@@ -1,0 +1,1 @@
+export { fontFamilies } from "./fontFamilies";
