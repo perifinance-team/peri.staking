@@ -6,7 +6,7 @@ const blueGreen = '#184771'
 //button
 const white = '#FFFFFF'
 //subtext
-const skyblue = '#00F0FF';
+const skyblue = 'rgb(0, 238, 255, 0.2)';
 //title, button
 
 export const dark = {
@@ -25,6 +25,10 @@ export const dark = {
     font: {
         primary: skyblue,
         secondary: white,
+    },
+    barChart: {
+        left: skyblue,
+        right: lightblue
     }
     
 }

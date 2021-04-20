@@ -1,13 +1,13 @@
 const navy = '#181339'
 //main backgorund
-const lightblue = '#1e1d4d'
+const lightblue = 'rgb(82, 113, 255, 0.1)'
 //panel
 const blueGreen = '#184771'
 //button
 const white = '#FFFFFF'
 //subtext
 const skyblue = '#00F0FF';
-//title
+//title, button
 
 export const light = {
     backgroundColor: {
@@ -25,6 +25,10 @@ export const light = {
     font: {
         primary: skyblue,
         secondary: white,
+    },
+    barChart: {
+        left: blueGreen,
+        right: lightblue
     }
     
 }

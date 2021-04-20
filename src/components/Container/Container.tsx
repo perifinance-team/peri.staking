@@ -2,6 +2,7 @@ import styled from 'styled-components';
 
 export const BodyContainer = styled.div`
 	display: flex;
+	flex: 1;
 	flex-direction: column;
 	padding: 20px 50px;
 	height: 100vh;
@@ -32,7 +33,7 @@ export const BlueBorderRoundContainer = styled(RoundContainer)`
 	width: 100%;
 	height: 100%;
 	border: 1px solid ${props => props.theme.colors.border};
-	padding: 15px 10px;
+	padding: 20px 10px;
 	background-color: transparent;
 `
 

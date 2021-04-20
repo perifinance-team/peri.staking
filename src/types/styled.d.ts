@@ -19,6 +19,10 @@ declare module 'styled-components' {
           button: string,
           background: string
       },
+      barChart: {
+        left: string,
+        right: string
+      }
     };
     
     fontFamilies: {
