@@ -51,16 +51,20 @@ export const FooterTitleContainer = styled.div`
 	align-items: center;
 `
 
-export const FooterRoundContainer = styled(RoundContainer)`
+export const FooterRoundContainer = styled(RoundContainer)<{margin?: number}>`
 	//margin delete
+	margin: 0px;
     align-items: baseline;
     justify-content: left;
-    padding: 20px;
+    padding: 30px;
     flex: 1;
 	display: flex;
 	flex-direction: column;
     height: 100%;
 	max-height: 330px;
+	:nth-child(2) {
+		margin: 0px 30px;
+	}
 `
 
 export const TableContainer = styled.div`

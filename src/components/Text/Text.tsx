@@ -54,5 +54,5 @@ export const H6 = styled.h6<Paragraph>`
     font-size: 14px;
     text-align: ${props => props.align ? props.align : 'center'};
     font-weight: 400;
-    color: ${props => props.theme.colors.font[props.color]};
+    color: ${props => props.theme.colors.font[props.color || 'secondary']};
 `;

@@ -9,5 +9,11 @@ export const en = {
 	walletDetail: {
 		title: 'MY WALLET DETAIL',
 		delegate: 'DELEGATE'
+	},
+	home: {
+		intro: {
+			title: "LET'S PYNTHS",
+			subTitle: "What would you like to do?",
+		},
 	}
 }

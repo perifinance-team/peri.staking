@@ -46,8 +46,8 @@ const FooterTitleLeftContainver = styled.div`
 
 const RateContainer = styled.div`
     display: flex;
-    flex: 1 1 1;
     width: 100%;
+    height: 140px;
     margin: 20px 0px;
 `
 
