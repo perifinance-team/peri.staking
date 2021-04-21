@@ -6,7 +6,7 @@ import { RootState } from 'config/reducers'
 import { RoundContainer } from 'components/Container'
 import { shortenAddress } from 'helpers/wallet'
 
-import { H5 } from 'components/Text';
+import { H6 } from 'components/Text';
 
 const WalletAddress = () => {
     const { currentWallet } = useSelector((state: RootState) => state.wallet);
@@ -23,7 +23,7 @@ const WalletAddress = () => {
 const WalletImage = styled.img`
     margin-left: 20px;
 `;
-const CurrentWallet = styled(H5)`
+const CurrentWallet = styled(H6)`
     margin: 0px 20px 0px 10px;
 `;
 

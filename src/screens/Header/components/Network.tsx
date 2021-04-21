@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { RootState } from 'config/reducers'
 
 import { RoundContainer } from 'components/Container'
-import { H5 } from 'components/Text';
+import { H6 } from 'components/Text';
 
 const Network = () => {
     const { networkName } = useSelector((state: RootState) => state.wallet);
@@ -16,7 +16,7 @@ const Network = () => {
     );
 }
 
-const NetworkText = styled(H5)`
+const NetworkText = styled(H6)`
     margin: 20px;
 `
 

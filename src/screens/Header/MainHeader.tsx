@@ -23,6 +23,7 @@ const Header = () => {
 
 const MainHeaderContainer = styled(HeaderContainer)`
     justify-content: space-between;
+    align-items: center;
 `
 
 export default Header;
