@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { MainContainer } from 'components/Container'
+import { BlueBorderRoundContainer } from 'components/Container'
 import { H1, H3, H4, H6} from 'components/Text'
 import { Button } from 'components/Button'
 
@@ -31,29 +31,17 @@ export const ActionButtonRow = styled.div`
 	grid-gap: 20px;
 `;
 
-export const ActionButtonContainer = styled.div`
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
-	overflow: hidden;
+export const ActionButtonContainer = styled(BlueBorderRoundContainer)`
+	padding: 30px;
+	cursor: pointer;
+	&:hover {
+		background-color: ${props => props.theme.colors.hover.background};
+	}
 `;
 
 export const ActionImage = styled.img`
 	height: 80px;
 	width: 80px;
-`;
-
-export const ActionButton = styled.button`
-	padding: 30px;
-	flex: 1;
-	cursor: pointer;
-	border: 2px solid ${props => props.theme.colors.border};
-	border-radius: 25px;
-	background-color: transparent;
-	&:hover {
-		background-color: ${props => props.theme.colors.hover.background};
-	}
 `;
 
 

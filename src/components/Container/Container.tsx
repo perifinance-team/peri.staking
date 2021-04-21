@@ -23,7 +23,7 @@ export const RoundContainer = styled.div`
 	color: ${props => props.theme.colors.font.secondary};
 	background-color: ${props => props.theme.colors.backgroundColor.panel};
 	border-radius: 25px;
-	height: 50px;
+	height: 40px;
 	margin: 0px 10px;
 `;
 
@@ -32,7 +32,7 @@ export const BlueBorderRoundContainer = styled(RoundContainer)`
 	flex-direction: column;
 	width: 100%;
 	height: 100%;
-	border: 1px solid ${props => props.theme.colors.border};
+	border: 2px solid ${props => props.theme.colors.border};
 	padding: 20px 10px;
 	background-color: transparent;
 `

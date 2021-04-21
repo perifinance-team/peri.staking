@@ -29,12 +29,10 @@ const Home = () => {
             <S.Container>
                 <S.ActionButtonRow>
                     {actions.map((action) => 
-                        (<S.ActionButtonContainer>
-                            <S.ActionButton>
+                        (<S.ActionButtonContainer onClick={() => console.log(123)}>
                                 <S.ActionImage src={`/images/dark/actions/${action}.svg`}></S.ActionImage>
                                 <H4>{action}</H4>
                                 <H6>Mint pUSD by staking PERI</H6>
-                            </S.ActionButton>
                         </S.ActionButtonContainer>)
                     )}
                 </S.ActionButtonRow>
