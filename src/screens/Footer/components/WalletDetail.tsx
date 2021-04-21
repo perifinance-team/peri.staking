@@ -15,7 +15,7 @@ const WalletDetail = () => {
                         <DelegateText>{t('walletDetail.delegate')}</DelegateText>
                     </DelegateContainer>
                     <RefreshContainer>
-                        <img src="/images/dark/refresh.svg"></img>
+                        <img src={"images/dark/refresh.svg"} alt="refresh"/>
                     </RefreshContainer>
                 </FooterTitleLeftContainver>
             </FooterTitleContainer>
@@ -73,7 +73,7 @@ const RateBox = styled(BlueBorderRoundContainer)<{margin?: number}>`
 `;
 
 const RateBoxText = styled(H3)`
-    margin: 0px 0px 0px 0px;
+    margin: 0px;
 `;
 
 const QuoteContainer = styled(BlueBorderRoundContainer)`

@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { FooterRoundContainer, FooterTitleContainer, RoundContainer } from 'components/Container'
+import { FooterRoundContainer, FooterTitleContainer } from 'components/Container'
 import { H4, H6 } from 'components/Text'
 import { useTranslation } from 'react-i18next';
 
@@ -13,21 +13,21 @@ const TotalBalance = () => {
             </FooterTitleContainer>
             <RageContainer>
 				<BarChart>
-					<Graph type="range" min="0" max="100" value="50"></Graph>
+					<Graph type="range" min="0" max="100" value="50" readOnly></Graph>
 					<Label>
 						<H6>Locked : 0</H6>
 						<H6>Transferable : 0</H6>
 					</Label>
 				</BarChart>
 				<BarChart>
-					<Graph type="range" min="0" max="100" value="50"></Graph>
+					<Graph type="range" min="0" max="100" value="50" readOnly></Graph>
 					<Label>
 						<H6>Staked : 0</H6>
 						<H6>Not staked : 0</H6>
 					</Label>
 				</BarChart>
 				<BarChart>
-					<Graph type="range" min="0" max="100" value="50"></Graph>
+					<Graph type="range" min="0" max="100" value="50" readOnly></Graph>
 					<Label>
 						<H6>Escrowed : 0</H6>
 						<H6>Not escrowed : 0</H6>

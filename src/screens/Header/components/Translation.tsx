@@ -1,6 +1,6 @@
-import styled from 'styled-components';
+// import styled from 'styled-components';
 
-import { RoundContainer } from 'components/Container'
+// import { RoundContainer } from 'components/Container'
 
 const Translation = () => {
     return (
@@ -12,14 +12,14 @@ const Translation = () => {
     );
 }
 
-const TranslationRoundContainer = styled(RoundContainer)`
-    width: 50px;
-    padding: 17px;
-`
+// const TranslationRoundContainer = styled(RoundContainer)`
+//     width: 50px;
+//     padding: 17px;
+// `
 
-const Globe = styled.img `
-    width: 15px;
-    height: 15px;
-`;
+// const Globe = styled.img `
+//     width: 15px;
+//     height: 15px;
+// `;
 
 export default Translation;

@@ -1,5 +1,3 @@
-import styled from 'styled-components'
-
 import { useTranslation } from 'react-i18next';
 import { H4, H6} from 'components/Text'
 import * as S from './styles'
@@ -29,7 +27,7 @@ const Home = () => {
             <S.Container>
                 <S.ActionButtonRow>
                     {actions.map((action) => 
-                        (<S.ActionButtonContainer onClick={() => console.log(123)}>
+                        (<S.ActionButtonContainer onClick={() => console.log(123)} key={action}>
                                 <S.ActionImage src={`/images/dark/actions/${action}.svg`}></S.ActionImage>
                                 <H4>{action}</H4>
                                 <H6>Mint pUSD by staking PERI</H6>

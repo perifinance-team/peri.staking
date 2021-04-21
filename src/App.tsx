@@ -12,7 +12,7 @@ import { setAppReady } from 'config/reducers/app';
 import { updateThemeStyles } from 'config/reducers/theme'
 
 import { changeAccount, changeNetwork } from 'helpers/wallet/change'
-
+import { getExchangeReates } from 'lib'
 import { BodyContainer } from 'components/Container'
 import {
   BrowserRouter as Router,

@@ -1,4 +1,3 @@
-import styled from 'styled-components'
 import { FooterRoundContainer, FooterTitleContainer } from 'components/Container'
 import BalanceTable from './BalanceTable'
 import { H4 } from 'components/Text'

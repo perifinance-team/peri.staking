@@ -1,8 +1,6 @@
 import styled from 'styled-components';
 import { BlueBorderRoundContainer } from 'components/Container'
-import { H1, H3, H4, H6} from 'components/Text'
-import { Button } from 'components/Button'
-
+import { H1, H3} from 'components/Text'
 
 export const Container = styled.div`
     flex: 1;

@@ -14,35 +14,7 @@ const BalanceTable = () => {
         name: 'PERI',
         balance: '123,123',
         valueUSD: '123,123,123',
-    },{
-        name: 'PERI',
-        balance: '123,123',
-        valueUSD: '123,123,123',
-    },{
-        name: 'PERI',
-        balance: '123,123',
-        valueUSD: '123,123,123',
-    },{
-        name: 'PERI',
-        balance: '123,123',
-        valueUSD: '123,123,123',
-    },{
-        name: 'PERI',
-        balance: '123,123',
-        valueUSD: '123,123,123',
-    },{
-        name: 'PERI',
-        balance: '123,123',
-        valueUSD: '123,123,123',
-    },{
-        name: 'PERI',
-        balance: '123,123',
-        valueUSD: '123,123,123',
-    },{
-        name: 'PERI',
-        balance: '123,123',
-        valueUSD: '123,123,123',
-    },
+    }
 ]
     const borderColors = ['#5271FF', '#00F0FF', '#F8B62D'];
     return (
@@ -50,13 +22,13 @@ const BalanceTable = () => {
             <StyledTHeader>
                 {tableHeadding.map( headding => 
                     headding === 'COIN' ?
-                    (<CellLeft> <H6 align={"left"}>{headding}</H6> </CellLeft>) :
-                    (<CellRight> <H6 align={"right"}>{headding}</H6> </CellRight>)
+                    (<CellLeft key={headding}> <H6 align={"left"}>{headding}</H6> </CellLeft>) :
+                    (<CellRight key={headding}> <H6 align={"right"}>{headding}</H6> </CellRight>)
                 )}
             </StyledTHeader>
             <StyledTBody className="dd">
                 {tableData.map( (data, index) => (
-                    <Row>
+                    <Row key={data.name}>
                         <CellLeft>
                             <Flex>
                                 <Border borderColor={borderColors[index%3]}></Border>
