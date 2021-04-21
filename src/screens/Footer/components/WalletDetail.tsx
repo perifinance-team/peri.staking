@@ -1,8 +1,8 @@
 import styled from 'styled-components'
 import { FooterRoundContainer, FooterTitleContainer, RoundContainer, BlueBorderRoundContainer } from 'components/Container'
-import { H3, H4, H5 } from 'components/Text'
+import { H3, H4, H6 } from 'components/Text'
 import { useTranslation } from 'react-i18next';
-
+import Asset from 'components/Asset'
 const WalletDetail = () => {
     const { t } = useTranslation();
     return (
@@ -22,26 +22,20 @@ const WalletDetail = () => {
             <RateContainer>
                 <RateBox>
                     <RateBoxText weigth={'bold'}>0%</RateBoxText>
-                    <H5>Current collateralization ratio</H5>
+                    <H6>Current collateralization ratio</H6>
                 </RateBox>
                 <RateBox margin={10}>
                     <RateBoxText weigth={'bold'}>300%</RateBoxText>
-                    <H5>Target collateralization ratio</H5>
+                    <H6>Target collateralization ratio</H6>
                 </RateBox>
                 <RateBox>
                     <RateBoxText weigth={'bold'}>150%</RateBoxText>
-                    <H5>Liquidation ratio</H5>
+                    <H6>Liquidation ratio</H6>
                 </RateBox>
             </RateContainer>
             <QuoteContainer>
-                <Asset>
-                    <CurrencyIcon src={`images/currencies/PERI.svg`} alt="currency"/>
-                    <H5>1PERI = $2.00 USD</H5>
-                </Asset>
-                <Asset>
-                    <CurrencyIcon src={`images/currencies/ETH.svg`} alt="currency"/>
-                    <H5>1PERI = $3,000.00 USD</H5>
-                </Asset>
+                <Asset currencyName={'PERI'} label={'1PERI = $2.00 USD'}></Asset>
+                <Asset currencyName={'ETH'} label={'1PERI = $3,000.00 USD'}></Asset>
             </QuoteContainer>
         </FooterRoundContainer>
     );
@@ -66,7 +60,7 @@ const WalletImage = styled.img`
     margin-left: 10px;
 `;
 
-const DelegateText = styled(H5)`
+const DelegateText = styled(H6)`
     margin: 10px;
 `
 
@@ -91,14 +85,5 @@ const QuoteContainer = styled(BlueBorderRoundContainer)`
     padding: 0px 40px;
 `;
 
-const Asset = styled.div`
-    display: flex;
-    flex-direction: row;
-    margin: 0px 10px;
-`;
-
-const CurrencyIcon = styled.img`
-    margin: 0px 10px;
-`;
 
 export default WalletDetail;

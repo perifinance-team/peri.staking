@@ -6,8 +6,10 @@ const blueGreen = '#184771'
 //button
 const white = '#FFFFFF'
 //subtext
-const skyblue = 'rgb(0, 238, 255, 0.2)';
+const skyblue = 'rgb(0, 238, 255, 1)';
 //title, button
+
+const skyblueBorder = 'rgb(0, 238, 255, 0.2)';
 
 export const dark = {
     backgroundColor: {
@@ -17,7 +19,7 @@ export const dark = {
         panel: lightblue
     },
     button: blueGreen,
-    border: skyblue,
+    border: skyblueBorder,
     hover: {
         button: skyblue,
         background: lightblue
@@ -27,8 +29,11 @@ export const dark = {
         secondary: white,
     },
     barChart: {
-        left: skyblue,
+        left: skyblueBorder,
         right: lightblue
+    },
+    table: {
+        theader: lightblue
     }
     
 }

@@ -3,12 +3,13 @@ import styled from 'styled-components';
 interface Paragraph {
     weigth?: string;
     color?: string;
+    align?: string;
 }
 
 const weigth = {
     black: 900,
     bold: 700,
-    regular: 100,
+    regular: 300,
 }
 
 export const H1 = styled.h1`
@@ -49,8 +50,9 @@ export const H5 = styled.h5<Paragraph>`
 `;
 
 export const H6 = styled.h6<Paragraph>`
+    margin: 0px;
     font-size: 14px;
-    text-align: center;
-    font-weight: ${weigth['regular']};
+    text-align: ${props => props.align ? props.align : 'center'};
+    font-weight: 400;
     color: ${props => props.theme.colors.font[props.color]};
 `;

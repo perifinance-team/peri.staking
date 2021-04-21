@@ -52,6 +52,7 @@ export const FooterTitleContainer = styled.div`
 `
 
 export const FooterRoundContainer = styled(RoundContainer)`
+	//margin delete
     align-items: baseline;
     justify-content: left;
     padding: 20px;
@@ -59,4 +60,10 @@ export const FooterRoundContainer = styled(RoundContainer)`
 	display: flex;
 	flex-direction: column;
     height: 100%;
+	max-height: 330px;
+`
+
+export const TableContainer = styled.div`
+	width: 100%;
+	margin-top: 30px;
 `

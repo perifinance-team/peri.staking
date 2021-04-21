@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 import { FooterRoundContainer, FooterTitleContainer, RoundContainer } from 'components/Container'
-import { H4, H5 } from 'components/Text'
+import { H4, H6 } from 'components/Text'
 import { useTranslation } from 'react-i18next';
 
 const TotalBalance = () => {
@@ -15,22 +15,22 @@ const TotalBalance = () => {
 				<BarChart>
 					<Graph type="range" min="0" max="100" value="50"></Graph>
 					<Label>
-						<H5>Locked : 0</H5>
-						<H5>Transferable : 0</H5>
+						<H6>Locked : 0</H6>
+						<H6>Transferable : 0</H6>
 					</Label>
 				</BarChart>
 				<BarChart>
 					<Graph type="range" min="0" max="100" value="50"></Graph>
 					<Label>
-						<H5>Staked : 0</H5>
-						<H5>Not staked : 0</H5>
+						<H6>Staked : 0</H6>
+						<H6>Not staked : 0</H6>
 					</Label>
 				</BarChart>
 				<BarChart>
 					<Graph type="range" min="0" max="100" value="50"></Graph>
 					<Label>
-						<H5>Escrowed : 0</H5>
-						<H5>Not escrowed : 0</H5>
+						<H6>Escrowed : 0</H6>
+						<H6>Not escrowed : 0</H6>
 					</Label>
 				</BarChart>
             </RageContainer>
@@ -86,7 +86,8 @@ export const Graph = styled.input`
 const Label = styled.div`
 	width: 100%;
 	height: 50px;
-	padding: 15px 40px;
+	padding: 0px 40px;
+	align-items: center;
 	display: flex;
 	justify-content: space-between;
 	position: absolute;

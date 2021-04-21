@@ -75,4 +75,5 @@ export const Link = styled.a`
 `;
 
 export const LinkText = styled(H4)`
+	color: ${props => props.theme.colors.font.primary};
 `;
