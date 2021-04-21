@@ -80,9 +80,9 @@ const QuoteContainer = styled(BlueBorderRoundContainer)`
     display: flex;
     flex-direction: row;
     margin: 0px;
-    height: 35px;
+    height: 40px;
     justify-content: space-between;
-    padding: 0px 40px;
+    padding: 10px 40px;
 `;
 
 
