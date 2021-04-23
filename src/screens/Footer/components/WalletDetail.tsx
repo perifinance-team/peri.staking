@@ -1,10 +1,29 @@
 import styled from 'styled-components'
+import { useSelector } from "react-redux";
+import numbro from 'numbro'
+
+import { RootState } from 'config/reducers'
+
 import { FooterRoundContainer, FooterTitleContainer, RoundContainer, BlueBorderRoundContainer } from 'components/Container'
 import { H3, H4, H6 } from 'components/Text'
 import { useTranslation } from 'react-i18next';
 import Asset from 'components/Asset'
+
+
+
 const WalletDetail = () => {
     const { t } = useTranslation();
+    const currentCRatio = useSelector((state: RootState) => state.ratio.currentCRatio);
+    const targetCRatio = useSelector((state: RootState) => state.ratio.targetCRatio);
+    const liquidationRatio = useSelector((state: RootState) => state.ratio.liquidationRatio);
+    const exchangeRates = useSelector((state: RootState) => state.exchangeRates);
+    
+    const formatRatio = (value) => {
+        const targetNum = numbro(value);
+        if(targetNum.value() <= 0) return 0;
+        return 100 / value;
+    }
+
     return (
         <FooterRoundContainer>
             <FooterTitleContainer>
@@ -21,21 +40,21 @@ const WalletDetail = () => {
             </FooterTitleContainer>
             <RateContainer>
                 <RateBox>
-                    <RateBoxText weigth={'bold'}>0%</RateBoxText>
+                    <RateBoxText weigth={'bold'}>{formatRatio(currentCRatio)}%</RateBoxText>
                     <H6>Current collateralization ratio</H6>
                 </RateBox>
                 <RateBox margin={10}>
-                    <RateBoxText weigth={'bold'}>300%</RateBoxText>
+                    <RateBoxText weigth={'bold'}>{formatRatio(targetCRatio)}%</RateBoxText>
                     <H6>Target collateralization ratio</H6>
                 </RateBox>
                 <RateBox>
-                    <RateBoxText weigth={'bold'}>150%</RateBoxText>
+                    <RateBoxText weigth={'bold'}>{formatRatio(liquidationRatio)}%</RateBoxText>
                     <H6>Liquidation ratio</H6>
                 </RateBox>
             </RateContainer>
             <QuoteContainer>
-                <Asset currencyName={'PERI'} label={'1PERI = $2.00 USD'}></Asset>
-                <Asset currencyName={'ETH'} label={'1PERI = $3,000.00 USD'}></Asset>
+                <Asset currencyName={'PERI'} label={`1PERI = ${exchangeRates?.PERI} USD`}></Asset>
+                <Asset currencyName={'ETH'} label={`1ETH = ${exchangeRates?.ETH} USD`}></Asset>
             </QuoteContainer>
         </FooterRoundContainer>
     );

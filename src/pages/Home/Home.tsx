@@ -8,9 +8,9 @@ const Home = () => {
         'staking',
         'burn',
         'claim',
-        'trade',
+        // 'trade',
         'transfer',
-        'track',
+        // 'track',
     ]
     return (
         <>

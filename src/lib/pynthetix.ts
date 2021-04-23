@@ -1,23 +1,23 @@
-import { PynthetixJs } from 'pynthetix-js';
+import { PeriFinanceJs } from '@perifinance/peri-finance-js';
 
 type Pynthetix = {
 	initialized: boolean,
-	signers: PynthetixJs.signers,
+	signers: PeriFinanceJs.signers,
 	setContractSettings: any,
-	js?: PynthetixJs | null,
-	pynths?: PynthetixJs.contractSettings.pynths | null,
-	signer?: PynthetixJs.contractSettings.signer | null,
-	provider?: PynthetixJs.contractSettings.provider | null,
-	utils?: PynthetixJs.contractSettings.utils | null,
-	ethersUtils?: PynthetixJs.ethers.utils | null,
+	js?: PeriFinanceJs | null,
+	pynths?: PeriFinanceJs.contractSettings.pynths | null,
+	signer?: PeriFinanceJs.contractSettings.signer | null,
+	provider?: PeriFinanceJs.contractSettings.provider | null,
+	utils?: PeriFinanceJs.contractSettings.utils | null,
+	ethersUtils?: PeriFinanceJs.ethers.utils | null,
 }
 
 export const pynthetix: Pynthetix = {
     initialized: false,
-	signers: PynthetixJs.signers,
+	signers: PeriFinanceJs.signers,
 	setContractSettings: function (contractSettings) {
 		this.initialized = true;
-		this.js = new PynthetixJs(contractSettings);
+		this.js = new PeriFinanceJs(contractSettings);
 		this.pynths = this.js.contractSettings.pynths;
 		this.signer = this.js.contractSettings.signer;
 		this.provider = this.js.contractSettings.provider;

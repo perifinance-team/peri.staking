@@ -1,6 +1,6 @@
-const defaultNetwork = 1;
+import detectEthereumProvider from '@metamask/detect-provider';
 
-export function getEthereumNetworkId() {
-	const networkVersion: number = Number(window.ethereum?.netWorkVersion) || defaultNetwork;
-	return networkVersion;
+export async function getEthereumNetworkId() {
+	let { networkVersion } = (await detectEthereumProvider());
+ 	return networkVersion;
 }

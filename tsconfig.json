@@ -6,26 +6,30 @@
       "dom.iterable",
       "esnext"
     ],
+    "typeRoots": ["./types/*"],
+
     "allowJs": true,
     "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "strict": false,
     "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
-    "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
+    "noEmit": true,
     "jsx": "react-jsx",
-    "baseUrl": "./src",
-    "allowSyntheticDefaultImports": true,
+    "baseUrl": "src",
     "noFallthroughCasesInSwitch": true
   },
-  "exclude": [
-    "node_modules"
-  ],
   "include": [
-    "**/*.ts",
-    "**/*.tsx"
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "./node_modules",
+    "./node_modules/*",
+    "./node_modules/@metamask/detect-provider"
   ]
 }

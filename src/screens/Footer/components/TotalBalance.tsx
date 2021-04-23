@@ -1,38 +1,51 @@
 import styled from 'styled-components'
+
+import { useSelector } from "react-redux";
+import { RootState } from 'config/reducers'
+
 import { FooterRoundContainer, FooterTitleContainer } from 'components/Container'
 import { H4, H6 } from 'components/Text'
 import { useTranslation } from 'react-i18next';
 
+import { formatCurrency } from 'lib'
+
+import numbro from 'numbro'
+
 const TotalBalance = () => {
     const { t } = useTranslation();
-
+	const PERI = useSelector((state: RootState) => state.balances.PERI);
+	const transferablePeri = useSelector((state: RootState) => Number(state.balances.transferablePeri) );
+	const staked:number = numbro(PERI.balance).subtract(transferablePeri).value();
+	
+	const totalStaked = staked === 0 ? 50 : numbro(staked).divide(transferablePeri).multiply(100).value();
+	
     return (
         <FooterRoundContainer>
             <FooterTitleContainer>
                 <H4 weigth="bold">{t('walletDetail.title')}</H4>
             </FooterTitleContainer>
             <RageContainer>
-				<BarChart>
+				{/* <BarChart>
 					<Graph type="range" min="0" max="100" value="50" readOnly></Graph>
 					<Label>
 						<H6>Locked : 0</H6>
 						<H6>Transferable : 0</H6>
 					</Label>
-				</BarChart>
+				</BarChart> */}
 				<BarChart>
-					<Graph type="range" min="0" max="100" value="50" readOnly></Graph>
+					<Graph type="range" min="0" max="100" value={totalStaked} readOnly></Graph>
 					<Label>
-						<H6>Staked : 0</H6>
-						<H6>Not staked : 0</H6>
+						<H6>Staked : {formatCurrency(staked)}</H6>
+						<H6>Not staked : {formatCurrency(transferablePeri)}</H6>
 					</Label>
 				</BarChart>
-				<BarChart>
+				{/* <BarChart>
 					<Graph type="range" min="0" max="100" value="50" readOnly></Graph>
 					<Label>
 						<H6>Escrowed : 0</H6>
 						<H6>Not escrowed : 0</H6>
 					</Label>
-				</BarChart>
+				</BarChart> */}
             </RageContainer>
         </FooterRoundContainer>
     );
