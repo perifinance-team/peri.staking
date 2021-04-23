@@ -1,8 +1,12 @@
 import styled from 'styled-components'
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import numbro from 'numbro'
 
 import { RootState } from 'config/reducers'
+import { updateBalances } from 'config/reducers/wallet/balances'
+import { updateExchangeRates, updateRatio } from 'config/reducers/rates'
+
+import { getExchangeRates, getRatio, getBalancess } from 'lib'
 
 import { FooterRoundContainer, FooterTitleContainer, RoundContainer, BlueBorderRoundContainer } from 'components/Container'
 import { H3, H4, H6 } from 'components/Text'
@@ -10,9 +14,11 @@ import { useTranslation } from 'react-i18next';
 import Asset from 'components/Asset'
 
 
-
 const WalletDetail = () => {
     const { t } = useTranslation();
+    const wallet = useSelector((state: RootState) => state.wallet);
+    const dispatch = useDispatch();
+
     const currentCRatio = useSelector((state: RootState) => state.ratio.currentCRatio);
     const targetCRatio = useSelector((state: RootState) => state.ratio.targetCRatio);
     const liquidationRatio = useSelector((state: RootState) => state.ratio.liquidationRatio);
@@ -24,6 +30,15 @@ const WalletDetail = () => {
         return 100 / value;
     }
 
+    const getDatas = async () => {
+        const exchangeRates = await getExchangeRates();
+        dispatch(updateExchangeRates(exchangeRates));
+        const ratios = await getRatio(wallet.currentWallet);
+        dispatch(updateRatio(ratios));
+        const balances = await getBalancess(wallet.currentWallet);
+        dispatch(updateBalances(balances));
+    }
+
     return (
         <FooterRoundContainer>
             <FooterTitleContainer>
@@ -33,7 +48,7 @@ const WalletDetail = () => {
                         <WalletImage src="/images/dark/wallet.svg"></WalletImage>
                         <DelegateText>{t('walletDetail.delegate')}</DelegateText>
                     </DelegateContainer>
-                    <RefreshContainer>
+                    <RefreshContainer onClick={()=> {console.log(123); getDatas()}}>
                         <img src={"images/dark/refresh.svg"} alt="refresh"/>
                     </RefreshContainer>
                 </FooterTitleLeftContainver>

@@ -41,15 +41,7 @@ export const appSlice = createSlice({
 			state.isFetching = false;
 			state.isRefreshing = false;
 		},
-		fetchAppStatusSuccess: (
-			state,
-			action: PayloadAction<{ isSystemUpgrading: boolean; isPVT: boolean }>
-		) => {
-			const { isSystemUpgrading, isPVT } = action.payload;
-			state.isSystemUpgrading = isSystemUpgrading;
-			state.isPVT = isPVT;
-			state.isFetching = false;
-			state.isRefreshing = false;
+		fetchAppStatusSuccess: ( state ) => {
 			state.isFetched = true;
 		},
 		setSystemUpgrading: (state, action: PayloadAction<{ reason: boolean }>) => {

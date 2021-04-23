@@ -6,7 +6,7 @@ import { ThemeProvider } from 'styled-components';
 import { useDispatch } from 'react-redux'
 
 import { RootState } from 'config/reducers'
-import { setAppReady } from 'config/reducers/app';
+import { setAppReady, fetchAppStatusSuccess } from 'config/reducers/app';
 import { updateThemeStyles } from 'config/reducers/theme'
 import { updateWallet, initWallet, clearWallet, updateIsConnected } from 'config/reducers/wallet'
 import { updateBalances } from 'config/reducers/wallet/balances'
@@ -53,6 +53,7 @@ const App = () => {
             dispatch(updateRatio(ratios));
             const balances = await getBalancess(wallet.currentWallet);
             dispatch(updateBalances(balances));
+            dispatch(fetchAppStatusSuccess());
         }
 
         const init = async () => {

@@ -5,7 +5,9 @@ import TotalBalance from './components/TotalBalance'
 import PeriBalance from './components/PeriBalance'
 
 const Footer = () => {
+    
     return (
+        
         <FooterContainer>
             <WalletDetail/>
             <TotalBalance/>

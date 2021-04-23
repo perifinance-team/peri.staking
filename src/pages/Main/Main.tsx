@@ -4,6 +4,9 @@ import {
     Route
 } from "react-router-dom";
 
+import { useSelector } from "react-redux";
+import { RootState } from 'config/reducers'
+
 import Home from '../Home'
 import Escrow from '../Escrow'
 import Depot from '../Depot'
@@ -22,6 +25,7 @@ import WalletConnection from '../Wallet'
 import * as S from './styled'
 
 const Main = () => {
+  const isFetched = useSelector((state: RootState) => state.app.isFetched);
   return (
     <>
       <S.BodyContainer>
