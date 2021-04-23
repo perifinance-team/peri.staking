@@ -86,6 +86,7 @@ const RateContainer = styled.div`
 `
 
 const DelegateContainer = styled(RoundContainer)`
+    cursor: pointer;
     padding: 10px;
     height: 40px;
 `
@@ -99,8 +100,10 @@ const DelegateText = styled(H6)`
 `
 
 const RefreshContainer = styled(RoundContainer)`
+    cursor: pointer;
     height: 40px;
     padding: 14px;
+    
 `
 const RateBox = styled(BlueBorderRoundContainer)<{margin?: number}>`
     margin: 0px ${(props) => props.margin ? `${props.margin}px` : '0px'};
