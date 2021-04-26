@@ -24,7 +24,7 @@ export const CellLeft = styled(Cell)`
 export const StyledTHeader = styled(Row)`
     display: flex;
     flex-direction: row;
-    background-color: ${props => props.theme.colors.backgroundColor.panel};
+    background-color: ${props => props.theme.colors.background.panel};
 `;
 
 export const StyledTBody = styled.div`

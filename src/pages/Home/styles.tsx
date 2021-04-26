@@ -22,7 +22,7 @@ export const IntroSubTitle = styled(H3)`
 `;
 
 export const ActionButtonRow = styled.div`
-	padding: 30px;
+	padding: 25px;
 	display: grid;
 	grid-template-columns: repeat(3, 200px);
 	grid-template-rows: repeat(2, 1fr);

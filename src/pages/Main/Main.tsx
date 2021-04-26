@@ -10,7 +10,7 @@ import { RootState } from 'config/reducers'
 import Home from '../Home'
 import Escrow from '../Escrow'
 import Depot from '../Depot'
-import Stake from '../Stake'
+import Staking from '../Staking'
 import Burn from '../Burn'
 import Claim from '../Claim'
 import Trade from '../Trade'
@@ -37,8 +37,8 @@ const Main = () => {
               <Route path="/walletConnection">
                 <WalletConnection></WalletConnection>
               </Route>
-              <Route path="/stake">
-                <Stake></Stake>
+              <Route path="/staking">
+                <Staking></Staking>
               </Route>
               <Route path="/burn">
                 <Burn></Burn>

@@ -6,14 +6,14 @@ export const BodyContainer = styled.div`
 	flex-direction: column;
 	padding: 20px 50px;
 	height: 100vh;
-	background-color: ${props => props.theme.colors.backgroundColor.body};
+	background-color: ${props => props.theme.colors.background.body};
 `;
 
 export const MainContainer =  styled.div`
 	margin-top: 30px;
 	width: 100%;
 	border-radius: 25px;
-    background-color: ${props => props.theme.colors.backgroundColor.panel};
+    background-color: ${props => props.theme.colors.background.panel};
 `;
 
 export const RoundContainer = styled.div`
@@ -21,7 +21,7 @@ export const RoundContainer = styled.div`
 	justify-content: center;
 	align-items: center;
 	color: ${props => props.theme.colors.font.secondary};
-	background-color: ${props => props.theme.colors.backgroundColor.panel};
+	background-color: ${props => props.theme.colors.background.panel};
 	border-radius: 25px;
 	height: 40px;
 	margin: 0px 10px;
@@ -71,3 +71,5 @@ export const TableContainer = styled.div`
 	width: 100%;
 	margin-top: 30px;
 `
+
+export const ActionContainer = styled.div``

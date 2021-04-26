@@ -4,6 +4,8 @@ interface Paragraph {
     weigth?: string;
     color?: string;
     align?: string;
+    margin?: number;
+    mb?: number;
 }
 
 const weigth = {
@@ -19,18 +21,18 @@ export const H1 = styled.h1`
     color: ${props => props.theme.colors.font.primary};
 `;
 
-export const H2 = styled.h2`
+export const H2 = styled.h2<Paragraph>`
     font-size: 36px;
-    font-weight: ${weigth['regular']};
+    font-weight: ${props => weigth[props.weigth || weigth.regular]};
     text-align: center;
-    color: ${props => props.theme.colors.font.secondary};
-`;
+    color: ${props => props.color ? props.theme.colors.font[props.color] : props.theme.colors.font.secondary};
+`
 
 export const H3 = styled.h3<Paragraph>`
     font-size: 32px;
     text-align: center;
     font-weight: ${props => weigth[props.weigth || weigth.regular]};
-    color: ${props => props.theme.colors.font.secondary};
+    color: ${props => props.color ? props.theme.colors.font[props.color] : props.theme.colors.font.secondary};
 `;
 
 export const H4 = styled.h4<Paragraph>`

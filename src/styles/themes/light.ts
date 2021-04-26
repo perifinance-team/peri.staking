@@ -1,34 +1,43 @@
 const navy = '#181339'
 //main backgorund
-const lightblue = 'rgb(82, 113, 255, 0.1)'
+const lightBlue = 'rgb(82, 113, 255, 0.1)'
 //panel
 const blueGreen = '#184771'
 //button
 const white = '#FFFFFF'
 //subtext
-const skyblue = '#00F0FF';
+const skyblue = 'rgb(0, 238, 255, 1)';
 //title, button
 
+const skyblueBorder = 'rgb(0, 238, 255, 0.2)';
+
 export const light = {
-    backgroundColor: {
+    background: {
         body: navy,
 
         // #23265f
-        panel: lightblue
+        panel: lightBlue,
+        button: skyblueBorder
     },
-    button: blueGreen,
-    border: skyblue,
+    button: {
+        primary: lightBlue,
+        secondary: blueGreen
+    },
+    border: skyblueBorder,
     hover: {
         button: skyblue,
-        background: lightblue
+        background: lightBlue
     },
     font: {
         primary: skyblue,
         secondary: white,
     },
     barChart: {
-        left: blueGreen,
-        right: lightblue
+        left: skyblueBorder,
+        right: lightBlue
+    },
+    table: {
+        theader: lightBlue
     }
     
 }

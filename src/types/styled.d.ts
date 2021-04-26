@@ -5,16 +5,20 @@ import 'styled-components';
 declare module 'styled-components' {
   export interface DefaultTheme {
     colors: {
-      backgroundColor: {
+      background: {
         body: string,
         panel: string,
+        button: string,
       },
       border: string,
       font: {
         primary: string,
         secondary: string,
       },
-      button: string,
+      button: {
+        primary: string,
+        secondary: string,
+      },
       hover: {
           button: string,
           background: string

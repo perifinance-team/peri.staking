@@ -1,15 +1,30 @@
 import styled from 'styled-components';
 
-export const Button = styled.button`
-    border-radius: 50px;
+const ButtonStyle = styled.button`
+	border-radius: 50px;
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	background-color: ${props => props.theme.colors.button};
-    border: none;
+	border: none;
 	cursor: pointer;
 	transition: all 0.1s ease;
+	color: ${props => props.theme.colors.font.secondary};
+	:focus {
+        outline: none;
+    }
+`;
+
+export const LightBlueButton = styled(ButtonStyle)`
+	background-color: ${props => props.theme.colors.button.primary};
+`;
+
+export const BlueGreenButton = styled(ButtonStyle)`
+	background-color: ${props => props.theme.colors.button.secondary};
 	:hover {
 		background-color: ${props => props.theme.colors.hover.button};
 	}
-`;
+`
+
+export const SkeyBlueButton = styled(LightBlueButton)`
+	border: 1px solid  ${props => props.theme.colors.border};
+`

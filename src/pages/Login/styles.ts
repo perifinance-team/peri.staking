@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { MainContainer } from 'components/Container'
 import { H1, H3, H4, H6} from 'components/Text'
-import { Button } from 'components/Button'
+import { BlueGreenButton } from 'components/Button'
 
 
 export const LoginMainContainer = styled(MainContainer)`
@@ -32,7 +32,7 @@ export const ButtonContainer = styled.div`
 `;
 
 
-export const WalletButton = styled(Button)`
+export const WalletButton = styled(BlueGreenButton)`
 	width: 350px;
     height: 60px;
 	margin: 10px;

@@ -4,7 +4,7 @@ import numbro from 'numbro'
 
 const format = (value) => {
     if(!value) return '0.00';
-    return (numbro(value.toString()).divide(1e18)).toString();
+    return (numbro(value).divide(1e18)).value().toString();
 }
 
 export const getExchangeRates = async () => {
@@ -31,12 +31,11 @@ export const getExchangeRates = async () => {
 
         return keys.forEach((key, index) => {
             const coinName = utils.parseBytes32String(key);
-            value[coinName] = format(rates[index]);
+            value[coinName] = format(utils.formatEther(rates[index]));
         });
     }
     await getPeriExchangeRate();
     await getPynthsRates();
-
     return value;
 }
 

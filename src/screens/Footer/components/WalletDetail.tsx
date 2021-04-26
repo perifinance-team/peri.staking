@@ -22,7 +22,7 @@ const WalletDetail = () => {
     const currentCRatio = useSelector((state: RootState) => state.ratio.currentCRatio);
     const targetCRatio = useSelector((state: RootState) => state.ratio.targetCRatio);
     const liquidationRatio = useSelector((state: RootState) => state.ratio.liquidationRatio);
-    const exchangeRates = useSelector((state: RootState) => state.exchangeRates);
+    const {PERI, ETH} = useSelector((state: RootState) => state.exchangeRates);
     
     const formatRatio = (value) => {
         const targetNum = numbro(value);
@@ -48,7 +48,7 @@ const WalletDetail = () => {
                         <WalletImage src="/images/dark/wallet.svg"></WalletImage>
                         <DelegateText>{t('walletDetail.delegate')}</DelegateText>
                     </DelegateContainer>
-                    <RefreshContainer onClick={()=> {console.log(123); getDatas()}}>
+                    <RefreshContainer onClick={()=> {getDatas()}}>
                         <img src={"images/dark/refresh.svg"} alt="refresh"/>
                     </RefreshContainer>
                 </FooterTitleLeftContainver>
@@ -68,8 +68,8 @@ const WalletDetail = () => {
                 </RateBox>
             </RateContainer>
             <QuoteContainer>
-                <Asset currencyName={'PERI'} label={`1PERI = ${exchangeRates?.PERI} USD`}></Asset>
-                <Asset currencyName={'ETH'} label={`1ETH = ${exchangeRates?.ETH} USD`}></Asset>
+                <Asset currencyName={'PERI'} label={`1PERI = ${PERI} USD`}></Asset>
+                <Asset currencyName={'ETH'} label={`1ETH = ${ETH} USD`}></Asset>
             </QuoteContainer>
         </FooterRoundContainer>
     );
