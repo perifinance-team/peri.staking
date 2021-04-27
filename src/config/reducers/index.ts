@@ -13,6 +13,9 @@ import themeStyles from './theme/themeStyles'
 import exchangeRates from './rates/exchangeRates'
 import ratio from './rates/ratio'
 
+import networkFee from './networkFee/networkFee'
+import seletedFee from './networkFee/seletedFee'
+
 const reducer = combineReducers({
     app,
     theme,
@@ -23,6 +26,8 @@ const reducer = combineReducers({
     themeStyles,
     exchangeRates,
     ratio,
+    networkFee,
+    seletedFee
 });
 
 export type RootState = ReturnType<typeof reducer>;

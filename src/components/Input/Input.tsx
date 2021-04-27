@@ -5,30 +5,30 @@ import { BlueBorderRoundContainer } from 'components/Container'
 import Asset from 'components/Asset'
 import { BlueGreenButton } from 'components/Button';
 import { H4 } from 'components/Text'
-const Input = ({readOnly = false, currencyName, tooltip = undefined }) => {
+const Input = ({disabled = false, currencyName, tooltip = undefined, onChange, onBlur, value, maxAction}) => {
     const [currencyListIsOpen, toggleCurrency] = useState(false);
     return (
-        <Container readOnly={readOnly}>
+        <Container disabled={disabled}>
             <DropdownContainer>
-                <DropdownButton disabled={readOnly}>
+                <DropdownButton disabled={disabled}>
                     <Asset currencyName={currencyName} label={currencyName}></Asset>
                 </DropdownButton>
                 <Border></Border>
             </DropdownContainer>
             <InputContainer>
-                <AmountInput readOnly={readOnly} value="123"></AmountInput>
-                { readOnly || <MaxButton>MAX</MaxButton>}
+                <AmountInput disabled={disabled} onChange={onChange} value={value} onBlur={onBlur}></AmountInput>
+                { disabled || <MaxButton onClick={maxAction}>MAX</MaxButton>}
             </InputContainer>
         </Container>
     )
 }
 
-const Container = styled(BlueBorderRoundContainer)<{readOnly: boolean}>`
+const Container = styled(BlueBorderRoundContainer)<{disabled: boolean}>`
     height: 50px;
     flex-direction: row;
     flex: 1 2;
     justify-content: space-between;
-    opacity: ${props => props.readOnly ? 0.5 : 1};
+    opacity: ${props => props.disabled ? 0.5 : 1};
     margin: 0px;
 `
 

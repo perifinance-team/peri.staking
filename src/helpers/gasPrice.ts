@@ -1,0 +1,1 @@
+export const gasPrice = 30 * 10**9;

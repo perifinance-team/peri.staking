@@ -1,20 +1,19 @@
-import { useEffect } from 'react';
-import { useSelector } from "react-redux";
+import { useEffect } from 'react'
+import { useSelector, useDispatch } from "react-redux"
 
-import { ThemeProvider } from 'styled-components';
-
-import { useDispatch } from 'react-redux'
+import { ThemeProvider } from 'styled-components'
 
 import { RootState } from 'config/reducers'
-import { setAppReady, fetchAppStatusSuccess } from 'config/reducers/app';
+import { setAppReady, fetchAppStatusSuccess } from 'config/reducers/app'
 import { updateThemeStyles } from 'config/reducers/theme'
 import { updateWallet, initWallet, clearWallet, updateIsConnected } from 'config/reducers/wallet'
 import { updateBalances } from 'config/reducers/wallet/balances'
 import { updateExchangeRates, updateRatio } from 'config/reducers/rates'
+import { updateNetworkFee } from 'config/reducers/networkFee'
 
 import { connectHelper } from 'helpers/wallet/connect'
-
 import { changeAccount, changeNetwork } from 'helpers/wallet/change'
+import { getNetworkFee } from 'helpers/defipulse'
 import { getExchangeRates, getRatio, getBalancess } from 'lib'
 import { BodyContainer } from 'components/Container'
 import {
@@ -31,7 +30,7 @@ import MainHeader from 'screens/Header/MainHeader';
 import SubHeader from 'screens/Header/SubHeader';
 
 const App = () => {
-
+    
     const dispatch = useDispatch();
     const appIsReady = useSelector((state: RootState) => state.app.isReady);
     const wallet = useSelector((state: RootState) => state.wallet);
@@ -53,7 +52,10 @@ const App = () => {
             dispatch(updateRatio(ratios));
             const balances = await getBalancess(wallet.currentWallet);
             dispatch(updateBalances(balances));
+            const networkFee = await getNetworkFee();
+            dispatch(updateNetworkFee(networkFee));
             dispatch(fetchAppStatusSuccess());
+            
         }
 
         const init = async () => {

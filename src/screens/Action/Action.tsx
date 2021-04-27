@@ -16,11 +16,11 @@ const Action = ({children, title, subTitles}) => {
             <ActionBodyContainer>
                 <Title color={'primary'} weigth={'black'}>{title}</Title>
                 <SubTitleContainer>
-                    {subTitles.map(text => (
-                        <H5>{text}</H5>
+                    {subTitles.map((text, index) => (
+                        <H5 key={index}>{text}</H5>
                     ))}
                 </SubTitleContainer>
-                <ContentContainer>
+                <ContentContainer key={1}>
                     {children}
                 </ContentContainer>
             </ActionBodyContainer>

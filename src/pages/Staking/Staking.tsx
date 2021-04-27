@@ -1,31 +1,158 @@
+import { useEffect, useState } from 'react';
+import { useSelector } from "react-redux";
+import { RootState } from 'config/reducers'
+
+import { pynthetix, getEstimateCRatio, getStakingAmount, getCurrencyFormat } from 'lib'
+import { utils } from 'ethers'
+import numbro from 'numbro'
+
 import styled from 'styled-components'
 import Action from 'screens/Action'
 import Input from 'components/Input'
 import { BlueGreenButton } from 'components/Button'
 import { H4, H5 } from 'components/Text'
 import Fee from 'components/Fee'
+
+import { gasPrice } from 'helpers/gasPrice'
+
 const Staking = () => {
-    const subTitles = [
-        "Mint pUSD by staking your PERI.",
-        "This gives you a Collateralization Ratio and a debt, allowing you to earn staking rewards."
-    ]
+    type StakingData = {
+        maxIssuable: string, 
+        balanceOf: string, 
+        PERIBalance: string, 
+        issuanceRatio: string, 
+        exchangeRates: string, 
+        issuable: string
+    }
+    
+    const [stakingData, setStakingData] = useState<StakingData>({
+        maxIssuable: "0",
+        balanceOf: "0",
+        PERIBalance: "0",
+        issuanceRatio: "0",
+        exchangeRates: "0",
+        issuable: "0",
+    });
+    const [estimateCRatio, setEstimateCRatio] = useState<string>("0");
+    const [stakingAmount, setStakingAmount] = useState<string>("0");
+    const [mintingAmount, setMintingAmount] = useState<string>("0");
+    const [gasLimit, setGasLimit] = useState<number>(0);
+    
+
+    const { currentWallet } = useSelector((state: RootState) => state.wallet);
+
+    const { js: { PeriFinance, Issuer, ExchangeRates } }  = pynthetix as any;
+    const { PERIBalance, balanceOf, exchangeRates, issuanceRatio, issuable } = stakingData;
+
+    const currenciesToBytes = {
+        PERI: utils.formatBytes32String('PERI'),
+        pUSD: utils.formatBytes32String('pUSD'),
+        USDC: utils.formatBytes32String('USDC'),
+    }
+    
+    useEffect(() => {
+        const getIssuanceData = async () => {
+            
+            try {
+                const maxIssuable = utils.formatEther(await PeriFinance.maxIssuablePynths(currentWallet, currenciesToBytes['pUSD']));
+                const balanceOf = utils.formatEther(await PeriFinance.debtBalanceOf(currentWallet, currenciesToBytes['pUSD']));
+                const PERIBalance = utils.formatEther(await PeriFinance.collateral(currentWallet));
+                const issuanceRatio = utils.formatEther(await Issuer.issuanceRatio());
+                const exchangeRates = utils.formatEther(await ExchangeRates.rateForCurrency(currenciesToBytes['PERI']));
+                const issuable = numbro(maxIssuable).subtract(numbro(balanceOf).value()).value().toString();
+                
+                setStakingData({ maxIssuable, balanceOf, PERIBalance, issuanceRatio, exchangeRates, issuable });
+
+            } catch (e) {
+                console.log(e);
+            }
+            
+		};
+        getIssuanceData();
+    } ,[currentWallet]);
+
+    const setAmount = (event) => {
+        let value = event.target.value;
+        
+        if(numbro(issuable).subtract(numbro(value).value()).value() < 0 ) {
+            value = issuable;
+        }
+        setEstimateCRatio(getEstimateCRatio({ PERIBalance, balanceOf, exchangeRates, mintingAmount: event.target.value }));
+        setStakingAmount(getStakingAmount({issuanceRatio, exchangeRates, mintingAmount: event.target.value}));
+        setMintingAmount((value));
+        getGasEstimate();
+    }
+
+    const setAmountMax = () => {
+        setMintingAmount(getCurrencyFormat(issuable))
+        setEstimateCRatio(getEstimateCRatio({ PERIBalance, balanceOf, exchangeRates, mintingAmount }));
+        setStakingAmount(getStakingAmount({issuanceRatio, exchangeRates, mintingAmount}));
+        getGasEstimate();
+    }
+    const getGasEstimate = async () => {
+        let estimateGasLimit;
+
+        try {
+            if(numbro(mintingAmount).value().toString() === issuanceRatio) {
+                estimateGasLimit = await PeriFinance.contract.estimate.issueMaxPynths()
+            } else {
+                estimateGasLimit = await PeriFinance.contract.estimate.issuePynths(
+                    utils.parseEther(numbro(mintingAmount).value().toString())
+                )
+            }
+            
+            console.log(numbro(estimateGasLimit).multiply(1.5).value())
+            setGasLimit(numbro(estimateGasLimit).multiply(1.5).value());
+        } catch(e) {
+
+        }
+    }
+
+    const onSaking = async () => {
+        const transactionSettings = {
+            gasPrice,
+			gasLimit,
+        }
+        try {
+            let transaction;
+            if(numbro(mintingAmount).value().toString() === issuanceRatio) {
+                transaction = await PeriFinance.issueMaxPynths(transactionSettings);
+            } else {
+                transaction = await PeriFinance.issuePynths(
+                    utils.parseEther(numbro(mintingAmount).value().toString()),
+                    transactionSettings
+                );
+            }
+            console.log(transaction);
+        } catch(e) {
+            console.log(e);
+        }   
+    }
+
     return (
         <Action title="STAKING"
-                subTitles={subTitles}
+            subTitles={[
+                "Mint pUSD by staking your PERI.",
+                "This gives you a Collateralization Ratio and a debt, allowing you to earn staking rewards."
+            ]}
         >
             <Container>
                 <div>
                     <Input key="primary"
                         currencyName="pUSD"
+                        value={mintingAmount}
+                        onChange={setAmount}
+                        onBlur={() => setMintingAmount(getCurrencyFormat(mintingAmount))}
+                        maxAction={() => setAmountMax()}
                     />
                     <StakingInfoContainer>
-                        <H5>Staking: 0 PERI</H5>
-                        <H5>Estimated C-Ratio: 0%</H5>
+                        <H5>Staking: {stakingAmount} PERI</H5>
+                        <H5>Estimated C-Ratio: {estimateCRatio}%</H5>
                     </StakingInfoContainer>
                 </div>
                 <div>
-                    <StakingButton><H4 weigth="bold">STAKE & MAINT</H4></StakingButton>
-                    <Fee/>
+                    <StakingButton onClick={ () => onSaking()}><H4 weigth="bold">STAKE & MAINT</H4></StakingButton>
+                    <Fee gasPrice={gasPrice} gasLimit={gasLimit}/>
                 </div>
             </Container>
             
