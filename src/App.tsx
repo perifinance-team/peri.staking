@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { useSelector, useDispatch } from "react-redux"
 
 import { ThemeProvider } from 'styled-components'
+import { NotificationContainer, NotificationManager } from 'react-notifications';
 
 import { RootState } from 'config/reducers'
 import { setAppReady, fetchAppStatusSuccess } from 'config/reducers/app'
@@ -10,11 +11,13 @@ import { updateWallet, initWallet, clearWallet, updateIsConnected } from 'config
 import { updateBalances } from 'config/reducers/wallet/balances'
 import { updateExchangeRates, updateRatio } from 'config/reducers/rates'
 import { updateNetworkFee } from 'config/reducers/networkFee'
+import { resetTransaction } from 'config/reducers/transaction'
+
 
 import { connectHelper } from 'helpers/wallet/connect'
 import { changeAccount, changeNetwork } from 'helpers/wallet/change'
 import { getNetworkFee } from 'helpers/defipulse'
-import { getExchangeRates, getRatio, getBalancess } from 'lib'
+import { pynthetix, getExchangeRates, getRatio, getBalancess } from 'lib'
 import { BodyContainer } from 'components/Container'
 import {
     BrowserRouter as Router,
@@ -37,6 +40,7 @@ const App = () => {
     const isConnectedWallet = useSelector((state: RootState) => state.isConnectedWallet.isConnectedWallet);
     const themeState = useSelector((state: RootState) => state.theme.theme);
     const themeStyles = useSelector((state: RootState) => state.themeStyles.styles);
+    const transaction = useSelector((state: RootState) => state.transaction);
 
     const connectWallet = async () => {
         const connect = await connectHelper(wallet.walletType);
@@ -83,7 +87,29 @@ const App = () => {
         
         // eslint-disable-next-line
     }, [wallet, isConnectedWallet]);
-
+    useEffect(() => {
+        if(transaction.hash) {
+            
+            const getState = async (init) => {
+                if(init) {
+                    NotificationManager.info(transaction.message, 'in progress', 0);
+                }
+                const state = await pynthetix.provider.getTransactionReceipt(transaction.hash);
+                if(state) {
+                    NotificationManager.remove(NotificationManager.listNotify[0])
+                    if(state.status === 1) {
+                        dispatch(resetTransaction());
+                        NotificationManager.success(`${transaction.type} success`, 'success');
+                    } else {
+                        NotificationManager.error(`${transaction.type} success`, 'success');
+                    }
+                } else {
+                    setTimeout(() => getState(false), 1000);
+                }
+            }
+            getState(true);
+        }
+    }, [transaction])
     return (
         <>
             { appIsReady &&
@@ -106,6 +132,7 @@ const App = () => {
                     </BodyContainer>
                 </ThemeProvider>
             }
+            <NotificationContainer/>
         </>
 
     );

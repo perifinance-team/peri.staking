@@ -1,12 +1,13 @@
 import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { Provider } from 'react-redux';
 import { PersistGate } from "redux-persist/integration/react";
 import {store, persistor} from './config/store';
 import './i18n';
+import './index.css';
+import 'react-notifications/lib/notifications.css';
 
 ReactDOM.render(
   <Suspense fallback={<div />}>
