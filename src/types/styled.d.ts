@@ -18,6 +18,7 @@ declare module 'styled-components' {
       button: {
         primary: string,
         secondary: string,
+        red: string,
       },
       hover: {
           button: string,

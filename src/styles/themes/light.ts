@@ -11,6 +11,8 @@ const skyblue = 'rgb(0, 238, 255, 1)';
 
 const skyblueBorder = 'rgb(0, 238, 255, 0.2)';
 
+const red = 'rgb(217, 68, 84)';
+
 export const light = {
     background: {
         body: navy,
@@ -31,6 +33,7 @@ export const light = {
     font: {
         primary: skyblue,
         secondary: white,
+        red
     },
     barChart: {
         left: skyblueBorder,
