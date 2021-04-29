@@ -14,11 +14,11 @@ declare module 'styled-components' {
       font: {
         primary: string,
         secondary: string,
+        red: string,
       },
       button: {
         primary: string,
         secondary: string,
-        red: string,
       },
       hover: {
           button: string,
