@@ -31,11 +31,12 @@ export const getExchangeRates = async () => {
 
         return keys.forEach((key, index) => {
             const coinName = utils.parseBytes32String(key);
-            value[coinName] = format(utils.formatEther(rates[index]));
+            value[coinName] = format(rates[index]);
         });
     }
     await getPeriExchangeRate();
     await getPynthsRates();
+
     return value;
 }
 
@@ -61,9 +62,13 @@ export const getRatio = async (walletAddress) => {
         return utils.formatEther(await Liquidations.liquidationRatio());
     };
     const currentCRatio = await getCurrentCRatio();
+
     const targetCRatio = await getTargetCRatio();
     const liquidationRatio = await getLiquidationRatio();
-
+    
+        // targetCRatio,
+        // liquidationRatio
+        // )
     return {
         currentCRatio,
         targetCRatio,
@@ -88,6 +93,9 @@ export const getBalancess = async (walletAddress) => {
             coinName: utils.parseBytes32String(key),
             balance: (utils.formatEther(value[index]))
         }});
+        console.log(PynthUtil);
+        console.log(pynthetix);
+
         const periBalance = utils.formatEther(await PeriFinance.collateral(walletAddress));
         const PERI = {
             coinName: 'PERI',

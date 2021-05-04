@@ -1,1 +1,1 @@
-export const gasPrice = 30 * 10**9;
+export const gasPrice = (value) => value*10**9;

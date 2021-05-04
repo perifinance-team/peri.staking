@@ -27,10 +27,11 @@ export const StyledTHeader = styled(Row)`
     background-color: ${props => props.theme.colors.background.panel};
 `;
 
-export const StyledTBody = styled.div`
+export const StyledTBody = styled.div<{'height'?: number}>`
     margin-top: 15px;
     display: flex;
     flex-direction: column;
-    height: 140px;
+    height: ${props => props['height'] ? `${props['height']}px` : `100%`};
     overflow-y: scroll;
+    overflow: scroll
 `;

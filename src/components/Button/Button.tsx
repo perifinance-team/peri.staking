@@ -20,8 +20,11 @@ export const LightBlueButton = styled(ButtonStyle)`
 
 export const BlueGreenButton = styled(ButtonStyle)`
 	background-color: ${props => props.theme.colors.button.secondary};
+	:disabled {
+		background: #ccc;
+	}
 	:hover {
-		background-color: ${props => props.theme.colors.hover.button};
+		background-color: ${props => props.disabled ? 'none' : props.theme.colors.hover.button};
 	}
 `
 

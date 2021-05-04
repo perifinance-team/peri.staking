@@ -28,7 +28,7 @@ const BalanceTable = () => {
                     (<CellRight key={headding}> <H6 align={"right"}>{headding}</H6> </CellRight>)
                 )}
             </StyledTHeader>
-            <StyledTBody className="dd">
+            <StyledTBody height={160}>
                 {balances.map( (currency, index) => {
                     if(currency.balance !== '0.0') {
                         return (

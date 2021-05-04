@@ -27,7 +27,7 @@ const WalletDetail = () => {
     const formatRatio = (value) => {
         const targetNum = numbro(value);
         if(targetNum.value() <= 0) return 0;
-        return 100 / value;
+        return numbro(100).divide(value).format({mantissa: 0});
     }
 
     const getDatas = async () => {
@@ -74,6 +74,7 @@ const WalletDetail = () => {
         </FooterRoundContainer>
     );
 }
+
 const FooterTitleLeftContainver = styled.div`
     display: flex;
 `

@@ -16,13 +16,12 @@ const TotalBalance = () => {
 	const PERI = useSelector((state: RootState) => state.balances.PERI);
 	const transferablePeri = useSelector((state: RootState) => Number(state.balances.transferablePeri) );
 	const staked:number = numbro(PERI.balance).subtract(transferablePeri).value();
-	
-	const totalStaked = staked === 0 ? 50 : numbro(staked).divide(transferablePeri).multiply(100).value();
+	const totalStaked = staked === 0 ? 50 : numbro(staked).divide(transferablePeri === 0 ? 1 : transferablePeri).multiply(100).value();
 	
     return (
         <FooterRoundContainer>
             <FooterTitleContainer>
-                <H4 weigth="bold">{t('walletDetail.title')}</H4>
+                <H4 weigth="bold">TOTAL PERI</H4>
             </FooterTitleContainer>
             <RageContainer>
 				{/* <BarChart>

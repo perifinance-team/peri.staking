@@ -48,7 +48,7 @@ export const H5 = styled.h5<Paragraph>`
     font-size: 16px;
     text-align: center;
     font-weight: ${props => weigth[props.weigth || weigth.regular]};
-    color: ${props => props.theme.colors.font.secondary};
+    color: ${props => props.color ? props.theme.colors.font[props.color] : props.theme.colors.font.secondary};
 `;
 
 export const H6 = styled.h6<Paragraph>`

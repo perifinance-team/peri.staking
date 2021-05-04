@@ -72,4 +72,12 @@ export const TableContainer = styled.div`
 	margin-top: 30px;
 `
 
-export const ActionContainer = styled.div``
+export const ActionContainer = styled.div`
+	display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin: auto;
+    width: 50%;
+    height: 100%;
+	min-width: 500px;
+`

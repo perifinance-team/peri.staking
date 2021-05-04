@@ -5,14 +5,25 @@ import { BlueBorderRoundContainer } from 'components/Container'
 import Asset from 'components/Asset'
 import { BlueGreenButton } from 'components/Button';
 import { H4 } from 'components/Text'
-const Input = ({disabled = false, currencyName, tooltip = undefined, onChange, onBlur, value, maxAction}) => {
+
+const Input = (
+    {
+        disabled = false, currencyName,
+        currencies=[],
+        tooltip = undefined, onChange = undefined, onBlur = undefined, value, maxAction = undefined
+    }
+    ) => {
     const [currencyListIsOpen, toggleCurrency] = useState(false);
+    
     return (
-        <Container disabled={disabled}>
-            <DropdownContainer>
+        <Container>
+            <DropdownContainer disabled={disabled}>
                 <DropdownButton disabled={disabled}>
                     <Asset currencyName={currencyName} label={currencyName}></Asset>
                 </DropdownButton>
+                {currencyListIsOpen && (<Cc>
+                    {currencies.map(currency => <Asset currencyName={currency} label={currency} key={currency}></Asset>)}
+                </Cc>)}
                 <Border></Border>
             </DropdownContainer>
             <InputContainer>
@@ -22,19 +33,27 @@ const Input = ({disabled = false, currencyName, tooltip = undefined, onChange, o
         </Container>
     )
 }
-
-const Container = styled(BlueBorderRoundContainer)<{disabled: boolean}>`
+const Cc = styled.div`
+    z-index: 11;
+	position: absolute;
+    top: calc(100% - 680px);
+    width: 250px;
+	height: 240px;
+	padding: 16px;
+	border-radius: 5px;
+`
+const Container = styled(BlueBorderRoundContainer)`
     height: 50px;
     flex-direction: row;
     flex: 1 2;
     justify-content: space-between;
-    opacity: ${props => props.disabled ? 0.5 : 1};
-    margin: 0px;
+    margin: 10px 0px;
 `
 
-const DropdownContainer = styled.div`
+const DropdownContainer = styled.div<{disabled: boolean}>`
     flex: 1;
     display: flex;
+    opacity: ${props => props.disabled ? 0.5 : 1};
     align-items: center;
 `
 

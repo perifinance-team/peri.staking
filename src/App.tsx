@@ -29,7 +29,6 @@ import {
 import Login from 'pages/Login';
 import Main from 'pages/Main';
 import Wallet from 'pages/Wallet'
-import MainHeader from 'screens/Header/MainHeader';
 import SubHeader from 'screens/Header/SubHeader';
 
 const App = () => {
@@ -59,7 +58,6 @@ const App = () => {
             const networkFee = await getNetworkFee();
             dispatch(updateNetworkFee(networkFee));
             dispatch(fetchAppStatusSuccess());
-            
         }
 
         const init = async () => {
@@ -115,16 +113,18 @@ const App = () => {
             { appIsReady &&
                 <ThemeProvider theme={themeStyles}>
                     <BodyContainer>
-                        {isConnectedWallet ? <MainHeader /> : <SubHeader />}
                         <Router>
                             <Switch>
                                 <Route path="/walletConnection" >
+                                    <SubHeader />
                                     <Wallet></Wallet>
                                 </Route>
                                 <Route path="/login">
+                                    <SubHeader />
                                     <Login />
                                 </Route>
                                 <Route path="/">
+                                    
                                     {isConnectedWallet ? <Main /> : <Redirect to={{ pathname: "/login" }} />}
                                 </Route>
                             </Switch>

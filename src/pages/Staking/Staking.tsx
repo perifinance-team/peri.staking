@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { RootState } from 'config/reducers'
-
+import { updateTransaction } from 'config/reducers/transaction'
 import { pynthetix, getEstimateCRatio, getStakingAmount, getCurrencyFormat } from 'lib'
 import { utils } from 'ethers'
+import { useHistory } from 'react-router-dom'
+
 import numbro from 'numbro'
 
 import styled from 'styled-components'
@@ -12,18 +14,24 @@ import Input from 'components/Input'
 import { BlueGreenButton } from 'components/Button'
 import { H4, H5 } from 'components/Text'
 import Fee from 'components/Fee'
+import { ActionContainer } from 'components/Container'
 
 import { gasPrice } from 'helpers/gasPrice'
 
+type StakingData = {
+    maxIssuable: string, 
+    balanceOf: string, 
+    PERIBalance: string, 
+    issuanceRatio: string, 
+    exchangeRates: string, 
+    issuable: string
+}
+
 const Staking = () => {
-    type StakingData = {
-        maxIssuable: string, 
-        balanceOf: string, 
-        PERIBalance: string, 
-        issuanceRatio: string, 
-        exchangeRates: string, 
-        issuable: string
-    }
+    const dispatch = useDispatch();
+    const history = useHistory();
+    const { currentWallet } = useSelector((state: RootState) => state.wallet);
+    const { seletedFee } = useSelector((state: RootState) => state.seletedFee);
     
     const [stakingData, setStakingData] = useState<StakingData>({
         maxIssuable: "0",
@@ -38,8 +46,6 @@ const Staking = () => {
     const [mintingAmount, setMintingAmount] = useState<string>("0");
     const [gasLimit, setGasLimit] = useState<number>(0);
     
-
-    const { currentWallet } = useSelector((state: RootState) => state.wallet);
 
     const { js: { PeriFinance, Issuer, ExchangeRates } }  = pynthetix as any;
     const { PERIBalance, balanceOf, exchangeRates, issuanceRatio, issuable } = stakingData;
@@ -62,7 +68,7 @@ const Staking = () => {
                 const issuable = numbro(maxIssuable).subtract(numbro(balanceOf).value()).value().toString();
                 
                 setStakingData({ maxIssuable, balanceOf, PERIBalance, issuanceRatio, exchangeRates, issuable });
-
+                console.log('init');
             } catch (e) {
                 console.log(e);
             }
@@ -79,7 +85,7 @@ const Staking = () => {
         }
         setEstimateCRatio(getEstimateCRatio({ PERIBalance, balanceOf, exchangeRates, mintingAmount: event.target.value }));
         setStakingAmount(getStakingAmount({issuanceRatio, exchangeRates, mintingAmount: event.target.value}));
-        setMintingAmount((value));
+        setMintingAmount(value);
         getGasEstimate();
     }
 
@@ -100,9 +106,7 @@ const Staking = () => {
                     utils.parseEther(numbro(mintingAmount).value().toString())
                 )
             }
-            
-            console.log(numbro(estimateGasLimit).multiply(1.5).value())
-            setGasLimit(numbro(estimateGasLimit).multiply(1.5).value());
+            setGasLimit(numbro(estimateGasLimit).multiply(1.2).value());
         } catch(e) {
 
         }
@@ -110,7 +114,7 @@ const Staking = () => {
 
     const onSaking = async () => {
         const transactionSettings = {
-            gasPrice,
+            gasPrice: gasPrice(seletedFee.price),
 			gasLimit,
         }
         try {
@@ -123,11 +127,21 @@ const Staking = () => {
                     transactionSettings
                 );
             }
-            console.log(transaction);
+            
+            dispatch(updateTransaction(
+                {
+                    hash: transaction.hash,
+                    message: `Staked & Minted ${getCurrencyFormat(mintingAmount)} pUSD`,
+                    type: 'Staked & Minted'
+                }
+            ));
+            history.push('/')
         } catch(e) {
             console.log(e);
         }   
     }
+
+    const currencies = ['USDC', 'pUSD'];
 
     return (
         <Action title="STAKING"
@@ -136,10 +150,11 @@ const Staking = () => {
                 "This gives you a Collateralization Ratio and a debt, allowing you to earn staking rewards."
             ]}
         >
-            <Container>
+            <ActionContainer>
                 <div>
                     <Input key="primary"
                         currencyName="pUSD"
+                        currencies={currencies}
                         value={mintingAmount}
                         onChange={setAmount}
                         onBlur={() => setMintingAmount(getCurrencyFormat(mintingAmount))}
@@ -152,23 +167,13 @@ const Staking = () => {
                 </div>
                 <div>
                     <StakingButton onClick={ () => onSaking()}><H4 weigth="bold">STAKE & MAINT</H4></StakingButton>
-                    <Fee gasPrice={gasPrice} gasLimit={gasLimit}/>
+                    <Fee gasPrice={seletedFee.price} gasLimit={gasLimit}/>
                 </div>
-            </Container>
-            
+            </ActionContainer>
         </Action>
         
     );
 }
-
-const Container = styled.div`
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    margin: auto;
-    width: 50%;
-    height: 100%;
-`
 
 const StakingInfoContainer = styled.div`
     padding: 5px 20px;

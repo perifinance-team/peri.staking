@@ -1,11 +1,11 @@
 import styled from 'styled-components';
 
 import { H3, H5 } from 'components/Text';
-
+import { RoundContainer } from 'components/Container'
 import { LightBlueButton } from 'components/Button';
 import { useHistory } from 'react-router-dom';
 
-const Action = ({children, title, subTitles}) => {
+const Action = ({children, title, subTitles, notice = undefined}) => {
     const history = useHistory();
     return (
         <ActionContainer>
@@ -13,6 +13,7 @@ const Action = ({children, title, subTitles}) => {
                 <Arrow src={`images/dark/arrow/arrow-left.svg`} alt="arrow-left"/>
                 CANCEL
             </Cancel>
+            
             <ActionBodyContainer>
                 <Title color={'primary'} weigth={'black'}>{title}</Title>
                 <SubTitleContainer>
@@ -36,6 +37,10 @@ const ActionContainer = styled.div`
     display: flex;
     flex-direction: row;
 `;
+
+const Notice = styled(RoundContainer)`
+    border-radius: 5px;
+`
 
 const Title = styled(H3)`
     margin: 0;

@@ -8,6 +8,7 @@ import {store, persistor} from './config/store';
 import './i18n';
 import './index.css';
 import 'react-notifications/lib/notifications.css';
+import 'react-calendar/dist/Calendar.css';
 
 ReactDOM.render(
   <Suspense fallback={<div />}>

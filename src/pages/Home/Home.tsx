@@ -5,7 +5,6 @@ import {
     useHistory
 } from "react-router-dom";
 
-
 const Home = () => {
     const { t } = useTranslation();
     const actions = [
@@ -13,7 +12,7 @@ const Home = () => {
         'burn',
         'claim',
         // 'trade',
-        'transfer',
+        // 'transfer',
         // 'track',
     ]
     const history = useHistory();
