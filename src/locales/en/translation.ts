@@ -15,5 +15,14 @@ export const en = {
 			title: "LET'S PYNTHS",
 			subTitle: "What would you like to do?",
 		},
+		staking: {
+			subTitle: "Mint pUSD by staking PERI",
+		},
+		burn: {
+			subTitle: "Burn pUSD to unlock your staked PERI",
+		},
+		claim: {
+			subTitle: "Claim rewards from PERI staking and Pynths exchanges",
+		}
 	}
 }
