@@ -93,8 +93,6 @@ export const getBalancess = async (walletAddress) => {
             coinName: utils.parseBytes32String(key),
             balance: (utils.formatEther(value[index]))
         }});
-        console.log(PynthUtil);
-        console.log(pynthetix);
 
         const periBalance = utils.formatEther(await PeriFinance.collateral(walletAddress));
         const PERI = {

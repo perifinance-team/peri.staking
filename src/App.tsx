@@ -5,7 +5,7 @@ import { ThemeProvider } from 'styled-components'
 import { NotificationContainer, NotificationManager } from 'react-notifications';
 
 import { RootState } from 'config/reducers'
-import { setAppReady, fetchAppStatusSuccess } from 'config/reducers/app'
+import { setAppReady, setIsLoading } from 'config/reducers/app'
 import { updateThemeStyles } from 'config/reducers/theme'
 import { updateWallet, initWallet, clearWallet, updateIsConnected } from 'config/reducers/wallet'
 import { updateBalances } from 'config/reducers/wallet/balances'
@@ -30,17 +30,18 @@ import Login from 'pages/Login';
 import Main from 'pages/Main';
 import Wallet from 'pages/Wallet'
 import SubHeader from 'screens/Header/SubHeader';
+import './App.css'
 
 const App = () => {
     
     const dispatch = useDispatch();
-    const appIsReady = useSelector((state: RootState) => state.app.isReady);
+    const {isReady, isLoading} = useSelector((state: RootState) => state.app);
     const wallet = useSelector((state: RootState) => state.wallet);
     const isConnectedWallet = useSelector((state: RootState) => state.isConnectedWallet.isConnectedWallet);
     const themeState = useSelector((state: RootState) => state.theme.theme);
     const themeStyles = useSelector((state: RootState) => state.themeStyles.styles);
     const transaction = useSelector((state: RootState) => state.transaction);
-
+    console.log(isLoading)
     const connectWallet = async () => {
         const connect = await connectHelper(wallet.walletType);
         dispatch(updateWallet(connect));
@@ -57,7 +58,6 @@ const App = () => {
             dispatch(updateBalances(balances));
             const networkFee = await getNetworkFee();
             dispatch(updateNetworkFee(networkFee));
-            dispatch(fetchAppStatusSuccess());
         }
 
         const init = async () => {
@@ -68,13 +68,13 @@ const App = () => {
                 const currentWallet = await connectWallet();
                 if (currentWallet.unlocked) {
                     dispatch(updateIsConnected(true));
-                    getDatas();
+                    await getDatas();
+                    setIsLoading(false);
                 }
             }
-            dispatch(setAppReady());
         };
-        
         init();
+        dispatch(setAppReady());
         // eslint-disable-next-line
     }, []);
 
@@ -109,28 +109,38 @@ const App = () => {
         }
     }, [transaction])
     return (
-        <>
-            { appIsReady &&
-                <ThemeProvider theme={themeStyles}>
-                    <BodyContainer>
-                        <Router>
-                            <Switch>
-                                <Route path="/walletConnection" >
-                                    <SubHeader />
-                                    <Wallet></Wallet>
-                                </Route>
-                                <Route path="/login">
-                                    <SubHeader />
-                                    <Login />
-                                </Route>
-                                <Route path="/">
-                                    
-                                    {isConnectedWallet ? <Main /> : <Redirect to={{ pathname: "/login" }} />}
-                                </Route>
-                            </Switch>
-                        </Router>
-                    </BodyContainer>
-                </ThemeProvider>
+        <>     
+            { isReady &&
+                <>
+                    <ThemeProvider theme={themeStyles}>
+                        <BodyContainer>
+                            <Router>
+                                <Switch>
+                                    <Route path="/walletConnection" >
+                                        <SubHeader />
+                                        <Wallet></Wallet>
+                                    </Route>
+                                    <Route path="/login">
+                                        <SubHeader />
+                                        <Login />
+                                    </Route>
+                                    <Route path="/">
+                                        {isConnectedWallet ? <Main /> : <Redirect to={{ pathname: "/login" }} />}
+                                    </Route>
+                                </Switch>
+                            </Router>
+                        </BodyContainer>
+                    </ThemeProvider>
+                    {
+                        isLoading ? (<div className="loading-back">
+                            <div className="loading-container">
+                                <div className="loading"></div>
+                                <div id="loading-text">loading</div>
+                            </div>
+                        </div>) : null
+                    }
+                    
+                </>
             }
             <NotificationContainer/>
         </>

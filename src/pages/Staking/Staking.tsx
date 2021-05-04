@@ -58,7 +58,6 @@ const Staking = () => {
     
     useEffect(() => {
         const getIssuanceData = async () => {
-            
             try {
                 const maxIssuable = utils.formatEther(await PeriFinance.maxIssuablePynths(currentWallet, currenciesToBytes['pUSD']));
                 const balanceOf = utils.formatEther(await PeriFinance.debtBalanceOf(currentWallet, currenciesToBytes['pUSD']));
@@ -68,7 +67,6 @@ const Staking = () => {
                 const issuable = numbro(maxIssuable).subtract(numbro(balanceOf).value()).value().toString();
                 
                 setStakingData({ maxIssuable, balanceOf, PERIBalance, issuanceRatio, exchangeRates, issuable });
-                console.log('init');
             } catch (e) {
                 console.log(e);
             }

@@ -29,8 +29,8 @@ const Burn = () => {
     const [burningAmount, setBurningAmount] = useState<string>("0");
     const [transferAmount, setTransferAmount] = useState<string>("0");
     const [gasLimit, setGasLimit] = useState<number>(0);
-    const [maxBurningAmount, setMaxBurningAmount] = useState<numbro.Numbro>(numbro());
-    const [maxTransferAmount, setMaxTransferAmount] = useState<numbro.Numbro>(numbro());
+    const [maxBurningAmount, setMaxBurningAmount] = useState<numbro.Numbro>(numbro(0));
+    const [maxTransferAmount, setMaxTransferAmount] = useState<numbro.Numbro>(numbro(0));
     const { js: {PeriFinance, pUSD, Issuer, ExchangeRates} } = pynthetix as any;
 
     const currenciesToBytes = {
@@ -57,8 +57,11 @@ const Burn = () => {
                 exchangeRates,
                 PERIBalance,
             });
-            setMaxBurningAmount(numbro(pUSDBalance));
-            setMaxTransferAmount(numbro(pUSDBalance).divide(numbro(burnData.issuanceRatio).value()).divide(numbro(burnData.exchangeRates).value()));
+            
+            if(Number(pUSDBalance) > 0) {
+                setMaxBurningAmount(numbro(pUSDBalance));
+                setMaxTransferAmount(numbro(pUSDBalance).divide(numbro(burnData.issuanceRatio).value()).divide(numbro(burnData.exchangeRates).value()));
+            }
         }
         init();
     }, []);
@@ -97,7 +100,9 @@ const Burn = () => {
     }
 
     const setAmountMax = () => {
-        setBurningAmount(getCurrencyFormat(burnData.pUSDBalance))
+        setBurningAmount(getCurrencyFormat(maxBurningAmount.value()));
+        console.log(maxTransferAmount)
+        setTransferAmount(getCurrencyFormat(maxTransferAmount.value()));
     }
 
     return (
@@ -114,14 +119,14 @@ const Burn = () => {
                         currencyName="pUSD"
                         value={burningAmount}
                         onChange={event => setBurningAmountChage(event.target.value)}
-                        // onBlur={() => currencyFormat()}
+                        onBlur={() => setBurningAmount(getCurrencyFormat(burningAmount))}
                         maxAction={() => setAmountMax()}
                     />
                     <Input key="secondary"
                         currencyName="PERI"
                         value={transferAmount}
                         onChange={event => setTransferAmountChage(event.target.value)}
-                        // onBlur={() => currencyFormat()}
+                        onBlur={() => setBurningAmount(getCurrencyFormat(transferAmount))}
                         maxAction={() => setAmountMax()}
                     />
                 </div>

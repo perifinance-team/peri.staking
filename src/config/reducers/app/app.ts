@@ -2,22 +2,12 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export type AppSliceState = {
 	isReady: boolean;
-	isFetching: boolean;
-	isFetched: boolean;
-	isRefreshing: boolean;
-	fetchError: string | null;
-	isSystemUpgrading: boolean;
-	isPVT: boolean;
+	isLoading: boolean;
 };
 
 const initialState: AppSliceState = {
 	isReady: false,
-	isFetching: false,
-	isFetched: false,
-	isRefreshing: false,
-	fetchError: null,
-	isSystemUpgrading: false,
-	isPVT: false,
+	isLoading: true,
 };
 
 const sliceName = 'app';
@@ -29,33 +19,15 @@ export const appSlice = createSlice({
 		setAppReady: state => {
 			state.isReady = true;
 		},
-		fetchAppStatusRequest: state => {
-			state.fetchError = null;
-			state.isFetching = true;
-			if (state.isFetched) {
-				state.isRefreshing = true;
-			}
-		},
-		fetchAppStatusFailure: (state, action: PayloadAction<{ error: string }>) => {
-			state.fetchError = action.payload.error;
-			state.isFetching = false;
-			state.isRefreshing = false;
-		},
-		fetchAppStatusSuccess: ( state ) => {
-			state.isFetched = true;
-		},
-		setSystemUpgrading: (state, action: PayloadAction<{ reason: boolean }>) => {
-			state.isSystemUpgrading = action.payload.reason;
+		setIsLoading: (state, actions) => {
+			state.isLoading = actions.payload;
 		},
 	},
 });
 
 export const {
 	setAppReady,
-	fetchAppStatusRequest,
-	fetchAppStatusFailure,
-	fetchAppStatusSuccess,
-	setSystemUpgrading,
+	setIsLoading,
 } = appSlice.actions;
 
 export default appSlice.reducer;
