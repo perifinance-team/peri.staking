@@ -33,8 +33,8 @@ const Home = () => {
                     {actions.map((action) => 
                         (<S.ActionButtonContainer onClick={() => history.push(`/${action}`)} key={action}>
                             <S.ActionImage src={`/images/dark/actions/${action}.svg`}></S.ActionImage>
-                            <H4>{action}</H4>
-                            <H6>Mint pUSD by staking PERI</H6>
+                            <H4 weigth={'bold'}>{action.toLocaleUpperCase()}</H4>
+                            <H6>{t(`home.${action}.subTitle`)}</H6>
                         </S.ActionButtonContainer>)
                     )}
                 </S.ActionButtonRow>
