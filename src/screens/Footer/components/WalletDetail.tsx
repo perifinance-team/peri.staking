@@ -1,5 +1,6 @@
 import styled from 'styled-components'
 import { useSelector, useDispatch } from "react-redux";
+import { setIsLoading } from 'config/reducers/app'
 import numbro from 'numbro'
 
 import { RootState } from 'config/reducers'
@@ -31,12 +32,19 @@ const WalletDetail = () => {
     }
 
     const getDatas = async () => {
-        const exchangeRates = await getExchangeRates();
-        dispatch(updateExchangeRates(exchangeRates));
-        const ratios = await getRatio(wallet.currentWallet);
-        dispatch(updateRatio(ratios));
-        const balances = await getBalancess(wallet.currentWallet);
-        dispatch(updateBalances(balances));
+        dispatch(setIsLoading(true));
+        try {
+            const exchangeRates = await getExchangeRates();
+            dispatch(updateExchangeRates(exchangeRates));
+            const ratios = await getRatio(wallet.currentWallet);
+            dispatch(updateRatio(ratios));
+            const balances = await getBalancess(wallet.currentWallet);
+            dispatch(updateBalances(balances));
+        } catch (e) {
+            console.log(e);
+        }
+        
+        dispatch(setIsLoading(false));
     }
 
     return (
