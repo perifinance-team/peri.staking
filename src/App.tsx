@@ -77,9 +77,10 @@ const App = () => {
                     await getDatas();
                 }
             }
+            dispatch(setAppReady());
         };
         init();
-        dispatch(setAppReady());
+        
         // eslint-disable-next-line
     }, []);
 
@@ -124,7 +125,7 @@ const App = () => {
                     </div>
                 </div>) : null
             }
-            { isReady &&
+            { isReady ?
                 <>
                     <ThemeProvider theme={themeStyles}>
                         <BodyContainer>
@@ -145,9 +146,8 @@ const App = () => {
                             </Router>
                         </BodyContainer>
                     </ThemeProvider>
-                    
-                    
                 </>
+                : null
             }
             <NotificationContainer/>
         </>
