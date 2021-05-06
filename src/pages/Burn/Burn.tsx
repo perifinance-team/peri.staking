@@ -8,13 +8,13 @@ import { pynthetix, getCurrencyFormat } from 'lib'
 import Action from 'screens/Action'
 import { utils } from 'ethers'
 import numbro from 'numbro'
-import { updateTransaction } from 'config/reducers/transaction'
 
 import BurnActionButtons from './BurnActionButtons'
-import { ActionContainer } from 'components/Container'
+import { ActionContainer, RoundContainer } from 'components/Container'
 
 import Fee from 'components/Fee'
 import Input from 'components/Input'
+import { gasPrice } from 'helpers/gasPrice'
 
 const Burn = () => {
     const { seletedFee } = useSelector((state: RootState) => state.seletedFee);
@@ -43,12 +43,10 @@ const Burn = () => {
         const init = async() => {
             const balanceOf = utils.formatEther(await PeriFinance.debtBalanceOf(currentWallet, currenciesToBytes.pUSD));
             const pUSDBalance = utils.formatEther(await pUSD.balanceOf(currentWallet));
-            console.log(pUSDBalance)
             const issuanceRatio = utils.formatEther(await Issuer.issuanceRatio());
             const exchangeRates = utils.formatEther(await ExchangeRates.rateForCurrency(currenciesToBytes.PERI));
             // RewardEscrow.totalEscrowedAccountBalance(currentWallet),
             // PeriFinanceEscrow.balanceOf(currentWallet),
-            // const maxIssuable = PeriFinance.maxIssuablePynths(currentWallet),
             const PERIBalance = utils.formatEther(await PeriFinance.balanceOf(currentWallet));
             setBurnData({
                 balanceOf,
@@ -57,7 +55,7 @@ const Burn = () => {
                 exchangeRates,
                 PERIBalance,
             });
-            
+
             if(Number(pUSDBalance) > 0) {
                 setMaxBurningAmount(numbro(pUSDBalance));
                 setMaxTransferAmount(numbro(pUSDBalance).divide(numbro(burnData.issuanceRatio).value()).divide(numbro(burnData.exchangeRates).value()));
@@ -66,10 +64,13 @@ const Burn = () => {
         init();
     }, []);
 
-    const getGasEstimate = async (amount) => {
+    const getGasEstimate = async () => {
         let estimateGasLimit;
         try {
-            estimateGasLimit = await PeriFinance.contract.estimate.burnSynths(amount);
+            estimateGasLimit = await PeriFinance.contract.estimate.burnPynths(
+                utils.parseEther(numbro(burningAmount).value().toString())
+            );
+            
         } catch (e) {
             estimateGasLimit = 32000;
             console.log(e);
@@ -78,30 +79,31 @@ const Burn = () => {
     }
 
     const setBurningAmountChage = (value) => {
-        value = numbro(value);
-        if(maxBurningAmount.clone().subtract(value.value()).value() < 0 ) {
-            value = maxBurningAmount.clone();
+        let temp:numbro.Numbro = numbro(value);
+        if(maxBurningAmount.clone().subtract(temp.value()).value() < 0 ) {
+            value = maxBurningAmount.clone().value().toString();
         }
-        setBurningAmount(value.value());
-        const TransferAmount = value.divide(numbro(burnData.issuanceRatio).value()).divide(numbro(burnData.exchangeRates).value()).value()
-        setTransferAmount(value.value() > 0 ? getCurrencyFormat(TransferAmount) : 0)
+        setBurningAmount(value);
+        
+        const TransferAmount = temp.divide(numbro(burnData.issuanceRatio).value()).divide(numbro(burnData.exchangeRates).value()).value()
+        setTransferAmount(temp.value() > 0 ? getCurrencyFormat(TransferAmount) : 0)
         //todo: escrow add to fiexed
+        getGasEstimate();
     }
 
     const setTransferAmountChage = (value) => {
-        value = numbro(value);
-        if(maxTransferAmount.clone().subtract(value.value()).value() < 0 ) {
-            value = maxTransferAmount.clone();
+        let temp:numbro.Numbro = numbro(value);
+        if(maxTransferAmount.clone().subtract(temp.value()).value() < 0 ) {
+            value = maxBurningAmount.clone().value().toString();
         }
-        setTransferAmount(value.value());
-        const BurningAmount = value.multiply(numbro(burnData.issuanceRatio)).multiply(numbro(burnData.exchangeRates).value()).value();
-        setBurningAmount(value.value() > 0 ? getCurrencyFormat(BurningAmount) : 0)
+        setTransferAmount(value);
+        const BurningAmount = temp.multiply(numbro(burnData.issuanceRatio).value()).multiply(numbro(burnData.exchangeRates).value()).value();
+        setBurningAmount(temp.value() > 0 ? getCurrencyFormat(BurningAmount) : 0)
         
     }
 
     const setAmountMax = () => {
         setBurningAmount(getCurrencyFormat(maxBurningAmount.value()));
-        console.log(maxTransferAmount)
         setTransferAmount(getCurrencyFormat(maxTransferAmount.value()));
     }
 
@@ -126,19 +128,22 @@ const Burn = () => {
                         currencyName="PERI"
                         value={transferAmount}
                         onChange={event => setTransferAmountChage(event.target.value)}
-                        onBlur={() => setBurningAmount(getCurrencyFormat(transferAmount))}
+                        onBlur={() => setTransferAmount(getCurrencyFormat(transferAmount))}
                         maxAction={() => setAmountMax()}
                     />
                 </div>
                 <div>
-                    <BurnActionButtons burningAmount={burningAmount} gasPrice={seletedFee.price} gasLimit={gasLimit} ></BurnActionButtons>
+                    <BurnActionButtons balanceOf={burnData.balanceOf} 
+                                       PERIBalance={burnData.PERIBalance}
+                                       burningAmount={burningAmount} 
+                                       gasPrice={gasPrice(seletedFee.price)} 
+                                       gasLimit={gasLimit}/>
+                    
                     <Fee gasPrice={seletedFee.price} gasLimit={gasLimit}/>
                 </div>
             </ActionContainer>
         </Action>
     );
 }
-
-
 
 export default Burn;

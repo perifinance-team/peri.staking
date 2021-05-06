@@ -7,7 +7,7 @@ export type AppSliceState = {
 
 const initialState: AppSliceState = {
 	isReady: false,
-	isLoading: true,
+	isLoading: false,
 };
 
 const sliceName = 'app';

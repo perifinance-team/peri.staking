@@ -1,15 +1,19 @@
 import { useEffect, useState, useCallback} from 'react';
 import styled from 'styled-components'
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch} from "react-redux";
 import { utils } from 'ethers'
 import { addSeconds, differenceInSeconds } from 'date-fns';
 import { NotificationManager } from 'react-notifications';
+import { useHistory } from 'react-router-dom'
 
 import { RootState } from 'config/reducers'
+import { setIsLoading } from 'config/reducers/app'
+import { updateTransaction } from 'config/reducers/transaction'
 import { pynthetix, getCurrencyFormat } from 'lib'
 
 import { BlueGreenButton } from 'components/Button'
 import { H4, H5 } from 'components/Text'
+import numbro from 'numbro'
 
 function str_pad_left(string, pad, length) {
 	return (new Array(length + 1).join(pad) + string).slice(-length);
@@ -26,7 +30,10 @@ export const secondsToTime = seconds => {
 	return `up to 1 minute`;
 };
 
-const BurnActionButtons = ({burningAmount, gasPrice, gasLimit}) => {
+const BurnActionButtons = ({balanceOf, PERIBalance, burningAmount, gasPrice, gasLimit}) => {
+    const dispatch = useDispatch();
+    const history = useHistory();
+
     const { currentWallet } = useSelector((state: RootState) => state.wallet);
     const [issuanceDelay, setIssuanceDelay] = useState<number>(0);
     const [waitingPeriod, setWaitingPeriod] = useState<number>(0);
@@ -55,22 +62,37 @@ const BurnActionButtons = ({burningAmount, gasPrice, gasLimit}) => {
         setWaitingPeriod(Number(maxSecsLeftInWaitingPeriod));
     },[]);
     
-    const onBurn = async () => {
+    const onBurn = async ({target = false}) => {
         let transaction;
-
+        dispatch(setIsLoading(true));
         try {
-            if(true) {
-                transaction = await PeriFinance.burnPynthsToTarget({
-                    gasLimit,
-                    gasPrice,
-                });
+            if(await Issuer.canBurnPynths(currentWallet)) {
+                
+                if(target) {
+                    const burnToTargetGasLimit = await PeriFinance.contract.estimate.burnPynthsToTarget();
+                    transaction = await PeriFinance.burnPynthsToTarget({
+                        gasLimit: numbro(burnToTargetGasLimit).multiply(1.2).value(),
+                        gasPrice,
+                    });
+                } else {
+                    transaction = await PeriFinance.burnPynths(utils.parseEther(numbro(burningAmount).value().toString()), {
+                        gasPrice,
+                        gasLimit,
+                    });
+                }
+    
+                dispatch(updateTransaction(
+                    {
+                        hash: transaction.hash,
+                        message: `Burnt ${getCurrencyFormat( target ? numbro(balanceOf).subtract(PERIBalance).value() : burningAmount)} pUSD`,
+                        type: 'Burn'
+                    }
+                ));
+                dispatch(setIsLoading(false));
+                history.push('/')
             } else {
-                transaction = await PeriFinance.burnPynths(burningAmount, {
-                    gasPrice,
-                    gasLimit,
-                });
+                NotificationManager.error('Waiting period to burn is still ongoing');
             }
-            console.log(transaction)
         } catch (e) {
             
         }
@@ -124,20 +146,27 @@ const BurnActionButtons = ({burningAmount, gasPrice, gasLimit}) => {
             </BurnButton>
         );
     } else {
-        return (
+        return (<>
             <BurnButton
                 // disabled={isFetchingGasLimit || gasEstimateError || pUSDBalance === 0}
-                onClick={ () => onBurn()}
+                onClick={ () => onBurn({target: false})}
             >
                 <H4 weigth="bold">BURN</H4>
             </BurnButton>
-        );
+            <BurnButton
+                // disabled={isFetchingGasLimit || gasEstimateError || pUSDBalance === 0}
+                onClick={ () => onBurn({target: true})}
+            >
+                <H4 weigth="bold" color="red">Fix your Collateralization Ratio </H4>
+            </BurnButton>
+        </>)
     }
 }
-
 const BurnButton = styled(BlueGreenButton)`
     width: 100%;
+    margin-top: 10px;
     height: 50px;
 `
+
 
 export default BurnActionButtons

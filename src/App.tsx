@@ -41,7 +41,7 @@ const App = () => {
     const themeState = useSelector((state: RootState) => state.theme.theme);
     const themeStyles = useSelector((state: RootState) => state.themeStyles.styles);
     const transaction = useSelector((state: RootState) => state.transaction);
-    console.log(isLoading)
+
     const connectWallet = async () => {
         const connect = await connectHelper(wallet.walletType);
         dispatch(updateWallet(connect));
@@ -50,14 +50,20 @@ const App = () => {
 
     useEffect(() => {
         const getDatas = async () => {
-            const exchangeRates = await getExchangeRates();
-            dispatch(updateExchangeRates(exchangeRates));
-            const ratios = await getRatio(wallet.currentWallet);
-            dispatch(updateRatio(ratios));
-            const balances = await getBalancess(wallet.currentWallet);
-            dispatch(updateBalances(balances));
-            const networkFee = await getNetworkFee();
-            dispatch(updateNetworkFee(networkFee));
+            dispatch(setIsLoading(true));
+            try {
+                const exchangeRates = await getExchangeRates();
+                dispatch(updateExchangeRates(exchangeRates));
+                const ratios = await getRatio(wallet.currentWallet);
+                dispatch(updateRatio(ratios));
+                const balances = await getBalancess(wallet.currentWallet);
+                dispatch(updateBalances(balances));
+                const networkFee = await getNetworkFee();
+                dispatch(updateNetworkFee(networkFee));
+                dispatch(setIsLoading(false));
+            } catch(e) {
+                dispatch(setIsLoading(true));
+            }
         }
 
         const init = async () => {
@@ -69,7 +75,6 @@ const App = () => {
                 if (currentWallet.unlocked) {
                     dispatch(updateIsConnected(true));
                     await getDatas();
-                    setIsLoading(false);
                 }
             }
         };
@@ -85,6 +90,7 @@ const App = () => {
         
         // eslint-disable-next-line
     }, [wallet, isConnectedWallet]);
+
     useEffect(() => {
         if(transaction.hash) {
             
@@ -110,6 +116,14 @@ const App = () => {
     }, [transaction])
     return (
         <>     
+            {
+                isLoading ? (<div className="loading-back">
+                    <div className="loading-container">
+                        <div className="loading"></div>
+                        <div id="loading-text">loading</div>
+                    </div>
+                </div>) : null
+            }
             { isReady &&
                 <>
                     <ThemeProvider theme={themeStyles}>
@@ -131,14 +145,7 @@ const App = () => {
                             </Router>
                         </BodyContainer>
                     </ThemeProvider>
-                    {
-                        isLoading ? (<div className="loading-back">
-                            <div className="loading-container">
-                                <div className="loading"></div>
-                                <div id="loading-text">loading</div>
-                            </div>
-                        </div>) : null
-                    }
+                    
                     
                 </>
             }

@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback} from 'react';
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from 'config/reducers'
 import { updateTransaction } from 'config/reducers/transaction'
 import { pynthetix, getEstimateCRatio, getStakingAmount, getCurrencyFormat } from 'lib'
 import { utils } from 'ethers'
 import { useHistory } from 'react-router-dom'
+import { setIsLoading } from 'config/reducers/app'
 
 import numbro from 'numbro'
 
@@ -45,7 +46,6 @@ const Staking = () => {
     const [stakingAmount, setStakingAmount] = useState<string>("0");
     const [mintingAmount, setMintingAmount] = useState<string>("0");
     const [gasLimit, setGasLimit] = useState<number>(0);
-    
 
     const { js: { PeriFinance, Issuer, ExchangeRates } }  = pynthetix as any;
     const { PERIBalance, balanceOf, exchangeRates, issuanceRatio, issuable } = stakingData;
@@ -55,30 +55,46 @@ const Staking = () => {
         pUSD: utils.formatBytes32String('pUSD'),
         USDC: utils.formatBytes32String('USDC'),
     }
-    
+    const getIssuanceData = useCallback(async () => {
+        dispatch(setIsLoading(true));
+        try {
+            const maxIssuable = utils.formatEther(await PeriFinance.maxIssuablePynths(currentWallet, currenciesToBytes['pUSD']));
+            const balanceOf = utils.formatEther(await PeriFinance.debtBalanceOf(currentWallet, currenciesToBytes['pUSD']));
+            const PERIBalance = utils.formatEther(await PeriFinance.collateral(currentWallet));
+            const issuanceRatio = utils.formatEther(await Issuer.issuanceRatio());
+            const exchangeRates = utils.formatEther(await ExchangeRates.rateForCurrency(currenciesToBytes['PERI']));
+            const issuable = (await PeriFinance.remainingIssuablePynths(currentWallet));
+
+            dispatch(setIsLoading(false));
+            setStakingData({ maxIssuable, balanceOf, PERIBalance, issuanceRatio, exchangeRates, issuable: utils.formatEther(issuable[0].toString()) });
+        } catch (e) {
+            console.log(e);
+        }
+        
+    }, [])
+
     useEffect(() => {
-        const getIssuanceData = async () => {
-            try {
-                const maxIssuable = utils.formatEther(await PeriFinance.maxIssuablePynths(currentWallet, currenciesToBytes['pUSD']));
-                const balanceOf = utils.formatEther(await PeriFinance.debtBalanceOf(currentWallet, currenciesToBytes['pUSD']));
-                const PERIBalance = utils.formatEther(await PeriFinance.collateral(currentWallet));
-                const issuanceRatio = utils.formatEther(await Issuer.issuanceRatio());
-                const exchangeRates = utils.formatEther(await ExchangeRates.rateForCurrency(currenciesToBytes['PERI']));
-                const issuable = numbro(maxIssuable).subtract(numbro(balanceOf).value()).value().toString();
-                
-                setStakingData({ maxIssuable, balanceOf, PERIBalance, issuanceRatio, exchangeRates, issuable });
-            } catch (e) {
-                console.log(e);
-            }
-            
-		};
-        getIssuanceData();
-    } ,[currentWallet]);
+        const init = async() => {
+            await getIssuanceData();
+        }
+        
+        init();
+        return () => {
+            setStakingData({
+                maxIssuable: "0",
+                balanceOf: "0",
+                PERIBalance: "0",
+                issuanceRatio: "0",
+                exchangeRates: "0",
+                issuable: "0",
+            })
+        };
+    } ,[]);
 
     const setAmount = (event) => {
         let value = event.target.value;
         
-        if(numbro(issuable).subtract(numbro(value).value()).value() < 0 ) {
+        if(numbro(issuable).clone().subtract(numbro(value).value()).value() < 0 ) {
             value = issuable;
         }
         setEstimateCRatio(getEstimateCRatio({ PERIBalance, balanceOf, exchangeRates, mintingAmount: event.target.value }));
@@ -89,8 +105,8 @@ const Staking = () => {
 
     const setAmountMax = () => {
         setMintingAmount(getCurrencyFormat(issuable))
-        setEstimateCRatio(getEstimateCRatio({ PERIBalance, balanceOf, exchangeRates, mintingAmount }));
-        setStakingAmount(getStakingAmount({issuanceRatio, exchangeRates, mintingAmount}));
+        setEstimateCRatio(getEstimateCRatio({ PERIBalance, balanceOf, exchangeRates, mintingAmount: issuable }));
+        setStakingAmount(getStakingAmount({issuanceRatio, exchangeRates, mintingAmount: issuable}));
         getGasEstimate();
     }
     const getGasEstimate = async () => {
@@ -111,6 +127,7 @@ const Staking = () => {
     }
 
     const onSaking = async () => {
+        dispatch(setIsLoading(true));
         const transactionSettings = {
             gasPrice: gasPrice(seletedFee.price),
 			gasLimit,
@@ -137,6 +154,7 @@ const Staking = () => {
         } catch(e) {
             console.log(e);
         }   
+        dispatch(setIsLoading(false));
     }
 
     const currencies = ['USDC', 'pUSD'];
