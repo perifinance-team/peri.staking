@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 
 import { RootState } from 'config/reducers'
+import { setIsLoading } from 'config/reducers/app'
 
 import { pynthetix, getCurrencyFormat } from 'lib'
 
@@ -17,6 +18,7 @@ import Input from 'components/Input'
 import { gasPrice } from 'helpers/gasPrice'
 
 const Burn = () => {
+    const dispatch = useDispatch();
     const { seletedFee } = useSelector((state: RootState) => state.seletedFee);
     const { currentWallet } = useSelector((state: RootState) => state.wallet);
     const [burnData, setBurnData] = useState({
@@ -41,25 +43,30 @@ const Burn = () => {
     
     useEffect(() => {
         const init = async() => {
-            const balanceOf = utils.formatEther(await PeriFinance.debtBalanceOf(currentWallet, currenciesToBytes.pUSD));
-            const pUSDBalance = utils.formatEther(await pUSD.balanceOf(currentWallet));
-            const issuanceRatio = utils.formatEther(await Issuer.issuanceRatio());
-            const exchangeRates = utils.formatEther(await ExchangeRates.rateForCurrency(currenciesToBytes.PERI));
-            // RewardEscrow.totalEscrowedAccountBalance(currentWallet),
-            // PeriFinanceEscrow.balanceOf(currentWallet),
-            const PERIBalance = utils.formatEther(await PeriFinance.balanceOf(currentWallet));
-            setBurnData({
-                balanceOf,
-                pUSDBalance,
-                issuanceRatio,
-                exchangeRates,
-                PERIBalance,
-            });
-
-            if(Number(pUSDBalance) > 0) {
-                setMaxBurningAmount(numbro(pUSDBalance));
-                setMaxTransferAmount(numbro(pUSDBalance).divide(numbro(burnData.issuanceRatio).value()).divide(numbro(burnData.exchangeRates).value()));
+            dispatch(setIsLoading(true));
+            try {
+                const balanceOf = utils.formatEther(await PeriFinance.debtBalanceOf(currentWallet, currenciesToBytes.pUSD));
+                const pUSDBalance = utils.formatEther(await pUSD.balanceOf(currentWallet));
+                const issuanceRatio = utils.formatEther(await Issuer.issuanceRatio());
+                const exchangeRates = utils.formatEther(await ExchangeRates.rateForCurrency(currenciesToBytes.PERI));
+                // RewardEscrow.totalEscrowedAccountBalance(currentWallet),
+                // PeriFinanceEscrow.balanceOf(currentWallet),
+                const PERIBalance = utils.formatEther(await PeriFinance.balanceOf(currentWallet));
+                setBurnData({
+                    balanceOf,
+                    pUSDBalance,
+                    issuanceRatio,
+                    exchangeRates,
+                    PERIBalance,
+                });
+                if(Number(pUSDBalance) > 0) {
+                    setMaxBurningAmount(numbro(pUSDBalance));
+                    setMaxTransferAmount(numbro(pUSDBalance).divide(numbro(burnData.issuanceRatio).value()).divide(numbro(burnData.exchangeRates).value()));
+                }
+            } catch(e) {
+                console.log(e)
             }
+            dispatch(setIsLoading(false));
         }
         init();
     }, []);

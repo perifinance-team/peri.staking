@@ -64,12 +64,12 @@ const Staking = () => {
             const issuanceRatio = utils.formatEther(await Issuer.issuanceRatio());
             const exchangeRates = utils.formatEther(await ExchangeRates.rateForCurrency(currenciesToBytes['PERI']));
             const issuable = (await PeriFinance.remainingIssuablePynths(currentWallet));
-
-            dispatch(setIsLoading(false));
             setStakingData({ maxIssuable, balanceOf, PERIBalance, issuanceRatio, exchangeRates, issuable: utils.formatEther(issuable[0].toString()) });
+            
         } catch (e) {
             console.log(e);
         }
+        dispatch(setIsLoading(false));
         
     }, [])
 

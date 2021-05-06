@@ -88,14 +88,16 @@ const BurnActionButtons = ({balanceOf, PERIBalance, burningAmount, gasPrice, gas
                         type: 'Burn'
                     }
                 ));
-                dispatch(setIsLoading(false));
+                
                 history.push('/')
             } else {
                 NotificationManager.error('Waiting period to burn is still ongoing');
             }
         } catch (e) {
-            
+            console.log(e);
         }
+        
+        dispatch(setIsLoading(false));
     };
 
     useEffect(  () => {

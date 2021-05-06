@@ -2,9 +2,12 @@ import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from "react-redux";
 import styled from 'styled-components'
 import { useHistory } from 'react-router-dom'
-import { addSeconds, subSeconds, formatDistanceToNow } from 'date-fns';
+import { addSeconds, formatDistanceToNow } from 'date-fns';
 import numbro from 'numbro'
+
 import { RootState } from 'config/reducers'
+import { setIsLoading } from 'config/reducers/app'
+
 import { pynthetix, getCurrencyFormat } from 'lib'
 
 import { updateTransaction } from 'config/reducers/transaction'
@@ -77,20 +80,18 @@ const Claim = () => {
 
     useEffect(() => {
         const init = async () => {
+            dispatch(setIsLoading(true));
+            
             try {
-                
                 const duration = await FeePool.feePeriodDuration();
                 const periods = await FeePool.recentFeePeriods(0);
                 const claimable = await FeePool.isFeesClaimable(currentWallet);
-                
                 const reward = await FeePool.feesAvailable(currentWallet);
                 //reward type  array[0] = exchage | array[1] = staking
                 
                 const { closeIn, isCloseFeePeriodEnabled } = getFeePeriodCountdown(periods, duration);
-                // const gasEstimate = await FeePool.contract.estimate.claimFees();
-                // setGasLimit(gasEstimate);
-                setGasLimit(320000);
-
+                const gasEstimate = await FeePool.contract.estimate.claimFees();
+                setGasLimit(gasEstimate);
                 setClaimData({
                     closeIn,
                     duration,
@@ -102,15 +103,17 @@ const Claim = () => {
                     claimable: claimable[0] && claimable[1],
                     isCloseFeePeriodEnabled
                 });
-                // console.log(claimData)
             } catch(e) {
                 console.log(e);
+                
             }
+            dispatch(setIsLoading(false));
         }
         init();
     },[currentWallet])
 
     const onClaim = async () => {
+        dispatch(setIsLoading(true));
         const transactionSettings = {
             gasPrice: gasPrice(seletedFee.price),
 			gasLimit,
@@ -129,6 +132,7 @@ const Claim = () => {
         } catch(e) {
             console.log(e);
         }
+        dispatch(setIsLoading(false));
     }
 
     const onCloseFeePeriod = async () => {
