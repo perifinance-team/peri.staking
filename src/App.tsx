@@ -60,10 +60,11 @@ const App = () => {
                 dispatch(updateBalances(balances));
                 const networkFee = await getNetworkFee();
                 dispatch(updateNetworkFee(networkFee));
-                dispatch(setIsLoading(false));
+                
             } catch(e) {
-                dispatch(setIsLoading(true));
+                
             }
+            dispatch(setIsLoading(false));
         }
 
         const init = async () => {
@@ -76,6 +77,8 @@ const App = () => {
                     dispatch(updateIsConnected(true));
                     await getDatas();
                 }
+            } else {
+                dispatch(updateIsConnected(false));
             }
             dispatch(setAppReady());
         };
@@ -125,7 +128,7 @@ const App = () => {
                     </div>
                 </div>) : null
             }
-            { isReady ?
+            { isReady || isConnectedWallet !== undefined ?
                 <>
                     <ThemeProvider theme={themeStyles}>
                         <BodyContainer>
@@ -140,7 +143,7 @@ const App = () => {
                                         <Login />
                                     </Route>
                                     <Route path="/">
-                                        {isConnectedWallet ? <Main /> : <Redirect to={{ pathname: "/login" }} />}
+                                        { isConnectedWallet ? <Main /> : <Redirect to={{ pathname: "/login" }}/> }
                                     </Route>
                                 </Switch>
                             </Router>

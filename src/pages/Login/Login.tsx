@@ -28,18 +28,27 @@ const Login = () => {
     
 
     const onWalletClick = (walletType) => {
-        return async () => {
-            const currentWallet = await connectHelper(walletType);
-            dispatch(updateWallet(currentWallet));
-            if(currentWallet.unlocked) {
-                changeAccount(async () => {
-                    const connect = await connectHelper(walletType);
-                    dispatch(updateWallet(connect));
-                }, () => dispatch(clearWallet()));
-                dispatch(updateIsConnected(true));
-                history.push('/')
-            }
+        if(walletType === 'Metamask') {
+            return (async () => {
+                const currentWallet = await connectHelper(walletType);
+                dispatch(updateWallet(currentWallet));
+                if(currentWallet.unlocked) {
+                    changeAccount(async () => {
+                        const connect = await connectHelper(walletType);
+                        dispatch(updateWallet(connect));
+                    }, () => dispatch(clearWallet()));
+                    dispatch(updateIsConnected(true));
+                    history.push('/')
+                }
+            })();
+        } else {
+            return (async () => {
+                const currentWallet = await connectHelper(walletType);
+                dispatch(updateWallet(currentWallet));
+                history.push('/walletConnection')
+            })();
         }
+        
     }
 
     const SUPPORTED_WALLETS_MAP = Object.values(SUPPORTED_WALLETS);
@@ -57,12 +66,10 @@ const Login = () => {
             </S.IntroContainer>
             <S.ButtonContainer>
             {SUPPORTED_WALLETS_MAP.map(walletType => {
-                const noMetamask = walletType === 'Metamask' && !window.ethereum.isMetaMask;
                 return (
                     <S.WalletButton
-                        disabled={noMetamask}
                         key={walletType}
-                        onClick={onWalletClick(walletType)}
+                        onClick={() => onWalletClick(walletType)}
                     >
                         <S.WalletIcon src={`images/wallets/${walletType.toLowerCase()}.svg`} />
                         <S.WalletText weigth={"balck"}>{walletType.toUpperCase()}</S.WalletText>

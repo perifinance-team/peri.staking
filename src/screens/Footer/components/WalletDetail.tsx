@@ -6,6 +6,7 @@ import numbro from 'numbro'
 import { RootState } from 'config/reducers'
 import { updateBalances } from 'config/reducers/wallet/balances'
 import { updateExchangeRates, updateRatio } from 'config/reducers/rates'
+import { clearWallet, updateIsConnected } from 'config/reducers/wallet'
 
 import { getExchangeRates, getRatio, getBalancess } from 'lib'
 
@@ -47,12 +48,17 @@ const WalletDetail = () => {
         dispatch(setIsLoading(false));
     }
 
+    const delegate = async () => {
+        dispatch(updateIsConnected(false));
+        dispatch(clearWallet());
+    }
+
     return (
         <FooterRoundContainer>
             <FooterTitleContainer>
                 <H4 weigth="bold">{t('walletDetail.title')}</H4>
                 <FooterTitleLeftContainver>
-                    <DelegateContainer>
+                    <DelegateContainer onClick={()=> {delegate()}}>
                         <WalletImage src="/images/dark/wallet.svg"></WalletImage>
                         <DelegateText>{t('walletDetail.delegate')}</DelegateText>
                     </DelegateContainer>

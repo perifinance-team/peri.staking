@@ -11,7 +11,7 @@ import { CellRight,
 import { H3, H6 } from 'components/Text'
 import { TableContainer, RoundContainer } from 'components/Container'
 import { Select } from 'components/Select'
-import Paginator from './Paginator'
+import Pagination from 'components/Pagination'
 import { pynthetix } from 'lib'
 
 const Transactions = () => {
@@ -87,7 +87,7 @@ const Transactions = () => {
                     )}
                 </StyledTHeader>
             </TableContainer>
-            <Paginator
+            <Pagination
                 disabled={transactionHistory.length === 0}
                 currentPage={currentPage}
                 lastPage={Math.trunc(transactionHistory.length / PAGINATION_INDEX) + 1}

@@ -99,6 +99,7 @@ export const getBalancess = async (walletAddress) => {
             coinName: 'PERI',
             balance: (periBalance)
         }
+        
         balances.push(PERI);
 
         const ethBalance = utils.formatEther(await provider.getBalance(walletAddress));
@@ -106,11 +107,17 @@ export const getBalancess = async (walletAddress) => {
             coinName: 'ETH',
             balance: (ethBalance)
         });
+
+        balances.push({
+            coinName: 'pUSD',
+            balance: (ethBalance)
+        });
+
         return {balances, PERI};
     }
 
     const transferablePeri = utils.formatEther(await PeriFinance.transferablePeriFinance(walletAddress));
-
+    
     const {balances, PERI} = await getPynthsBalances();
     
     return {

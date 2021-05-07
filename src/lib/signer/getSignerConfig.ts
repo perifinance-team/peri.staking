@@ -6,6 +6,7 @@ import { INFURA_URLS } from '../../helpers/infura'
 
 export const getSignerConfig = (type, networkId) => {
 	const customProvider = getProvider(networkId);
+	
 	if (type === SUPPORTED_WALLETS.LEDGER) {
 		const DEFAULT_LEDGER_DERIVATION_PATH = "44'/60'/";
 		return {

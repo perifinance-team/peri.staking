@@ -5,7 +5,7 @@ export type IsConnectedWallet = {
 }
 
 const initialState: IsConnectedWallet = {
-    isConnectedWallet: false
+    isConnectedWallet: undefined
 }
 
 
