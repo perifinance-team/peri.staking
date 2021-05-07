@@ -28,27 +28,20 @@ const Login = () => {
     
 
     const onWalletClick = (walletType) => {
-        if(walletType === 'Metamask') {
-            return (async () => {
-                const currentWallet = await connectHelper(walletType);
-                dispatch(updateWallet(currentWallet));
-                if(currentWallet.unlocked) {
-                    changeAccount(async () => {
-                        const connect = await connectHelper(walletType);
-                        dispatch(updateWallet(connect));
-                    }, () => dispatch(clearWallet()));
-                    dispatch(updateIsConnected(true));
-                    history.push('/')
-                }
-            })();
-        } else {
-            return (async () => {
-                const currentWallet = await connectHelper(walletType);
-                dispatch(updateWallet(currentWallet));
+        return (async () => {
+            const currentWallet = await connectHelper(walletType);
+            dispatch(updateWallet(currentWallet));
+            if(currentWallet.unlocked && walletType === 'Metamask' || walletType === 'Coinbase') {
+                changeAccount(async () => {
+                    const connect = await connectHelper(walletType);
+                    dispatch(updateWallet(connect));
+                }, () => dispatch(clearWallet()));
+                dispatch(updateIsConnected(true));
+                history.push('/')
+            } else {
                 history.push('/walletConnection')
-            })();
-        }
-        
+            }
+        })();
     }
 
     const SUPPORTED_WALLETS_MAP = Object.values(SUPPORTED_WALLETS);

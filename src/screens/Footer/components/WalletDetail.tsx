@@ -48,7 +48,7 @@ const WalletDetail = () => {
         dispatch(setIsLoading(false));
     }
 
-    const delegate = async () => {
+    const disconnet = async () => {
         dispatch(updateIsConnected(false));
         dispatch(clearWallet());
     }
@@ -58,9 +58,8 @@ const WalletDetail = () => {
             <FooterTitleContainer>
                 <H4 weigth="bold">{t('walletDetail.title')}</H4>
                 <FooterTitleLeftContainver>
-                    <DelegateContainer onClick={()=> {delegate()}}>
-                        <WalletImage src="/images/dark/wallet.svg"></WalletImage>
-                        <DelegateText>{t('walletDetail.delegate')}</DelegateText>
+                    <DelegateContainer onClick={()=> {disconnet()}}>
+                        <DelegateText>DISCONNET</DelegateText>
                     </DelegateContainer>
                     <RefreshContainer onClick={()=> {getDatas()}}>
                         <img src={"images/dark/refresh.svg"} alt="refresh"/>
