@@ -80,4 +80,5 @@ export const ActionContainer = styled.div`
     width: 50%;
     height: 100%;
 	min-width: 500px;
+	overflow: hidden;
 `

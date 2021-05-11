@@ -12,7 +12,7 @@ import numbro from 'numbro'
 import styled from 'styled-components'
 import Action from 'screens/Action'
 import Input from 'components/Input'
-import { BlueGreenButton } from 'components/Button'
+import { BlueGreenButton, LightBlueButton } from 'components/Button'
 import { H4, H5 } from 'components/Text'
 import Fee from 'components/Fee'
 import { ActionContainer } from 'components/Container'
@@ -43,7 +43,9 @@ const Staking = () => {
         issuable: "0",
     });
     const [estimateCRatio, setEstimateCRatio] = useState<string>("0");
-    const [stakingAmount, setStakingAmount] = useState<string>("0");
+    const [stakingPERIAmount, setStakingPERIAmount] = useState<string>("0");
+    const [stakingUSDCAmount, setStakingUSDCAmount] = useState<string>("0");
+    const [useStakingUSDC, setUseStakingUSDC] = useState<boolean>(false);
     const [mintingAmount, setMintingAmount] = useState<string>("0");
     const [gasLimit, setGasLimit] = useState<number>(0);
 
@@ -64,6 +66,8 @@ const Staking = () => {
             const issuanceRatio = utils.formatEther(await Issuer.issuanceRatio());
             const exchangeRates = utils.formatEther(await ExchangeRates.rateForCurrency(currenciesToBytes['PERI']));
             const issuable = (await PeriFinance.remainingIssuablePynths(currentWallet));
+
+            // ( staked amount + staking admount ) / 20% = usdc
             setStakingData({ maxIssuable, balanceOf, PERIBalance, issuanceRatio, exchangeRates, issuable: utils.formatEther(issuable[0].toString()) });
             
         } catch (e) {
@@ -98,7 +102,7 @@ const Staking = () => {
             value = issuable;
         }
         setEstimateCRatio(getEstimateCRatio({ PERIBalance, balanceOf, exchangeRates, mintingAmount: event.target.value }));
-        setStakingAmount(getStakingAmount({issuanceRatio, exchangeRates, mintingAmount: event.target.value}));
+        setStakingPERIAmount(getStakingAmount({issuanceRatio, exchangeRates, mintingAmount: event.target.value}));
         setMintingAmount(value);
         getGasEstimate();
     }
@@ -106,7 +110,7 @@ const Staking = () => {
     const setAmountMax = () => {
         setMintingAmount(getCurrencyFormat(issuable))
         setEstimateCRatio(getEstimateCRatio({ PERIBalance, balanceOf, exchangeRates, mintingAmount: issuable }));
-        setStakingAmount(getStakingAmount({issuanceRatio, exchangeRates, mintingAmount: issuable}));
+        setStakingPERIAmount(getStakingAmount({issuanceRatio, exchangeRates, mintingAmount: issuable}));
         getGasEstimate();
     }
     const getGasEstimate = async () => {
@@ -157,8 +161,6 @@ const Staking = () => {
         dispatch(setIsLoading(false));
     }
 
-    const currencies = ['USDC', 'pUSD'];
-
     return (
         <Action title="STAKING"
             subTitles={[
@@ -168,18 +170,34 @@ const Staking = () => {
         >
             <ActionContainer>
                 <div>
-                    <Input key="primary"
+                    <StakingInfoContainer>
+                        <UseUSDCButton onClick={() => setUseStakingUSDC(!useStakingUSDC)}>
+                            <H5 color={'red'}>{useStakingUSDC ? 'use USDC' : 'disable USDC'}</H5></UseUSDCButton>
+                        <H5>Estimated C-Ratio: {estimateCRatio}%</H5>
+                    </StakingInfoContainer>
+                    <Input key="pUSD"
                         currencyName="pUSD"
-                        currencies={currencies}
                         value={mintingAmount}
                         onChange={setAmount}
                         onBlur={() => setMintingAmount(getCurrencyFormat(mintingAmount))}
                         maxAction={() => setAmountMax()}
                     />
-                    <StakingInfoContainer>
-                        <H5>Staking: {stakingAmount} PERI</H5>
-                        <H5>Estimated C-Ratio: {estimateCRatio}%</H5>
-                    </StakingInfoContainer>
+                    <Input key="peri"
+                        currencyName="PERI"
+                        value={stakingPERIAmount}
+                        onChange={setAmount}
+                        onBlur={() => setMintingAmount(getCurrencyFormat(stakingPERIAmount))}
+                        maxAction={() => setAmountMax()}
+                    />
+                    {useStakingUSDC && <Input key="usdc"
+                        currencyName="USDC"
+                        value={stakingUSDCAmount}
+                        onChange={setAmount}
+                        onBlur={() => setMintingAmount(getCurrencyFormat(stakingUSDCAmount))}
+                        maxAction={() => setAmountMax()}
+                    />}
+
+                    
                 </div>
                 <div>
                     <StakingButton onClick={ () => onSaking()}><H4 weigth="bold">STAKE & MAINT</H4></StakingButton>
@@ -192,13 +210,18 @@ const Staking = () => {
 }
 
 const StakingInfoContainer = styled.div`
-    padding: 5px 20px;
     display: flex;
     justify-content: space-between;
+    align-items: center;
 `
 
 const StakingButton = styled(BlueGreenButton)`
     width: 100%;
     height: 50px;
+`
+
+const UseUSDCButton = styled(LightBlueButton)`
+    height: 30px;
+    padding: 0px 20px;
 `
 export default Staking;

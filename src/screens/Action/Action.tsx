@@ -33,7 +33,7 @@ const ActionContainer = styled.div`
     display: flex;
     flex: 1 9;
     height: 100%;
-    padding: 20px 200px;
+    padding: 10px 200px;
     display: flex;
     flex-direction: row;
 `;
