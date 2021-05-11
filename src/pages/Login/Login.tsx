@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { updateWallet, clearWallet } from 'config/reducers/wallet'
 import { updateIsConnected } from 'config/reducers/wallet/isConnectedWallet'
 import { changeAccount } from 'helpers/wallet/change'
+import { NotificationManager } from 'react-notifications';
 
 import { connectHelper } from 'helpers/wallet/connect'
 import { SUPPORTED_WALLETS } from 'helpers/wallet'
@@ -29,17 +30,22 @@ const Login = () => {
 
     const onWalletClick = (walletType) => {
         return (async () => {
-            const currentWallet = await connectHelper(walletType);
-            dispatch(updateWallet(currentWallet));
-            if(currentWallet.unlocked && walletType === 'Metamask' || walletType === 'Coinbase') {
-                changeAccount(async () => {
-                    const connect = await connectHelper(walletType);
-                    dispatch(updateWallet(connect));
-                }, () => dispatch(clearWallet()));
-                dispatch(updateIsConnected(true));
-                history.push('/')
-            } else {
-                history.push('/walletConnection')
+            try {
+                const currentWallet = await connectHelper(walletType);
+                dispatch(updateWallet(currentWallet));
+                if(currentWallet.unlocked && walletType === 'Metamask' || walletType === 'Coinbase') {
+                    changeAccount(async () => {
+                        const connect = await connectHelper(walletType);
+                        dispatch(updateWallet(connect));
+                    }, () => dispatch(clearWallet()));
+                    dispatch(updateIsConnected(true));
+                    history.push('/')
+                } else {
+                    history.push('/walletConnection')
+                }
+            } catch (e) {
+                NotificationManager.error('Could not get addresses from wallet', 'wallet connection error', 5000)
+                console.log(e)
             }
         })();
     }

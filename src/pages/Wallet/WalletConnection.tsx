@@ -12,7 +12,6 @@ import { getBalancess, formatCurrency, pynthetix } from 'lib'
 import { updateWallet, updateIsConnected } from 'config/reducers/wallet'
 
 import { CellRight,
-    CellLeft,
     Cell,
     Row,
     StyledTHeader,
