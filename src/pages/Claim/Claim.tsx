@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import styled from 'styled-components'
 import { useHistory } from 'react-router-dom'
 import { addSeconds, formatDistanceToNow } from 'date-fns';
-import numbro from 'numbro'
+
 
 import { RootState } from 'config/reducers'
 import { setIsLoading } from 'config/reducers/app'
@@ -19,7 +19,7 @@ import { BlueGreenButton } from 'components/Button'
 import { H4, H5 } from 'components/Text'
 import Fee from 'components/Fee'
 import Input from 'components/Input'
-import { utils } from 'ethers'
+
 import { gasPrice } from 'helpers/gasPrice'
 
 type ClaimData = {
@@ -72,12 +72,6 @@ const Claim = () => {
         
     };
 
-    const add = (operator, operand) => {
-        operator = numbro(utils.formatEther(operator))
-        operand = numbro(utils.formatEther(operand))
-        return operator.add(operand.value());
-    }
-
     useEffect(() => {
         const init = async () => {
             dispatch(setIsLoading(true));
@@ -110,6 +104,7 @@ const Claim = () => {
             dispatch(setIsLoading(false));
         }
         init();
+        // eslint-disable-next-line
     },[currentWallet])
 
     const onClaim = async () => {

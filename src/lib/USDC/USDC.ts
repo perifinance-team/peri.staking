@@ -1,9 +1,6 @@
 import ERC20 from './contract/ERC20.json';
 import { ethers } from 'ethers';
-import { pynthetix } from 'lib';
 import numbro from 'numbro';
-
-const { signer } = pynthetix;
 
 export const USDC = {
     isConnect: false,
@@ -18,10 +15,8 @@ export const USDC = {
     },
 
     allowance: function (currentAddress) {
-        console.log(currentAddress);
         // this.contract.allowance(currentAddress, this.address)
-        let dd = this.contract.allowance(currentAddress, "0x263d21A44C89718c1Fddd81D8eCC20411505bCb9");
-        console.log(dd);
+        return numbro(this.contract.allowance(currentAddress, "0x263d21A44C89718c1Fddd81D8eCC20411505bCb9")).multiply(10**6).value();
     },
 
     approve: function () {

@@ -1,5 +1,5 @@
 
-import { useSelector, useDispatch } from "react-redux"
+import { useSelector } from "react-redux"
 
 import { ThemeProvider } from 'styled-components'
 import { NotificationContainer } from 'react-notifications';
@@ -11,7 +11,6 @@ import {
     BrowserRouter as Router,
     Switch,
     Route,
-    Redirect
 } from "react-router-dom";
 
 import Login from 'pages/Login';

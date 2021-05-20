@@ -23,10 +23,10 @@ import Pagination from 'components/Pagination'
 
 const WALLET_PAGE_SIZE = 15;
 
-const LEDGER_DERIVATION_PATHS = [
-    { value: "44'/60'/0'/", label: "Ethereum - m/44'/60'/0'" },
-    { value: "44'/60'/", label: "Ethereum - Ledger Live - m/44'/60'" },
-];
+// const LEDGER_DERIVATION_PATHS = [
+//     { value: "44'/60'/0'/", label: "Ethereum - m/44'/60'/0'" },
+//     { value: "44'/60'/", label: "Ethereum - Ledger Live - m/44'/60'" },
+// ];
 
 const WalletConnection = () => {
     const history = useHistory();
@@ -66,7 +66,7 @@ const WalletConnection = () => {
             
         }
         getWallets();
-        
+        // eslint-disable-next-line
     }, [paginatorIndex]);
 
     const connetWallet = (address, index) => {

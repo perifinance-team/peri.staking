@@ -100,7 +100,7 @@ const Staking = () => {
             console.log(e);
         }
         dispatch(setIsLoading(false));
-        
+        // eslint-disable-next-line
     }, [currentWallet])
 
     useEffect(() => {
@@ -125,6 +125,7 @@ const Staking = () => {
                 },
             })
         };
+        // eslint-disable-next-line
     } ,[currentWallet]);
 
     const setAmount = (event) => {

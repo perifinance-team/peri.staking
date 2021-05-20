@@ -29,6 +29,7 @@ export const wallet = createSlice({
 	reducers: {
 		initWallet(state) {
 			state.unlockReason = undefined;
+			state.unlocked = false;
 		},
 		updateWallet(state, actions: PayloadAction<WalletState>)  {
 			state = Object.assign(state, {...actions.payload});

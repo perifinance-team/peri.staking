@@ -1,19 +1,15 @@
-import { useState } from 'react';
-
 import styled from 'styled-components';
 import { BlueBorderRoundContainer } from 'components/Container'
 import Asset from 'components/Asset'
 import { BlueGreenButton } from 'components/Button';
-import { H4 } from 'components/Text'
 
 const Input = (
     {
         disabled = false, currencyName,
-        currencies=[],
-        tooltip = undefined, onChange = undefined, onBlur = undefined, value, maxAction = undefined
+        onChange = undefined, onBlur = undefined, value, maxAction = undefined
     }
     ) => {
-    const [currencyListIsOpen, toggleCurrency] = useState(false);
+    
     
     return (
         <Container>
@@ -21,9 +17,9 @@ const Input = (
                 <DropdownButton disabled={disabled}>
                     <Asset currencyName={currencyName} label={currencyName}></Asset>
                 </DropdownButton>
-                {currencyListIsOpen && (<Currencies>
+                {/* {false && (<Currencies>
                     {currencies.map(currency => <Asset currencyName={currency} label={currency} key={currency}></Asset>)}
-                </Currencies>)}
+                </Currencies>)} */}
                 <Border></Border>
             </DropdownContainer>
             <InputContainer>
@@ -33,15 +29,15 @@ const Input = (
         </Container>
     )
 }
-const Currencies = styled.div`
-    z-index: 11;
-	position: absolute;
-    top: calc(100% - 680px);
-    width: 250px;
-	height: 240px;
-	padding: 16px;
-	border-radius: 5px;
-`
+// const Currencies = styled.div`
+//     z-index: 11;
+// 	position: absolute;
+//     top: calc(100% - 680px);
+//     width: 250px;
+// 	height: 240px;
+// 	padding: 16px;
+// 	border-radius: 5px;
+// `
 const Container = styled(BlueBorderRoundContainer)`
     height: 50px;
     flex-direction: row;

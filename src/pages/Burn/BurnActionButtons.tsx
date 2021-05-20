@@ -12,7 +12,7 @@ import { updateTransaction } from 'config/reducers/transaction'
 import { pynthetix, getCurrencyFormat } from 'lib'
 
 import { BlueGreenButton } from 'components/Button'
-import { H4, H5 } from 'components/Text'
+import { H4 } from 'components/Text'
 import numbro from 'numbro'
 
 function str_pad_left(string, pad, length) {
@@ -65,6 +65,7 @@ const BurnActionButtons = ({burnData, burningAmount, gasPrice}) => {
                 issuanceDelayInSeconds > 0 ? issuanceDelayInSeconds : canBurnSynths ? 0 : 1
             );
         }
+        // eslint-disable-next-line
     },[]);
     
     const onBurn = async ({target = false}) => {
@@ -125,6 +126,7 @@ const BurnActionButtons = ({burnData, burningAmount, gasPrice}) => {
                 NotificationManager.remove(NotificationManager.listNotify[0]);
             }
         }
+        // eslint-disable-next-line
     }, [])
 
     if (issuanceDelay) {

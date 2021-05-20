@@ -1,10 +1,10 @@
 import { FooterRoundContainer, FooterTitleContainer } from 'components/Container'
 import BalanceTable from './BalanceTable'
 import { H4 } from 'components/Text'
-import { useTranslation } from 'react-i18next';
+// import { useTranslation } from 'react-i18next';
 
 const PeriBalance = () => {
-    const { t } = useTranslation();
+    // const { t } = useTranslation();
     
     return (
         <FooterRoundContainer>

@@ -17,8 +17,8 @@ const Paginator = ({ currentPage, onPageChange, disabled, lastPage }) => {
 						setStartIndex(startIndex - 1);
 					}
 				}}
-			>
-				<img src={`/images/dark/arrow/arrow-left.svg`}/>
+		>
+				<img src={`/images/dark/arrow/arrow-left.svg`} alt="arrow"/>
 			</Button>
 			{getRange(startIndex).map(index => (
 				<Button
@@ -36,7 +36,7 @@ const Paginator = ({ currentPage, onPageChange, disabled, lastPage }) => {
 					setStartIndex(startIndex + 1);
 				}}
 			>
-				<img src={`/images/dark/arrow/arrow-right.svg`}/>
+				<img src={`/images/dark/arrow/arrow-right.svg`} alt="arrow"/>
 			</Button>
 		</Wrapper>
 	);

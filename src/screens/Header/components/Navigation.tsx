@@ -2,15 +2,15 @@ import styled from 'styled-components';
 
 import { 
     BrowserRouter as Router,
-    useHistory,
-    useLocation
+    // useHistory,
+    // useLocation
 } from "react-router-dom";
 
 const Navigation = () => {
-    const history = useHistory();
-    const location = useLocation();
+    // const history = useHistory();
+    // const location = useLocation();
     
-    const navs = [
+    // const navs = [
         // {
         //     name: 'Transactions',
         //     to: '/transactions'
@@ -19,7 +19,7 @@ const Navigation = () => {
         //     name: 'HOME',
         //     to: '/'
         // }
-    ]
+    // ]
     
     return (
         <Router>
@@ -43,39 +43,39 @@ const LinkContainer = styled.div`
     flex-direction: row-reverse;
     flex: 1;
 `
-const LinkButton = styled.a<{active: boolean}>`
-    height: 50px;
-    /* width: 100%; */
-    cursor: pointer;
-    width: 250px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-weight: 700px;
-    border-radius: 50px;
-    text-decoration: none;
-    color: ${props => props.theme.colors.font.secondary};
-    :hover {
-        border: 1px solid ${props => props.theme.colors.border};
-        color: ${props => props.theme.colors.font.primary};
-        background-color: ${props => props.theme.colors.hover.background};
-	}
+// const LinkButton = styled.a<{active: boolean}>`
+//     height: 50px;
+//     /* width: 100%; */
+//     cursor: pointer;
+//     width: 250px;
+//     display: flex;
+//     justify-content: center;
+//     align-items: center;
+//     font-weight: 700px;
+//     border-radius: 50px;
+//     text-decoration: none;
+//     color: ${props => props.theme.colors.font.secondary};
+//     :hover {
+//         border: 1px solid ${props => props.theme.colors.border};
+//         color: ${props => props.theme.colors.font.primary};
+//         background-color: ${props => props.theme.colors.hover.background};
+// 	}
 
-    ${
-        props => {
-            return props.active ? {
-                color: props.theme.colors.font.primary,
-                border: `1px solid ${props.theme.colors.border}`,
-                'background-color': props.theme.colors.hover.background,
-            } : {}
-        }
-    }
+//     ${
+//         props => {
+//             return props.active ? {
+//                 color: props.theme.colors.font.primary,
+//                 border: `1px solid ${props.theme.colors.border}`,
+//                 'background-color': props.theme.colors.hover.background,
+//             } : {}
+//         }
+//     }
 
-    p {
-        margin: 0px;
-        font-size: 20px;
-    }
-`;
+//     p {
+//         margin: 0px;
+//         font-size: 20px;
+//     }
+// `;
 
 
 

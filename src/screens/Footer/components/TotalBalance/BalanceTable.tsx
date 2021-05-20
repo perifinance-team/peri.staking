@@ -29,7 +29,7 @@ const BalanceTable = () => {
                 )}
             </StyledTHeader>
             <StyledTBody height={160}>
-                {balances.map( (currency, index) => {
+                {balances.length > 0 && balances.map( (currency, index) => {
                     if(currency.balance !== '0.0') {
                         return (
                             <Row key={currency?.coinName}>
@@ -43,6 +43,9 @@ const BalanceTable = () => {
                                 <CellRight><H6 align={"right"}>${formatCurrency(currency?.balanceToUSD)}</H6></CellRight>
                             </Row>
                         )}
+                        else {
+                            return null;
+                        }
                     }
                 )}
             </StyledTBody>

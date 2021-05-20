@@ -4,10 +4,9 @@ import { useSelector } from "react-redux"
 import { RootState } from 'config/reducers'
 
 import { CellRight,
-    CellLeft,
-    Row,
+    CellLeft,    
     StyledTHeader,
-    StyledTBody } from 'components/Table'
+} from 'components/Table'
 import { H3, H6 } from 'components/Text'
 import { TableContainer, RoundContainer } from 'components/Container'
 import { Select } from 'components/Select'
@@ -18,6 +17,7 @@ const Transactions = () => {
     const { currentWallet } = useSelector((state: RootState) => state.wallet);
     const tableHeadding = ['Type', 'Amount', 'Date']
     const PAGINATION_INDEX = 8;
+    // eslint-disable-next-line
     const [transactionHistory, setTransactionHistory] = useState([]);
     const transactionTypes = [
         'issued',
@@ -46,7 +46,8 @@ const Transactions = () => {
             burned({ account: currentWallet });
             feesClaimed({ account: currentWallet });
         }
-
+        init();
+        // eslint-disable-next-line
     }, [currentWallet])
 
     return (
@@ -115,21 +116,21 @@ const SelectContainer = styled.div`
     display: flex;
 `
 const Title = styled(H3)`
-    margin: 0
+    margin: 0;
 `
 const ClearButton = styled(RoundContainer)`
     cursor: pointer;
     height: 30px;
     padding: 0px 20px;
 `
-const Border = styled.div<{borderColor: string}>`
-    padding-left: 7px;
-	border-left: 5px solid ${props => props.borderColor};
-`;
+// const Border = styled.div<{borderColor: string}>`
+//     padding-left: 7px;
+// 	border-left: 5px solid ${props => props.borderColor};
+// `;
 
-const Flex = styled.div`
-    display: flex;
-`;
+// const Flex = styled.div`
+//     display: flex;
+// `;
 
 
 export default Transactions;

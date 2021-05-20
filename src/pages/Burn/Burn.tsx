@@ -5,10 +5,9 @@ import styled from 'styled-components'
 import { RootState } from 'config/reducers'
 import { setIsLoading } from 'config/reducers/app'
 
-import { pynthetix, getCurrencyFormat, getBurnData, BurnData, getBurnTransferAmount, getBurnMaxAmount } from 'lib'
+import { getCurrencyFormat, getBurnData, BurnData, getBurnTransferAmount, getBurnMaxAmount } from 'lib'
 
 import Action from 'screens/Action'
-import { utils } from 'ethers'
 import numbro from 'numbro'
 
 import BurnActionButtons from './BurnActionButtons'
@@ -19,7 +18,6 @@ import { H5 } from 'components/Text'
 import Fee from 'components/Fee'
 import Input from 'components/Input'
 import { gasPrice } from 'helpers/gasPrice'
-import { collapseTextChangeRangesAcrossMultipleVersions } from 'typescript';
 
 type AmountsNumbro = {
     PERI?: numbro.Numbro,
@@ -43,11 +41,10 @@ const Burn = () => {
     const [maxBurningAmount, setMaxBurningAmount] = useState<AmountsNumbro>();
 
     const [transferAmount, setTransferAmount] = useState<string>("0");
+    // eslint-disable-next-line
     const [gasLimit, setGasLimit] = useState<number>(0);
     
     const [useBurningUSDC, setUseBurningUSDC] = useState<boolean>(false);
-
-    const { js: {PeriFinance} } = pynthetix as any;
 
     useEffect(() => {
         const init = async() => {
@@ -63,8 +60,8 @@ const Burn = () => {
             dispatch(setIsLoading(false));
         }
         init();
-        
-    }, []);
+        // eslint-disable-next-line
+    }, [currentWallet]);
 
     const setBurningAmountChange = (value) => {
         let amount:numbro.Numbro = !isNaN(Number(value)) && value ? numbro(value) : numbro(0);

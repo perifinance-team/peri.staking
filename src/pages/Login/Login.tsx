@@ -33,7 +33,7 @@ const Login = () => {
             try {
                 const currentWallet = await connectHelper(walletType);
                 dispatch(updateWallet(currentWallet));
-                if(currentWallet.unlocked && walletType === 'Metamask' || walletType === 'Coinbase') {
+                if((currentWallet.unlocked && walletType === 'Metamask') || walletType === 'Coinbase') {
                     changeAccount(async () => {
                         const connect = await connectHelper(walletType);
                         dispatch(updateWallet(connect));

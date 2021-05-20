@@ -4,9 +4,8 @@ import { RootState } from 'config/reducers'
 import styled from 'styled-components'
 import { updateSelectedFee } from 'config/reducers/networkFee'
 
-
 import { H6 } from 'components/Text'
-import { SkeyBlueButton } from 'components/Button'
+// import { SkeyBlueButton } from 'components/Button'
 import numbro from 'numbro'
 
 const Fee = ({gasPrice, gasLimit}) => {
@@ -27,8 +26,8 @@ const Fee = ({gasPrice, gasLimit}) => {
             console.log(e);
             setFeeToGwei(0);
         }
-        
-    }, [gasPrice, gasLimit])
+        // eslint-disable-next-line
+    }, [gasPrice, gasLimit, networkFee, seletedFee, ETH, feeToGwei])
     
     return (
         <FeeContainer>
@@ -47,8 +46,8 @@ const FeeContainer = styled.div`
     vertical-align: middle;
 `
 
-const EditButton = styled(SkeyBlueButton)`
-    padding: 0px 10px;
-    margin: 0px 10px;
-`
+// const EditButton = styled(SkeyBlueButton)`
+//     padding: 0px 10px;
+//     margin: 0px 10px;
+// `
 export default Fee

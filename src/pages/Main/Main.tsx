@@ -51,18 +51,18 @@ const Main = () => {
     const isConnectedWallet = useSelector((state: RootState) => state.isConnectedWallet.isConnectedWallet);
     const themeState = useSelector((state: RootState) => state.theme.theme);
     const transaction = useSelector((state: RootState) => state.transaction);
-
+    
     const connectWallet = useCallback(async () => {
         const currentWallet = await connectHelper(wallet.walletType);
         dispatch(updateWallet(currentWallet));
         if (currentWallet.unlocked) {
             dispatch(updateIsConnected(true));
         }
+        // eslint-disable-next-line
     }, []);
 
     const getDatas = useCallback(async () => {
         dispatch(setIsLoading(true));
-
         try {
             const exchangeRates = await getExchangeRates();
             dispatch(updateExchangeRates(exchangeRates));
@@ -76,11 +76,8 @@ const Main = () => {
             console.log(e);
         }
         dispatch(setIsLoading(false));
+        // eslint-disable-next-line
     }, []);
-
-    useEffect(() => {
-        getDatas();
-    },[wallet])
 
     useEffect(() => {
         const init = async () => {
@@ -89,6 +86,7 @@ const Main = () => {
             dispatch(updateThemeStyles(themeState));
             if (wallet?.unlocked) {
                 await connectWallet();
+                await getDatas();
             } else {
                 dispatch(updateIsConnected(false));
                 history.push('/login');
@@ -133,6 +131,7 @@ const Main = () => {
             }
             getState(true);
         }
+        // eslint-disable-next-line
     }, [transaction])
 
     return (

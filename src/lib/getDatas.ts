@@ -2,7 +2,6 @@ import pynthetix from './pynthetix'
 import { utils } from 'ethers'
 import numbro from 'numbro'
 import { USDC } from 'lib'
-import { wallet } from 'config/reducers/wallet'
 
 const format = (value) => {
     if(!value) return '0.00';

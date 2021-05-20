@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import OutsideClickHandler from 'react-outside-click-handler';
 import Calendar from 'react-calendar';
 import { format } from 'date-fns';
-import { H3, H6, H5 } from 'components/Text'
+import { H6, H5 } from 'components/Text'
 
 import { getCurrencyFormat } from 'lib'
 
@@ -188,11 +188,6 @@ const ButtonInner = styled.div`
 	text-transform: uppercase;
 `;
 
-const ButtonImage = styled.img`
-	width: 10px;
-	margin-left: 10px;
-`;
-
 const SelectContainer = styled.div<{autoWidth: boolean, border?: string}>`
 	z-index: 10;
 	position: absolute;
@@ -302,11 +297,6 @@ const ListElementInner = styled.div`
 		border: 1px dotted blue;
 		}
 	}
-`;
-
-const ListElementLabel = styled(H6)`
-	width: 100%;
-	margin-left: 5px;
 `;
 
 const RangeContainer = styled.div`

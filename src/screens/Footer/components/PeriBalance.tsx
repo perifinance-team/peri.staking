@@ -5,14 +5,14 @@ import { RootState } from 'config/reducers'
 
 import { FooterRoundContainer, FooterTitleContainer } from 'components/Container'
 import { H4, H6 } from 'components/Text'
-import { useTranslation } from 'react-i18next';
+// import { useTranslation } from 'react-i18next';
 
 import { formatCurrency } from 'lib'
 
 import numbro from 'numbro'
 
 const TotalBalance = () => {
-    const { t } = useTranslation();
+    // const { t } = useTranslation();
 	const PERI = useSelector((state: RootState) => state.balances.PERI);
 	const transferablePeri = useSelector((state: RootState) => Number(state.balances.transferablePeri) );
 	const staked:number = numbro(PERI.balance).subtract(transferablePeri).value();
