@@ -2,7 +2,7 @@ import styled from 'styled-components'
 import { useSelector, useDispatch } from "react-redux";
 import { setIsLoading } from 'config/reducers/app'
 import numbro from 'numbro'
-
+import { useHistory } from "react-router-dom";
 import { RootState } from 'config/reducers'
 import { updateBalances } from 'config/reducers/wallet/balances'
 import { updateExchangeRates, updateRatio } from 'config/reducers/rates'
@@ -17,6 +17,7 @@ import Asset from 'components/Asset'
 
 
 const WalletDetail = () => {
+    const history  = useHistory();
     const { t } = useTranslation();
     const wallet = useSelector((state: RootState) => state.wallet);
     const dispatch = useDispatch();
@@ -49,6 +50,7 @@ const WalletDetail = () => {
     }
 
     const disconnet = async () => {
+        history.push('/login');
         dispatch(updateIsConnected(false));
         dispatch(clearWallet());
     }
@@ -104,10 +106,6 @@ const DelegateContainer = styled(RoundContainer)`
     padding: 10px;
     height: 40px;
 `
-
-const WalletImage = styled.img`
-    margin-left: 10px;
-`;
 
 const DelegateText = styled(H6)`
     margin: 10px;

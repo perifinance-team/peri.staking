@@ -15,7 +15,7 @@ type Pynthetix = {
 export const pynthetix: Pynthetix = {
     initialized: false,
 	signers: PeriFinanceJs.signers,
-	setContractSettings: function (contractSettings) {
+	setContractSettings: function (contractSettings) {		
 		this.initialized = true;
 		this.js = new PeriFinanceJs(contractSettings);
 		this.pynths = this.js.contractSettings.pynths;
@@ -23,6 +23,7 @@ export const pynthetix: Pynthetix = {
 		this.provider = this.js.contractSettings.provider;
 		this.utils = this.js.utils;
 		this.ethersUtils = this.js.ethers.utils;
+		return this;
     }
 }
 

@@ -1,0 +1,12 @@
+import numbro from 'numbro'
+
+export const getBurnTransferAmount = ({amount, issuanceRatio, exchangeRates, target}) => {
+    if(target === 'PERI') {
+        return numbro(amount).multiply(numbro(issuanceRatio).value()).multiply(numbro(exchangeRates['PERI']).value());
+    } else if(target === 'USDC') {
+        return numbro(amount).multiply(numbro(issuanceRatio).value()).multiply(numbro(exchangeRates['USDC']).value());
+    } else if(target === 'pUSD') {
+        return numbro(amount).divide(numbro(issuanceRatio).value()).divide(numbro(exchangeRates['PERI']).value());
+    }
+    
+}

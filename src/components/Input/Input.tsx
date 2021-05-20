@@ -17,23 +17,23 @@ const Input = (
     
     return (
         <Container>
-            <DropdownContainer disabled={disabled}>
+            <DropdownContainer>
                 <DropdownButton disabled={disabled}>
                     <Asset currencyName={currencyName} label={currencyName}></Asset>
                 </DropdownButton>
-                {currencyListIsOpen && (<Cc>
+                {currencyListIsOpen && (<Currencies>
                     {currencies.map(currency => <Asset currencyName={currency} label={currency} key={currency}></Asset>)}
-                </Cc>)}
+                </Currencies>)}
                 <Border></Border>
             </DropdownContainer>
             <InputContainer>
-                <AmountInput disabled={disabled} onChange={onChange} value={value} onBlur={onBlur}></AmountInput>
+                <AmountInput disabled={disabled} onChange={onChange} defaultValue={null} value={value} onBlur={onBlur}></AmountInput>
                 { disabled || <MaxButton onClick={maxAction}>MAX</MaxButton>}
             </InputContainer>
         </Container>
     )
 }
-const Cc = styled.div`
+const Currencies = styled.div`
     z-index: 11;
 	position: absolute;
     top: calc(100% - 680px);
@@ -50,10 +50,9 @@ const Container = styled(BlueBorderRoundContainer)`
     margin: 10px 0px;
 `
 
-const DropdownContainer = styled.div<{disabled: boolean}>`
+const DropdownContainer = styled.div`
     flex: 1;
     display: flex;
-    opacity: ${props => props.disabled ? 0.5 : 1};
     align-items: center;
 `
 
@@ -88,9 +87,13 @@ const AmountInput = styled.input`
     font-size: 16px;
     border: none;
     background: transparent;
+
     color: ${props => props.theme.colors.font.secondary};
     :focus {
         outline: none;
+    }
+    :disabled {
+        opacity: 0.5
     }
     
 `

@@ -1,6 +1,8 @@
 import pynthetix from './pynthetix'
 import { utils } from 'ethers'
 import numbro from 'numbro'
+import { USDC } from 'lib'
+import { wallet } from 'config/reducers/wallet'
 
 const format = (value) => {
     if(!value) return '0.00';
@@ -88,12 +90,7 @@ export const getBalancess = async (walletAddress) => {
     
     const getPynthsBalances = async () => {
         let balances = [];
-        const [keys, value] = await PynthUtil.pynthsBalances(walletAddress);
-        balances = keys.map((key, index) => {return {
-            coinName: utils.parseBytes32String(key),
-            balance: (utils.formatEther(value[index]))
-        }});
-
+        
         const periBalance = utils.formatEther(await PeriFinance.collateral(walletAddress));
         const PERI = {
             coinName: 'PERI',
@@ -101,28 +98,40 @@ export const getBalancess = async (walletAddress) => {
         }
         
         balances.push(PERI);
+        
+        const [keys, value] = await PynthUtil.pynthsBalances(walletAddress);
+    
+        keys.forEach((key, index) => {
+            balances.push({
+                coinName: utils.parseBytes32String(key),
+                balance: (utils.formatEther(value[index]))
+            })
+        });
+        
+        const USDCBalance = await USDC.balanceOf(walletAddress);
+        
+        balances.push({
+            coinName: 'USDC',
+            balance: USDCBalance.toString()
+        });
 
         const ethBalance = utils.formatEther(await provider.getBalance(walletAddress));
         balances.push({
             coinName: 'ETH',
             balance: (ethBalance)
         });
-
-        balances.push({
-            coinName: 'pUSD',
-            balance: (ethBalance)
-        });
-
-        return {balances, PERI};
+        
+        return { balances, PERI };
     }
 
     const transferablePeri = utils.formatEther(await PeriFinance.transferablePeriFinance(walletAddress));
+
     
     const {balances, PERI} = await getPynthsBalances();
     
     return {
         balances,
         PERI,
-        transferablePeri
+        transferablePeri,
     };
 }

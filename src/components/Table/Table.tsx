@@ -7,6 +7,7 @@ export const Row = styled.div`
 `;
 
 export const Cell = styled.div`
+    width: 100%;
     height: 40px;
     vertical-align: middle;
     padding: 10px 40px;

@@ -1,17 +1,17 @@
 import numbro from 'numbro'
 import { getCurrencyFormat } from 'lib'
 
-export const getEstimateCRatio = ({ PERIBalance, balanceOf, exchangeRates, mintingAmount }) => {
+export const getEstimateCRatio = ({ PERIBalance, debtBalanceOf, exchangeRates, mintingAmount }) => {
     PERIBalance = numbro(PERIBalance);
-    balanceOf = numbro(balanceOf);
-    exchangeRates = numbro(exchangeRates);
+    debtBalanceOf = numbro(debtBalanceOf);
+    exchangeRates['PERI'] = numbro(exchangeRates['PERI']);
     mintingAmount = numbro(mintingAmount);
 
-	if (PERIBalance.value() || balanceOf.value() || exchangeRates.value()) {
+	if (!PERIBalance.value() || !debtBalanceOf.value() || !exchangeRates['PERI'].value()) {
 		return "0";
 	}
 
-	const pUSDRates = PERIBalance.multiply(exchangeRates);
-	const value = getCurrencyFormat(pUSDRates.divide((balanceOf.add(mintingAmount))).multiply(10));
+	const pUSDRates = PERIBalance.multiply(exchangeRates['PERI']);
+	const value = getCurrencyFormat(pUSDRates.divide((debtBalanceOf.add(mintingAmount))).multiply(100));
 	return value;
 }

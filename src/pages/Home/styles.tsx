@@ -4,6 +4,7 @@ import { H1, H3} from 'components/Text'
 
 export const Container = styled.div`
     flex: 1;
+	padding: 10px 20px;
 `
 
 export const IntroContainer = styled.div`
@@ -23,8 +24,8 @@ export const IntroSubTitle = styled(H3)`
 
 export const ActionButtonRow = styled.div`
 	display: grid;
-	grid-template-columns: repeat(3, 230px);
-	grid-template-rows: repeat(2, 220px);
+	grid-template-columns: repeat(3, 220px);
+	grid-template-rows: repeat(2, 210px);
 	grid-gap: 20px;
 `;
 

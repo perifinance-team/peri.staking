@@ -1,7 +1,7 @@
 import { setSigner } from 'lib/signer'
 import { getEthereumNetwork } from 'lib/ethereum'
 import { SUPPORTED_WALLETS } from '../index';
-
+import { USDC } from 'lib'
 
 import {
 	connectMetamask,
@@ -35,9 +35,10 @@ const connect = async (walletType, networkName, networkId) => {
 }
 export const connectHelper = async (walletType) => {
 	const { networkName, networkId } = await getEthereumNetwork();
-	setSigner(walletType, networkId);
-	const walletStatus = await connect(walletType, networkName, networkId);
-	// dispatch 시키기
+	const { signer } = setSigner(walletType, networkId);
 	
+	const walletStatus = await connect(walletType, networkName, networkId);
+	await USDC.connect(signer, networkId);
+
 	return walletStatus;
 };

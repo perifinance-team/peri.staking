@@ -4,7 +4,7 @@ export const BodyContainer = styled.div`
 	display: flex;
 	flex: 1;
 	flex-direction: column;
-	padding: 20px 50px;
+	padding: 20px 30px;
 	height: 100vh;
 	background-color: ${props => props.theme.colors.background.body};
 `;

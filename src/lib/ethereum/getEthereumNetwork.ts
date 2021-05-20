@@ -5,7 +5,6 @@ export async function getEthereumNetwork() {
     let network = { networkName: 'KOVAN', networkId: '42' };
     try {
         let networkId = await getEthereumNetworkId();
-        console.log(networkId)
         if(networkId) {
             network.networkName = SUPPORTED_NETWORKS[networkId];
             network.networkId = networkId;
