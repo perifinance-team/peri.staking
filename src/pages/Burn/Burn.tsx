@@ -224,6 +224,7 @@ const Burn = () => {
                 </div>
                 <div>
                     <BurnActionButtons 
+                        useBurningUSDC={useBurningUSDC}
                         burnData={burnData}
                         burningAmount={burningAmount} 
                         gasPrice={gasPrice(seletedFee.price)} 

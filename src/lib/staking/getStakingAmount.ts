@@ -19,7 +19,7 @@ export const getStakingAmount = ({ issuanceRatio, exchangeRates, mintingAmount, 
         stakingUSDCAmountTopUSDAmount = stakingUSDCAmount.multiply(issuanceRatio).multiply(exchangeRates['USDC']);
         mintingAmount.subtract(stakingUSDCAmountTopUSDAmount);
     }
-
+    
     PERIAmount = mintingAmount.divide(issuanceRatio).divide(exchangeRates['PERI']);
-    return getCurrencyFormat(PERIAmount).toString();
+    return PERIAmount.value() > 0 ? getCurrencyFormat(PERIAmount).toString() : '0.00';
 }

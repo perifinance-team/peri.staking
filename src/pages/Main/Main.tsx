@@ -47,28 +47,31 @@ const Main = () => {
     const history = useHistory();
 
     const { isReady } = useSelector((state: RootState) => state.app);
-    const wallet = useSelector((state: RootState) => state.wallet);
+    const { walletType, unlocked, currentWallet } = useSelector((state: RootState) => state.wallet);
     const isConnectedWallet = useSelector((state: RootState) => state.isConnectedWallet.isConnectedWallet);
     const themeState = useSelector((state: RootState) => state.theme.theme);
     const transaction = useSelector((state: RootState) => state.transaction);
     
     const connectWallet = useCallback(async () => {
-        const currentWallet = await connectHelper(wallet.walletType);
+        const currentWallet = await connectHelper(walletType);
+        
         dispatch(updateWallet(currentWallet));
         if (currentWallet.unlocked) {
             dispatch(updateIsConnected(true));
         }
+        await getDatas(currentWallet.currentWallet);
+
         // eslint-disable-next-line
     }, []);
 
-    const getDatas = useCallback(async () => {
+    const getDatas = useCallback(async (currentWallet) => {
         dispatch(setIsLoading(true));
         try {
             const exchangeRates = await getExchangeRates();
             dispatch(updateExchangeRates(exchangeRates));
-            const ratios = await getRatio(wallet.currentWallet);
+            const ratios = await getRatio(currentWallet);
             dispatch(updateRatio(ratios));
-            const balances = await getBalancess(wallet.currentWallet);
+            const balances = await getBalancess(currentWallet);
             dispatch(updateBalances(balances));
             const networkFee = await getNetworkFee();
             dispatch(updateNetworkFee(networkFee));
@@ -84,9 +87,8 @@ const Main = () => {
             dispatch(initWallet());
             changeNetwork();
             dispatch(updateThemeStyles(themeState));
-            if (wallet?.unlocked) {
+            if (unlocked) {
                 await connectWallet();
-                await getDatas();
             } else {
                 dispatch(updateIsConnected(false));
                 history.push('/login');
@@ -97,11 +99,10 @@ const Main = () => {
         
         // eslint-disable-next-line
     }, []);
-
     useEffect(() => {
         if(isConnectedWallet) {
             changeAccount( async () => {
-                await connectWallet();     
+                await connectWallet();
             }, () => { dispatch(clearWallet()); dispatch(updateIsConnected(false)); });
         }
         
@@ -121,7 +122,7 @@ const Main = () => {
                     if(state.status === 1) {
                         dispatch(resetTransaction());
                         NotificationManager.success(`${transaction.type} success`, 'success');
-                        await getDatas();
+                        await getDatas(currentWallet);
                     } else {
                         NotificationManager.error(`${transaction.type} success`, 'success');
                     }

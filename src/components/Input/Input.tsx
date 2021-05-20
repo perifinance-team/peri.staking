@@ -23,7 +23,7 @@ const Input = (
                 <Border></Border>
             </DropdownContainer>
             <InputContainer>
-                <AmountInput disabled={disabled} onChange={onChange} defaultValue={null} value={value} onBlur={onBlur}></AmountInput>
+                <AmountInput disabled={disabled} onChange={onChange} defaultValue="" value={value} onBlur={onBlur}></AmountInput>
                 { disabled || <MaxButton onClick={maxAction}>MAX</MaxButton>}
             </InputContainer>
         </Container>

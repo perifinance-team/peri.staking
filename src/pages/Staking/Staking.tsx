@@ -31,7 +31,8 @@ type StakingData = {
     issuable: {
         pUSD: string,
         USDC: string
-    }
+    },
+    USDCBalance: string
 }
 
 const Staking = () => {
@@ -52,7 +53,8 @@ const Staking = () => {
         issuable: {
             pUSD: "0",
             USDC: "0"
-        }
+        },
+        USDCBalance: "0"
     });
     const [estimateCRatio, setEstimateCRatio] = useState<string>("0");
     const [stakingPERIAmount, setStakingPERIAmount] = useState<string>("0");
@@ -62,7 +64,7 @@ const Staking = () => {
     const [gasLimit, setGasLimit] = useState<number>(0);
 
     const { js: { PeriFinance, Issuer, ExchangeRates } }  = pynthetix as any;
-    const { PERIBalance, debtBalanceOf, exchangeRates, issuanceRatio, issuable } = stakingData;
+    const { PERIBalance, debtBalanceOf, exchangeRates, issuanceRatio, issuable, USDCBalance } = stakingData;
 
     const currenciesToBytes = {
         PERI: utils.formatBytes32String('PERI'),
@@ -84,17 +86,16 @@ const Staking = () => {
             const issuableUSDC = numbro(debtBalanceOf).add(numbro(mintingAmount).value())
                 .multiply(0.2).divide(numbro(issuanceRatio).value()).divide(numbro(exchangeRates['USDC']).value()).value();
             
-            const USDCBalance = await USDC.balanceOf(currentWallet);
+            const USDCBalance = (await USDC.balanceOf(currentWallet)).toString();
 
             const issuable = {
                 pUSD: utils.formatEther((await PeriFinance.remainingIssuablePynths(currentWallet))[0].toString()),
                 USDC: numbro(USDCBalance).subtract(issuableUSDC).value() > 0 ? 
                     issuableUSDC.toString() : USDCBalance.toString()
             }
+            
             USDC.allowance(currentWallet);
-            // USDC.approve();
-            // ( staked amount + staking admount ) / 20% = usdc
-            setStakingData({ maxIssuable, debtBalanceOf, PERIBalance, issuanceRatio, exchangeRates, issuable});
+            setStakingData({ maxIssuable, debtBalanceOf, PERIBalance, issuanceRatio, exchangeRates, issuable, USDCBalance});
             
         } catch (e) {
             console.log(e);
@@ -123,6 +124,7 @@ const Staking = () => {
                     pUSD: "0",
                     USDC: "0",
                 },
+                USDCBalance: "0"
             })
         };
         // eslint-disable-next-line
@@ -130,53 +132,105 @@ const Staking = () => {
 
     const setAmount = (event) => {
         let value = event.target.value;
-        
-        if(numbro(issuable).clone().subtract(numbro(value).value()).value() < 0 ) {
-            value = issuable;
+        if(!value) {
+            value = 0;
         }
+        if(useStakingUSDC) {
+            const issuableUSDCtoUSDT = numbro(stakingUSDCAmount).clone().multiply(numbro(issuanceRatio).value())
+                .multiply(numbro(exchangeRates['USDC']).value()).value();
+            if(numbro(value).clone().subtract(numbro(issuableUSDCtoUSDT).value()).value() < 0) {
+                value = issuableUSDCtoUSDT;
+            }
+        }
+        
+        if(numbro(issuable['pUSD']).clone().subtract(numbro(value).value()).value() < 0 ) {
+            value = issuable['pUSD'];
+        }
+
         setEstimateCRatio(getEstimateCRatio({ PERIBalance, debtBalanceOf, exchangeRates, mintingAmount: value}));
         setStakingPERIAmount(getStakingAmount({issuanceRatio, exchangeRates, mintingAmount: value, stakingUSDCAmount}));
         setMintingAmount(value);
+        getGasEstimate();
     }
 
     const setAmountMax = () => {
-        setMintingAmount(getCurrencyFormat(issuable['pUSD']));
-        setEstimateCRatio(getEstimateCRatio({ PERIBalance, debtBalanceOf, exchangeRates, mintingAmount: issuable['pUSD']}));
-        setStakingPERIAmount(getStakingAmount({issuanceRatio, exchangeRates, mintingAmount: issuable['pUSD'], stakingUSDCAmount}));
+        const issuableUSDCtoUSDT = numbro(stakingUSDCAmount).clone().multiply(numbro(issuanceRatio).value())
+            .multiply(numbro(exchangeRates['USDC']).value()).value();
+        
+        let currentMaxUSDTAmount = !isNaN(Number(issuableUSDCtoUSDT)) && issuableUSDCtoUSDT ? numbro(issuable['pUSD']).add(issuableUSDCtoUSDT).value() : issuable['pUSD'];
+
+        setMintingAmount(getCurrencyFormat(currentMaxUSDTAmount));
+        setEstimateCRatio(getEstimateCRatio({ PERIBalance, debtBalanceOf, exchangeRates, mintingAmount: currentMaxUSDTAmount}));
+        setStakingPERIAmount(getStakingAmount({issuanceRatio, exchangeRates, mintingAmount: currentMaxUSDTAmount, stakingUSDCAmount}));
+        getGasEstimate();
     }
 
     const setUSDCAmount = (event) => {
         let value = event.target.value;
+        let currentMaxUSDCAmount = 0;
+        if(useStakingUSDC) {
+            const issuableUSDC = numbro(mintingAmount).multiply(0.2).divide(numbro(issuanceRatio).value())
+            .divide(numbro(exchangeRates['USDC']).value()).value();
+
+            let currentMaxUSDCAmount = numbro(issuable['USDC']).add(issuableUSDC).value(); 
+
+            if(numbro(currentMaxUSDCAmount).clone().subtract(numbro(value).value()).value() < 0 ) {
+                value = currentMaxUSDCAmount;
+            }   
+        }
+        if(numbro(USDCBalance).subtract(numbro(currentMaxUSDCAmount).value()).value() < 0 ) {
+            value = USDCBalance;
+        }
+
         setStakingUSDCAmount(value);
         setStakingPERIAmount( getStakingAmount({ issuanceRatio, exchangeRates, mintingAmount, stakingUSDCAmount: value }));
+        getGasEstimate();
     }
 
     const setUSDCAmountMax = () => {
         
-        setStakingUSDCAmount(getCurrencyFormat(issuable['USDC']));
-        setStakingPERIAmount(getStakingAmount({ issuanceRatio, exchangeRates, mintingAmount, stakingUSDCAmount: issuable['USDC']}))
+        const issuableUSDC = numbro(mintingAmount).multiply(0.2).divide(numbro(issuanceRatio).value())
+            .divide(numbro(exchangeRates['USDC']).value()).value();
+
+        let currentMaxUSDCAmount = !isNaN(Number(issuableUSDC)) && issuableUSDC ? numbro(issuable['USDC']).add(issuableUSDC).value() : issuable['USDC'];
+
+        if(numbro(USDCBalance).subtract(numbro(currentMaxUSDCAmount).value()).value() < 0 ) {
+            currentMaxUSDCAmount = USDCBalance;
+        }
+
+        setStakingUSDCAmount(getCurrencyFormat(currentMaxUSDCAmount));
+        setStakingPERIAmount(getStakingAmount({ issuanceRatio, exchangeRates, mintingAmount, stakingUSDCAmount: currentMaxUSDCAmount}));
+        getGasEstimate();
     } 
 
     const getGasEstimate = async () => {
+        
         let estimateGasLimit;
 
         try {
-            if(numbro(mintingAmount).value().toString() === issuanceRatio) {
-                estimateGasLimit = await PeriFinance.contract.estimate.issueMaxPynths()
+            if(useStakingUSDC) {
+                if(numbro(mintingAmount).value().toString() === issuanceRatio) {
+                    estimateGasLimit = await PeriFinance.contract.estimate.issueMaxPynths()
+                } else {
+                    estimateGasLimit = await PeriFinance.contract.estimate.issuePynths(
+                        utils.parseEther(numbro(mintingAmount).value().toString())
+                    )
+                }
             } else {
-                estimateGasLimit = await PeriFinance.contract.estimate.issuePynths(
+                estimateGasLimit = await PeriFinance.contract.estimate.stakeUSDCAndIssuePynths(
+                    numbro(stakingUSDCAmount).multiply(10**6).value().toString(),
                     utils.parseEther(numbro(mintingAmount).value().toString())
-                )
+                )   
             }
             setGasLimit(numbro(estimateGasLimit).multiply(1.2).value());
         } catch(e) {
-
+            console.log(e);
         }
     }
 
     const onSaking = async () => {
         dispatch(setIsLoading(true));
-        await getGasEstimate();
+        
         const transactionSettings = {
             gasPrice: gasPrice(seletedFee.price),
 			gasLimit,
@@ -188,10 +242,6 @@ const Staking = () => {
                 if(numbro(mintingAmount).value().toString() === issuable['pUSD'] && numbro(stakingUSDCAmount).value().toString() === issuable['USDC']) {
                     transaction = await PeriFinance.stakeMaxUSDCAndIssuePynths(transactionSettings);
                 } else {
-                    console.log(
-                        numbro(stakingUSDCAmount).multiply(10**6).value().toString(),
-                        utils.parseEther(numbro(mintingAmount).value().toString()).toString(),
-                    )
                     transaction = await PeriFinance.stakeUSDCAndIssuePynths(
                         numbro(stakingUSDCAmount).multiply(10**6).value().toString(),
                         utils.parseEther(numbro(mintingAmount).value().toString()),
@@ -222,7 +272,7 @@ const Staking = () => {
                         transactionSettings
                     );
                 }
-                
+                history.push('/');
                 dispatch(updateTransaction(
                     {
                         hash: transaction.hash,
@@ -230,7 +280,7 @@ const Staking = () => {
                         type: 'Staked & Minted'
                     }
                 ));
-                history.push('/')
+                
             } catch(e) {
                 console.log(e);
             }   
@@ -262,20 +312,18 @@ const Staking = () => {
                         onBlur={() => setMintingAmount(getCurrencyFormat(mintingAmount))}
                         maxAction={() => setAmountMax()}
                     />
-                    {useStakingUSDC && <Input key="usdc"
+                    {useStakingUSDC && <Input key="USDC"
                         currencyName="USDC"
                         value={stakingUSDCAmount}
                         onChange={setUSDCAmount}
+                        onBlur={() => setMintingAmount(getCurrencyFormat(stakingUSDCAmount))}
                         maxAction={() => setUSDCAmountMax()}
                     />}
-                    <Input key="peri"
+                    <Input key="PERI"
                         currencyName="PERI"
                         disabled= {true}
                         value={stakingPERIAmount}
-                    />
-                    
-
-                    
+                    />                    
                 </div>
                 <div>
                     <StakingButton onClick={ () => onSaking()}><H4 weigth="bold">STAKE & MAINT</H4></StakingButton>

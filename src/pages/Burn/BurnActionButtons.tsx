@@ -30,7 +30,7 @@ export const secondsToTime = seconds => {
 	return `up to 1 minute`;
 };
 
-const BurnActionButtons = ({burnData, burningAmount, gasPrice}) => {
+const BurnActionButtons = ({useBurningUSDC, burnData, burningAmount, gasPrice}) => {
     const dispatch = useDispatch();
     const history = useHistory();
 
@@ -86,10 +86,18 @@ const BurnActionButtons = ({burnData, burningAmount, gasPrice}) => {
                         gasPrice,
                     });
                 } else {
-                    transaction = await PeriFinance.burnPynths(utils.parseEther(numbro(burningAmount['pUSD']).value().toString()), {
-                        gasPrice,
-                        gasLimit,
-                    });
+                    if(useBurningUSDC) {
+                        transaction = await PeriFinance.burnPynths(utils.parseEther(numbro(burningAmount['pUSD']).value().toString()), {
+                            gasPrice,
+                            gasLimit,
+                        });
+                    } else {
+                        transaction = await PeriFinance.burnPynths(utils.parseEther(numbro(burningAmount['pUSD']).value().toString()), {
+                            gasPrice,
+                            gasLimit,
+                        });
+                    }
+                    
                 }
                 history.push('/');
 
@@ -112,7 +120,7 @@ const BurnActionButtons = ({burnData, burningAmount, gasPrice}) => {
         dispatch(setIsLoading(false));
     };
 
-    useEffect(  () => {
+    useEffect( () => {
         const init = async () => {
             const issuanceDelay = await getIssuanceDelayCheck();
             
