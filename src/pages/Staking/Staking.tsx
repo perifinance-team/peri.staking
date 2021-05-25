@@ -48,6 +48,7 @@ const Staking = () => {
     const [useStakingUSDC, setUseStakingUSDC] = useState<boolean>(false);
 
     const [gasLimit, setGasLimit] = useState<number>(0);
+    const [needApprove, setNeedApprove] = useState<boolean>(false);
 
     const { js: { PeriFinance } }  = pynthetix as any;
 
@@ -114,8 +115,6 @@ const Staking = () => {
 
             return false;
         }
-
-        if(numbro(stakingData.allowance['USDC']))
 
         if(numbro(stakingData.issuable['pUSD']).clone().subtract(numbro(value).value()).value() < 0 ) {
             value = getCurrencyFormat(stakingData.issuable['pUSD']);
@@ -198,6 +197,10 @@ const Staking = () => {
             setMaxMintingAmount({pUSD: getCurrencyFormat(stakingData.issuable['pUSD'])});
             return false;
         }
+        //allowance check()
+        if(numbro(stakingData.allowance['USDC']).subtract(numbro(value).value()).value() < 0) {
+            setNeedApprove(true)
+        }   
         
         if(numbro(maxStakingAmount['USDC']).subtract(numbro(value).value()).value() < 0) {
             value = getCurrencyFormat(maxStakingAmount['USDC']);
@@ -234,11 +237,11 @@ const Staking = () => {
     } 
 
     const getGasEstimate = async () => {
-        
         let estimateGasLimit;
-        const mintAmount = Number(numbro(maxMintingAmount['pUSD']).subtract(numbro(mintingAmount['pUSD']).value()).format({mantissa: 2}));
-        const stakeUSDCAmount = Number(numbro(maxStakingAmount['USDC']).subtract(numbro(maxStakingAmount['USDC']).value()).format({mantissa: 2}));
+        
         try {
+            const mintAmount = Number(numbro(maxMintingAmount['pUSD']).subtract(numbro(mintingAmount['pUSD']).value()).format({mantissa: 2})); 
+            const stakeUSDCAmount = Number(numbro(maxStakingAmount['USDC']).subtract(numbro(maxStakingAmount['USDC']).value()).format({mantissa: 2}));
             if(useStakingUSDC) {
                 if(mintAmount === 0 && stakeUSDCAmount === 0) {
                     estimateGasLimit = await PeriFinance.contract.estimate.stakeMaxUSDCAndIssuePynths();
@@ -273,15 +276,13 @@ const Staking = () => {
             gasPrice: gasPrice(seletedFee.price),
 			gasLimit: await getGasEstimate(),
         }
-        console.log(transactionSettings);
 
-        const mintAmount = Number(numbro(maxMintingAmount['pUSD']).subtract(numbro(mintingAmount['pUSD']).value()).format({mantissa: 2}));
-        const stakeUSDCAmount = Number(numbro(maxStakingAmount['USDC']).subtract(numbro(maxStakingAmount['USDC']).value()).format({mantissa: 2}));
+        try {
+            let transaction;
+            const mintAmount = Number(numbro(maxMintingAmount['pUSD']).subtract(numbro(mintingAmount['pUSD']).value()).format({mantissa: 2})); 
+            const stakeUSDCAmount = Number(numbro(maxStakingAmount['USDC']).subtract(numbro(maxStakingAmount['USDC']).value()).format({mantissa: 2}));
 
-        if(useStakingUSDC) {
-            try {
-                let transaction;
-                
+            if(useStakingUSDC) {
                 if(mintAmount === 0 && stakeUSDCAmount === 0) {
                     transaction = await PeriFinance.stakeMaxUSDCAndIssuePynths(transactionSettings);
                 } else {
@@ -300,37 +301,41 @@ const Staking = () => {
                     }
                 ));
                 history.push('/')
-            } catch(e) {
-                console.log(e);
-            }   
-
-        } else {
-            try {
-                let transaction;
-                if(mintAmount === 0) {
-                    transaction = await PeriFinance.issueMaxPynths(transactionSettings);
-                } else {
-                    transaction = await PeriFinance.issuePynths(
-                        utils.parseEther(numbro(mintingAmount['pUSD']).value().toString()),
-                        transactionSettings
-                    );
-                }
-                history.push('/');
-                dispatch(updateTransaction(
-                    {
-                        hash: transaction.hash,
-                        message: `Staked & Minted ${getCurrencyFormat(mintingAmount['pUSD'])} pUSD`,
-                        type: 'Staked & Minted'
+            } else {
+                    if(mintAmount === 0) {
+                        transaction = await PeriFinance.issueMaxPynths(transactionSettings);
+                    } else {
+                        transaction = await PeriFinance.issuePynths(
+                            utils.parseEther(numbro(mintingAmount['pUSD']).value().toString()),
+                            transactionSettings
+                        );
                     }
-                ));
-                
-            } catch(e) {
-                console.log(e);
-            }   
+                    history.push('/');
+                    dispatch(updateTransaction(
+                        {
+                            hash: transaction.hash,
+                            message: `Staked & Minted ${getCurrencyFormat(mintingAmount['pUSD'])} pUSD`,
+                            type: 'Staked & Minted'
+                        }
+                    ));
+            }
+        } catch(e) {
+            console.log(e);
+        }    
+        dispatch(setIsLoading(false));
+    }
+
+    const approve = async () => {
+        dispatch(setIsLoading(true));
+        try {
+            await USDC.approve();
+            setNeedApprove(false);
             
+        } catch (e) {
+
         }
         dispatch(setIsLoading(false));
-        
+        getIssuanceData();
     }
 
     return (
@@ -373,7 +378,16 @@ const Staking = () => {
                     />                    
                 </div>
                 <div>
-                    <StakingButton onClick={ () => onSaking()}><H4 weigth="bold">STAKE & MINT</H4></StakingButton>
+                    {
+                        useStakingUSDC ? 
+                            (needApprove ? 
+                                (<StakingButton onClick={ () => approve()}><H4 weigth="bold">Approve</H4></StakingButton>)
+                                : (<StakingButton onClick={ () => onSaking()}><H4 weigth="bold">STAKE & MINT</H4></StakingButton>)
+                            ) :
+                        (<StakingButton onClick={ () => onSaking()}><H4 weigth="bold">STAKE & MINT</H4></StakingButton>)
+                    }
+                    
+                    
                     <Fee gasPrice={seletedFee.price} gasLimit={gasLimit}/>
                 </div>
             </ActionContainer>

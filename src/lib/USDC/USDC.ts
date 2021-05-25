@@ -14,12 +14,13 @@ export const USDC = {
         return this;
     },
 
-    allowance: function (currentAddress) {
-        return numbro(this.contract.allowance(currentAddress, "0x263d21A44C89718c1Fddd81D8eCC20411505bCb9")).divide(10**6).value().toString();
+    allowance: async function (currentAddress) {
+        
+        return numbro(await this.contract.allowance(currentAddress, this.address)).divide(10**6).value().toString();
     },
 
-    approve: function () {
-        this.contract.connect(this.signer).approve('0x263d21A44C89718c1Fddd81D8eCC20411505bCb9', numbro(1000000000000).multiply(10**6).value().toString());
+    approve: async function () {
+        return await this.contract.connect(this.signer).approve(this.address, numbro(1000000000000).multiply(10**6).value().toString());
     },
 
     balanceOf: async function (currentAddress) {
