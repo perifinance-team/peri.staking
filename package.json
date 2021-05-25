@@ -43,9 +43,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "deploy": "npm run deploy-dev && npm run deploy-real && npm run invalidate",
-    "deploy-dev": "aws s3 sync ./build s3://test.peri.finance --profile=Peri.Staking",
-    "deploy-real": "aws s3 sync ./build s3://peri.staking --profile=Peri.Staking",
+    "deploy": "npm run deploy-s3 && npm run invalidate",
+    "deploy-s3": "aws s3 sync ./build s3://peri.staking --profile=Peri.Staking",
     "invalidate": "aws cloudfront create-invalidation --profile=Peri.Staking --distribution-id E10BVDVX3OHOTH --paths / /index.html /error.html /service-worker.js /manifest.json /favicon.ico"
   },
   "eslintConfig": {
