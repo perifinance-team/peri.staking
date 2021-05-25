@@ -263,8 +263,7 @@ const Staking = () => {
             setGasLimit(numbro(estimateGasLimit).multiply(1.2).value());
             
         } catch(e) {
-            console.log(e);
-            estimateGasLimit = 210000;
+            estimateGasLimit = 2100000;
         }
         return numbro(estimateGasLimit).multiply(1.2).value();
     }

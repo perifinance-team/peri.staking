@@ -8,7 +8,7 @@ import { updateBalances } from 'config/reducers/wallet/balances'
 import { updateExchangeRates, updateRatio } from 'config/reducers/rates'
 import { clearWallet, updateIsConnected } from 'config/reducers/wallet'
 
-import { getExchangeRates, getRatio, getBalancess } from 'lib'
+import { getExchangeRates, getRatio, getBalancess, getCurrencyFormat } from 'lib'
 
 import { FooterRoundContainer, FooterTitleContainer, RoundContainer, BlueBorderRoundContainer } from 'components/Container'
 import { H3, H4, H6 } from 'components/Text'
@@ -83,8 +83,8 @@ const WalletDetail = () => {
                 </RateBox>
             </RateContainer>
             <QuoteContainer>
-                <Asset currencyName={'PERI'} label={`1PERI = ${PERI} USD`}></Asset>
-                <Asset currencyName={'ETH'} label={`1ETH = ${ETH} USD`}></Asset>
+                <Asset currencyName={'PERI'} label={`1PERI = ${getCurrencyFormat(PERI)} USD`}></Asset>
+                <Asset currencyName={'ETH'} label={`1ETH = ${getCurrencyFormat(ETH)} USD`}></Asset>
             </QuoteContainer>
         </FooterRoundContainer>
     );
