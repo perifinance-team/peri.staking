@@ -6,7 +6,7 @@
   "dependencies": {
     "@ethereumjs/config-typescript": "^2.0.0",
     "@metamask/detect-provider": "^1.2.0",
-    "@perifinance/peri-finance-js": "^0.0.4",
+    "@perifinance/peri-finance-js": "0.0.7",
     "@reduxjs/toolkit": "^1.5.0",
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^11.2.5",

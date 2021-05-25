@@ -52,8 +52,8 @@ const Burn = () => {
             try {
                 const data = await getBurnData(currentWallet);
                 setBurnData(data);
-                const MaxAmount = getBurnMaxAmount({...data});
-                setMaxBurningAmount(MaxAmount);
+                // const MaxAmount = getBurnMaxAmount({...data});
+                // setMaxBurningAmount(MaxAmount);
             } catch(e) {
                 console.log(e)
             }
@@ -212,6 +212,7 @@ const Burn = () => {
                     {useBurningUSDC && <Input key="usdc"
                         currencyName="USDC"
                         value={burningAmount.USDC}
+                        disabled={!useBurningUSDC}
                         onChange={event => setBurningUSDCAmountChange(event.target.value)}
                         maxAction={() => setAmountUSDCMax()}
                     />}

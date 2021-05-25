@@ -67,6 +67,7 @@ export const getStakingData = async (currentWallet) => {
         USDC: await USDC.allowance(currentWallet)
     };
     
+    
     return {
         balances,
         issuanceRatio,
