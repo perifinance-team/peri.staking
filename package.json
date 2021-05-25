@@ -42,7 +42,11 @@
     "start": "set HTTPS=true && react-scripts --max-old-space-size=4096 start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "deploy": "npm run deploy-dev && npm run deploy-real && npm run invalidate",
+    "deploy-dev": "aws s3 sync ./build s3://test.peri.finance --profile=Peri.Staking",
+    "deploy-real": "aws s3 sync ./build s3://peri.staking --profile=Peri.Staking",
+    "invalidate": "aws cloudfront create-invalidation --profile=Peri.Staking --distribution-id E10BVDVX3OHOTH --paths / /index.html /error.html /service-worker.js /manifest.json /favicon.ico"
   },
   "eslintConfig": {
     "extends": [
