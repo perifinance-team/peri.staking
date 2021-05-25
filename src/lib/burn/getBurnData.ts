@@ -27,7 +27,7 @@ export const getBurnData = async (currentWallet) => {
     const issuanceRatio = utils.formatEther(await Issuer.issuanceRatio());
     const exchangeRates = {
         PERI: utils.formatEther(await ExchangeRates.rateForCurrency(currenciesToBytes['PERI'])),
-        USDC: utils.formatEther(await ExchangeRates.rateForCurrency(currenciesToBytes['USDC'])) && "0.90",
+        USDC: utils.formatEther(await ExchangeRates.rateForCurrency(currenciesToBytes['USDC'])) && "1.00",
     }
     const PERIBalance = utils.formatEther(await PeriFinance.balanceOf(currentWallet));
     const USDCDebtpUSD = numbro(await PeriFinance.usdcStakedAmountOf(currentWallet)).divide(10**6).value().toString();

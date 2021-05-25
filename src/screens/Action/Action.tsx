@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-import { H3, H5 } from 'components/Text';
+import { H2, H5 } from 'components/Text';
 import { LightBlueButton } from 'components/Button';
 import { useHistory } from 'react-router-dom';
 
@@ -8,18 +8,21 @@ const Action = ({children, title, subTitles}) => {
     const history = useHistory();
     return (
         <ActionContainer>
-            <Cancel onClick={() => history.push('/')}>
-                <Arrow src={`images/dark/arrow/arrow-left.svg`} alt="arrow-left"/>
-                CANCEL
-            </Cancel>
-            
+            <LeftContainer>
+                <Cancel onClick={() => history.push('/')}>
+                    <Arrow src={`images/dark/arrow/arrow-left.svg`} alt="arrow-left"/>
+                    CANCEL
+                </Cancel>
+                <TitleContainer>
+                    <Title color={'primary'} weigth={'black'}>{title}</Title>
+                    <SubTitleContainer>
+                        {subTitles.map((text, index) => (
+                            <H5 key={index}>{text}</H5>
+                        ))}
+                    </SubTitleContainer>
+                </TitleContainer>
+            </LeftContainer>
             <ActionBodyContainer>
-                <Title color={'primary'} weigth={'black'}>{title}</Title>
-                <SubTitleContainer>
-                    {subTitles.map((text, index) => (
-                        <H5 key={index}>{text}</H5>
-                    ))}
-                </SubTitleContainer>
                 <ContentContainer key={1}>
                     {children}
                 </ContentContainer>
@@ -30,24 +33,37 @@ const Action = ({children, title, subTitles}) => {
 
 const ActionContainer = styled.div`
     display: flex;
-    flex: 1 9;
     height: 100%;
-    padding: 10px 200px;
-    display: flex;
+    padding: 10px 100px;
     flex-direction: row;
 `;
 
-const Title = styled(H3)`
+const LeftContainer = styled.div`
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+`;
+
+const TitleContainer = styled.div`
+    justify-content: center;
+    padding: 100px 20px;
+`
+
+const Title = styled(H2)`
     margin: 0;
+    text-align: left;
 `
 const SubTitleContainer = styled.div`
     margin-top: 10px;
+    H5 {
+        text-align: left;
+    }
 `
 
 const ActionBodyContainer = styled.div`
     display: flex;
     flex-direction: column;
-    flex: 1;
+    flex: 2;
     
     justify-content: center;
 `

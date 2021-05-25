@@ -64,10 +64,20 @@ const BurnActionButtons = ({useBurningUSDC, burnData, burningAmount, gasPrice}) 
             setIssuanceDelay(
                 issuanceDelayInSeconds > 0 ? issuanceDelayInSeconds : canBurnSynths ? 0 : 1
             );
-            return issuanceDelayInSeconds > 0 ? issuanceDelayInSeconds : canBurnSynths ? 0 : 1
+            const issuanceDelay = issuanceDelayInSeconds > 0 ? issuanceDelayInSeconds : canBurnSynths ? 0 : 1
+            if(issuanceDelay > 0) {
+                NotificationManager.warning(
+                    `There is a waiting period after minting before you can burn. Please wait
+                    ${secondsToTime(issuanceDelay)} before attempting to burn pUSD.`, 'NOTE', 0
+                )
+            }
+            
+            return issuanceDelay
         } else {
             return 1
         }
+
+        
         
         // eslint-disable-next-line
     },[]);
@@ -124,12 +134,7 @@ const BurnActionButtons = ({useBurningUSDC, burnData, burningAmount, gasPrice}) 
         const init = async () => {
             const issuanceDelay = await getIssuanceDelayCheck();
             
-            if(issuanceDelay > 0) {
-                NotificationManager.warning(
-                    `There is a waiting period after minting before you can burn. Please wait
-                    ${secondsToTime(issuanceDelay)} before attempting to burn pUSD.`, 'NOTE', 0
-                )
-            }
+            
         }
 
         init();

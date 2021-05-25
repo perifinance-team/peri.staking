@@ -2,31 +2,35 @@ import styled from 'styled-components';
 import { BlueBorderRoundContainer } from 'components/Container'
 import Asset from 'components/Asset'
 import { BlueGreenButton } from 'components/Button';
+import { H6 } from 'components/Text'
+import { getCurrencyFormat } from 'lib'
 
 const Input = (
     {
         disabled = false, currencyName,
-        onChange = undefined, onBlur = undefined, value, maxAction = undefined
-    }
-    ) => {
-    
+        onChange = undefined, onBlur = undefined, value, maxAction = undefined,
+        fixed = false,
+        fixedAction = undefined,
+        maxAmount = undefined
+    }) => {
     
     return (
-        <Container>
-            <DropdownContainer>
-                <DropdownButton disabled={disabled}>
+        <>
+            <Container>
+                <AssetContainer>
                     <Asset currencyName={currencyName} label={currencyName}></Asset>
-                </DropdownButton>
-                {/* {false && (<Currencies>
-                    {currencies.map(currency => <Asset currencyName={currency} label={currency} key={currency}></Asset>)}
-                </Currencies>)} */}
+                </AssetContainer>
+
                 <Border></Border>
-            </DropdownContainer>
-            <InputContainer>
-                <AmountInput disabled={disabled} onChange={onChange} defaultValue="" value={value} onBlur={onBlur}></AmountInput>
-                { disabled || <MaxButton onClick={maxAction}>MAX</MaxButton>}
-            </InputContainer>
-        </Container>
+                
+                <InputContainer>
+                    <AmountInput disabled={disabled} onChange={onChange} defaultValue="" value={value} onBlur={onBlur}></AmountInput>
+                    { fixedAction && <MaxButton active={fixed} onClick={fixedAction}>Fixed{fixed}</MaxButton>}
+                    { disabled || <MaxButton onClick={maxAction}>MAX</MaxButton>}
+                </InputContainer>
+            </Container>
+            {maxAmount && <MaxAmount>MAX: {getCurrencyFormat(maxAmount)} {currencyName}</MaxAmount>}
+        </>
     )
 }
 // const Currencies = styled.div`
@@ -43,29 +47,19 @@ const Container = styled(BlueBorderRoundContainer)`
     flex-direction: row;
     flex: 1 2;
     justify-content: space-between;
-    margin: 10px 0px;
+    margin: 10px 0px 0px 0px;
 `
 
-const DropdownContainer = styled.div`
+const AssetContainer = styled.div`
     flex: 1;
+    padding: 10px;
     display: flex;
     align-items: center;
 `
 
-const DropdownButton = styled.button`
-    width: 110px;
-    height: 50px;
-    cursor: pointer;
-    border: none;
-    background: transparent;
-    padding: 0px 20px;
-    :focus {
-        outline: none;
-    }
-`
-
-const Border = styled.div`    
+const Border = styled.div`
     height: 25px;
+    margin: 10px;
     border-right: 2px solid ${props => props.theme.colors.border};
 `
 
@@ -94,13 +88,18 @@ const AmountInput = styled.input`
     
 `
 
-const MaxButton = styled(BlueGreenButton)`
+const MaxButton = styled(BlueGreenButton)<{active?: boolean}>`
     font-size: 14px;
     width: 70px;
     height: 30px;
-    margin: auto;
-`
+    margin: auto 5px;
+    color: ${props => props.active ? props.theme.colors.font.red : ''};
+`;
 
+const MaxAmount = styled(H6)`
+    text-align: right;
+    padding: 0px 10px;
+`;
 
 
 

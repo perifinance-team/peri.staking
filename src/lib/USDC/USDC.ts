@@ -15,13 +15,11 @@ export const USDC = {
     },
 
     allowance: function (currentAddress) {
-        // this.contract.allowance(currentAddress, this.address)
-        return numbro(this.contract.allowance(currentAddress, "0x263d21A44C89718c1Fddd81D8eCC20411505bCb9")).multiply(10**6).value();
+        return numbro(this.contract.allowance(currentAddress, "0x263d21A44C89718c1Fddd81D8eCC20411505bCb9")).divide(10**6).value().toString();
     },
 
     approve: function () {
-        this.contract.connect(this.signer).approve('0x263d21A44C89718c1Fddd81D8eCC20411505bCb9', '11579208923731619542357098500868790785326998466');
-        // this.contract.approve(this.address, '11579208923731619542357098500868790785326998466')
+        this.contract.connect(this.signer).approve('0x263d21A44C89718c1Fddd81D8eCC20411505bCb9', numbro(1000000000000).multiply(10**6).value().toString());
     },
 
     balanceOf: async function (currentAddress) {

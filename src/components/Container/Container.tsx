@@ -6,6 +6,7 @@ export const BodyContainer = styled.div`
 	flex-direction: column;
 	padding: 20px 30px;
 	height: 100vh;
+	overflow: scroll;
 	background-color: ${props => props.theme.colors.background.body};
 `;
 
