@@ -1,7 +1,7 @@
 import numbro from 'numbro'
 import { getCurrencyFormat } from 'lib'
 
-export const getEstimateCRatio = ({ PERITotalBalance, debtBalanceOf, exchangeRates, mintingAmount, stakedAmount, stakingAmount }) => {
+export const getEstimateCRatio = ({ PERITotalBalance, debtBalanceOf, exchangeRates, mintingAmount}) => {
     PERITotalBalance = numbro(PERITotalBalance);
     debtBalanceOf = numbro(debtBalanceOf);
     exchangeRates['PERI'] = numbro(exchangeRates['PERI']);
@@ -10,10 +10,10 @@ export const getEstimateCRatio = ({ PERITotalBalance, debtBalanceOf, exchangeRat
 	if (!PERITotalBalance.value() || !debtBalanceOf.value() || !exchangeRates['PERI'].value()) {
 		return "0";
 	}
-	
-	const PERItopUSDRates = PERITotalBalance.multiply(exchangeRates['PERI']); //pUSD
 
-	const USDCtopUSDRates = numbro(stakedAmount).clone().add(numbro(stakingAmount).value()).multiply(exchangeRates['USDC']); //pUSD
-	const value = PERItopUSDRates.add(USDCtopUSDRates).divide((debtBalanceOf.add(mintingAmount))).multiply(100);
-	return isNaN(Number(value)) ? '0.00' : getCurrencyFormat(value);
+	const USDCtopPERIRates = numbro(PERITotalBalance).multiply(exchangeRates['PERI'].value());
+	
+	const value = (debtBalanceOf.add(mintingAmount)).divide((USDCtopPERIRates));
+
+	return isNaN(Number(value)) ? '0.00' : Math.round(Number(numbro(100).divide(value).format({mantissa: 2}))).toString();
 }

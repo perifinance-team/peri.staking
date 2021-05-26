@@ -2,23 +2,23 @@ import { getBurnTransferAmount } from 'lib'
 
 import numbro from 'numbro';
 
-export const getBurnMaxAmount = ({ pUSDBalance, PERIDebtpUSD, USDCDebtpUSD, issuanceRatio, exchangeRates }) => {
-    const pUSD = numbro(pUSDBalance);
+export const getBurnMaxAmount = ({ balances, issuanceRatio, exchangeRates }) => {
+    const pUSD = numbro(balances['pUSD']).value().toString();
 
     const PERI = getBurnTransferAmount({
-        amount: numbro(PERIDebtpUSD), 
+        amount: numbro(balances['debt']), 
         issuanceRatio, 
         exchangeRates: exchangeRates['PERI'], 
         target: 'PERI'
     });
     
     const USDC = getBurnTransferAmount({
-        amount: numbro(USDCDebtpUSD), 
+        amount: numbro(balances['USDC']), 
         issuanceRatio, 
         exchangeRates: exchangeRates['USDC'], 
         target: 'USDC'
     });
-    const total = PERI.add(USDC.value());
+    const total = numbro(PERI).add(numbro(USDC).value());
     return {
         pUSD,
         PERI, 

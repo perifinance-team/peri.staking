@@ -37,8 +37,10 @@ const Burn = () => {
     const { seletedFee } = useSelector((state: RootState) => state.seletedFee);
     const { currentWallet } = useSelector((state: RootState) => state.wallet);
     const [burnData, setBurnData] = useState<BurnData>();
-    const [burningAmount, setBurningAmount] = useState<AmountsString>({pUSD: '', USDC: '', PERI: ''})
-    const [maxBurningAmount, setMaxBurningAmount] = useState<AmountsNumbro>();
+    const [burningAmount, setBurningAmount] = useState<AmountsString>({pUSD: '0', USDC: '0', PERI: '0'})
+    const [maxBurningAmount, setMaxBurningAmount] = useState<AmountsString>(
+        {pUSD: '0', USDC: '0', PERI: '0'}
+    );
 
     const [transferAmount, setTransferAmount] = useState<string>("0");
     // eslint-disable-next-line
@@ -52,8 +54,8 @@ const Burn = () => {
             try {
                 const data = await getBurnData(currentWallet);
                 setBurnData(data);
-                // const MaxAmount = getBurnMaxAmount({...data});
-                // setMaxBurningAmount(MaxAmount);
+                const MaxAmount = getBurnMaxAmount({...data});
+                setMaxBurningAmount(MaxAmount);
             } catch(e) {
                 console.log(e)
             }
@@ -64,12 +66,17 @@ const Burn = () => {
     }, [currentWallet]);
 
     const setBurningAmountChange = (value) => {
+        value = value.replace(/\,/g, '');
+        if((/\./g).test(value)) {
+            value = value.match(/\d+\.\d{0,2}/g)[0];
+        }
+
         let amount:numbro.Numbro = !isNaN(Number(value)) && value ? numbro(value) : numbro(0);
         let USDCAmount:numbro.Numbro = !isNaN(Number(burningAmount['USDC'])) && burningAmount['USDC'] ? numbro(burningAmount['USDC']) : numbro(0);
         let subtractUSDCAmount:numbro.Numbro = numbro(0);
         try {
-            if(maxBurningAmount['pUSD'].clone().subtract(amount.value()).value() < 0 ) {
-                amount = maxBurningAmount['pUSD'].clone();
+            if(numbro(maxBurningAmount['pUSD']).clone().subtract(amount.value()).value() < 0 ) {
+                amount = numbro(maxBurningAmount['pUSD']).clone();
             }
             
             const USDCtransferTopUSD = getBurnTransferAmount({
@@ -80,7 +87,7 @@ const Burn = () => {
             });
 
             if(useBurningUSDC) {
-                subtractUSDCAmount = amount.clone().add(USDCtransferTopUSD.value());
+                subtractUSDCAmount = amount.clone().add(numbro(USDCtransferTopUSD).value());
             }
             
             const pUSDtransferToPERI = getBurnTransferAmount({
@@ -91,9 +98,9 @@ const Burn = () => {
             });
             
             setBurningAmount({
-                pUSD: value,
+                pUSD: amount.value().toString(),
                 USDC: burningAmount['USDC'],
-                PERI: getCurrencyFormat(pUSDtransferToPERI.value().toString())
+                PERI: getCurrencyFormat(numbro(pUSDtransferToPERI).value().toString())
             });
             
         }
@@ -112,8 +119,8 @@ const Burn = () => {
 
         let subtractUSDCAmount:numbro.Numbro = numbro(0);
         try {
-            if(maxBurningAmount['USDC'].clone().subtract(amount.value()).value() < 0 ) {
-                amount = maxBurningAmount['USDC'].clone();
+            if(numbro(maxBurningAmount['USDC']).clone().subtract(amount.value()).value() < 0 ) {
+                amount = numbro(maxBurningAmount['USDC']).clone();
             }
 
             const USDCtransferTopUSD = getBurnTransferAmount({
@@ -124,7 +131,7 @@ const Burn = () => {
             });
             
             if(useBurningUSDC) {
-                subtractUSDCAmount = numbro(pUSDAmount).clone().add(USDCtransferTopUSD.value());
+                subtractUSDCAmount = numbro(pUSDAmount).clone().add(numbro(USDCtransferTopUSD).value());
             }
 
             const pUSDtransferToPERI = getBurnTransferAmount({
@@ -137,7 +144,7 @@ const Burn = () => {
             setBurningAmount({
                 pUSD: burningAmount['pUSD'],
                 USDC: value,
-                PERI: getCurrencyFormat(pUSDtransferToPERI.value().toString())
+                PERI: getCurrencyFormat(numbro(pUSDtransferToPERI).value().toString())
             });
 
         }
@@ -208,14 +215,15 @@ const Burn = () => {
                         onChange={event => setBurningAmountChange(event.target.value)}
                         onBlur={() => setBurningAmount({pUSD: getCurrencyFormat(burningAmount['pUSD'])})}
                         maxAction={() => setAmountpUSDMax()}
+                        maxAmount={maxBurningAmount['pUSD']}
                     />
-                    {useBurningUSDC && <Input key="usdc"
+                    <Input key="usdc"
                         currencyName="USDC"
                         value={burningAmount.USDC}
                         disabled={!useBurningUSDC}
                         onChange={event => setBurningUSDCAmountChange(event.target.value)}
                         maxAction={() => setAmountUSDCMax()}
-                    />}
+                    />
                     <Input key="secondary"
                         currencyName="PERI"
                         value={burningAmount.PERI}

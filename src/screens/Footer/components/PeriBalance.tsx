@@ -14,9 +14,12 @@ import numbro from 'numbro'
 const TotalBalance = () => {
     // const { t } = useTranslation();
 	const PERI = useSelector((state: RootState) => state.balances.PERI);
-	const transferablePeri = useSelector((state: RootState) => Number(state.balances.transferablePeri) );
-	const staked:number = numbro(PERI.balance).subtract(transferablePeri).value();
-	const totalStaked = staked === 0 ? 50 : numbro(staked).divide(transferablePeri === 0 ? 1 : transferablePeri).multiply(100).value();
+	const { transferablePERI, stakedUSDCamount} = useSelector((state: RootState) => (state.balances) );
+	const stakedPERI:number = numbro(PERI.balance).subtract(numbro(transferablePERI).value()).value();
+	const totalStakedPERI = numbro(stakedPERI).divide(numbro(transferablePERI).value() === 0 ? 
+		1 : numbro(transferablePERI).value()).multiply(100).value();
+	
+	const transferableUSDC = 0
 	
     return (
         <FooterRoundContainer>
@@ -32,12 +35,20 @@ const TotalBalance = () => {
 					</Label>
 				</BarChart> */}
 				<BarChart>
-					<Graph type="range" min="0" max="100" value={totalStaked} readOnly></Graph>
+					<Graph type="range" min="0" max="100" value={totalStakedPERI} readOnly></Graph>
 					<Label>
-						<H6>Staked : {formatCurrency(staked)}</H6>
-						<H6>Not staked : {formatCurrency(transferablePeri)}</H6>
+						<H6>Staked PERI : {formatCurrency(stakedPERI)}</H6>
+						<H6>Transferable : {formatCurrency(transferablePERI)}</H6>
 					</Label>
 				</BarChart>
+				<BarChart>
+					<Graph type="range" min="0" max="100" value={totalStakedPERI} readOnly></Graph>
+					<Label>
+						<H6>Staked USDC : {formatCurrency(stakedUSDCamount)}</H6>
+						<H6>Transferable : {formatCurrency(transferablePERI)}</H6>
+					</Label>
+				</BarChart>
+
 				{/* <BarChart>
 					<Graph type="range" min="0" max="100" value="50" readOnly></Graph>
 					<Label>
