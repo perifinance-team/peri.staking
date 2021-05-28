@@ -34,19 +34,21 @@ export const ActionButtonContainer = styled(BlueBorderRoundContainer)`
 	margin: 0;
 	padding: 20px 10px;
 	cursor: pointer;
-	justify-content: start;
 	&:hover {
 		background-color: ${props => props.theme.colors.hover.background};
-	}
-	H5 {
-		margin: 20px;
 	}
 `;
 
 export const ActionImage = styled.img`
 	height: 80px;
 	width: 80px;
+	margin-bottom: 20px;
 `;
+
+export const ActionButtonTitle = styled.div`
+	display: flex;
+	flex-direction: column	;
+`
 
 
 

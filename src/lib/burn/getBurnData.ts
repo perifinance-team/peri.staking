@@ -25,13 +25,17 @@ const currenciesToBytes = {
 }
 
 export const getBurnData = async (currentWallet) => {
-    const { js: { PeriFinance, pUSD, Issuer, ExchangeRates} } = pynthetix as any;
-    
+    const { js: { PeriFinance, Issuer, ExchangeRates, PynthUtil } } = pynthetix as any;
+    const [keys, value] = await PynthUtil.pynthsBalances(currentWallet);
+    const pUSDIndex = keys.findIndex( (key) => utils.parseBytes32String(key) === 'pUSD');
+
     const balances = {
-        debt: utils.formatEther(await PeriFinance.debtBalanceOf(currentWallet, currenciesToBytes.pUSD)),
-        PERI: utils.formatEther(await PeriFinance.balanceOf(currentWallet)),
-        pUSD: utils.formatEther(await pUSD.balanceOf(currentWallet)),
+        debt: utils.formatEther(await PeriFinance.debtBalanceOf(currentWallet, currenciesToBytes.pUSD)).toString(),
+        PERI: utils.formatEther(await PeriFinance.balanceOf(currentWallet)).toString(),
+        PERITotal: utils.formatEther(await PeriFinance.collateral(currentWallet)),
+        pUSD: utils.formatEther(value[pUSDIndex]),
     }
+
 
     const staked = {
         USDC: numbro(await PeriFinance.usdcStakedAmountOf(currentWallet)).divide(10**6).value().toString(),
@@ -40,7 +44,7 @@ export const getBurnData = async (currentWallet) => {
     const issuanceRatio = utils.formatEther(await Issuer.issuanceRatio());
     const exchangeRates = {
         PERI: utils.formatEther(await ExchangeRates.rateForCurrency(currenciesToBytes['PERI'])),
-        USDC: utils.formatEther(await ExchangeRates.rateForCurrency(currenciesToBytes['USDC'])) && "1.00",
+        USDC: utils.formatEther(await ExchangeRates.rateForCurrency(currenciesToBytes['USDC'])),
     }
 
     return {

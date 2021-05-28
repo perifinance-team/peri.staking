@@ -136,9 +136,7 @@ const Staking = () => {
             issuanceRatio: stakingData.issuanceRatio,
             exchangeRates: stakingData.exchangeRates,
             mintingAmount: value,
-            maxMintingAmount,
-            stakingAmount,
-            maxStakingAmount: {USDC: maxpUSDStakingAmount, PERI: maxStakingAmount['PERI']},
+            stakingAmount
         });
         
         
@@ -170,10 +168,9 @@ const Staking = () => {
                 issuanceRatio: stakingData.issuanceRatio,
                 exchangeRates: stakingData.exchangeRates,
                 mintingAmount: mintingAmount['pUSD'],
-                maxMintingAmount,
                 stakingAmount: {USDC: value, PERI: stakingAmount['PERI']},
-                maxStakingAmount,
             }))
+            
             setEstimateCRatio(getStakingEstimateCRatio(
                 { 
                     PERITotalBalance: stakingData.balances['PERITotal'], 
@@ -196,9 +193,7 @@ const Staking = () => {
                 issuanceRatio: stakingData.issuanceRatio,
                 exchangeRates: stakingData.exchangeRates,
                 mintingAmount: mintingAmount['pUSD'],
-                maxMintingAmount,
                 stakingAmount: {USDC: value, PERI: stakingAmount['PERI']},
-                maxStakingAmount,
             })
         );
 
@@ -241,12 +236,10 @@ const Staking = () => {
         } else {
             return false;
         }
-
-        // 환율적용 계산하여 mintamount 계산
     }
 
     const onSaking = async () => {
-        // dispatch(setIsLoading(true));
+        dispatch(setIsLoading(true));
         
         const transactionSettings = {
             gasPrice: gasPrice(seletedFee.price),

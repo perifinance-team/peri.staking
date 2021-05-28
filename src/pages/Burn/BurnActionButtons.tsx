@@ -30,7 +30,7 @@ export const secondsToTime = seconds => {
 	return `up to 1 minute`;
 };
 
-const BurnActionButtons = ({useBurningUSDC, burnData, burningAmount, gasPrice}) => {
+const BurnActionButtons = ({burnData, burningAmount, gasPrice}) => {
     const dispatch = useDispatch();
     const history = useHistory();
 
@@ -47,10 +47,11 @@ const BurnActionButtons = ({useBurningUSDC, burnData, burningAmount, gasPrice}) 
                 utils.parseEther(numbro(burningAmount['pUSD']).value().toString())
             );
         } catch (e) {
-            estimateGasLimit = 32000;
+            estimateGasLimit = 350000;
             console.log(e);
         }
         setGasLimit(numbro(estimateGasLimit).multiply(1.2).value());
+        return numbro(estimateGasLimit).multiply(1.2).value();
     }
 
     const getIssuanceDelayCheck = useCallback(async() => {
@@ -81,34 +82,37 @@ const BurnActionButtons = ({useBurningUSDC, burnData, burningAmount, gasPrice}) 
         
         // eslint-disable-next-line
     },[]);
+    const checkBurnAmount = () => {
+        const PERItopUSD = numbro(burningAmount['PERI']).multiply(burnData.exchangeRates['PERI']);
+        const USDCtopUSD = numbro(burningAmount['USDC']).multiply(burnData.exchangeRates['USDC']);
+        const burnAmountTopUSD = PERItopUSD.add(USDCtopUSD.value()).multiply(burnData.issuanceRatio);
+        
+        return burnAmountTopUSD.subtract(numbro(burningAmount['pUSD']).value()).format({mantissa: 6});
+    }
     
     const onBurn = async ({target = false}) => {
         let transaction;
+        
+        if(numbro(checkBurnAmount()).value() !== 0) {
+            
+            NotificationManager.error('check input amounts');
+            return false;
+        }
         dispatch(setIsLoading(true));
-        await getGasEstimate();
+        const transactionInfo = {
+            gasPrice,
+            gasLimit: await getGasEstimate()
+        }
+        
         try {
             if(await Issuer.canBurnPynths(currentWallet)) {
                 
-                if(target) {
-                    const burnToTargetGasLimit = await PeriFinance.contract.estimate.burnPynthsToTarget();
-                    transaction = await PeriFinance.burnPynthsToTarget({
-                        gasLimit: numbro(burnToTargetGasLimit).multiply(1.2).value(),
-                        gasPrice,
-                    });
-                } else {
-                    if(useBurningUSDC) {
-                        transaction = await PeriFinance.burnPynths(utils.parseEther(numbro(burningAmount['pUSD']).value().toString()), {
-                            gasPrice,
-                            gasLimit,
-                        });
-                    } else {
-                        transaction = await PeriFinance.burnPynths(utils.parseEther(numbro(burningAmount['pUSD']).value().toString()), {
-                            gasPrice,
-                            gasLimit,
-                        });
-                    }
-                    
-                }
+                transaction = await PeriFinance.burnPynthsAndUnstakeUSDC(
+                    utils.parseEther(numbro(burningAmount['pUSD']).value().toString()),
+                    numbro(burningAmount['USDC']).multiply(10**6).value().toString(),
+                    transactionInfo
+                );
+                
                 history.push('/');
 
                 dispatch(updateTransaction(
@@ -118,8 +122,6 @@ const BurnActionButtons = ({useBurningUSDC, burnData, burningAmount, gasPrice}) 
                         type: 'Burn'
                     }
                 ));
-                
-                
             } else {
                 NotificationManager.error('Waiting period to burn is still ongoing');
             }

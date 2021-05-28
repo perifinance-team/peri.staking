@@ -135,9 +135,7 @@ const Staking = () => {
             issuanceRatio: stakingData.issuanceRatio,
             exchangeRates: stakingData.exchangeRates,
             mintingAmount: value,
-            maxMintingAmount,
             stakingAmount,
-            maxStakingAmount: {USDC: maxpUSDStakingAmount, PERI: maxStakingAmount['PERI']},
         });
         
         
@@ -169,9 +167,7 @@ const Staking = () => {
                 issuanceRatio: stakingData.issuanceRatio,
                 exchangeRates: stakingData.exchangeRates,
                 mintingAmount: mintingAmount['pUSD'],
-                maxMintingAmount,
                 stakingAmount: {USDC: value, PERI: stakingAmount['PERI']},
-                maxStakingAmount,
             }))
             setEstimateCRatio(getStakingEstimateCRatio(
                 { 
@@ -195,9 +191,7 @@ const Staking = () => {
                 issuanceRatio: stakingData.issuanceRatio,
                 exchangeRates: stakingData.exchangeRates,
                 mintingAmount: mintingAmount['pUSD'],
-                maxMintingAmount,
                 stakingAmount: {USDC: value, PERI: stakingAmount['PERI']},
-                maxStakingAmount,
             })
         );
 

@@ -5,7 +5,7 @@ export const getCurrencyFormat = (value) => {
     try {
         formatValue = numbro(value).format({
             thousandSeparated: true,
-            mantissa: 2
+            mantissa: 6
         });
     }catch (e) {
         formatValue = '0';

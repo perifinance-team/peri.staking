@@ -1,23 +1,23 @@
 import ERC20 from './contract/ERC20.json';
-import { ethers } from 'ethers';
+import { ethers, utils } from 'ethers';
 import numbro from 'numbro';
 import { pynthetix } from 'lib'
+
 export const USDC = {
     isConnect: false,
     address: null,
     contract: null,
     signer: null,
-    connect: function (signer, networkId) {
-        const { js: { Issuer } }  = pynthetix as any;
-        this.issuerAddress = Issuer.contract.address;
+    connect: async function (signer, networkId) {
+        const { js: { PeriFinance } }  = pynthetix as any;
+        this.issuerAddress = await PeriFinance.getRequiredAddress(utils.formatBytes32String('Issuer'));
         this.address = networkId === 1 ? process.env.REACT_APP_MAIN_USDC_ADDRESS : process.env.REACT_APP_KOVAN_USDC_ADDRESS;
         this.signer = signer;
         this.contract = new ethers.Contract(this.address, ERC20.abi, signer);
         return this;
     },
-
+    // formatBytes32String
     allowance: async function (currentAddress) {
-        
         return numbro(await this.contract.allowance(currentAddress, this.issuerAddress)).divide(10**6).value().toString();
     },
 

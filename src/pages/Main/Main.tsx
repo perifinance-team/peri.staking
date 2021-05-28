@@ -142,41 +142,44 @@ const Main = () => {
                 <Router>
                     <MainHeader /> 
                     <S.BodyContainer>
-                        <Switch>
-                            <Route exact path="/">
-                                <Home></Home>
-                            </Route>
-                            <Route path="/walletConnection">
-                                <WalletConnection></WalletConnection>
-                            </Route>
-                            <Route path="/staking">
-                                <Staking></Staking>
-                            </Route>
-                            <Route path="/burn">
-                                <Burn></Burn>
-                            </Route>
-                            <Route path="/claim">
-                                <Claim></Claim>
-                            </Route>
-                            <Route path="/trade">
-                                <Trade></Trade>
-                            </Route>
-                            <Route path="/transactions">
-                                <Transactions></Transactions>
-                            </Route>
-                            <Route path="/track">
-                                <Track></Track>
-                            </Route>
-                            <Route path="/escrow">
-                                <Escrow></Escrow>
-                            </Route>
-                            <Route path="/depot">
-                                <Depot></Depot>
-                            </Route>
-                            <Route path="/lp">
-                                <LP></LP>
-                            </Route>
-                        </Switch>
+                        {isConnectedWallet && 
+                            <Switch>
+                                <Route exact path="/">
+                                    <Home></Home>
+                                </Route>
+                                <Route path="/walletConnection">
+                                    <WalletConnection></WalletConnection>
+                                </Route>
+                                <Route path="/staking">
+                                    <Staking></Staking>
+                                </Route>
+                                <Route path="/burn">
+                                    <Burn></Burn>
+                                </Route>
+                                <Route path="/claim">
+                                    <Claim></Claim>
+                                </Route>
+                                <Route path="/trade">
+                                    <Trade></Trade>
+                                </Route>
+                                <Route path="/transactions">
+                                    <Transactions></Transactions>
+                                </Route>
+                                <Route path="/track">
+                                    <Track></Track>
+                                </Route>
+                                <Route path="/escrow">
+                                    <Escrow></Escrow>
+                                </Route>
+                                <Route path="/depot">
+                                    <Depot></Depot>
+                                </Route>
+                                <Route path="/lp">
+                                    <LP></LP>
+                                </Route>
+                            </Switch>
+                        }
+                        
                     </S.BodyContainer>
                 </Router>
                 <Footer></Footer>

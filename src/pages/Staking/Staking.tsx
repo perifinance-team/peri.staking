@@ -33,20 +33,26 @@ const Staking = () => {
                 <Route exact path="/staking">
                     <ActionContainer>
                         <S.ActionButtonRow>
-                            <Link to="/staking/PERI">
-                                <S.ActionButtonContainer onClick={() => history.push(`/staking/PERI`)}>
-                                    <S.ActionImage src={`/images/dark/actions/staking.svg`}></S.ActionImage>
+                            <S.ActionButtonContainer onClick={() => history.push(`/staking/PERI`)}>
+                                <S.ActionImage src={`/images/dark/actions/staking.svg`}></S.ActionImage>
+                                <S.ActionButtonTitle>
                                     <H5 weigth={'bold'}>Staking PERI</H5>
-                                </S.ActionButtonContainer>
-                            </Link>
+                                </S.ActionButtonTitle>
+                            </S.ActionButtonContainer>
+                            
                             <S.ActionButtonContainer onClick={() => history.push(`/staking/USDC`)}>
                                 <S.ActionImage src={`/images/dark/actions/staking.svg`}></S.ActionImage>
+                                <S.ActionButtonTitle>
                                 <H5 weigth={'bold'}>Staking USDC</H5>
+                                </S.ActionButtonTitle>
                             </S.ActionButtonContainer>
 
                             <S.ActionButtonContainer onClick={() => history.push(`/staking/PERIandUSDC`)}>
                                 <S.ActionImage src={`/images/dark/actions/staking.svg`}></S.ActionImage>
-                                <H5 weigth={'bold'}>Staking PERI and USDC</H5>
+                                <S.ActionButtonTitle>
+                                    <H5 weigth={'bold'}>Staking </H5>
+                                    <H5 weigth={'bold'}>PERI and USDC </H5>
+                                </S.ActionButtonTitle>
                             </S.ActionButtonContainer>
                         </S.ActionButtonRow>
                     </ActionContainer>        

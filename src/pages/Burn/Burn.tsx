@@ -5,7 +5,7 @@ import styled from 'styled-components'
 import { RootState } from 'config/reducers'
 import { setIsLoading } from 'config/reducers/app'
 
-import { getCurrencyFormat, getBurnData, BurnData, getBurnTransferAmount, getBurnMaxAmount } from 'lib'
+import { getBurnData, BurnData, getBurnTransferAmount, getBurnMaxUSDCAmount, getBurnMaxAmount, getBurnEstimateCRatio } from 'lib'
 
 import Action from 'screens/Action'
 import numbro from 'numbro'
@@ -37,7 +37,8 @@ const Burn = () => {
     const { seletedFee } = useSelector((state: RootState) => state.seletedFee);
     const { currentWallet } = useSelector((state: RootState) => state.wallet);
     const [burnData, setBurnData] = useState<BurnData>();
-    const [burningAmount, setBurningAmount] = useState<AmountsString>({pUSD: '0', USDC: '0', PERI: '0'})
+    const [burningAmount, setBurningAmount] = useState<AmountsString>({pUSD: '0', USDC: '0', PERI: '0'});
+    const [estimateCRatio, setEstimateCRatio] = useState<string>("0");
     const [maxBurningAmount, setMaxBurningAmount] = useState<AmountsString>(
         {pUSD: '0', USDC: '0', PERI: '0'}
     );
@@ -45,8 +46,6 @@ const Burn = () => {
     const [transferAmount, setTransferAmount] = useState<string>("0");
     // eslint-disable-next-line
     const [gasLimit, setGasLimit] = useState<number>(0);
-    
-    const [useBurningUSDC, setUseBurningUSDC] = useState<boolean>(false);
 
     useEffect(() => {
         const init = async() => {
@@ -54,8 +53,13 @@ const Burn = () => {
             try {
                 const data = await getBurnData(currentWallet);
                 setBurnData(data);
-                const MaxAmount = getBurnMaxAmount({...data});
-                setMaxBurningAmount(MaxAmount);
+                const maxAmount = getBurnMaxAmount({...data});
+                setMaxBurningAmount(maxAmount);
+                setEstimateCRatio(getBurnEstimateCRatio({
+                    balances: data.balances,
+                    exchangeRates: data.exchangeRates, 
+                    burningAmount
+                }));
             } catch(e) {
                 console.log(e)
             }
@@ -67,132 +71,127 @@ const Burn = () => {
 
     const setBurningAmountChange = (value) => {
         value = value.replace(/\,/g, '');
+
         if((/\./g).test(value)) {
-            value = value.match(/\d+\.\d{0,2}/g)[0];
+            value = value.match(/\d+\.\d{0,6}/g)[0];
         }
-
-        let amount:numbro.Numbro = !isNaN(Number(value)) && value ? numbro(value) : numbro(0);
-        let USDCAmount:numbro.Numbro = !isNaN(Number(burningAmount['USDC'])) && burningAmount['USDC'] ? numbro(burningAmount['USDC']) : numbro(0);
-        let subtractUSDCAmount:numbro.Numbro = numbro(0);
-        try {
-            if(numbro(maxBurningAmount['pUSD']).clone().subtract(amount.value()).value() < 0 ) {
-                amount = numbro(maxBurningAmount['pUSD']).clone();
-            }
-            
-            const USDCtransferTopUSD = getBurnTransferAmount({
-                amount: useBurningUSDC ? USDCAmount : '0', 
-                issuanceRatio: burnData.issuanceRatio,
-                exchangeRates: burnData.exchangeRates,
-                target: 'USDC'
-            });
-
-            if(useBurningUSDC) {
-                subtractUSDCAmount = amount.clone().add(numbro(USDCtransferTopUSD).value());
-            }
-            
-            const pUSDtransferToPERI = getBurnTransferAmount({
-                amount: useBurningUSDC ? subtractUSDCAmount : amount, 
-                issuanceRatio: burnData.issuanceRatio, 
-                exchangeRates: burnData.exchangeRates,
-                target: 'pUSD'
-            });
-            
+        
+        if(isNaN(Number(value)) || value === "") {
             setBurningAmount({
-                pUSD: amount.value().toString(),
-                USDC: burningAmount['USDC'],
-                PERI: getCurrencyFormat(numbro(pUSDtransferToPERI).value().toString())
+                pUSD: '',
+                USDC: '0.000000',
+                PERI: '0.000000',
             });
-            
+            return false;
         }
-        catch(e) {
             
+        if(numbro(maxBurningAmount['pUSD']).clone().subtract(numbro(value).value()).value() < 0 ) {
+            value = maxBurningAmount['pUSD'];
         }
+        
+        const USDCtransferTopUSD = getBurnTransferAmount({
+            amount: burningAmount['USDC'],
+            issuanceRatio: burnData.issuanceRatio,
+            exchangeRates: burnData.exchangeRates,
+            target: 'USDC'
+        }); 
+        
+        let subtractUSDCAmount = numbro(value).add(numbro(USDCtransferTopUSD).value());
+        
+        const pUSDtransferToPERI = getBurnTransferAmount({
+            amount: subtractUSDCAmount,
+            issuanceRatio: burnData.issuanceRatio, 
+            exchangeRates: burnData.exchangeRates,
+            target: 'pUSD'
+        });
+
+        const maxBurningUSDCAmount = getBurnMaxUSDCAmount({
+            issuanceRatio: burnData.issuanceRatio,
+            exchangeRates: burnData.exchangeRates,
+            burningAmount: value,
+            stakedUSDC: burnData.staked['USDC'],
+        })
+
+
+        setMaxBurningAmount({
+            pUSD: maxBurningAmount['pUSD'],
+            USDC: maxBurningUSDCAmount
+        })
+
+        setEstimateCRatio(getBurnEstimateCRatio({
+            balances: burnData.balances,
+            exchangeRates: burnData.exchangeRates, 
+            burningAmount: {
+                pUSD: value,
+                USDC: burningAmount['USDC'],    
+            }
+        }));
+
+        setBurningAmount({
+            pUSD: value,
+            USDC: burningAmount['USDC'],
+            PERI: (numbro(pUSDtransferToPERI).format({mantissa: 6}))
+        });
+            
+        
         //todo: escrow add to fiexed
         // getGasEstimate();
     }
 
     const setBurningUSDCAmountChange = (value) => {
-        
-        let amount:numbro.Numbro = !isNaN(Number(value)) && value ? numbro(value) : numbro(0);
-        
-        let pUSDAmount:numbro.Numbro = !isNaN(Number(burningAmount['pUSD'])) && burningAmount['pUSD'] ? numbro(burningAmount['pUSD']) : numbro(0);
+        value = value.replace(/\,/g, '');
 
-        let subtractUSDCAmount:numbro.Numbro = numbro(0);
-        try {
-            if(numbro(maxBurningAmount['USDC']).clone().subtract(amount.value()).value() < 0 ) {
-                amount = numbro(maxBurningAmount['USDC']).clone();
-            }
-
-            const USDCtransferTopUSD = getBurnTransferAmount({
-                amount: useBurningUSDC ? amount : '0', 
-                issuanceRatio: burnData.issuanceRatio,
-                exchangeRates: burnData.exchangeRates,
-                target: 'USDC'
-            });
-            
-            if(useBurningUSDC) {
-                subtractUSDCAmount = numbro(pUSDAmount).clone().add(numbro(USDCtransferTopUSD).value());
-            }
-
-            const pUSDtransferToPERI = getBurnTransferAmount({
-                amount: useBurningUSDC ? subtractUSDCAmount : amount, 
-                issuanceRatio: burnData.issuanceRatio, 
-                exchangeRates: burnData.exchangeRates,
-                target: 'pUSD'
-            });
-
-            setBurningAmount({
-                pUSD: burningAmount['pUSD'],
-                USDC: value,
-                PERI: getCurrencyFormat(numbro(pUSDtransferToPERI).value().toString())
-            });
-
+        if((/\./g).test(value)) {
+            value = value.match(/\d+\.\d{0,6}/g)[0];
         }
-        catch(e) {
-        }   
-    }
-
-
-    // const setTransferAmountChange = (value) => {
-    //     let amount:numbro.Numbro = numbro(value);
-
-    //     let subtractUSDCAmount:numbro.Numbro = numbro(0);
-
-    //     try {
-    //         if(maxBurningAmount['pUSD'].clone().subtract(amount.value()).value() < 0 ) {
-    //             amount = maxBurningAmount['pUSD'].clone();
-    //         }
-    //         // setTransferAmount();
-    //         const BurningAmount = amount.multiply(numbro(burnData.issuanceRatio).value()).multiply(numbro(burnData.exchangeRates['PERI']).value()).value();
-    //         setBurningAmount(amount.value() > 0 ? getCurrencyFormat(BurningAmount) : 0)
-    //     }
-    //     catch(e) {
-    //         // setTransferAmount("0");
-    //         // setBurningAmount("0");
-    //     }
         
-    // }
+        if(isNaN(Number(value)) || value === "") {
+            value = '';
+        }
+        
+        if(numbro(maxBurningAmount['USDC']).clone().subtract(numbro(value).value()).value() < 0 ) {
+            value = numbro(maxBurningAmount['USDC']).clone();    
+        }
+        
+        const USDCtransferTopUSD = getBurnTransferAmount({
+            amount: value, 
+            issuanceRatio: burnData.issuanceRatio,
+            exchangeRates: burnData.exchangeRates,
+            target: 'USDC'
+        });
+        
+        let subtractUSDCAmount = numbro(burningAmount['pUSD']).subtract(numbro(USDCtransferTopUSD).value());
+        
+        const pUSDtransferToPERI = getBurnTransferAmount({
+            amount: subtractUSDCAmount,
+            issuanceRatio: burnData.issuanceRatio, 
+            exchangeRates: burnData.exchangeRates,
+            target: 'pUSD'
+        });
 
-    
-
+        setEstimateCRatio(getBurnEstimateCRatio({
+            balances: burnData.balances,
+            exchangeRates: burnData.exchangeRates, 
+            burningAmount: {
+                pUSD: burningAmount['pUSD'],
+                USDC: value,    
+            }
+        }));
+        
+        setBurningAmount({
+            pUSD: burningAmount['pUSD'],
+            USDC: value,
+            PERI: (numbro(pUSDtransferToPERI).format({mantissa: 6}))
+        });
+}
     
 
     const setAmountpUSDMax = () => {
-        // setBurningAmount(getCurrencyFormat(maxBurningAmount.value()));
-        // setTransferAmount(getCurrencyFormat(maxBurningAmount['PERI'].value()));
-        //USDC 계산
+        setBurningAmountChange(maxBurningAmount['pUSD']);
     }
 
     const setAmountUSDCMax = () => {
-        // setBurningUSDCAmount(getCurrencyFormat(maxBurningUSDCAmount.value()));
-        // let burnAmount;
-        // if(numbro(burningAmount).value() === 0) {
-        //     burnAmount = numbro(maxBurningUSDCAmount).multiply(numbro(burnData.exchangeRates['USDC']).value()).add(numbro(burningAmount).value());
-        // } else {
-        //     burnAmount = numbro(maxBurningUSDCAmount).multiply(numbro(burnData.exchangeRates['USDC']).value()).add()
-        // }
-        
-        // setBurningAmount(getCurrencyFormat(burnAmount.value()));
+        setBurningUSDCAmountChange(maxBurningAmount['USDC']);
     }
 
     return (
@@ -205,42 +204,39 @@ const Burn = () => {
         >
             <ActionContainer>
                 <div>
-                    <UseUSDCButton onClick={() => setUseBurningUSDC(!useBurningUSDC)}>
-                        <H5 color={'red'}>{useBurningUSDC ? 'disable USDC' : 'use USDC'}</H5>
-                    </UseUSDCButton>
-                
+                    <BurnInfoContainer>
+                        <H5>Estimated C-Ratio: {estimateCRatio}%</H5>
+                    </BurnInfoContainer>
+
                     <Input key="primary"
                         currencyName="pUSD"
-                        value={burningAmount.pUSD}
+                        value={burningAmount['pUSD']}
                         onChange={event => setBurningAmountChange(event.target.value)}
-                        onBlur={() => setBurningAmount({pUSD: getCurrencyFormat(burningAmount['pUSD'])})}
+                        onBlur={() => setBurningAmount({pUSD: (burningAmount['pUSD'])})}
                         maxAction={() => setAmountpUSDMax()}
                         maxAmount={maxBurningAmount['pUSD']}
+                        
                     />
                     <Input key="usdc"
                         currencyName="USDC"
-                        value={burningAmount.USDC}
-                        disabled={!useBurningUSDC}
+                        value={burningAmount['USDC']}
                         onChange={event => setBurningUSDCAmountChange(event.target.value)}
                         maxAction={() => setAmountUSDCMax()}
+                        maxAmount={maxBurningAmount['USDC']}
                     />
                     <Input key="secondary"
                         currencyName="PERI"
-                        value={burningAmount.PERI}
+                        value={burningAmount['PERI']}
                         disabled={true}  
-                        onBlur={() => setTransferAmount(getCurrencyFormat(transferAmount))}
+                        onBlur={() => setTransferAmount((transferAmount))}
                     />
                 </div>
                 <div>
                     <BurnActionButtons 
-                        useBurningUSDC={useBurningUSDC}
                         burnData={burnData}
                         burningAmount={burningAmount} 
                         gasPrice={gasPrice(seletedFee.price)} 
                         />
-                    
-                    
-                    
                     <Fee gasPrice={seletedFee.price} gasLimit={gasLimit}/>
                 </div>
             </ActionContainer>
@@ -248,10 +244,10 @@ const Burn = () => {
     );
 }
 
-const UseUSDCButton = styled(LightBlueButton)`
-    height: 30px;
-    padding: 0px 20px;
-    width: fit-content;
+const BurnInfoContainer = styled.div`
+    padding: 0 10px;
+    H5 {
+       text-align: right;
+    }
 `
-
 export default Burn;

@@ -25,7 +25,7 @@ const WalletDetail = () => {
     const currentCRatio = useSelector((state: RootState) => state.ratio.currentCRatio);
     const targetCRatio = useSelector((state: RootState) => state.ratio.targetCRatio);
     const liquidationRatio = useSelector((state: RootState) => state.ratio.liquidationRatio);
-    const {PERI, ETH} = useSelector((state: RootState) => state.exchangeRates);
+    const {PERI, ETH, USDC} = useSelector((state: RootState) => state.exchangeRates);
     
     const formatRatio = (value) => {
         const targetNum = numbro(value);
@@ -64,7 +64,7 @@ const WalletDetail = () => {
                         <DelegateText>DISCONNET</DelegateText>
                     </DelegateContainer>
                     <RefreshContainer onClick={()=> {getDatas()}}>
-                        <img src={"images/dark/refresh.svg"} alt="refresh"/>
+                        <img src={"/images/dark/refresh.svg"} alt="refresh"/>
                     </RefreshContainer>
                 </FooterTitleLeftContainver>
             </FooterTitleContainer>
@@ -84,7 +84,7 @@ const WalletDetail = () => {
             </RateContainer>
             <QuoteContainer>
                 <Asset currencyName={'PERI'} label={`1PERI = ${getCurrencyFormat(PERI)} USD`}></Asset>
-                <Asset currencyName={'ETH'} label={`1ETH = ${getCurrencyFormat(ETH)} USD`}></Asset>
+                <Asset currencyName={'USDC'} label={`1USDC = ${getCurrencyFormat(USDC)} USD`}></Asset>
             </QuoteContainer>
         </FooterRoundContainer>
     );

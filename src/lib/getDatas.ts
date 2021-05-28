@@ -15,6 +15,7 @@ export const getExchangeRates = async () => {
 
     const currencyPeri = 'PERI';
     let value = {
+        USDC: '0.00',
         PERI: '0.00',
         ETH: '0.00',
         iBTC: '0.00',
@@ -23,8 +24,8 @@ export const getExchangeRates = async () => {
         pETH: '0.00',
     };
     const getPeriExchangeRate = async () => {
-        const rate = await ExchangeRates.rateForCurrency(utils.formatBytes32String(currencyPeri));
-        return value[currencyPeri] = format(rate)
+        value[currencyPeri] = format(await ExchangeRates.rateForCurrency(utils.formatBytes32String(currencyPeri)))
+        value['USDC'] = format(await ExchangeRates.rateForCurrency(utils.formatBytes32String('USDC')));
     }
 
     const getPynthsRates = async () => {
@@ -91,6 +92,7 @@ export const getBalancess = async (walletAddress) => {
         let balances = [];
         
         const periBalance = utils.formatEther(await PeriFinance.collateral(walletAddress));
+        
         const PERI = {
             coinName: 'PERI',
             balance: (periBalance)
