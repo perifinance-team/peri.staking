@@ -99,7 +99,7 @@ export const getBalancess = async (walletAddress) => {
         balances.push(PERI);
         
         const [keys, value] = await PynthUtil.pynthsBalances(walletAddress);
-    
+        
         keys.forEach((key, index) => {
             balances.push({
                 coinName: utils.parseBytes32String(key),
