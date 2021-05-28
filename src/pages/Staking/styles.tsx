@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { BlueBorderRoundContainer } from 'components/Container'
-import { H1, H3 } from 'components/Text'
+import { H1, H3} from 'components/Text'
 
 export const Container = styled.div`
     flex: 1;
@@ -23,9 +23,10 @@ export const IntroSubTitle = styled(H3)`
 `;
 
 export const ActionButtonRow = styled.div`
+	margin: auto;
 	display: grid;
-	grid-template-columns: repeat(3, 220px);
-	grid-template-rows: repeat(2, 210px);
+	grid-template-columns: repeat(3, 200px);
+	grid-template-rows: repeat(2, 190px);
 	grid-gap: 20px;
 `;
 
@@ -37,8 +38,8 @@ export const ActionButtonContainer = styled(BlueBorderRoundContainer)`
 	&:hover {
 		background-color: ${props => props.theme.colors.hover.background};
 	}
-	H4 {
-		margin: 10px;
+	H5 {
+		margin: 20px;
 	}
 `;
 

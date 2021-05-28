@@ -4,7 +4,7 @@ import { H6 } from 'components/Text'
 const Asset = ({currencyName, label}) => {
     return (
         <AssetContainer>
-            <CurrencyIcon src={`images/currencies/${currencyName}.svg`} alt="currency"/>
+            <CurrencyIcon src={`/images/currencies/${currencyName}.svg`} alt="currency"/>
             <AssetLabel align={"left"}>{label}</AssetLabel>
         </AssetContainer>
     );

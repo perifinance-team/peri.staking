@@ -1,6 +1,6 @@
 import { utils } from 'ethers';
 import numbro from 'numbro';
-import { pynthetix, USDC, getCurrencyFormat } from 'lib';
+import { pynthetix, USDC, getStakingMaxUSDCAmount } from 'lib';
 import { getBalance } from 'helpers/wallet/getBalance'
 
 const currenciesToBytes = {
@@ -17,6 +17,7 @@ export type StakingData = {
     }, 
     issuable: {
         pUSD: string,
+        all: string,
     },
     stakeable: {
         USDC: string
@@ -39,7 +40,6 @@ export type StakingData = {
 
 export const getStakingData = async (currentWallet) => {
     const { js: { PeriFinance, Issuer, ExchangeRates } }  = pynthetix as any;
-
     const balances = {
         debt: utils.formatEther(await PeriFinance.debtBalanceOf(currentWallet, currenciesToBytes['pUSD'])),
         USDC: (await USDC.balanceOf(currentWallet)).toString(),
@@ -57,22 +57,34 @@ export const getStakingData = async (currentWallet) => {
     
     const exchangeRates = {
         PERI: utils.formatEther(await ExchangeRates.rateForCurrency(currenciesToBytes['PERI'])),
-        USDC: utils.formatEther(await ExchangeRates.rateForCurrency(currenciesToBytes['USDC'])) && "1.00",
+        USDC: utils.formatEther(await ExchangeRates.rateForCurrency(currenciesToBytes['USDC'])),
     }
     
-    let stakeableUSDC = numbro(await PeriFinance.availableUSDCStakeAmount(currentWallet)).multiply(10**6).format({mantissa: 2});
-    stakeableUSDC = numbro(balances['USDC']).subtract(numbro(stakeableUSDC).value()).value() > 0 ? stakeableUSDC : numbro(balances['USDC']).format({mantissa: 2})
     const issuablepUSD = utils.formatEther((await PeriFinance.remainingIssuablePynths(currentWallet))[0].toString());
+
+    let stakeableUSDC = numbro(await PeriFinance.availableUSDCStakeAmount(currentWallet)).divide(10**6)
+        
+
+    const maxStakeableUSDC = getStakingMaxUSDCAmount(
+        {
+            mintingAmount: issuablepUSD,
+            balances: balances,
+            stakedUSDC: "0",
+            issuanceRatio: issuanceRatio,
+            exchangeRates: exchangeRates,
+        }
+    )
     
     const issuable = {
-        pUSD: numbro(issuablepUSD).add(
-            numbro(stakeableUSDC).multiply(numbro(issuanceRatio).value())
-            .divide(numbro(exchangeRates['USDC']).value()).value()
-        ).value().toString(),
+        pUSD: numbro(issuablepUSD).value().toString(),
+        USDC: stakeableUSDC.multiply(numbro(issuanceRatio).value()).multiply(numbro(exchangeRates['USDC']).value()).format({mantissa: 6}),
+        all: numbro(issuablepUSD)
+        .add(numbro(maxStakeableUSDC).multiply(numbro(issuanceRatio).value()).multiply(numbro(exchangeRates['USDC']).value()).value())
+        .value().toString(),
     }
-        
+
     const stakeable = {
-        USDC: stakeableUSDC,
+        USDC: '0.00',
         PERI: balances.transferablePERI
     };
 

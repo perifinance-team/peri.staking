@@ -1,7 +1,6 @@
 import numbro from 'numbro'
-import { getCurrencyFormat } from 'lib'
 
-export const getEstimateCRatio = ({ PERITotalBalance, debtBalanceOf, exchangeRates, mintingAmount}) => {
+export const getStakingEstimateCRatio = ({ PERITotalBalance, debtBalanceOf, exchangeRates, mintingAmount, stakingAmount}) => {
     PERITotalBalance = numbro(PERITotalBalance);
     debtBalanceOf = numbro(debtBalanceOf);
     exchangeRates['PERI'] = numbro(exchangeRates['PERI']);
@@ -10,8 +9,9 @@ export const getEstimateCRatio = ({ PERITotalBalance, debtBalanceOf, exchangeRat
 	if (!PERITotalBalance.value() || !debtBalanceOf.value() || !exchangeRates['PERI'].value()) {
 		return "0";
 	}
-
-	const USDCtopPERIRates = numbro(PERITotalBalance).multiply(exchangeRates['PERI'].value());
+	
+	const USDCtopUSD = numbro(stakingAmount['USDC']).multiply(numbro(exchangeRates['USDC']).value()).value();
+	const USDCtopPERIRates = numbro(PERITotalBalance).multiply(exchangeRates['PERI'].value()).add(USDCtopUSD);
 	
 	const value = (debtBalanceOf.add(mintingAmount)).divide((USDCtopPERIRates));
 

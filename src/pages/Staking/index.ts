@@ -1,1 +1,2 @@
-export { default } from './Staking';
+export * from './Staking';
+export * from './StakingToPERIandUSDC';

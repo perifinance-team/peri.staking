@@ -78,7 +78,6 @@ export const ActionContainer = styled.div`
     flex-direction: column;
     justify-content: space-between;
     margin: auto;
-    width: 50%;
     height: 100%;
 	min-width: 500px;
 	overflow: hidden;

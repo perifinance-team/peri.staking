@@ -40,13 +40,13 @@ const ActionContainer = styled.div`
 
 const LeftContainer = styled.div`
     display: flex;
-    flex: 1;
+    flex: 2;
     flex-direction: column;
 `;
 
 const TitleContainer = styled.div`
     justify-content: center;
-    padding: 100px 20px;
+    padding: 100px 100px 100px 0px;
 `
 
 const Title = styled(H2)`
@@ -64,7 +64,6 @@ const ActionBodyContainer = styled.div`
     display: flex;
     flex-direction: column;
     flex: 2;
-    
     justify-content: center;
 `
 

@@ -26,7 +26,7 @@ import { pynthetix, getExchangeRates, getRatio, getBalancess } from 'lib'
 import Home from '../Home'
 import Escrow from '../Escrow'
 import Depot from '../Depot'
-import Staking from '../Staking'
+import Staking from '../Staking/Staking'
 import Burn from '../Burn'
 import Claim from '../Claim'
 import Trade from '../Trade'
@@ -124,7 +124,7 @@ const Main = () => {
                         NotificationManager.success(`${transaction.type} success`, 'success');
                         await getDatas(currentWallet);
                     } else {
-                        NotificationManager.error(`${transaction.type} success`, 'success');
+                        NotificationManager.error(`${transaction.type} error`, 'error');
                     }
                 } else {
                     setTimeout(() => getState(false), 1000);
