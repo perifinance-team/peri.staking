@@ -1,253 +1,147 @@
-import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from "react-redux";
-import styled from 'styled-components'
-
 import { RootState } from 'config/reducers'
+import { updateTransaction } from 'config/reducers/transaction'
+import { useTranslation } from 'react-i18next';
+import { gasPrice } from 'helpers/gasPrice';
 import { setIsLoading } from 'config/reducers/app'
+import { NotificationManager } from 'react-notifications';
 
-import { getBurnData, BurnData, getBurnTransferAmount, getBurnMaxUSDCAmount, getBurnMaxAmount, getBurnEstimateCRatio } from 'lib'
-
-import Action from 'screens/Action'
+import { pynthetix } from 'lib'
 import numbro from 'numbro'
+import {
+    BrowserRouter as Router,
+    Link,
+    Switch,
+    Route,
+    useHistory
+} from "react-router-dom";
 
-import BurnActionButtons from './BurnActionButtons'
-import { LightBlueButton } from 'components/Button'
-import { ActionContainer } from 'components/Container'
 import { H5 } from 'components/Text'
+import Action from 'screens/Action'
+import { ActionContainer } from 'components/Container'
+import BurnToPERI from './BurnToPERI'
+import BurnToPERIandUSDC from './BurnToPERIandUSDC'
+import BurnToUSDC from './BurnToUSDC'
 
-import Fee from 'components/Fee'
-import Input from 'components/Input'
-import { gasPrice } from 'helpers/gasPrice'
 
-type AmountsNumbro = {
-    PERI?: numbro.Numbro,
-    USDC?: numbro.Numbro,
-    pUSD?: numbro.Numbro,
-}
-
-type AmountsString = {
-    PERI?: string,
-    USDC?: string,
-    pUSD?: string,
-}
+import * as S from './styles'
 
 const Burn = () => {
+    const { t } = useTranslation();
+    const history = useHistory();
     const dispatch = useDispatch();
-    
     const { seletedFee } = useSelector((state: RootState) => state.seletedFee);
     const { currentWallet } = useSelector((state: RootState) => state.wallet);
-    const [burnData, setBurnData] = useState<BurnData>();
-    const [burningAmount, setBurningAmount] = useState<AmountsString>({pUSD: '0', USDC: '0', PERI: '0'});
-    const [estimateCRatio, setEstimateCRatio] = useState<string>("0");
-    const [maxBurningAmount, setMaxBurningAmount] = useState<AmountsString>(
-        {pUSD: '0', USDC: '0', PERI: '0'}
-    );
 
-    const [transferAmount, setTransferAmount] = useState<string>("0");
-    // eslint-disable-next-line
-    const [gasLimit, setGasLimit] = useState<number>(0);
-
-    useEffect(() => {
-        const init = async() => {
-            dispatch(setIsLoading(true));
+    const burnToTarget = async () => {
+        const { js: {Issuer, PeriFinance} } = pynthetix;
+        dispatch(setIsLoading(true));
+        let transaction;
+        const getGasEstimate = async () => {
+            let estimateGasLimit;
             try {
-                const data = await getBurnData(currentWallet);
-                setBurnData(data);
-                const maxAmount = getBurnMaxAmount({...data});
-                setMaxBurningAmount(maxAmount);
-                setEstimateCRatio(getBurnEstimateCRatio({
-                    balances: data.balances,
-                    exchangeRates: data.exchangeRates, 
-                    burningAmount
-                }));
-            } catch(e) {
-                console.log(e)
+                estimateGasLimit = await PeriFinance.contract.estimate.burnPynthsToTargetAndUnstakeUSDCToTarget();
+            } catch (e) {
+                estimateGasLimit = 350000;
+                console.log(e);
             }
-            dispatch(setIsLoading(false));
+            return numbro(estimateGasLimit).multiply(1.2).value();
         }
-        init();
-        // eslint-disable-next-line
-    }, [currentWallet]);
 
-    const setBurningAmountChange = (value) => {
-        value = value.replace(/\,/g, '');
-
-        if((/\./g).test(value)) {
-            value = value.match(/\d+\.\d{0,6}/g)[0];
+        const transactionInfo = {
+            gasPrice: gasPrice(seletedFee.price),
+            gasLimit: await getGasEstimate()
         }
-        
-        if(isNaN(Number(value)) || value === "") {
-            setBurningAmount({
-                pUSD: '',
-                USDC: '0.000000',
-                PERI: '0.000000',
-            });
-            return false;
-        }
-            
-        if(numbro(maxBurningAmount['pUSD']).clone().subtract(numbro(value).value()).value() < 0 ) {
-            value = maxBurningAmount['pUSD'];
-        }
-        
-        const USDCtransferTopUSD = getBurnTransferAmount({
-            amount: burningAmount['USDC'],
-            issuanceRatio: burnData.issuanceRatio,
-            exchangeRates: burnData.exchangeRates,
-            target: 'USDC'
-        }); 
-        
-        let subtractUSDCAmount = numbro(value).add(numbro(USDCtransferTopUSD).value());
-        
-        const pUSDtransferToPERI = getBurnTransferAmount({
-            amount: subtractUSDCAmount,
-            issuanceRatio: burnData.issuanceRatio, 
-            exchangeRates: burnData.exchangeRates,
-            target: 'pUSD'
-        });
+        try {
+            if(await Issuer.canBurnPynths(currentWallet)) {
+                
+                transaction = await PeriFinance.burnPynthsToTargetAndUnstakeUSDCToTarget(
+                    transactionInfo
+                );
+                
+                history.push('/');
 
-        const maxBurningUSDCAmount = getBurnMaxUSDCAmount({
-            issuanceRatio: burnData.issuanceRatio,
-            exchangeRates: burnData.exchangeRates,
-            burningAmount: value,
-            stakedUSDC: burnData.staked['USDC'],
-        })
-
-
-        setMaxBurningAmount({
-            pUSD: maxBurningAmount['pUSD'],
-            USDC: maxBurningUSDCAmount
-        })
-
-        setEstimateCRatio(getBurnEstimateCRatio({
-            balances: burnData.balances,
-            exchangeRates: burnData.exchangeRates, 
-            burningAmount: {
-                pUSD: value,
-                USDC: burningAmount['USDC'],    
+                dispatch(updateTransaction(
+                    {
+                        hash: transaction.hash,
+                        message: `Burnt to target C-Ratio 400%`,
+                        type: 'Burn'
+                    }
+                ));
+            } else {
+                NotificationManager.error('Waiting period to burn is still ongoing');
             }
-        }));
-
-        setBurningAmount({
-            pUSD: value,
-            USDC: burningAmount['USDC'],
-            PERI: (numbro(pUSDtransferToPERI).format({mantissa: 6}))
-        });
-            
-        
-        //todo: escrow add to fiexed
-        // getGasEstimate();
-    }
-
-    const setBurningUSDCAmountChange = (value) => {
-        value = value.replace(/\,/g, '');
-
-        if((/\./g).test(value)) {
-            value = value.match(/\d+\.\d{0,6}/g)[0];
+        } catch (e) {
+            console.log(e);
         }
         
-        if(isNaN(Number(value)) || value === "") {
-            value = '';
-        }
-        
-        if(numbro(maxBurningAmount['USDC']).clone().subtract(numbro(value).value()).value() < 0 ) {
-            value = numbro(maxBurningAmount['USDC']).clone();    
-        }
-        
-        const USDCtransferTopUSD = getBurnTransferAmount({
-            amount: value, 
-            issuanceRatio: burnData.issuanceRatio,
-            exchangeRates: burnData.exchangeRates,
-            target: 'USDC'
-        });
-        
-        let subtractUSDCAmount = numbro(burningAmount['pUSD']).subtract(numbro(USDCtransferTopUSD).value());
-        
-        const pUSDtransferToPERI = getBurnTransferAmount({
-            amount: subtractUSDCAmount,
-            issuanceRatio: burnData.issuanceRatio, 
-            exchangeRates: burnData.exchangeRates,
-            target: 'pUSD'
-        });
+        dispatch(setIsLoading(false));
 
-        setEstimateCRatio(getBurnEstimateCRatio({
-            balances: burnData.balances,
-            exchangeRates: burnData.exchangeRates, 
-            burningAmount: {
-                pUSD: burningAmount['pUSD'],
-                USDC: value,    
-            }
-        }));
         
-        setBurningAmount({
-            pUSD: burningAmount['pUSD'],
-            USDC: value,
-            PERI: (numbro(pUSDtransferToPERI).format({mantissa: 6}))
-        });
-}
-    
-
-    const setAmountpUSDMax = () => {
-        setBurningAmountChange(maxBurningAmount['pUSD']);
     }
-
-    const setAmountUSDCMax = () => {
-        setBurningUSDCAmountChange(maxBurningAmount['USDC']);
-    }
-
     return (
         <Action title="BURN"
             subTitles={[
                 "If you have staked your PERI and minted pUSD, you are eligible to collect two kinds of rewards :",
                 "allowing you to transfer your non-escrowed PERI."
             ]}
-             
         >
-            <ActionContainer>
-                <div>
-                    <BurnInfoContainer>
-                        <H5>Estimated C-Ratio: {estimateCRatio}%</H5>
-                    </BurnInfoContainer>
+            
+            <Switch>
+                <Route exact path="/burn">
+                    <ActionContainer>
+                        <S.ActionButtonRow>
+                            <S.ActionButtonContainer onClick={() => history.push(`/burn/PERI`)}>
+                                <S.ActionImage src={`/images/dark/actions/burn.svg`}></S.ActionImage>
+                                <S.ActionButtonTitle>
+                                    <H5 weigth={'bold'}>Burn PERI</H5>
+                                </S.ActionButtonTitle>
+                            </S.ActionButtonContainer>
+                            
+                            <S.ActionButtonContainer onClick={() => history.push(`/burn/USDC`)}>
+                                <S.ActionImage src={`/images/dark/actions/burn.svg`}></S.ActionImage>
+                                <S.ActionButtonTitle>
+                                <H5 weigth={'bold'}>Burn USDC</H5>
+                                </S.ActionButtonTitle>
+                            </S.ActionButtonContainer>
 
-                    <Input key="primary"
-                        currencyName="pUSD"
-                        value={burningAmount['pUSD']}
-                        onChange={event => setBurningAmountChange(event.target.value)}
-                        onBlur={() => setBurningAmount({pUSD: (burningAmount['pUSD'])})}
-                        maxAction={() => setAmountpUSDMax()}
-                        maxAmount={maxBurningAmount['pUSD']}
-                        
-                    />
-                    <Input key="usdc"
-                        currencyName="USDC"
-                        value={burningAmount['USDC']}
-                        onChange={event => setBurningUSDCAmountChange(event.target.value)}
-                        maxAction={() => setAmountUSDCMax()}
-                        maxAmount={maxBurningAmount['USDC']}
-                    />
-                    <Input key="secondary"
-                        currencyName="PERI"
-                        value={burningAmount['PERI']}
-                        disabled={true}  
-                        onBlur={() => setTransferAmount((transferAmount))}
-                    />
-                </div>
-                <div>
-                    <BurnActionButtons 
-                        burnData={burnData}
-                        burningAmount={burningAmount} 
-                        gasPrice={gasPrice(seletedFee.price)} 
-                        />
-                    <Fee gasPrice={seletedFee.price} gasLimit={gasLimit}/>
-                </div>
-            </ActionContainer>
+                            <S.ActionButtonContainer onClick={() => history.push(`/burn/PERIandUSDC`)}>
+                                <S.ActionImage src={`/images/dark/actions/burn.svg`}></S.ActionImage>
+                                <S.ActionButtonTitle>
+                                    <H5 weigth={'bold'}>Burn </H5>
+                                    <H5 weigth={'bold'}>PERI and USDC </H5>
+                                </S.ActionButtonTitle>
+                            </S.ActionButtonContainer>
+
+                            <S.ActionButtonContainer onClick={() => burnToTarget()}>
+                                <S.ActionImage src={`/images/dark/actions/burn.svg`}></S.ActionImage>
+                                <S.ActionButtonTitle>
+                                    <H5 weigth={'bold'}>Burn </H5>
+                                    <H5 weigth={'bold'}>Target 400% </H5>
+                                </S.ActionButtonTitle>
+                            </S.ActionButtonContainer>
+
+                        </S.ActionButtonRow>
+                    </ActionContainer>        
+                </Route>
+
+                <Route exact path="/burn/PERI"> 
+                    <BurnToPERI/>
+                </Route>
+
+                <Route exact path="/burn/PERIandUSDC"> 
+                    <BurnToPERIandUSDC/>
+                </Route>
+
+                <Route exact path="/burn/USDC"> 
+                    <BurnToUSDC/>
+                </Route>
+
+            </Switch>
         </Action>
     );
 }
 
-const BurnInfoContainer = styled.div`
-    padding: 0 10px;
-    H5 {
-       text-align: right;
-    }
-`
+
+
 export default Burn;

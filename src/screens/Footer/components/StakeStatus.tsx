@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import styled from 'styled-components'
 
 import { useSelector } from "react-redux";
@@ -7,24 +8,46 @@ import { FooterRoundContainer, FooterTitleContainer } from 'components/Container
 import { H4, H6 } from 'components/Text'
 // import { useTranslation } from 'react-i18next';
 
-import { formatCurrency } from 'lib'
-
+import { pynthetix, formatCurrency } from 'lib'
+import { utils } from 'ethers'
 import numbro from 'numbro'
 
 const TotalBalance = () => {
     // const { t } = useTranslation();
-	const PERI = useSelector((state: RootState) => state.balances.PERI);
+	const PERI = useSelector((state: RootState) => state.balances.PERIBalanceInfo);
+	const USDC = useSelector((state: RootState) => state.balances.USDCBalanceInfo);
+	const { currentWallet } = useSelector((state: RootState) => state.wallet);
 	const { transferablePERI, stakedUSDCamount} = useSelector((state: RootState) => (state.balances) );
+	const exchangeRates = useSelector((state: RootState) => state.exchangeRates);
+	const targetCRatio = useSelector((state: RootState) => state.ratio.targetCRatio);
+
 	const stakedPERI:number = numbro(PERI.balance).subtract(numbro(transferablePERI).value()).value();
-	const totalStakedPERI = numbro(stakedPERI).divide(numbro(transferablePERI).value() === 0 ? 
-		1 : numbro(transferablePERI).value()).multiply(100).value();
-	
-	const transferableUSDC = 0
-	
+	const totalStakedPERI = numbro(stakedPERI).divide(numbro(transferablePERI).value()).multiply(100).value();
+	const totalStakedUSDC = numbro(stakedUSDCamount).divide(numbro(USDC.balance).value()).multiply(100).value();
+	const [stakedRate, setStakedRate] = useState('0');
+
+	const getStakingRate = async () => {
+		const debt = utils.formatEther(await pynthetix.js.PeriFinance.debtBalanceOf(currentWallet, utils.formatBytes32String('pUSD')));
+		
+		setStakedRate(
+			numbro(stakedPERI).multiply(numbro(exchangeRates['PERI']).value()).multiply(numbro(targetCRatio).value())
+			.divide(numbro(debt).value()).multiply(100).format({mantissa: 2})
+		);
+	}
+
+	useEffect( () => {
+		const init = async () => {
+			await getStakingRate();
+		}
+		init();
+		
+	}, [currentWallet, PERI, USDC]);
+
+
     return (
         <FooterRoundContainer>
             <FooterTitleContainer>
-                <H4 weigth="bold">TOTAL PERI</H4>
+                <H4 weigth="bold">TOTAL STAKE</H4>
             </FooterTitleContainer>
             <RageContainer>
 				{/* <BarChart>
@@ -42,12 +65,27 @@ const TotalBalance = () => {
 					</Label>
 				</BarChart>
 				<BarChart>
-					<Graph type="range" min="0" max="100" value={totalStakedPERI} readOnly></Graph>
+					<Graph type="range" min="0" max="100" value={totalStakedUSDC} readOnly></Graph>
 					<Label>
 						<H6>Staked USDC : {formatCurrency(stakedUSDCamount)}</H6>
-						<H6>Transferable : {formatCurrency(transferablePERI)}</H6>
+						<H6>Transferable : {formatCurrency(USDC.balance)}</H6>
 					</Label>
 				</BarChart>
+				<BarChart>
+					<Graph type="range" min="0" max="100" value={stakedRate} readOnly></Graph>
+					<Label>
+						<H6>Staked PERI rate : {numbro(stakedRate).format({mantissa: 0})}%</H6>
+						<H6>Staked USDC rate : {numbro(100).subtract(numbro(stakedRate).value()).format({mantissa: 0})}%</H6>
+					</Label>
+				</BarChart>
+				
+				{/* <BarChart>
+					<Graph type="range" min="0" max="100" value={totalStakedUSDC} readOnly></Graph>
+					<Label>
+						<H6>Staked PERI : {formatCurrency(stakedUSDCamount)}</H6>
+						<H6>Staked USDC : {formatCurrency(USDC.balance)}</H6>
+					</Label>
+				</BarChart> */}
 
 				{/* <BarChart>
 					<Graph type="range" min="0" max="100" value="50" readOnly></Graph>

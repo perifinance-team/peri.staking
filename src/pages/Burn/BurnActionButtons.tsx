@@ -83,18 +83,20 @@ const BurnActionButtons = ({burnData, burningAmount, gasPrice}) => {
         // eslint-disable-next-line
     },[]);
     const checkBurnAmount = () => {
-        const PERItopUSD = numbro(burningAmount['PERI']).multiply(burnData.exchangeRates['PERI']);
-        const USDCtopUSD = numbro(burningAmount['USDC']).multiply(burnData.exchangeRates['USDC']);
+        const PERItopUSD = numbro(burningAmount['PERI'] ? burningAmount['PERI'] : 0).multiply(burnData.exchangeRates['PERI']);       
+        
+        const USDCtopUSD = numbro(burningAmount['USDC'] ? burningAmount['USDC'] : 0).multiply(burnData.exchangeRates['USDC']);
+        
         const burnAmountTopUSD = PERItopUSD.add(USDCtopUSD.value()).multiply(burnData.issuanceRatio);
         
-        return burnAmountTopUSD.subtract(numbro(burningAmount['pUSD']).value()).format({mantissa: 6});
+        return Math.round(burnAmountTopUSD.subtract(numbro(burningAmount['pUSD']).value()).value());
     }
     
     const onBurn = async ({target = false}) => {
         let transaction;
         
         if(numbro(checkBurnAmount()).value() !== 0) {
-            
+            console.log(checkBurnAmount())
             NotificationManager.error('check input amounts');
             return false;
         }
@@ -118,7 +120,9 @@ const BurnActionButtons = ({burnData, burningAmount, gasPrice}) => {
                 dispatch(updateTransaction(
                     {
                         hash: transaction.hash,
-                        message: `Burnt ${getCurrencyFormat( target ? numbro(burnData.PERIDebtpUSD).subtract(burnData.PERIBalance).value() : burningAmount['pUSD'])} pUSD`,
+                        message: `Burnt ${getCurrencyFormat( target ? numbro(burnData.PERIDebtpUSD).subtract(burnData.PERIBalance).value() : burningAmount['pUSD'])} pUSD
+                             ${numbro(burningAmount['USDC']).multiply(10**6).value().toString()} USDC
+                        `,
                         type: 'Burn'
                     }
                 ));

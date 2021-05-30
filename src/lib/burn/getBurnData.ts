@@ -33,9 +33,9 @@ export const getBurnData = async (currentWallet) => {
         debt: utils.formatEther(await PeriFinance.debtBalanceOf(currentWallet, currenciesToBytes.pUSD)).toString(),
         PERI: utils.formatEther(await PeriFinance.balanceOf(currentWallet)).toString(),
         PERITotal: utils.formatEther(await PeriFinance.collateral(currentWallet)),
+        transferablePERI: utils.formatEther(await PeriFinance.transferablePeriFinance(currentWallet)),
         pUSD: utils.formatEther(value[pUSDIndex]),
     }
-
 
     const staked = {
         USDC: numbro(await PeriFinance.usdcStakedAmountOf(currentWallet)).divide(10**6).value().toString(),

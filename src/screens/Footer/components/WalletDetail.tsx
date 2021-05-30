@@ -25,7 +25,7 @@ const WalletDetail = () => {
     const currentCRatio = useSelector((state: RootState) => state.ratio.currentCRatio);
     const targetCRatio = useSelector((state: RootState) => state.ratio.targetCRatio);
     const liquidationRatio = useSelector((state: RootState) => state.ratio.liquidationRatio);
-    const {PERI, ETH, USDC} = useSelector((state: RootState) => state.exchangeRates);
+    const {PERI, USDC} = useSelector((state: RootState) => state.exchangeRates);
     
     const formatRatio = (value) => {
         const targetNum = numbro(value);

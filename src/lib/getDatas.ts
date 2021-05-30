@@ -93,12 +93,12 @@ export const getBalancess = async (walletAddress) => {
         
         const periBalance = utils.formatEther(await PeriFinance.collateral(walletAddress));
         
-        const PERI = {
+        const PERIBalanceInfo = {
             coinName: 'PERI',
             balance: (periBalance)
         }
         
-        balances.push(PERI);
+        balances.push(PERIBalanceInfo);
         
         const [keys, value] = await PynthUtil.pynthsBalances(walletAddress);
         
@@ -108,7 +108,6 @@ export const getBalancess = async (walletAddress) => {
                 balance: (utils.formatEther(value[index]))
             })
         });
-        
         const USDCBalance = await USDC.balanceOf(walletAddress);
         
         balances.push({
@@ -122,17 +121,20 @@ export const getBalancess = async (walletAddress) => {
             balance: (ethBalance)
         });
         
-        return { balances, PERI };
+        return { balances, PERIBalanceInfo, USDCBalanceInfo: {
+            coinName: 'USDC',
+            balance: USDCBalance.toString()
+        } };
     }
-
+    
     const transferablePERI = utils.formatEther(await PeriFinance.transferablePeriFinance(walletAddress));
     const stakedUSDCamount = numbro(await PeriFinance.usdcStakedAmountOf(walletAddress)).divide(10**6).value().toString()
-    
-    const {balances, PERI} = await getPynthsBalances();
+    const {balances, PERIBalanceInfo, USDCBalanceInfo} = await getPynthsBalances();
     
     return {
         balances,
-        PERI,
+        PERIBalanceInfo,
+        USDCBalanceInfo,
         transferablePERI,
         stakedUSDCamount
     };

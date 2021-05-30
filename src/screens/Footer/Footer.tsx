@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 import WalletDetail from './components/WalletDetail'
-import PeriBalance from './components/PeriBalance'
+import StakeStatus from './components/StakeStatus'
 import TotalBalance from './components/TotalBalance'
 
 const Footer = () => {
@@ -10,7 +10,7 @@ const Footer = () => {
         
         <FooterContainer>
             <WalletDetail/>
-            <PeriBalance/>
+            <StakeStatus/>
             <TotalBalance/>
         </FooterContainer>
     );
