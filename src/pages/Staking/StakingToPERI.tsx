@@ -50,6 +50,7 @@ const Staking = () => {
 
     const [gasLimit, setGasLimit] = useState<number>(0);
     const [needApprove, setNeedApprove] = useState<boolean>(false);
+    const dataIntervalTime = 1000 * 1 * 3;
 
     const { js: { PeriFinance } }  = pynthetix as any;
 
@@ -87,10 +88,13 @@ const Staking = () => {
 
     useEffect(() => {
         const init = async() => {
-            await getIssuanceData();            
+            return await getIssuanceData(); 
         }
-        
+        const interval = setInterval( async () => await init(), dataIntervalTime);
         init();
+        return () => {
+            clearInterval(interval);
+        }
         // eslint-disable-next-line
     } ,[currentWallet]);
     

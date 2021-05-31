@@ -51,7 +51,8 @@ const Main = () => {
     const isConnectedWallet = useSelector((state: RootState) => state.isConnectedWallet.isConnectedWallet);
     const themeState = useSelector((state: RootState) => state.theme.theme);
     const transaction = useSelector((state: RootState) => state.transaction);
-    
+    const dataIntervalTime = 1000 * 60 * 3;
+
     const connectWallet = useCallback(async () => {
         const currentWallet = await connectHelper(walletType);
         
@@ -60,7 +61,11 @@ const Main = () => {
             dispatch(updateIsConnected(true));
         }
         await getDatas(currentWallet.currentWallet);
-
+        setInterval( async () => {
+            dispatch(setIsLoading(true));
+            await getDatas(currentWallet.currentWallet)
+            dispatch(setIsLoading(false));
+        }, dataIntervalTime) 
         // eslint-disable-next-line
     }, []);
 

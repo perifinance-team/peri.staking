@@ -52,7 +52,8 @@ const Staking = () => {
     const [needApprove, setNeedApprove] = useState<boolean>(false);
 
     const { js: { PeriFinance } }  = pynthetix as any;
-
+    const dataIntervalTime = 1000 * 60 * 3;
+    
     const getIssuanceData = useCallback(async () => {
         dispatch(setIsLoading(true));
         try {
@@ -87,10 +88,14 @@ const Staking = () => {
 
     useEffect(() => {
         const init = async() => {
-            await getIssuanceData();            
+            return await getIssuanceData(); 
         }
-        
+        const interval = setInterval( async () => await init(), dataIntervalTime);
         init();
+        
+        return () => {
+            clearInterval(interval);
+        }
         // eslint-disable-next-line
     } ,[currentWallet]);
     

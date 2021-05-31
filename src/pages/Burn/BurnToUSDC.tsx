@@ -46,7 +46,7 @@ const Burn = () => {
     const [transferAmount, setTransferAmount] = useState<string>("0");
     // eslint-disable-next-line
     const [gasLimit, setGasLimit] = useState<number>(0);
-
+    const dataIntervalTime = 1000 * 60 * 3;
     useEffect(() => {
         const init = async() => {
             dispatch(setIsLoading(true));
@@ -65,7 +65,9 @@ const Burn = () => {
             }
             dispatch(setIsLoading(false));
         }
+        const interval = setInterval( async () => await init(), dataIntervalTime);
         init();
+        return () => {clearInterval(interval)}
         // eslint-disable-next-line
     }, [currentWallet]);
 
