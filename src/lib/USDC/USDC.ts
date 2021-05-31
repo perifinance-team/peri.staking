@@ -1,5 +1,6 @@
 import ERC20 from './contract/ERC20.json';
 import { ethers, utils } from 'ethers';
+import { getEthereumNetworkId } from 'lib/ethereum'
 import numbro from 'numbro';
 import { pynthetix } from 'lib'
 
@@ -18,14 +19,23 @@ export const USDC = {
     },
     // formatBytes32String
     allowance: async function (currentAddress) {
+        if(!this.contract) {
+            await this.connect(pynthetix.signer, await getEthereumNetworkId());
+        }
         return numbro(await this.contract.allowance(currentAddress, this.issuerAddress)).divide(10**6).value().toString();
     },
 
     approve: async function () {
+        if(!this.contract) {
+            await this.connect(pynthetix.signer, await getEthereumNetworkId());
+        }
         return await this.contract.connect(this.signer).approve(this.issuerAddress, numbro(1000000000000).multiply(10**6).value().toString());
     },
 
     balanceOf: async function (currentAddress) {
+        if(!this.contract) {
+            await this.connect(pynthetix.signer, await getEthereumNetworkId());
+        }
         return numbro(await this.contract.balanceOf(currentAddress)).divide(10**6).value();
     }
 
