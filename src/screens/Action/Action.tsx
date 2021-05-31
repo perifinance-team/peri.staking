@@ -2,15 +2,30 @@ import styled from 'styled-components';
 
 import { H2, H5 } from 'components/Text';
 import { LightBlueButton } from 'components/Button';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 
 const Action = ({children, title, subTitles}) => {
     const history = useHistory();
+    const location = useLocation();
+
+    const goToBack = () => {
+        try {
+            const locations = location.pathname.split(/\//i);
+            if(locations.length > 2) {
+                history.push(`/${locations[1]}`);
+            } else {
+                history.push(`/`);
+            }
+        } catch (e){
+            history.push(`/`);
+        }
+    }
+
     return (
         <ActionContainer>
             <LeftContainer>
-                <Cancel onClick={() => history.push('/')}>
-                    <Arrow src={`images/dark/arrow/arrow-left.svg`} alt="arrow-left"/>
+                <Cancel onClick={() => goToBack()}>
+                    <Arrow src={`/images/dark/arrow/arrow-left.svg`} alt="arrow-left"/>
                     CANCEL
                 </Cancel>
                 <TitleContainer>
