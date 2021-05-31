@@ -31,7 +31,7 @@ const TotalBalance = () => {
 		
 		setStakedRate(
 			numbro(stakedPERI).multiply(numbro(exchangeRates['PERI']).value()).multiply(numbro(targetCRatio).value())
-			.divide(numbro(debt).value()).multiply(100).format({mantissa: 2})
+			.divide(numbro(debt).value()).multiply(100).value().toString()
 		);
 	}
 
@@ -74,8 +74,8 @@ const TotalBalance = () => {
 				<BarChart>
 					<Graph type="range" min="0" max="100" value={stakedRate} readOnly></Graph>
 					<Label>
-						<H6>Staked PERI rate : {numbro(stakedRate).format({mantissa: 0})}%</H6>
-						<H6>Staked USDC rate : {numbro(100).subtract(numbro(stakedRate).value()).format({mantissa: 0})}%</H6>
+						<H6>Staked PERI rate : {numbro(stakedRate).format({mantissa: 2})}%</H6>
+						<H6>Staked USDC rate : {numbro(100).subtract(numbro(stakedRate).value()).format({mantissa: 2})}%</H6>
 					</Label>
 				</BarChart>
 				
