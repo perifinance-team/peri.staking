@@ -1,3 +1,5 @@
+
+import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { useSelector, useDispatch } from "react-redux";
 import { setIsLoading } from 'config/reducers/app'
@@ -8,12 +10,13 @@ import { updateBalances } from 'config/reducers/wallet/balances'
 import { updateExchangeRates, updateRatio } from 'config/reducers/rates'
 import { clearWallet, updateIsConnected } from 'config/reducers/wallet'
 
-import { getExchangeRates, getRatio, getBalancess, getCurrencyFormat } from 'lib'
+import { getExchangeRates, getRatio, getBalancess, getCurrencyFormat, calculator } from 'lib'
 
 import { FooterRoundContainer, FooterTitleContainer, RoundContainer, BlueBorderRoundContainer } from 'components/Container'
 import { H3, H4, H6 } from 'components/Text'
 import { useTranslation } from 'react-i18next';
 import Asset from 'components/Asset'
+import { utils } from 'ethers';
 
 
 const WalletDetail = () => {
@@ -21,17 +24,34 @@ const WalletDetail = () => {
     const { t } = useTranslation();
     const wallet = useSelector((state: RootState) => state.wallet);
     const dispatch = useDispatch();
-
-    const currentCRatio = useSelector((state: RootState) => state.ratio.currentCRatio);
-    const targetCRatio = useSelector((state: RootState) => state.ratio.targetCRatio);
-    const liquidationRatio = useSelector((state: RootState) => state.ratio.liquidationRatio);
+    const { currentCRatio, targetCRatio, liquidationRatio } = useSelector((state: RootState) => state.ratio);
+    const [ ratio, setRatio ] = useState({
+        currentCRatio: '0',
+        targetCRatio: '0',
+        liquidationRatio: '0'
+    });
+    
     const {PERI, USDC} = useSelector((state: RootState) => state.exchangeRates);
     
     const formatRatio = (value) => {
-        const targetNum = numbro(value);
-        if(targetNum.value() <= 0) return 0;
-        return numbro(100).divide(value).format({mantissa: 0});
+        if(utils.parseEther(value).eq('0')) {
+            return '0';
+        } else {
+            return calculator('100', utils.formatEther(value), 'div').toString();
+        }
     }
+
+    useEffect( () => {
+        setRatio({
+            currentCRatio: formatRatio(currentCRatio),
+            targetCRatio: formatRatio(targetCRatio),
+            liquidationRatio: formatRatio(liquidationRatio),
+        })
+    }, [
+        currentCRatio,
+        targetCRatio,
+        liquidationRatio,
+    ])
 
     const getDatas = async () => {
         dispatch(setIsLoading(true));
@@ -42,6 +62,7 @@ const WalletDetail = () => {
             dispatch(updateRatio(ratios));
             const balances = await getBalancess(wallet.currentWallet);
             dispatch(updateBalances(balances));
+            
         } catch (e) {
             console.log(e);
         }
@@ -70,21 +91,21 @@ const WalletDetail = () => {
             </FooterTitleContainer>
             <RateContainer>
                 <RateBox>
-                    <RateBoxText weigth={'bold'}>{formatRatio(currentCRatio)}%</RateBoxText>
+                    <RateBoxText weigth={'bold'}>{ratio.currentCRatio}%</RateBoxText>
                     <H6>Current collateralization ratio</H6>
                 </RateBox>
                 <RateBox margin={10}>
-                    <RateBoxText weigth={'bold'}>{formatRatio(targetCRatio)}%</RateBoxText>
+                    <RateBoxText weigth={'bold'}>{ratio.targetCRatio}%</RateBoxText>
                     <H6>Target collateralization ratio</H6>
                 </RateBox>
                 <RateBox>
-                    <RateBoxText weigth={'bold'}>{formatRatio(liquidationRatio)}%</RateBoxText>
+                    <RateBoxText weigth={'bold'}>{ratio.liquidationRatio}%</RateBoxText>
                     <H6>Liquidation ratio</H6>
                 </RateBox>
             </RateContainer>
             <QuoteContainer>
-                <Asset currencyName={'PERI'} label={`1PERI = ${getCurrencyFormat(PERI)} USD`}></Asset>
-                <Asset currencyName={'USDC'} label={`1USDC = ${getCurrencyFormat(USDC)} USD`}></Asset>
+                <Asset currencyName={'PERI'} label={`1PERI = ${getCurrencyFormat(PERI, 12)} USD`}></Asset>
+                <Asset currencyName={'USDC'} label={`1USDC = ${getCurrencyFormat(USDC, 12)} USD`}></Asset>
             </QuoteContainer>
         </FooterRoundContainer>
     );

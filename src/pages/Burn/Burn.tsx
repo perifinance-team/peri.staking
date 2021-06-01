@@ -16,7 +16,7 @@ import {
     useHistory
 } from "react-router-dom";
 
-import { H5 } from 'components/Text'
+import { H5, H6 } from 'components/Text'
 import Action from 'screens/Action'
 import { ActionContainer } from 'components/Container'
 import BurnToPERI from './BurnToPERI'
@@ -94,30 +94,32 @@ const Burn = () => {
                             <S.ActionButtonContainer onClick={() => history.push(`/burn/PERI`)}>
                                 <S.ActionImage src={`/images/dark/actions/burn.svg`}></S.ActionImage>
                                 <S.ActionButtonTitle>
-                                    <H5 weigth={'bold'}>Burn PERI</H5>
+                                    <H5 weigth={'bold'}>Burn</H5>
+                                    <H6 weigth={'bold'}>only PERI</H6>
                                 </S.ActionButtonTitle>
                             </S.ActionButtonContainer>
                             
                             <S.ActionButtonContainer onClick={() => history.push(`/burn/USDC`)}>
                                 <S.ActionImage src={`/images/dark/actions/burn.svg`}></S.ActionImage>
                                 <S.ActionButtonTitle>
-                                <H5 weigth={'bold'}>Burn USDC</H5>
+                                <H5 weigth={'bold'}>Burn</H5>
+                                <H6 weigth={'bold'}>only USDC</H6>
                                 </S.ActionButtonTitle>
                             </S.ActionButtonContainer>
 
                             <S.ActionButtonContainer onClick={() => history.push(`/burn/PERIandUSDC`)}>
                                 <S.ActionImage src={`/images/dark/actions/burn.svg`}></S.ActionImage>
                                 <S.ActionButtonTitle>
-                                    <H5 weigth={'bold'}>Burn </H5>
-                                    <H5 weigth={'bold'}>PERI and USDC </H5>
+                                    <H5 weigth={'bold'}>Burn</H5>
+                                    <H6 weigth={'bold'}>PERI and USDC</H6>
                                 </S.ActionButtonTitle>
                             </S.ActionButtonContainer>
 
                             <S.ActionButtonContainer onClick={() => burnToTarget()}>
                                 <S.ActionImage src={`/images/dark/actions/burn.svg`}></S.ActionImage>
                                 <S.ActionButtonTitle>
-                                    <H5 weigth={'bold'}>Burn </H5>
-                                    <H5 weigth={'bold'}>Target 400% </H5>
+                                    <H5 weigth={'bold'}>Burn</H5>
+                                    <H6 weigth={'bold'}>fit to claimable</H6>
                                 </S.ActionButtonTitle>
                             </S.ActionButtonContainer>
 

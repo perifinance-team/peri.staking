@@ -31,7 +31,7 @@ const Fee = ({gasPrice, gasLimit}) => {
     
     return (
         <FeeContainer>
-            <H6>Ethereum network fees : ${feeToUSD} / {feeToGwei} GWEI</H6>
+            <H6>Ethereum network fees : {feeToGwei} GWEI</H6>
             {/* <EditButton>
                 <H6 color={'primary'}>edit</H6>
             </EditButton> */}

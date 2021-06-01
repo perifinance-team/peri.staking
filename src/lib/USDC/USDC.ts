@@ -22,21 +22,22 @@ export const USDC = {
         if(!this.contract) {
             await this.connect(pynthetix.signer, await getEthereumNetworkId());
         }
-        return numbro(await this.contract.allowance(currentAddress, this.issuerAddress)).divide(10**6).value().toString();
+        return (await this.contract.allowance(currentAddress, this.issuerAddress)).mul(10**12);
     },
 
     approve: async function () {
         if(!this.contract) {
             await this.connect(pynthetix.signer, await getEthereumNetworkId());
         }
-        return await this.contract.connect(this.signer).approve(this.issuerAddress, numbro(1000000000000).multiply(10**6).value().toString());
+        return await this.contract.connect(this.signer).approve(this.issuerAddress, utils.formatEther(1));
     },
 
     balanceOf: async function (currentAddress) {
         if(!this.contract) {
             await this.connect(pynthetix.signer, await getEthereumNetworkId());
         }
-        return numbro(await this.contract.balanceOf(currentAddress)).divide(10**6).value();
+        
+        return ((await this.contract.balanceOf(currentAddress)).mul(10**12));
     }
 
 }

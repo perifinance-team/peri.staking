@@ -1,7 +1,7 @@
 import { utils } from 'ethers';
-import numbro from 'numbro';
-import { pynthetix, USDC } from 'lib';
+import { pynthetix, USDC, calculator, currencyToPynths } from 'lib';
 import { getBalance } from 'helpers/wallet/getBalance'
+import numbro from 'numbro'
 
 const currenciesToBytes = {
     PERI: utils.formatBytes32String('PERI'),
@@ -10,10 +10,10 @@ const currenciesToBytes = {
 }
 
 export type StakingData = {
-    issuanceRatio: string,
+    issuanceRatio: utils.BigNumber,
     exchangeRates: {
-        PERI: string,
-        USDC: string,
+        PERI: utils.BigNumber,
+        USDC: utils.BigNumber,
     }, 
     issuable: {
         pUSD: string,
@@ -25,66 +25,69 @@ export type StakingData = {
         PERI: string,
     },
     balances: {
-        debt: string,
-        USDC: string,
-        PERITotal: string
-        pUSD: string,
-        transferablePERI: string,
+        debt: utils.BigNumber,
+        USDC: utils.BigNumber,
+        PERITotal: utils.BigNumber
+        pUSD: utils.BigNumber,
+        transferablePERI: utils.BigNumber,
     },
     stakedAmount: {
-        USDC: string
+        USDC: utils.BigNumber
     },
     allowance: {
-        USDC: string
+        USDC: utils.BigNumber
     }
 }
 
 export const getStakingData = async (currentWallet) => {
     const { js: { PeriFinance, Issuer, ExchangeRates } }  = pynthetix as any;
     try {
+        
         const balances = {
-            debt: utils.formatEther(await PeriFinance.debtBalanceOf(currentWallet, currenciesToBytes['pUSD'])),
-            USDC: (await USDC.balanceOf(currentWallet)).toString(),
-            PERITotal: utils.formatEther(await PeriFinance.collateral(currentWallet)),
-            transferablePERI: utils.formatEther(await PeriFinance.transferablePeriFinance(currentWallet)),
-            pUSD: utils.formatEther(await getBalance(currentWallet, 'pUSD')),
-        }
+            debt: await PeriFinance.debtBalanceOf(currentWallet, currenciesToBytes['pUSD']),
+            USDC: await USDC.balanceOf(currentWallet),
+            PERITotal: await PeriFinance.collateral(currentWallet),
+            transferablePERI: await PeriFinance.transferablePeriFinance(currentWallet),
+            pUSD: await getBalance(currentWallet, 'pUSD'),
+        }        
         
         const stakedAmount = {
-            USDC: numbro(await PeriFinance.usdcStakedAmountOf(currentWallet)).divide(10**6).value().toString(),
+            USDC: (await PeriFinance.usdcStakedAmountOf(currentWallet)),
         }
-    
-        const issuanceRatio = utils.formatEther(await Issuer.issuanceRatio());
+        
+        const issuanceRatio = utils.parseEther(utils.parseEther('100').div(await Issuer.issuanceRatio()).toString());
         
         const exchangeRates = {
-            PERI: utils.formatEther(await ExchangeRates.rateForCurrency(currenciesToBytes['PERI'])),
-            USDC: utils.formatEther(await ExchangeRates.rateForCurrency(currenciesToBytes['USDC'])),
+            PERI: await ExchangeRates.rateForCurrency(currenciesToBytes['PERI']),
+            USDC: await ExchangeRates.rateForCurrency(currenciesToBytes['USDC']),
         }
         
-        const issuablepUSD = utils.formatEther((await PeriFinance.remainingIssuablePynths(currentWallet))[0].toString());
-    
-        let stakeableUSDC = numbro(await PeriFinance.availableUSDCStakeAmount(currentWallet)).divide(10**6).value().toString();
-    
-        if(stakeableUSDC > balances['USDC']) {
+        
+        const issuablepUSD = (await PeriFinance.remainingIssuablePynths(currentWallet))[0];
+        
+        let stakeableUSDC = (await PeriFinance.availableUSDCStakeAmount(currentWallet));
+        
+        if((stakeableUSDC).gt(balances['USDC'])) {
             stakeableUSDC = balances['USDC']
         }
-    
+        
         const issuable = {
-            pUSD: numbro(issuablepUSD).subtract(numbro(stakedAmount['USDC']).multiply(numbro(issuanceRatio).value())
-                .multiply(numbro(exchangeRates['USDC']).value()).value()).value().toString(),
-            USDC: numbro(stakeableUSDC).multiply(numbro(issuanceRatio).value()).multiply(numbro(exchangeRates['USDC']).value()).format({mantissa: 6}),
-            all: numbro(issuablepUSD).value().toString()
-            
+            pUSD: utils.formatEther(calculator(issuablepUSD, stakedAmount['USDC'], 'sub')).toString(),
+            //  .sub().mul(issuanceRatio).mul(exchangeRates['USDC']),
+            // (issuablepUSD - stakedAmount['USDC'] ) issuanceRatio * exchangeRates['USDC']
+            USDC: utils.formatEther(currencyToPynths(stakeableUSDC, issuanceRatio, exchangeRates['USDC'])).toString(),
+            all: utils.formatEther(issuablepUSD).toString()
         }
     
         const stakeable = {
-            USDC: '0.00',
-            PERI: balances.transferablePERI
+            USDC: utils.formatEther(stakeableUSDC),
+            PERI: utils.formatEther(balances.transferablePERI)
         };
     
         const allowance = {
             USDC: await USDC.allowance(currentWallet)
         };
+
         return {
             balances,
             issuanceRatio,
@@ -96,33 +99,34 @@ export const getStakingData = async (currentWallet) => {
         }
         
     } catch(e) {
+        console.log(e);
         return {
-            issuanceRatio: '0.000000',
+            issuanceRatio: utils.parseEther('0'),
             exchangeRates: {
-                PERI: '0.000000',
-                USDC: '0.000000',
+                PERI: utils.parseEther('0'),
+                USDC: utils.parseEther('0'),
             }, 
             issuable: {
-                pUSD: '0.000000',
-                USDC: '0.000000',
-                all: '0.000000',
+                pUSD: '0',
+                USDC: '0',
+                all: '0',
             },
             stakeable: {
-                USDC: '0.000000',
-                PERI: '0.000000',
+                USDC: '0',
+                PERI: '0',
             },
             balances: {
-                debt: '0.000000',
-                USDC: '0.000000',
-                PERITotal: '0.000000',
-                pUSD: '0.000000',
-                transferablePERI: '0.000000',
+                debt: utils.parseEther('0'),
+                USDC: utils.parseEther('0'),
+                PERITotal: utils.parseEther('0'),
+                pUSD: utils.parseEther('0'),
+                transferablePERI: utils.parseEther('0'),
             },
             stakedAmount: {
-                USDC: '0.000000'
+                USDC: utils.parseEther('0')
             },
             allowance: {
-                USDC: '0.000000'
+                USDC: utils.parseEther('0')
             }
         }
     }

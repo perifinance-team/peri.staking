@@ -38,7 +38,7 @@ export const getBurnData = async (currentWallet) => {
     }
 
     const staked = {
-        USDC: numbro(await PeriFinance.usdcStakedAmountOf(currentWallet)).divide(10**6).value().toString(),
+        USDC: numbro(await PeriFinance.usdcStakedAmountOf(currentWallet)).divide(10**18).value().toString(),
     }
 
     const issuanceRatio = utils.formatEther(await Issuer.issuanceRatio());

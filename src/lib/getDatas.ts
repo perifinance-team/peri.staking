@@ -1,6 +1,7 @@
 import pynthetix from './pynthetix'
 import { utils } from 'ethers'
 import numbro from 'numbro'
+import { convertDecimal } from 'lib'
 import { USDC } from 'lib'
 
 const format = (value) => {
@@ -53,15 +54,15 @@ export const getRatio = async (walletAddress) => {
 	} = pynthetix as any;
     
     const getCurrentCRatio = async () => {
-        return utils.formatEther(await PeriFinance.collateralisationRatio(walletAddress));
+        return (await PeriFinance.collateralisationRatio(walletAddress)).toString();
     };
 
     const getTargetCRatio = async () => {
-        return utils.formatEther(await SystemSettings.issuanceRatio());
+        return (await SystemSettings.issuanceRatio()).toString();
     };
     
     const getLiquidationRatio = async () => {
-        return utils.formatEther(await Liquidations.liquidationRatio());
+        return (await Liquidations.liquidationRatio()).toString();
     };
     const currentCRatio = await getCurrentCRatio();
 
@@ -128,7 +129,7 @@ export const getBalancess = async (walletAddress) => {
     }
     
     const transferablePERI = utils.formatEther(await PeriFinance.transferablePeriFinance(walletAddress));
-    const stakedUSDCamount = numbro(await PeriFinance.usdcStakedAmountOf(walletAddress)).divide(10**6).value().toString()
+    const stakedUSDCamount = numbro(await PeriFinance.usdcStakedAmountOf(walletAddress)).divide(10**18).value().toString()
     const {balances, PERIBalanceInfo, USDCBalanceInfo} = await getPynthsBalances();
     
     return {

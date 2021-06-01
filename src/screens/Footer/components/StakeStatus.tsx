@@ -8,7 +8,7 @@ import { FooterRoundContainer, FooterTitleContainer } from 'components/Container
 import { H4, H6 } from 'components/Text'
 // import { useTranslation } from 'react-i18next';
 
-import { pynthetix, formatCurrency } from 'lib'
+import { pynthetix, formatCurrency, convertDecimal } from 'lib'
 import { utils } from 'ethers'
 import numbro from 'numbro'
 
@@ -21,9 +21,9 @@ const TotalBalance = () => {
 	const exchangeRates = useSelector((state: RootState) => state.exchangeRates);
 	const targetCRatio = useSelector((state: RootState) => state.ratio.targetCRatio);
 
-	const stakedPERI:number = numbro(PERI.balance).subtract(numbro(transferablePERI).value()).value();
-	const totalStakedPERI = numbro(stakedPERI).divide(numbro(transferablePERI).value()).multiply(100).value();
-	const totalStakedUSDC = numbro(stakedUSDCamount).divide(numbro(USDC.balance).value()).multiply(100).value();
+	const stakedPERI = convertDecimal(numbro(PERI.balance).subtract(numbro(transferablePERI).value()).value(), 16);
+	const totalStakedPERI = convertDecimal(numbro(stakedPERI).divide(numbro(transferablePERI).value()).multiply(100).value(), 16);
+	const totalStakedUSDC = convertDecimal(numbro(stakedUSDCamount).divide(numbro(USDC.balance).value()).multiply(100).value(), 16);
 	const [stakedRate, setStakedRate] = useState('0');
 
 	const getStakingRate = async () => {
@@ -72,11 +72,11 @@ const TotalBalance = () => {
 					</Label>
 				</BarChart>
 				<BarChart>
-					<Graph type="range" min="0" max="100" value={stakedRate} readOnly></Graph>
-					<Label>
-						<H6>Staked PERI rate : {numbro(stakedRate).format({mantissa: 2})}%</H6>
-						<H6>Staked USDC rate : {numbro(100).subtract(numbro(stakedRate).value()).format({mantissa: 2})}%</H6>
-					</Label>
+						<Graph type="range" min="0" max="100" value={stakedRate} readOnly></Graph>
+						<Label>
+							<H6>Staked PERI rate : {numbro(stakedRate).value() === 0 ? '0.00' : numbro(stakedRate).format({mantissa: 2})}%</H6>
+							<H6>Staked USDC rate : {numbro(stakedRate).value() === 0 ? '0.00' : numbro(100).subtract(numbro(stakedRate).value()).format({mantissa: 2})}%</H6>
+						</Label>
 				</BarChart>
 				
 				{/* <BarChart>

@@ -43,7 +43,7 @@ const BurnActionButtons = ({burnData, burningAmount, gasPrice}) => {
     const getGasEstimate = async () => {
         let estimateGasLimit;
         try {
-            estimateGasLimit = await PeriFinance.contract.estimate.burnPynths(
+            estimateGasLimit = await PeriFinance.contract.estimate.burnPynthsAndUnstakeUSDC(
                 utils.parseEther(numbro(burningAmount['pUSD']).value().toString())
             );
         } catch (e) {
@@ -96,7 +96,6 @@ const BurnActionButtons = ({burnData, burningAmount, gasPrice}) => {
         let transaction;
         
         if(numbro(checkBurnAmount()).value() !== 0) {
-            console.log(checkBurnAmount())
             NotificationManager.error('check input amounts');
             return false;
         }
@@ -105,13 +104,16 @@ const BurnActionButtons = ({burnData, burningAmount, gasPrice}) => {
             gasPrice,
             gasLimit: await getGasEstimate()
         }
-        
+        console.log(
+            (numbro(burningAmount['pUSD']).value().toString()),
+        )
+        console.log(numbro(burningAmount['USDC']).multiply(10**18).value().toString())
         try {
             if(await Issuer.canBurnPynths(currentWallet)) {
                 
                 transaction = await PeriFinance.burnPynthsAndUnstakeUSDC(
                     utils.parseEther(numbro(burningAmount['pUSD']).value().toString()),
-                    numbro(burningAmount['USDC']).multiply(10**6).value().toString(),
+                    numbro(burningAmount['USDC']).multiply(10**18).value().toString(),
                     transactionInfo
                 );
                 
@@ -120,8 +122,9 @@ const BurnActionButtons = ({burnData, burningAmount, gasPrice}) => {
                 dispatch(updateTransaction(
                     {
                         hash: transaction.hash,
-                        message: `Burnt ${getCurrencyFormat( target ? numbro(burnData.PERIDebtpUSD).subtract(burnData.PERIBalance).value() : burningAmount['pUSD'])} pUSD
-                             ${numbro(burningAmount['USDC']).multiply(10**6).value().toString()} USDC
+                        message: `Burnt ${getCurrencyFormat(
+                            burningAmount['pUSD'])} pUSD
+                            ${numbro(burningAmount['USDC']).value().toString()} USDC
                         `,
                         type: 'Burn'
                     }

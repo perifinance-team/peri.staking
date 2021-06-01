@@ -1,19 +1,19 @@
-import numbro from 'numbro'
+import { currencyToPynths, pynthsToCurrency, calculator } from 'lib'
 
-export const getStakingEstimateCRatio = ({ PERITotalBalance, debtBalanceOf, exchangeRates, mintingAmount, stakingAmount}) => {
-    PERITotalBalance = numbro(PERITotalBalance);
-    debtBalanceOf = numbro(debtBalanceOf);
-    exchangeRates['PERI'] = numbro(exchangeRates['PERI']);
-    mintingAmount = numbro(mintingAmount);
+import { utils } from 'ethers'
 
-	if (!PERITotalBalance.value() || !debtBalanceOf.value() || !exchangeRates['PERI'].value()) {
-		return "0";
-	}
+export const getStakingEstimateCRatio = ({ PERITotalBalance, debtBalanceOf, exchangeRates, mintingAmount, stakingAmount, stakedAmount}) => {
 	
-	const USDCtopUSD = numbro(stakingAmount['USDC']).multiply(numbro(exchangeRates['USDC']).value()).value();
-	const USDCtopPERIRates = numbro(PERITotalBalance).multiply(exchangeRates['PERI'].value()).add(USDCtopUSD);
 	
-	const value = (debtBalanceOf.add(mintingAmount)).divide((USDCtopPERIRates));
+	const totalUSDC = calculator(stakingAmount['USDC'], stakedAmount, 'add');
+	const USDCTopUSD = calculator(totalUSDC, exchangeRates['USDC'], 'mul');
+	const USDCTopUSDToPERI = calculator(USDCTopUSD, exchangeRates['PERI'], 'div');
 
-	return isNaN(Number(value)) ? '0.00' : Math.round(Number(numbro(100).divide(value).format({mantissa: 2}))).toString();
+	const totalPERIaddUSDC = calculator( PERITotalBalance, USDCTopUSDToPERI, 'add');
+		
+	const totalDebt = calculator(debtBalanceOf, mintingAmount, 'add');
+	
+	const totalDebtToPERI = calculator((totalDebt).toString(), exchangeRates['PERI'], 'div');
+	
+	return calculator('100', calculator(totalDebtToPERI.toString(), totalPERIaddUSDC, 'div'), 'div').toString();
 }

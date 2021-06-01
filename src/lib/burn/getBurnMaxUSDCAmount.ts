@@ -1,6 +1,6 @@
 import numbro from 'numbro'
-
-export const getBurnMaxUSDCAmount = ({burningAmount, stakedUSDC, issuanceRatio, exchangeRates}) => {
+import { convertDecimal } from 'lib'
+export const getBurnMaxUSDCAmount = ({burningAmount, stakedUSDC, issuanceRatio, exchangeRates, decimal}) => {
     let burningAble = numbro(burningAmount).divide(issuanceRatio).divide(exchangeRates['USDC']);
-    return numbro(stakedUSDC).value() > burningAble.value() ? burningAble.format({mantissa: 6}) : numbro(stakedUSDC).format({mantissa: 6});
+    return numbro(stakedUSDC).value() > burningAble.value() ? convertDecimal(burningAble, decimal) : convertDecimal(stakedUSDC, decimal);
 }

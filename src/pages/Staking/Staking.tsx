@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { H5 } from 'components/Text'
+import { H5, H6 } from 'components/Text'
 
 import {
     BrowserRouter as Router,
@@ -36,14 +36,16 @@ const Staking = () => {
                             <S.ActionButtonContainer onClick={() => history.push(`/staking/PERI`)}>
                                 <S.ActionImage src={`/images/dark/actions/staking.svg`}></S.ActionImage>
                                 <S.ActionButtonTitle>
-                                    <H5 weigth={'bold'}>Staking PERI</H5>
+                                    <H5 weigth={'bold'}>Staking</H5>
+                                    <H6 weigth={'bold'}>only PERI</H6>
                                 </S.ActionButtonTitle>
                             </S.ActionButtonContainer>
                             
                             <S.ActionButtonContainer onClick={() => history.push(`/staking/USDC`)}>
                                 <S.ActionImage src={`/images/dark/actions/staking.svg`}></S.ActionImage>
                                 <S.ActionButtonTitle>
-                                <H5 weigth={'bold'}>Staking USDC</H5>
+                                <H5 weigth={'bold'}>Staking</H5>
+                                <H6 weigth={'bold'}>only USDC</H6>
                                 </S.ActionButtonTitle>
                             </S.ActionButtonContainer>
 
@@ -51,7 +53,7 @@ const Staking = () => {
                                 <S.ActionImage src={`/images/dark/actions/staking.svg`}></S.ActionImage>
                                 <S.ActionButtonTitle>
                                     <H5 weigth={'bold'}>Staking </H5>
-                                    <H5 weigth={'bold'}>PERI and USDC </H5>
+                                    <H6 weigth={'bold'}>PERI and USDC</H6>
                                 </S.ActionButtonTitle>
                             </S.ActionButtonContainer>
                         </S.ActionButtonRow>

@@ -96,7 +96,8 @@ const Burn = () => {
             amount: burningAmount['USDC'],
             issuanceRatio: burnData.issuanceRatio,
             exchangeRates: burnData.exchangeRates,
-            target: 'USDC'
+            target: 'USDC',
+            decimal: 6
         }); 
         
         let subtractUSDCAmount = numbro(value).add(numbro(USDCtransferTopUSD).value());
@@ -105,7 +106,8 @@ const Burn = () => {
             amount: subtractUSDCAmount,
             issuanceRatio: burnData.issuanceRatio, 
             exchangeRates: burnData.exchangeRates,
-            target: 'pUSD'
+            target: 'pUSD',
+            decimal: 6
         });
 
         const maxBurningUSDCAmount = getBurnMaxUSDCAmount({
@@ -113,6 +115,7 @@ const Burn = () => {
             exchangeRates: burnData.exchangeRates,
             burningAmount: value,
             stakedUSDC: burnData.staked['USDC'],
+            decimal: 6
         })
 
 
@@ -160,7 +163,8 @@ const Burn = () => {
             amount: value, 
             issuanceRatio: burnData.issuanceRatio,
             exchangeRates: burnData.exchangeRates,
-            target: 'USDC'
+            target: 'USDC',
+            decimal: 6
         });
         
         let subtractUSDCAmount = numbro(burningAmount['pUSD']).subtract(numbro(USDCtransferTopUSD).value());
@@ -169,7 +173,8 @@ const Burn = () => {
             amount: subtractUSDCAmount,
             issuanceRatio: burnData.issuanceRatio, 
             exchangeRates: burnData.exchangeRates,
-            target: 'pUSD'
+            target: 'pUSD',
+            decimal: 6
         });
 
         setEstimateCRatio(getBurnEstimateCRatio({
