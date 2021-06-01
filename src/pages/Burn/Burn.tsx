@@ -9,7 +9,7 @@ import { NotificationManager } from 'react-notifications';
 import { pynthetix } from 'lib'
 import numbro from 'numbro'
 import {
-    BrowserRouter as Router,
+    HashRouter as Router,
     Link,
     Switch,
     Route,
@@ -40,7 +40,7 @@ const Burn = () => {
         const getGasEstimate = async () => {
             let estimateGasLimit;
             try {
-                estimateGasLimit = await PeriFinance.contract.estimate.burnPynthsToTargetAndUnstakeUSDCToTarget();
+                estimateGasLimit = await PeriFinance.contract.estimate.burnPynthsAndUnstakeUSDCToTarget();
             } catch (e) {
                 estimateGasLimit = 350000;
                 console.log(e);
@@ -55,7 +55,7 @@ const Burn = () => {
         try {
             if(await Issuer.canBurnPynths(currentWallet)) {
                 
-                transaction = await PeriFinance.burnPynthsToTargetAndUnstakeUSDCToTarget(
+                transaction = await PeriFinance.burnPynthsAndUnstakeUSDCToTarget(
                     transactionInfo
                 );
                 

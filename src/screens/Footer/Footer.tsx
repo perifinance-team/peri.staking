@@ -10,7 +10,7 @@ const Footer = () => {
         
         <FooterContainer>
             <WalletDetail/>
-            <StakeStatus/>
+            {/* <StakeStatus/> */}
             <TotalBalance/>
         </FooterContainer>
     );

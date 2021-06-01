@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { H5, H6 } from 'components/Text'
 
 import {
-    BrowserRouter as Router,
+    HashRouter as Router,
     Link,
     Switch,
     Route,

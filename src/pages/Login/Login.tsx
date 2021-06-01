@@ -39,7 +39,7 @@ const Login = () => {
                         dispatch(updateWallet(connect));
                     }, () => dispatch(clearWallet()));
                     dispatch(updateIsConnected(true));
-                    history.push('/')
+                    history.push('/#')
                 } else {
                     history.push('/walletConnection')
                 }

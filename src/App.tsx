@@ -8,7 +8,7 @@ import { RootState } from 'config/reducers'
 
 import { BodyContainer } from 'components/Container'
 import {
-    BrowserRouter as Router,
+    HashRouter as Router,
     Switch,
     Route,
 } from "react-router-dom";

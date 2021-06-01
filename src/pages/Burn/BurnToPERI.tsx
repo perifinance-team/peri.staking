@@ -16,6 +16,7 @@ import { H5 } from 'components/Text'
 import Fee from 'components/Fee'
 import Input from 'components/Input'
 import { gasPrice } from 'helpers/gasPrice'
+import { utils } from 'ethers';
 
 type AmountsNumbro = {
     PERI?: numbro.Numbro,
@@ -72,10 +73,11 @@ const Burn = () => {
     }, [currentWallet]);
 
     const setBurningAmountChange = (value) => {
+        
         value = value.replace(/\,/g, '');
 
         if((/\./g).test(value)) {
-            value = value.match(/\d+\.\d{0,6}/g)[0];
+            value = value.match(/\d+\.\d{0,18}/g)[0];
         }
         
         if(isNaN(Number(value)) || value === "") {
@@ -87,41 +89,16 @@ const Burn = () => {
             return false;
         }
             
-        if(numbro(maxBurningAmount['pUSD']).clone().subtract(numbro(value).value()).value() < 0 ) {
+        if( utils.parseEther(maxBurningAmount['pUSD']).lt(utils.parseEther(value))) {
             value = maxBurningAmount['pUSD'];
         }
         
-        const USDCtransferTopUSD = getBurnTransferAmount({
-            amount: burningAmount['USDC'],
-            issuanceRatio: burnData.issuanceRatio,
-            exchangeRates: burnData.exchangeRates,
-            target: 'USDC',
-            decimal: 18
-        }); 
-        
-        let subtractUSDCAmount = numbro(value).add(numbro(USDCtransferTopUSD).value());
-        
         const pUSDtransferToPERI = getBurnTransferAmount({
-            amount: subtractUSDCAmount,
+            amount: value,
             issuanceRatio: burnData.issuanceRatio, 
             exchangeRates: burnData.exchangeRates,
             target: 'pUSD',
-            decimal: 18
         });
-
-        const maxBurningUSDCAmount = getBurnMaxUSDCAmount({
-            issuanceRatio: burnData.issuanceRatio,
-            exchangeRates: burnData.exchangeRates,
-            burningAmount: value,
-            stakedUSDC: burnData.staked['USDC'],
-            decimal: 18
-        })
-
-
-        setMaxBurningAmount({
-            pUSD: maxBurningAmount['pUSD'],
-            USDC: maxBurningUSDCAmount
-        })
 
         setEstimateCRatio(getBurnEstimateCRatio({
             balances: burnData.balances,
@@ -134,8 +111,8 @@ const Burn = () => {
 
         setBurningAmount({
             pUSD: value,
-            USDC: burningAmount['USDC'],
-            PERI: (numbro(pUSDtransferToPERI).format({mantissa: 6}))
+            USDC: '0',
+            PERI: pUSDtransferToPERI
         });
     }
 

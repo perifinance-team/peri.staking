@@ -44,10 +44,11 @@ const BurnActionButtons = ({burnData, burningAmount, gasPrice}) => {
         let estimateGasLimit;
         try {
             estimateGasLimit = await PeriFinance.contract.estimate.burnPynthsAndUnstakeUSDC(
-                utils.parseEther(numbro(burningAmount['pUSD']).value().toString())
+                utils.parseEther(numbro(burningAmount['pUSD']).value().toString()),
+                utils.parseEther(numbro(burningAmount['USDC']).value().toString()),
             );
         } catch (e) {
-            estimateGasLimit = 350000;
+            estimateGasLimit = 650000;
             console.log(e);
         }
         setGasLimit(numbro(estimateGasLimit).multiply(1.2).value());
@@ -95,25 +96,25 @@ const BurnActionButtons = ({burnData, burningAmount, gasPrice}) => {
     const onBurn = async ({target = false}) => {
         let transaction;
         
-        if(numbro(checkBurnAmount()).value() !== 0) {
-            NotificationManager.error('check input amounts');
-            return false;
-        }
+        // if(numbro(checkBurnAmount()).value() !== 0) {
+        //     NotificationManager.error('check input amounts');
+        //     return false;
+        // }
         dispatch(setIsLoading(true));
         const transactionInfo = {
             gasPrice,
             gasLimit: await getGasEstimate()
         }
-        console.log(
-            (numbro(burningAmount['pUSD']).value().toString()),
-        )
-        console.log(numbro(burningAmount['USDC']).multiply(10**18).value().toString())
+        
         try {
             if(await Issuer.canBurnPynths(currentWallet)) {
-                
+                console.log(
+                    utils.parseEther(burningAmount['pUSD']),
+                    utils.parseEther(burningAmount['USDC'])
+                )
                 transaction = await PeriFinance.burnPynthsAndUnstakeUSDC(
-                    utils.parseEther(numbro(burningAmount['pUSD']).value().toString()),
-                    numbro(burningAmount['USDC']).multiply(10**18).value().toString(),
+                    utils.parseEther(burningAmount['pUSD']),
+                    utils.parseEther(burningAmount['USDC']),
                     transactionInfo
                 );
                 

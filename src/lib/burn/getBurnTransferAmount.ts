@@ -1,20 +1,21 @@
 import numbro from 'numbro'
-import { convertDecimal } from 'lib'
+import { pynthsToCurrency, currencyToPynths } from 'lib'
+import { utils } from 'ethers';
 
-export const getBurnTransferAmount = ({amount, issuanceRatio, exchangeRates, target, decimal}) => {
+export const getBurnTransferAmount = ({amount, issuanceRatio, exchangeRates, target}) => {
     if(isNaN(Number(amount)) || amount === "") {
         amount = '0';
     }
     let retrunValue; 
     
     if(target === 'PERI') {
-        retrunValue = numbro(amount).multiply(numbro(issuanceRatio).value()).multiply(numbro(exchangeRates['PERI']).value()).value().toString();
+        retrunValue = currencyToPynths(amount, issuanceRatio, exchangeRates['PERI']);
     } else if(target === 'USDC') {
-        retrunValue = numbro(amount).multiply(numbro(issuanceRatio).value()).multiply(numbro(exchangeRates['USDC']).value()).value().toString();
+        retrunValue = currencyToPynths(amount, issuanceRatio, exchangeRates['USDC']);
     } else if(target === 'pUSD') {
-        retrunValue = numbro(amount).divide(numbro(issuanceRatio).value()).divide(numbro(exchangeRates['PERI']).value()).value().toString();
+        retrunValue = pynthsToCurrency(amount, issuanceRatio, exchangeRates['PERI'])
     }
 
-    return convertDecimal(convertDecimal, decimal)
+    return utils.formatEther(retrunValue);
     
 }

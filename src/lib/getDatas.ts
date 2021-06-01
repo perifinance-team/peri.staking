@@ -109,7 +109,7 @@ export const getBalancess = async (walletAddress) => {
                 balance: (utils.formatEther(value[index]))
             })
         });
-        const USDCBalance = await USDC.balanceOf(walletAddress);
+        const USDCBalance = utils.formatEther(await USDC.balanceOf(walletAddress));
         
         balances.push({
             coinName: 'USDC',

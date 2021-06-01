@@ -5,13 +5,13 @@ import styled from 'styled-components'
 import { RootState } from 'config/reducers'
 import { setIsLoading } from 'config/reducers/app'
 
-import { getBurnData, BurnData, getBurnTransferAmount, getBurnMaxUSDCAmount, getBurnMaxAmount, getBurnEstimateCRatio } from 'lib'
+import { getBurnData, BurnData, getBurnTransferAmount, getBurnMaxUSDCAmount, getBurnMaxAmount, getBurnEstimateCRatio, calculator } from 'lib'
 
-import Action from 'screens/Action'
+
 import numbro from 'numbro'
 
 import BurnActionButtons from './BurnActionButtons'
-import { LightBlueButton } from 'components/Button'
+import {utils} from 'ethers'
 import { ActionContainer } from 'components/Container'
 import { H5 } from 'components/Text'
 
@@ -76,7 +76,7 @@ const Burn = () => {
         value = value.replace(/\,/g, '');
 
         if((/\./g).test(value)) {
-            value = value.match(/\d+\.\d{0,6}/g)[0];
+            value = value.match(/\d+\.\d{0,18}/g)[0];
         }
         
         if(isNaN(Number(value)) || value === "") {
@@ -85,10 +85,14 @@ const Burn = () => {
                 USDC: '0.000000',
                 PERI: '0.000000',
             });
+            setMaxBurningAmount({
+                pUSD: maxBurningAmount['pUSD'],
+                USDC: '0'
+            });
             return false;
         }
             
-        if(numbro(maxBurningAmount['pUSD']).clone().subtract(numbro(value).value()).value() < 0 ) {
+        if( utils.parseEther(maxBurningAmount['pUSD']).lt(utils.parseEther(value))) {
             value = maxBurningAmount['pUSD'];
         }
         
@@ -97,17 +101,16 @@ const Burn = () => {
             issuanceRatio: burnData.issuanceRatio,
             exchangeRates: burnData.exchangeRates,
             target: 'USDC',
-            decimal: 6
         }); 
         
-        let subtractUSDCAmount = numbro(value).add(numbro(USDCtransferTopUSD).value());
+        let subtractUSDCAmount = calculator( value, USDCtransferTopUSD, 'sub')
         
         const pUSDtransferToPERI = getBurnTransferAmount({
             amount: subtractUSDCAmount,
             issuanceRatio: burnData.issuanceRatio, 
             exchangeRates: burnData.exchangeRates,
             target: 'pUSD',
-            decimal: 6
+            
         });
 
         const maxBurningUSDCAmount = getBurnMaxUSDCAmount({
@@ -115,7 +118,6 @@ const Burn = () => {
             exchangeRates: burnData.exchangeRates,
             burningAmount: value,
             stakedUSDC: burnData.staked['USDC'],
-            decimal: 6
         })
 
 
@@ -138,25 +140,31 @@ const Burn = () => {
             USDC: burningAmount['USDC'],
             PERI: (numbro(pUSDtransferToPERI).format({mantissa: 6}))
         });
-            
-        
-        //todo: escrow add to fiexed
-        // getGasEstimate();
     }
 
     const setBurningUSDCAmountChange = (value) => {
         value = value.replace(/\,/g, '');
 
         if((/\./g).test(value)) {
-            value = value.match(/\d+\.\d{0,6}/g)[0];
+            value = value.match(/\d+\.\d{0,18}/g)[0];
         }
         
         if(isNaN(Number(value)) || value === "") {
-            value = '';
+            setBurningAmount({
+                pUSD: burningAmount['pUSD'],
+                USDC: '',
+                PERI: getBurnTransferAmount({
+                    amount: burningAmount['pUSD'],
+                    issuanceRatio: burnData.issuanceRatio, 
+                    exchangeRates: burnData.exchangeRates,
+                    target: 'pUSD', 
+                }),
+            });
+            return false;
         }
         
-        if(numbro(maxBurningAmount['USDC']).clone().subtract(numbro(value).value()).value() < 0 ) {
-            value = numbro(maxBurningAmount['USDC']).clone();    
+        if( utils.parseEther(maxBurningAmount['USDC']).lt(utils.parseEther(value))) {
+            value = maxBurningAmount['USDC'];
         }
         
         const USDCtransferTopUSD = getBurnTransferAmount({
@@ -164,17 +172,15 @@ const Burn = () => {
             issuanceRatio: burnData.issuanceRatio,
             exchangeRates: burnData.exchangeRates,
             target: 'USDC',
-            decimal: 6
         });
         
-        let subtractUSDCAmount = numbro(burningAmount['pUSD']).subtract(numbro(USDCtransferTopUSD).value());
+        let subtractUSDCAmount = calculator( burningAmount['pUSD'], USDCtransferTopUSD, 'sub')
         
         const pUSDtransferToPERI = getBurnTransferAmount({
             amount: subtractUSDCAmount,
             issuanceRatio: burnData.issuanceRatio, 
             exchangeRates: burnData.exchangeRates,
-            target: 'pUSD',
-            decimal: 6
+            target: 'pUSD', 
         });
 
         setEstimateCRatio(getBurnEstimateCRatio({
@@ -185,11 +191,11 @@ const Burn = () => {
                 USDC: value,    
             }
         }));
-        
+        console.log(value);
         setBurningAmount({
             pUSD: burningAmount['pUSD'],
             USDC: value,
-            PERI: (numbro(pUSDtransferToPERI).format({mantissa: 6}))
+            PERI: pUSDtransferToPERI
         });
 }
     

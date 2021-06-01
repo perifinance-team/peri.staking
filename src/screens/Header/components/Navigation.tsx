@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 import { 
-    BrowserRouter as Router,
+    HashRouter as Router,
     // useHistory,
     // useLocation
 } from "react-router-dom";
