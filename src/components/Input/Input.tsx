@@ -3,7 +3,7 @@ import { BlueBorderRoundContainer } from 'components/Container'
 import Asset from 'components/Asset'
 import { BlueGreenButton } from 'components/Button';
 import { H6 } from 'components/Text'
-import { getCurrencyFormat } from 'lib'
+import { formatCurrency } from 'lib'
 
 const Input = (
     {
@@ -29,7 +29,7 @@ const Input = (
                     { disabled || <MaxButton onClick={maxAction}>MAX</MaxButton>}
                 </InputContainer>
             </Container>
-            {maxAmount && <MaxAmount>MAX: {getCurrencyFormat(maxAmount)} {currencyName}</MaxAmount>}
+            {maxAmount && <MaxAmount>MAX: {formatCurrency(maxAmount)} {currencyName}</MaxAmount>}
         </>
     )
 }

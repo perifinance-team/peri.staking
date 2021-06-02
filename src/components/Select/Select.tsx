@@ -5,7 +5,7 @@ import Calendar from 'react-calendar';
 import { format } from 'date-fns';
 import { H6, H5 } from 'components/Text'
 
-import { getCurrencyFormat } from 'lib'
+import { formatCurrency } from 'lib'
 
 const DropdownSelect = ({ data = [], onSelect, selected = [] }) => {
 	const handleSelect = element => {
@@ -156,7 +156,7 @@ const SelectedValue = ({ type, data, selected, placeholder}) => {
 			)}`;
 			return <H6>{text}</H6>;
 		case 'range':
-			text = `${getCurrencyFormat(selected.from)} → ${getCurrencyFormat(selected.to)}`;
+			text = `${formatCurrency(selected.from)} → ${formatCurrency(selected.to)}`;
 			return <H6>{text}</H6>;
 		default:
 			return null;

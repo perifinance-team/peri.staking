@@ -8,7 +8,7 @@ import { addSeconds, formatDistanceToNow } from 'date-fns';
 import { RootState } from 'config/reducers'
 import { setIsLoading } from 'config/reducers/app'
 
-import { pynthetix, getCurrencyFormat } from 'lib'
+import { pynthetix, formatCurrency } from 'lib'
 
 import { updateTransaction } from 'config/reducers/transaction'
 import { NotificationManager } from 'react-notifications';
@@ -189,12 +189,12 @@ const Claim = () => {
                     <div>
                         <Input key="primary"
                             currencyName="pUSD"
-                            value={`exchage rewards  : ${getCurrencyFormat(claimData.rewards.exchage)}`}
+                            value={`exchage rewards  : ${formatCurrency(claimData.rewards.exchage)}`}
                             disabled={true}
                         />
                         <Input key="secondary"
                             currencyName="PERI"
-                            value={`staking rewards  : ${getCurrencyFormat(claimData.rewards.staking)}`}
+                            value={`staking rewards  : ${formatCurrency(claimData.rewards.staking)}`}
                             disabled={true}
                         />
                     </div>

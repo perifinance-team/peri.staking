@@ -9,7 +9,7 @@ import { useHistory } from 'react-router-dom'
 import { RootState } from 'config/reducers'
 import { setIsLoading } from 'config/reducers/app'
 import { updateTransaction } from 'config/reducers/transaction'
-import { pynthetix, getCurrencyFormat } from 'lib'
+import { pynthetix, formatCurrency } from 'lib'
 
 import { BlueGreenButton } from 'components/Button'
 import { H4 } from 'components/Text'
@@ -105,7 +105,7 @@ const BurnActionButtons = ({burnData, burningAmount, gasPrice}) => {
                 dispatch(updateTransaction(
                     {
                         hash: transaction.hash,
-                        message: `Burnt ${getCurrencyFormat(
+                        message: `Burnt ${formatCurrency(
                             burningAmount['pUSD'])} pUSD
                             ${numbro(burningAmount['USDC']).value().toString()} USDC
                         `,

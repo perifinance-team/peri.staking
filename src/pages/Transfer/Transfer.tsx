@@ -4,12 +4,11 @@ import styled from 'styled-components'
 
 import { RootState } from 'config/reducers'
 
-import { pynthetix, getCurrencyFormat } from 'lib'
+import { pynthetix, formatCurrency } from 'lib'
 
 import Action from 'screens/Action'
 import { utils } from 'ethers'
 import numbro from 'numbro'
-import { updateTransaction } from 'config/reducers/transaction'
 
 import { ActionContainer } from 'components/Container'
 import { BlueGreenButton } from 'components/Button'
@@ -85,7 +84,7 @@ const Transfer = () => {
     
 
     // const setAmountMax = () => {
-    //     setCurrency(getCurrencyFormat(burnData.pUSDBalance))
+    //     setCurrency(formatCurrency(burnData.pUSDBalance))
     // }
     
     return (
@@ -101,7 +100,7 @@ const Transfer = () => {
                         currencyName="pUSD"
                         value={transferAmount}
                         onChange={setTransferAmount}
-                        onBlur={() => getCurrencyFormat(transferAmount)}
+                        onBlur={() => formatCurrency(transferAmount)}
                         maxAction={() => {}}
                     />
                 </div>
