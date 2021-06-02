@@ -13,11 +13,23 @@ export const Cell = styled.div`
     padding: 10px 40px;
 `;
 
+export const HeaderCellRight = styled(Cell)`
+    padding: 10px 40px;
+    text-align: right;
+`;
+
+export const HeaderCellLeft = styled(Cell)`
+    padding: 10px 6 0px;
+    text-align: left;
+`;
+
 export const CellRight = styled(Cell)`
+    padding: 10px 20px;
     text-align: right;
 `;
 
 export const CellLeft = styled(Cell)`
+    padding: 10px 40px;
     text-align: left;
 `;
 

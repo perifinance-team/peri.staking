@@ -75,6 +75,7 @@ export const TableContainer = styled.div`
 
 export const ActionContainer = styled.div`
 	display: flex;
+	
     flex-direction: column;
     justify-content: space-between;
     margin: auto;

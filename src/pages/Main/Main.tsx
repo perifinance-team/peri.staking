@@ -32,6 +32,7 @@ import Claim from '../Claim'
 import Trade from '../Trade'
 import Transactions from '../Transactions'
 import Track from '../Track'
+import Transfer from '../Transfer'
 import LP from '../LP'
 
 import MainHeader from 'screens/Header/MainHeader';
@@ -168,6 +169,9 @@ const Main = () => {
                                 </Route>
                                 <Route path="/claim">
                                     <Claim></Claim>
+                                </Route>
+                                <Route path="/transfer">
+                                    <Transfer></Transfer>
                                 </Route>
                                 <Route path="/trade">
                                     <Trade></Trade>

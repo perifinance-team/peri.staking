@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import styled from 'styled-components';
 import { BlueBorderRoundContainer } from 'components/Container'
 import Asset from 'components/Asset'
@@ -11,15 +12,24 @@ const Input = (
         onChange = undefined, onBlur = undefined, value, maxAction = undefined,
         fixed = false,
         fixedAction = undefined,
-        maxAmount = undefined
+        maxAmount = undefined,
+        currencies = undefined
     }) => {
-    
+    const [isOpen, setIsOpen] = useState<boolean>(false);
+
     return (
         <>
             <Container>
-                <AssetContainer>
+                <AssetContainer isCurrencies={currencies ? true: false} onClick={ () => currencies ? setIsOpen(!isOpen) : false }>
                     <Asset currencyName={currencyName} label={currencyName}></Asset>
                 </AssetContainer>
+                {isOpen && 
+                    <CurrenciesContainer>
+                        <Currencies>
+                            123123
+                        </Currencies>
+                    </CurrenciesContainer>
+                }
 
                 <Border></Border>
                 
@@ -33,16 +43,23 @@ const Input = (
         </>
     )
 }
-// const Currencies = styled.div`
-//     z-index: 11;
-// 	position: absolute;
-//     top: calc(100% - 680px);
-//     width: 250px;
-// 	height: 240px;
-// 	padding: 16px;
-// 	border-radius: 5px;
-// `
+const CurrenciesContainer = styled.div`
+    z-index: 11;
+	position: absolute;
+    top: 60px;
+    width: 250px;
+	height: 240px;
+	padding: 16px;
+    background: transparent;
+    border: 2px solid ${props => props.theme.colors.border};
+	border-radius: 5px;
+`
+const Currencies = styled.div`
+
+`
+
 const Container = styled(BlueBorderRoundContainer)`
+    position: relative;
     height: 50px;
     flex-direction: row;
     flex: 1 2;
@@ -50,11 +67,12 @@ const Container = styled(BlueBorderRoundContainer)`
     margin: 10px 0px 0px 0px;
 `
 
-const AssetContainer = styled.div`
+const AssetContainer = styled.div<{isCurrencies?: boolean}>`
     flex: 1;
     padding: 10px;
     display: flex;
     align-items: center;
+    cursor: ${props => props.isCurrencies ? 'pointer' : 'default'};
 `
 
 const Border = styled.div`

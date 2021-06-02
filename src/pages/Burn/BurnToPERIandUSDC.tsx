@@ -185,7 +185,7 @@ const Burn = () => {
                 USDC: value,    
             }
         }));
-        console.log(value);
+
         setBurningAmount({
             pUSD: burningAmount['pUSD'],
             USDC: value,

@@ -32,6 +32,7 @@ const TotalBalance = () => {
 	});
 	
 	const getRate = (stakAmount, totalBalance) => {
+		
 		if(numbro(stakAmount).value() === 0) {
 			return '0'
 		}
@@ -45,14 +46,14 @@ const TotalBalance = () => {
 		const init = async () => {
 			const debt = await pynthetix.js.PeriFinance.debtBalanceOf(currentWallet, utils.formatBytes32String('pUSD'));
 			const issuanceRatio = utils.parseEther(utils.parseEther('100').div(targetCRatio).toString()).toString();
-		
+			
 			setStakedRate(
 				{
 					PERI: getRate(stakedPERI, PERIBalance),
 					USDC: getRate(stakedUSDCamount, utils.formatEther(calculator(numbro(stakedUSDCamount).format({mantissa: 2}), USDC.balance, 'add'))),
 					PERIForUSDC: getRate(
-						currencyToPynths(stakedPERI, issuanceRatio, exchangeRates['PERI']), 
-						utils.formatEther(debt)
+						currencyToPynths(utils.parseEther(stakedPERI).toString(), issuanceRatio, exchangeRates['PERI']),
+						debt
 					)
 				}
 			)

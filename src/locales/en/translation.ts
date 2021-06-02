@@ -23,6 +23,9 @@ export const en = {
 		},
 		claim: {
 			subTitle: "Claim rewards from PERI staking and Pynths exchanges",
+		},
+		transfer: {
+			subTitle: "Pynths transfer",
 		}
 	}
 }

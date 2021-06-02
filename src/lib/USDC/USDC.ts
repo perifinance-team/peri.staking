@@ -28,7 +28,8 @@ export const USDC = {
         if(!this.contract) {
             await this.connect(pynthetix.signer, await getEthereumNetworkId());
         }
-        return await this.contract.connect(this.signer).approve(this.issuerAddress, utils.formatEther(1));
+        
+        return await this.contract.connect(this.signer).approve(this.issuerAddress, '11579208923731619542357098500868790785326998466');
     },
 
     balanceOf: async function (currentAddress) {

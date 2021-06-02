@@ -75,7 +75,7 @@ export const getStakingData = async (currentWallet) => {
             //  .sub().mul(issuanceRatio).mul(exchangeRates['USDC']),
             // (issuablepUSD - stakedAmount['USDC'] ) issuanceRatio * exchangeRates['USDC']
             USDC: utils.formatEther(currencyToPynths(stakeableUSDC, issuanceRatio, exchangeRates['USDC'])).toString(),
-            all: utils.formatEther(issuablepUSD).toString()
+            all: utils.formatEther((issuablepUSD).add((currencyToPynths(stakeableUSDC, issuanceRatio, exchangeRates['USDC'])).toString())).toString()
         }
     
         const stakeable = {

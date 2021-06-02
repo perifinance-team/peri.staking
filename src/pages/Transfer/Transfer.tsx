@@ -20,9 +20,11 @@ import Input from 'components/Input'
 const Transfer = () => {
     const { seletedFee } = useSelector((state: RootState) => state.seletedFee);
     const { currentWallet } = useSelector((state: RootState) => state.wallet);
+    const balances = useSelector((state: RootState) => state.balances.balances);
     const [transferData, setTransferData] = useState({});
     const [transferAmount, setTransferAmount] = useState<string>("0");
     const [gasLimit, setGasLimit] = useState<number>(0);
+    
     const { js: {PeriFinance, pUSD, Issuer, ExchangeRates} } = pynthetix as any;
 
     const currenciesToBytes = {
@@ -98,6 +100,7 @@ const Transfer = () => {
                 <div>
                     <Input key="primary"
                         currencyName="pUSD"
+                        currencies={balances}
                         value={transferAmount}
                         onChange={setTransferAmount}
                         onBlur={() => formatCurrency(transferAmount)}

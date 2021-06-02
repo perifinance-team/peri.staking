@@ -103,8 +103,8 @@ const WalletDetail = () => {
                 </RateBox>
             </RateContainer>
             <QuoteContainer>
-                <Asset currencyName={'PERI'} label={`${formatCurrency(PERI, 12)} USD`}></Asset>
-                <Asset currencyName={'USDC'} label={`${formatCurrency(USDC, 12)} USD`}></Asset>
+                <Asset currencyName={'PERI'} label={`${formatCurrency(PERI, 4)} USD`}></Asset>
+                <Asset currencyName={'USDC'} label={`${formatCurrency(USDC, 4)} USD`}></Asset>
             </QuoteContainer>
         </FooterRoundContainer>
     );
