@@ -1,7 +1,6 @@
 import { utils } from 'ethers';
 import { pynthetix, USDC, calculator, currencyToPynths } from 'lib';
 import { getBalance } from 'helpers/wallet/getBalance'
-import numbro from 'numbro'
 
 const currenciesToBytes = {
     PERI: utils.formatBytes32String('PERI'),

@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react'
+import { useEffect, useCallback, useState } from 'react'
 import { useSelector, useDispatch } from "react-redux"
 
 import {
@@ -52,7 +52,8 @@ const Main = () => {
     const themeState = useSelector((state: RootState) => state.theme.theme);
     const transaction = useSelector((state: RootState) => state.transaction);
     const dataIntervalTime = 1000 * 60 * 3;
-
+    const [intervals, setIntervals] = useState({data: null});
+    
     const connectWallet = useCallback(async () => {
         const currentWallet = await connectHelper(walletType);
         
@@ -61,11 +62,13 @@ const Main = () => {
             dispatch(updateIsConnected(true));
         }
         await getDatas(currentWallet.currentWallet);
-        setInterval( async () => {
-            dispatch(setIsLoading(true));
-            await getDatas(currentWallet.currentWallet)
-            dispatch(setIsLoading(false));
-        }, dataIntervalTime) 
+        setIntervals(
+            {data: setInterval( async () => {
+                dispatch(setIsLoading(true));
+                await getDatas(currentWallet.currentWallet)
+                dispatch(setIsLoading(false));
+            }, dataIntervalTime) }
+        )
         // eslint-disable-next-line
     }, []);
 
@@ -107,6 +110,8 @@ const Main = () => {
     useEffect(() => {
         if(isConnectedWallet) {
             changeAccount( async () => {
+                clearInterval(intervals.data);
+                setIntervals({data: null});
                 await connectWallet();
             }, () => { dispatch(clearWallet()); dispatch(updateIsConnected(false)); });
         }

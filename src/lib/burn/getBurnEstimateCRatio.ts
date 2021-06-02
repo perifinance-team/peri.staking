@@ -1,5 +1,4 @@
 import numbro from 'numbro'
-import { convertDecimal } from 'lib'
 
 export const getBurnEstimateCRatio = ({ balances, exchangeRates, burningAmount}) => {
     
@@ -9,7 +8,7 @@ export const getBurnEstimateCRatio = ({ balances, exchangeRates, burningAmount})
 	
 	const USDCtopUSD = numbro(burningAmount['USDC']).multiply(numbro(exchangeRates['USDC']).value()).value();
 	const USDCtopPERIRates = numbro(balances['PERITotal']).multiply(numbro(exchangeRates['PERI']).value()).subtract(USDCtopUSD);
-	const value = convertDecimal((numbro(balances['debt']).subtract(burningAmount['pUSD'])).divide((USDCtopPERIRates).value()), 6);
+	const value = (numbro(balances['debt']).subtract(burningAmount['pUSD'])).divide((USDCtopPERIRates).value());
 
 	return isNaN(Number(value)) || (Number(value) === 0)  ? '0.00' : Math.round(Number(numbro(100).divide(numbro(value).value()).format({mantissa: 2}))).toString();
 }

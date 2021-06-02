@@ -6,28 +6,28 @@ import { updateSelectedFee } from 'config/reducers/networkFee'
 
 import { H6 } from 'components/Text'
 // import { SkeyBlueButton } from 'components/Button'
-import numbro from 'numbro'
+// import numbro from 'numbro'
 
-const Fee = ({gasPrice, gasLimit}) => {
+const Fee = ({gasPrice}) => {
     const dispatch = useDispatch();
     const { ETH } = useSelector((state: RootState) => state.exchangeRates);
     const networkFee = useSelector((state: RootState) => state.networkFee);
     const { seletedFee } = useSelector((state: RootState) => state.seletedFee);
     const [feeToGwei, setFeeToGwei] = useState<number>(0);
-    const [feeToUSD, setFeeToUSD] = useState<number>(0);
+    // const [feeToUSD, setFeeToUSD] = useState<number>(0);
     useEffect(() => {
         try {
             dispatch(updateSelectedFee(networkFee.AVERAGE));
             setFeeToGwei(seletedFee.price);
-            setFeeToUSD(
-                numbro(feeToGwei).multiply(numbro(ETH).value()).value()
-            )
+            // setFeeToUSD(
+            //     numbro(feeToGwei).multiply(numbro(ETH).value()).value()
+            // )
         } catch(e) {
             console.log(e);
             setFeeToGwei(0);
         }
         // eslint-disable-next-line
-    }, [gasPrice, gasLimit, networkFee, seletedFee, ETH, feeToGwei])
+    }, [gasPrice, networkFee, seletedFee, ETH, feeToGwei])
     
     return (
         <FeeContainer>

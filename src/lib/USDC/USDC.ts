@@ -1,7 +1,6 @@
-import ERC20 from './contract/ERC20.json';
+import ERC20 from '../contract/ERC20.json';
 import { ethers, utils } from 'ethers';
 import { getEthereumNetworkId } from 'lib/ethereum'
-import numbro from 'numbro';
 import { pynthetix } from 'lib'
 
 export const USDC = {

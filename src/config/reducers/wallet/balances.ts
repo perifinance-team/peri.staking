@@ -12,6 +12,7 @@ type BalanceState = {
 	USDCBalanceInfo: Balances,
     transferablePERI: TransferablePERI,
 	stakedUSDCamount: string,
+	rewardEscrow: string,
 }
 
 const initialState: BalanceState = {
@@ -19,7 +20,8 @@ const initialState: BalanceState = {
 	PERIBalanceInfo: {coinName: 'PERI', balance: '0.0'},
 	USDCBalanceInfo: {coinName: 'USDC', balance: '0.0'},
 	transferablePERI: '0.00',
-	stakedUSDCamount: '0.00'
+	stakedUSDCamount: '0.00',
+	rewardEscrow: '0.00'
 }
 
 
@@ -34,6 +36,8 @@ export const ExchangeRatesSlice = createSlice({
 			state.USDCBalanceInfo.balance = actions.payload.USDCBalanceInfo.balance;
             state.transferablePERI = actions.payload.transferablePERI;
 			state.stakedUSDCamount = actions.payload.stakedUSDCamount;
+			state.rewardEscrow = actions.payload.rewardEscrow;
+			
 		},
 	},
 });

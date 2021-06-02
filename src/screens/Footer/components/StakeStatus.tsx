@@ -8,40 +8,58 @@ import { FooterRoundContainer, FooterTitleContainer } from 'components/Container
 import { H4, H6 } from 'components/Text'
 // import { useTranslation } from 'react-i18next';
 
-import { pynthetix, formatCurrency, convertDecimal } from 'lib'
+import { pynthetix, formatCurrency, calculator, currencyToPynths } from 'lib'
 import { utils } from 'ethers'
 import numbro from 'numbro'
 
 const TotalBalance = () => {
     // const { t } = useTranslation();
 	const PERI = useSelector((state: RootState) => state.balances.PERIBalanceInfo);
+	
 	const USDC = useSelector((state: RootState) => state.balances.USDCBalanceInfo);
 	const { currentWallet } = useSelector((state: RootState) => state.wallet);
-	const { transferablePERI, stakedUSDCamount} = useSelector((state: RootState) => (state.balances) );
+	const { transferablePERI, stakedUSDCamount, rewardEscrow } = useSelector((state: RootState) => (state.balances) );
 	const exchangeRates = useSelector((state: RootState) => state.exchangeRates);
 	const targetCRatio = useSelector((state: RootState) => state.ratio.targetCRatio);
-
-	const stakedPERI = convertDecimal(numbro(PERI.balance).subtract(numbro(transferablePERI).value()).value(), 16);
-	const totalStakedPERI = convertDecimal(numbro(stakedPERI).divide(numbro(transferablePERI).value()).multiply(100).value(), 16);
-	const totalStakedUSDC = convertDecimal(numbro(stakedUSDCamount).divide(numbro(USDC.balance).value()).multiply(100).value(), 16);
-	const [stakedRate, setStakedRate] = useState('0');
-
-	const getStakingRate = async () => {
-		const debt = utils.formatEther(await pynthetix.js.PeriFinance.debtBalanceOf(currentWallet, utils.formatBytes32String('pUSD')));
-		
-		setStakedRate(
-			numbro(stakedPERI).multiply(numbro(exchangeRates['PERI']).value()).multiply(numbro(targetCRatio).value())
-			.divide(numbro(debt).value()).multiply(100).value().toString()
-		);
+	const PERIBalance = utils.formatEther(calculator(PERI.balance, rewardEscrow, 'sub'));
+	
+	const stakedPERI = utils.formatEther(calculator(PERIBalance, transferablePERI, 'sub'));
+	
+	const [stakedRate, setStakedRate] = useState({
+		PERI: '0',
+		USDC: '0',
+		PERIForUSDC: '0'
+	});
+	
+	const getRate = (stakAmount, totalBalance) => {
+		if(numbro(stakAmount).value() === 0) {
+			return '0'
+		}
+		if(numbro(totalBalance).value() === 0) {
+			return '0'
+		}
+		return numbro(stakAmount).divide(totalBalance).multiply(100).format({mantissa: 2});
 	}
 
 	useEffect( () => {
 		const init = async () => {
-			await getStakingRate();
+			const debt = await pynthetix.js.PeriFinance.debtBalanceOf(currentWallet, utils.formatBytes32String('pUSD'));
+			const issuanceRatio = utils.parseEther(utils.parseEther('100').div(targetCRatio).toString()).toString();
+		
+			setStakedRate(
+				{
+					PERI: getRate(stakedPERI, PERIBalance),
+					USDC: getRate(stakedUSDCamount, utils.formatEther(calculator(numbro(stakedUSDCamount).format({mantissa: 2}), USDC.balance, 'add'))),
+					PERIForUSDC: getRate(
+						currencyToPynths(stakedPERI, issuanceRatio, exchangeRates['PERI']), 
+						utils.formatEther(debt)
+					)
+				}
+			)
 		}
 		init();
 		
-	}, [currentWallet, PERI, USDC]);
+	}, [currentWallet, PERI, USDC, stakedUSDCamount, stakedPERI, PERIBalance, targetCRatio, exchangeRates]);
 
 
     return (
@@ -50,50 +68,27 @@ const TotalBalance = () => {
                 <H4 weigth="bold">TOTAL STAKE</H4>
             </FooterTitleContainer>
             <RageContainer>
-				{/* <BarChart>
-					<Graph type="range" min="0" max="100" value="50" readOnly></Graph>
-					<Label>
-						<H6>Locked : 0</H6>
-						<H6>Transferable : 0</H6>
-					</Label>
-				</BarChart> */}
 				<BarChart>
-					<Graph type="range" min="0" max="100" value={totalStakedPERI} readOnly></Graph>
+					<Graph type="range" min="0" max="100" value={stakedRate.PERI} readOnly></Graph>
 					<Label>
 						<H6>Staked PERI : {formatCurrency(stakedPERI)}</H6>
 						<H6>Transferable : {formatCurrency(transferablePERI)}</H6>
 					</Label>
 				</BarChart>
 				<BarChart>
-					<Graph type="range" min="0" max="100" value={totalStakedUSDC} readOnly></Graph>
+					<Graph type="range" min="0" max="100" value={stakedRate.USDC} readOnly></Graph>
 					<Label>
 						<H6>Staked USDC : {formatCurrency(stakedUSDCamount)}</H6>
 						<H6>Transferable : {formatCurrency(USDC.balance)}</H6>
 					</Label>
 				</BarChart>
 				<BarChart>
-						<Graph type="range" min="0" max="100" value={stakedRate} readOnly></Graph>
+						<Graph type="range" min="0" max="100" value={stakedRate.PERIForUSDC} readOnly></Graph>
 						<Label>
-							<H6>Staked PERI rate : {numbro(stakedRate).value() === 0 ? '0.00' : numbro(stakedRate).format({mantissa: 2})}%</H6>
-							<H6>Staked USDC rate : {numbro(stakedRate).value() === 0 ? '0.00' : numbro(100).subtract(numbro(stakedRate).value()).format({mantissa: 2})}%</H6>
+							<H6>Staked PERI rate : {numbro(stakedRate).value() === 0 ? '0.00' : numbro(stakedRate.PERIForUSDC).format({mantissa: 2})}%</H6>
+							<H6>Staked USDC rate : {numbro(stakedRate).value() === 0 ? '0.00' : numbro(100).subtract(numbro(stakedRate.PERIForUSDC).value()).format({mantissa: 2})}%</H6>
 						</Label>
 				</BarChart>
-				
-				{/* <BarChart>
-					<Graph type="range" min="0" max="100" value={totalStakedUSDC} readOnly></Graph>
-					<Label>
-						<H6>Staked PERI : {formatCurrency(stakedUSDCamount)}</H6>
-						<H6>Staked USDC : {formatCurrency(USDC.balance)}</H6>
-					</Label>
-				</BarChart> */}
-
-				{/* <BarChart>
-					<Graph type="range" min="0" max="100" value="50" readOnly></Graph>
-					<Label>
-						<H6>Escrowed : 0</H6>
-						<H6>Not escrowed : 0</H6>
-					</Label>
-				</BarChart> */}
             </RageContainer>
         </FooterRoundContainer>
     );

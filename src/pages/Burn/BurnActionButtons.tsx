@@ -36,7 +36,6 @@ const BurnActionButtons = ({burnData, burningAmount, gasPrice}) => {
 
     const { currentWallet } = useSelector((state: RootState) => state.wallet);
     const [issuanceDelay, setIssuanceDelay] = useState<number>(0)
-    const [gasLimit, setGasLimit] = useState<number>(0);
 
     const { js: { Issuer, PeriFinance} } = pynthetix;
 
@@ -51,7 +50,6 @@ const BurnActionButtons = ({burnData, burningAmount, gasPrice}) => {
             estimateGasLimit = 650000;
             console.log(e);
         }
-        setGasLimit(numbro(estimateGasLimit).multiply(1.2).value());
         return numbro(estimateGasLimit).multiply(1.2).value();
     }
 
@@ -83,23 +81,10 @@ const BurnActionButtons = ({burnData, burningAmount, gasPrice}) => {
         
         // eslint-disable-next-line
     },[]);
-    const checkBurnAmount = () => {
-        const PERItopUSD = numbro(burningAmount['PERI'] ? burningAmount['PERI'] : 0).multiply(burnData.exchangeRates['PERI']);       
-        
-        const USDCtopUSD = numbro(burningAmount['USDC'] ? burningAmount['USDC'] : 0).multiply(burnData.exchangeRates['USDC']);
-        
-        const burnAmountTopUSD = PERItopUSD.add(USDCtopUSD.value()).multiply(burnData.issuanceRatio);
-        
-        return Math.round(burnAmountTopUSD.subtract(numbro(burningAmount['pUSD']).value()).value());
-    }
     
-    const onBurn = async ({target = false}) => {
+    const onBurn = async () => {
         let transaction;
         
-        // if(numbro(checkBurnAmount()).value() !== 0) {
-        //     NotificationManager.error('check input amounts');
-        //     return false;
-        // }
         dispatch(setIsLoading(true));
         const transactionInfo = {
             gasPrice,
@@ -108,10 +93,7 @@ const BurnActionButtons = ({burnData, burningAmount, gasPrice}) => {
         
         try {
             if(await Issuer.canBurnPynths(currentWallet)) {
-                console.log(
-                    utils.parseEther(burningAmount['pUSD']),
-                    utils.parseEther(burningAmount['USDC'])
-                )
+
                 transaction = await PeriFinance.burnPynthsAndUnstakeUSDC(
                     utils.parseEther(burningAmount['pUSD']),
                     utils.parseEther(burningAmount['USDC']),
@@ -142,9 +124,7 @@ const BurnActionButtons = ({burnData, burningAmount, gasPrice}) => {
 
     useEffect( () => {
         const init = async () => {
-            const issuanceDelay = await getIssuanceDelayCheck();
-            
-            
+            await getIssuanceDelayCheck();
         }
 
         init();
@@ -170,18 +150,9 @@ const BurnActionButtons = ({burnData, burningAmount, gasPrice}) => {
     } else {
         return (
         <>
-            <BurnButton
-                // disabled={isFetchingGasLimit || gasEstimateError || pUSDBalance === 0}
-                onClick={ () => onBurn({target: false})}
-            >
+            <BurnButton onClick={ () => onBurn()}>
                 <H4 weigth="bold">BURN</H4>
             </BurnButton>
-            {/* <BurnButton
-                // disabled={isFetchingGasLimit || gasEstimateError || pUSDBalance === 0}
-                onClick={ () => onBurn({target: true})}
-            >
-                <H4 weigth="bold" color="red">Fix your Collateralization Ratio </H4>
-            </BurnButton> */}
         </>)
     }
 }

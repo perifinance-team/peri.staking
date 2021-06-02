@@ -1,9 +1,6 @@
-import { useTranslation } from 'react-i18next';
 import { H5, H6 } from 'components/Text'
 
 import {
-    HashRouter as Router,
-    Link,
     Switch,
     Route,
     useHistory
@@ -18,7 +15,6 @@ import StakingToUSDC from './StakingToUSDC'
 import * as S from './styles'
 
 const Staking = () => {
-    const { t } = useTranslation();
     const history = useHistory();
 
     return (

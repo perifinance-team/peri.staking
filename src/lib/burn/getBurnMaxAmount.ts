@@ -9,7 +9,7 @@ export const getBurnMaxAmount = ({ balances, type, issuanceRatio, exchangeRates,
         if(type === 'PERI') {     
             const burnAblePERI = calculator(balances['PERITotal'], balances['transferablePERI'], 'sub');
             pUSD = currencyToPynths(burnAblePERI, issuanceRatio, exchangeRates['PERI']);
-        } else if (type === 'USDC') {            
+        } else if (type === 'USDC') {
             pUSD = currencyToPynths(staked['USDC'], issuanceRatio, exchangeRates['USDC']);
         } else {
             pUSD = balances['pUSD'];

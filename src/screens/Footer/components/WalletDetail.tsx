@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { useSelector, useDispatch } from "react-redux";
 import { setIsLoading } from 'config/reducers/app'
-import numbro from 'numbro'
 import { useHistory } from "react-router-dom";
 import { RootState } from 'config/reducers'
 import { updateBalances } from 'config/reducers/wallet/balances'
@@ -104,8 +103,8 @@ const WalletDetail = () => {
                 </RateBox>
             </RateContainer>
             <QuoteContainer>
-                <Asset currencyName={'PERI'} label={`1PERI = ${getCurrencyFormat(PERI, 12)} USD`}></Asset>
-                <Asset currencyName={'USDC'} label={`1USDC = ${getCurrencyFormat(USDC, 12)} USD`}></Asset>
+                <Asset currencyName={'PERI'} label={`${getCurrencyFormat(PERI, 12)} USD`}></Asset>
+                <Asset currencyName={'USDC'} label={`${getCurrencyFormat(USDC, 12)} USD`}></Asset>
             </QuoteContainer>
         </FooterRoundContainer>
     );

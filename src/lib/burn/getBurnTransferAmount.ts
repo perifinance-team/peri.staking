@@ -1,4 +1,3 @@
-import numbro from 'numbro'
 import { pynthsToCurrency, currencyToPynths } from 'lib'
 import { utils } from 'ethers';
 

@@ -1,8 +1,7 @@
 import pynthetix from './pynthetix'
 import { utils } from 'ethers'
 import numbro from 'numbro'
-import { convertDecimal } from 'lib'
-import { USDC } from 'lib'
+import { USDC, RewardEscrow } from 'lib'
 
 const format = (value) => {
     if(!value) return '0.00';
@@ -83,7 +82,7 @@ export const getBalancess = async (walletAddress) => {
     const {
 		js: { 
             PynthUtil,
-            PeriFinance
+            PeriFinance,
         },
         provider
 	} = pynthetix as any;
@@ -93,6 +92,7 @@ export const getBalancess = async (walletAddress) => {
         let balances = [];
         
         const periBalance = utils.formatEther(await PeriFinance.collateral(walletAddress));
+        
         
         const PERIBalanceInfo = {
             coinName: 'PERI',
@@ -132,11 +132,14 @@ export const getBalancess = async (walletAddress) => {
     const stakedUSDCamount = numbro(await PeriFinance.usdcStakedAmountOf(walletAddress)).divide(10**18).value().toString()
     const {balances, PERIBalanceInfo, USDCBalanceInfo} = await getPynthsBalances();
     
+    const rewardEscrow = utils.formatEther(await RewardEscrow.balanceOf(walletAddress));
+    
     return {
         balances,
         PERIBalanceInfo,
         USDCBalanceInfo,
         transferablePERI,
-        stakedUSDCamount
+        stakedUSDCamount,
+        rewardEscrow
     };
 }

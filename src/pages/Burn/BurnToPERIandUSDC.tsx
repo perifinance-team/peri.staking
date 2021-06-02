@@ -19,12 +19,6 @@ import Fee from 'components/Fee'
 import Input from 'components/Input'
 import { gasPrice } from 'helpers/gasPrice'
 
-type AmountsNumbro = {
-    PERI?: numbro.Numbro,
-    USDC?: numbro.Numbro,
-    pUSD?: numbro.Numbro,
-}
-
 type AmountsString = {
     PERI?: string,
     USDC?: string,
@@ -73,7 +67,7 @@ const Burn = () => {
     }, [currentWallet]);
 
     const setBurningAmountChange = (value) => {
-        value = value.replace(/\,/g, '');
+        value = value.replace(/,/g, '');
 
         if((/\./g).test(value)) {
             value = value.match(/\d+\.\d{0,18}/g)[0];
@@ -143,7 +137,7 @@ const Burn = () => {
     }
 
     const setBurningUSDCAmountChange = (value) => {
-        value = value.replace(/\,/g, '');
+        value = value.replace(/,/g, '');
 
         if((/\./g).test(value)) {
             value = value.match(/\d+\.\d{0,18}/g)[0];
@@ -243,7 +237,7 @@ const Burn = () => {
                         burningAmount={burningAmount} 
                         gasPrice={gasPrice(seletedFee.price)} 
                         />
-                    <Fee gasPrice={seletedFee.price} gasLimit={gasLimit}/>
+                    <Fee gasPrice={seletedFee.price}/>
                 </div>
             </ActionContainer>
     );

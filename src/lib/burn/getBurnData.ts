@@ -1,6 +1,5 @@
 import { pynthetix } from 'lib'
 import { utils } from 'ethers'
-import numbro from 'numbro'
 
 export type BurnData = {
     issuanceRatio: utils.BigNumber,

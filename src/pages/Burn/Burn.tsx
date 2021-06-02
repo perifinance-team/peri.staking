@@ -1,7 +1,6 @@
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from 'config/reducers'
 import { updateTransaction } from 'config/reducers/transaction'
-import { useTranslation } from 'react-i18next';
 import { gasPrice } from 'helpers/gasPrice';
 import { setIsLoading } from 'config/reducers/app'
 import { NotificationManager } from 'react-notifications';
@@ -9,8 +8,6 @@ import { NotificationManager } from 'react-notifications';
 import { pynthetix } from 'lib'
 import numbro from 'numbro'
 import {
-    HashRouter as Router,
-    Link,
     Switch,
     Route,
     useHistory
@@ -27,7 +24,6 @@ import BurnToUSDC from './BurnToUSDC'
 import * as S from './styles'
 
 const Burn = () => {
-    const { t } = useTranslation();
     const history = useHistory();
     const dispatch = useDispatch();
     const { seletedFee } = useSelector((state: RootState) => state.seletedFee);

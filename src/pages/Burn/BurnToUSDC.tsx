@@ -8,22 +8,14 @@ import { setIsLoading } from 'config/reducers/app'
 import { getBurnData, BurnData, getBurnMaxUSDCAmount, getBurnMaxAmount, getBurnEstimateCRatio } from 'lib'
 
 import { utils } from 'ethers' 
-import numbro from 'numbro'
 
 import BurnActionButtons from './BurnActionButtons'
-import { LightBlueButton } from 'components/Button'
 import { ActionContainer } from 'components/Container'
 import { H5 } from 'components/Text'
 
 import Fee from 'components/Fee'
 import Input from 'components/Input'
 import { gasPrice } from 'helpers/gasPrice'
-
-type AmountsNumbro = {
-    PERI?: numbro.Numbro,
-    USDC?: numbro.Numbro,
-    pUSD?: numbro.Numbro,
-}
 
 type AmountsString = {
     PERI?: string,
@@ -43,7 +35,6 @@ const Burn = () => {
         {pUSD: '0', USDC: '0', PERI: '0'}
     );
 
-    const [transferAmount, setTransferAmount] = useState<string>("0");
     // eslint-disable-next-line
     const [gasLimit, setGasLimit] = useState<number>(0);
     const dataIntervalTime = 1000 * 60 * 3;
@@ -72,7 +63,7 @@ const Burn = () => {
     }, [currentWallet]);
 
     const setBurningAmountChange = (value) => {
-        value = value.replace(/\,/g, '');
+        value = value.replace(/,/g, '');
 
         if((/\./g).test(value)) {
             value = value.match(/\d+\.\d{0,18}/g)[0];
@@ -150,7 +141,7 @@ const Burn = () => {
                     burningAmount={burningAmount} 
                     gasPrice={gasPrice(seletedFee.price)} 
                     />
-                <Fee gasPrice={seletedFee.price} gasLimit={gasLimit}/>
+                <Fee gasPrice={seletedFee.price}/>
             </div>
         </ActionContainer>
     );

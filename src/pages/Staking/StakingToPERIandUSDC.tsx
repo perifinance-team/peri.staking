@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback} from 'react';
 import { useSelector, useDispatch } from "react-redux";
-import { NotificationManager } from 'react-notifications';
+import styled from 'styled-components'
 
 import { RootState } from 'config/reducers'
 import { setIsLoading } from 'config/reducers/app'
@@ -14,9 +14,9 @@ import { gasPrice } from 'helpers/gasPrice'
 
 import numbro from 'numbro'
 
-import styled from 'styled-components'
+
 import Input from 'components/Input'
-import { BlueGreenButton, LightBlueButton } from 'components/Button'
+import { BlueGreenButton } from 'components/Button'
 import { H4, H5 } from 'components/Text'
 import Fee from 'components/Fee'
 import { ActionContainer } from 'components/Container'
@@ -47,7 +47,6 @@ const Staking = () => {
         pUSD: '0'
     });
 
-    const [gasLimit, setGasLimit] = useState<number>(0);
     const [needApprove, setNeedApprove] = useState<boolean>(false);
     const dataIntervalTime = 1000 * 60 * 3;
 
@@ -101,7 +100,7 @@ const Staking = () => {
     } ,[currentWallet]);
     
     const setMintAmount = useCallback ((value, isMax = false) => {
-        value = value.replace(/\,/g, '');
+        value = value.replace(/,/g, '');
 
         if((/\./g).test(value)) {
             value = value.match(/\d+\.\d{0,18}/g)[0];
@@ -153,21 +152,21 @@ const Staking = () => {
                 debtBalanceOf: stakingData.balances['debt'],
                 exchangeRates: stakingData.exchangeRates,
                 mintingAmount: value,
-                stakingAmount,
+                stakingAmount: {USDC, PERI},
                 stakedAmount: stakingData.stakedAmount['USDC']
             }
         ));
         
         setMintingAmount({pUSD: isMax ? value : value});
         // getGasEstimate();
-    }, [stakingData, maxMintingAmount, stakingAmount, maxStakingAmount])
+    }, [stakingData, maxMintingAmount, stakingAmount])
 
     const setAmountMax = () => {
         setMintAmount(maxMintingAmount['pUSD'], true);
     }
 
     const setUSDCAmount = useCallback( (value, isMax = false) => {
-        value = value.replace(/\,/g, '');
+        value = value.replace(/,/g, '');
         
         if(isNaN(Number(value)) || value === "") {
             setStakingAmount({
@@ -217,7 +216,7 @@ const Staking = () => {
                 stakedAmount: stakingData.stakedAmount['USDC']
             }
         ));
-    }, [stakingData, maxStakingAmount])
+    }, [stakingData, maxStakingAmount, stakingAmount, mintingAmount])
 
     const setUSDCAmountMax = () => {
         setUSDCAmount(maxStakingAmount['USDC'], true);
@@ -230,25 +229,11 @@ const Staking = () => {
                 utils.parseEther(mintingAmount['pUSD']).toString(),
                 utils.parseEther(stakingAmount['USDC']).toString(),
             );
-            
-            setGasLimit(numbro(estimateGasLimit).multiply(1.2).value());
-            
+
         } catch(e) {
             estimateGasLimit = 600000;
         }
         return numbro(estimateGasLimit).multiply(1.2).value();
-    }
-    const amountCheck = () => {
-        const USDCtopUSD = numbro(stakingAmount['USDC']).divide(numbro(stakingData.exchangeRates['USDC']).value())
-        const PERItopUSD = numbro(stakingAmount['PERI']).divide(numbro(stakingData.exchangeRates['PERI']).value())
-
-        if(USDCtopUSD.add(PERItopUSD.value()).divide(numbro(stakingData.issuanceRatio).value()).subtract(numbro(mintingAmount['pUSD']).value()).value() === 0) {
-            return true;
-        } else {
-            return false;
-        }
-
-        // 환율적용 계산하여 mintamount 계산
     }
 
     const onSaking = async () => {
@@ -337,7 +322,7 @@ const Staking = () => {
                             </H4>
                         </StakingButton>)
                     }
-                    <Fee gasPrice={seletedFee.price} gasLimit={gasLimit}/>
+                    <Fee gasPrice={seletedFee.price}/>
                 </div>
             </ActionContainer>
     );

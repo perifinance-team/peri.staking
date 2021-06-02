@@ -107,7 +107,7 @@ const Transfer = () => {
                 </div>
                 <div>
                     <BurnButton onClick={ () => console.log(12)}><H4 weigth="bold">BURN</H4></BurnButton>
-                    <Fee gasPrice={seletedFee.price} gasLimit={gasLimit}/>
+                    <Fee gasPrice={seletedFee.price}/>
                 </div>
             </ActionContainer>
         </Action>

@@ -1,12 +1,13 @@
 import { useEffect, useState, useCallback} from 'react';
 import { useSelector, useDispatch } from "react-redux";
 import { NotificationManager } from 'react-notifications';
+import styled from 'styled-components'
 
 import { RootState } from 'config/reducers'
 import { setIsLoading } from 'config/reducers/app'
 import { updateTransaction } from 'config/reducers/transaction'
 
-import { StakingData, getStakingData, pynthetix, getStakingEstimateCRatio, getStakingAmount, getStakingMaxUSDCAmount, USDC, calculator } from 'lib'
+import { StakingData, getStakingData, pynthetix, getStakingEstimateCRatio, getStakingAmount } from 'lib'
 import { utils } from 'ethers'
 import { useHistory } from 'react-router-dom'
 import { gasPrice } from 'helpers/gasPrice'
@@ -14,10 +15,9 @@ import { gasPrice } from 'helpers/gasPrice'
 
 import numbro from 'numbro'
 
-import styled from 'styled-components'
-import Action from 'screens/Action'
+
 import Input from 'components/Input'
-import { BlueGreenButton, LightBlueButton } from 'components/Button'
+import { BlueGreenButton } from 'components/Button'
 import { H4, H5 } from 'components/Text'
 import Fee from 'components/Fee'
 import { ActionContainer } from 'components/Container'
@@ -35,11 +35,6 @@ const Staking = () => {
         USDC: '0'
     });
 
-    const [maxStakingAmount , setMaxStakingAmount] = useState<{USDC?: string, PERI?: string}>({
-        USDC: '0',
-        PERI: '0'
-    });
-
     const [mintingAmount, setMintingAmount] = useState<{pUSD: string}>({
         pUSD: '0'
     });
@@ -47,9 +42,7 @@ const Staking = () => {
     const [maxMintingAmount, setMaxMintingAmount] = useState<{pUSD?: string}>({
         pUSD: '0'
     });
-
-    const [gasLimit, setGasLimit] = useState<number>(0);
-    const [needApprove, setNeedApprove] = useState<boolean>(false);
+    
     const dataIntervalTime = 1000 * 60 * 3;
 
     const { js: { PeriFinance } }  = pynthetix as any;
@@ -64,11 +57,6 @@ const Staking = () => {
             setStakingData(data);
             setMaxMintingAmount({
                 pUSD: data.issuable['pUSD'],
-            });
-        
-            setMaxStakingAmount({
-                USDC: '0',
-                PERI: data.stakeable['PERI']
             });
 
             setEstimateCRatio(getStakingEstimateCRatio(
@@ -102,7 +90,7 @@ const Staking = () => {
     } ,[currentWallet]);
     
     const setMintAmount = useCallback ((value, isMax = false) => {
-        value = value.replace(/\,/g, '');
+        value = value.replace(/,/g, '');
         
         if((/\./g).test(value)) {
             value = value.match(/\d+\.\d{0,18}/g)[0];
@@ -111,7 +99,6 @@ const Staking = () => {
         if(isNaN(Number(value)) || value === "") {
             setMintingAmount({pUSD: ''});
             setStakingAmount( { PERI: '0', USDC: '0'} );
-            setMaxStakingAmount({USDC: '0'});
             setEstimateCRatio(getStakingEstimateCRatio(
                 { 
                     PERITotalBalance: stakingData.balances['PERITotal'], 
@@ -145,14 +132,14 @@ const Staking = () => {
                 debtBalanceOf: stakingData.balances['debt'],
                 exchangeRates: stakingData.exchangeRates,
                 mintingAmount: value,
-                stakingAmount,
+                stakingAmount: {USDC, PERI},
                 stakedAmount: stakingData.stakedAmount['USDC']
             }
         ));
         
         setMintingAmount({pUSD: isMax ? value : value});
         // getGasEstimate();
-    }, [stakingData, maxMintingAmount, stakingAmount, maxStakingAmount])
+    }, [stakingData, maxMintingAmount, stakingAmount])
 
     const setAmountMax = () => {
         setMintAmount(maxMintingAmount['pUSD'], true);
@@ -165,9 +152,6 @@ const Staking = () => {
                 utils.parseEther(numbro(mintingAmount['pUSD']).value().toString()),
                 numbro(stakingAmount['USDC']).multiply(10**18).value().toString()
             );
-            
-            setGasLimit(numbro(estimateGasLimit).multiply(1.2).value());
-            
         } catch(e) {
             estimateGasLimit = 600000;
         }
@@ -247,7 +231,7 @@ const Staking = () => {
                             { numbro(estimateCRatio).value() < 400 ? 'Maintain the C-Ratio above 400%' : 'STAKE & MINT'}
                         </H4>
                     </StakingButton>
-                    <Fee gasPrice={seletedFee.price} gasLimit={gasLimit}/>
+                    <Fee gasPrice={seletedFee.price}/>
                 </div>
             </ActionContainer>        
     );
