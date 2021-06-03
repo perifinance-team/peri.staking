@@ -1,6 +1,15 @@
 import { calculator } from 'lib'
 
 export const getStakingEstimateCRatio = ({ PERITotalBalance, debtBalanceOf, exchangeRates, mintingAmount, stakingAmount, stakedAmount}) => {
+	if(mintingAmount === '' || !mintingAmount) {
+		mintingAmount = '0';
+	}
+
+	if(stakedAmount === '' || !stakedAmount) {
+		stakedAmount = '0';
+	}
+	
+
 	const totalUSDC = calculator(stakingAmount['USDC'], stakedAmount, 'add');
 	const USDCTopUSD = calculator(totalUSDC, exchangeRates['USDC'], 'mul');
 	const USDCTopUSDToPERI = calculator(USDCTopUSD, exchangeRates['PERI'], 'div');

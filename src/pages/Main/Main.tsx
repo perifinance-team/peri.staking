@@ -63,13 +63,13 @@ const Main = () => {
             dispatch(updateIsConnected(true));
         }
         await getDatas(currentWallet.currentWallet);
-        // setIntervals(
-            // {data: setInterval( async () => {
-            //     dispatch(setIsLoading(true));
-            //     await getDatas(currentWallet.currentWallet)
-            //     dispatch(setIsLoading(false));
-            // }, dataIntervalTime) }
-        // )
+        setIntervals(
+            {data: setInterval( async () => {
+                dispatch(setIsLoading(true));
+                await getDatas(currentWallet.currentWallet)
+                dispatch(setIsLoading(false));
+            }, dataIntervalTime) }
+        )
         // eslint-disable-next-line
     }, []);
 
