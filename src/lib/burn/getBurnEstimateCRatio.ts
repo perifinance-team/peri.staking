@@ -1,14 +1,17 @@
-import numbro from 'numbro'
+import { calculator } from 'lib'
 
-export const getBurnEstimateCRatio = ({ balances, exchangeRates, burningAmount}) => {
+export const getBurnEstimateCRatio = ({ balances, exchangeRates, burningAmount, stakedAmount}) => {
     
-	if (!numbro(balances['debt']).value() || !numbro(balances['PERITotal']).value() || !numbro(exchangeRates['PERI']).value()) {
-		return "0";
-	}
-	
-	const USDCtopUSD = numbro(burningAmount['USDC']).multiply(numbro(exchangeRates['USDC']).value()).value();
-	const USDCtopPERIRates = numbro(balances['PERITotal']).multiply(numbro(exchangeRates['PERI']).value()).subtract(USDCtopUSD);
-	const value = (numbro(balances['debt']).subtract(burningAmount['pUSD'])).divide((USDCtopPERIRates).value());
+	const totalUSDC = calculator(stakedAmount, burningAmount['USDC'], 'sub');
 
-	return isNaN(Number(value)) || (Number(value) === 0)  ? '0.00' : Math.round(Number(numbro(100).divide(numbro(value).value()).format({mantissa: 2}))).toString();
+	const USDCTopUSD = calculator(totalUSDC, exchangeRates['USDC'], 'mul');
+
+	const USDCTopUSDToPERI = calculator(USDCTopUSD, exchangeRates['PERI'], 'div');
+
+	const totalPERIaddUSDC = calculator( balances['debt'], USDCTopUSDToPERI, 'add');
+	
+	const totalDebt = calculator(balances['debt'], burningAmount['pUSD'], 'sub');
+	
+	const totalDebtToPERI = calculator((totalDebt).toString(), exchangeRates['PERI'], 'div');
+	return calculator('100', calculator(totalDebtToPERI.toString(), totalPERIaddUSDC, 'div'), 'div').toString();
 }

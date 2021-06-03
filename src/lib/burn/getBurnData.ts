@@ -1,4 +1,4 @@
-import { pynthetix } from 'lib'
+import { pynthetix, RewardEscrow} from 'lib'
 import { utils } from 'ethers'
 
 export type BurnData = {
@@ -7,6 +7,8 @@ export type BurnData = {
         debt: utils.BigNumber,
         PERI: utils.BigNumber,
         pUSD: utils.BigNumber,
+        PERITotal: utils.BigNumber,
+        transferablePERI: utils.BigNumber,
     }
     exchangeRates: {
         PERI: utils.BigNumber,
@@ -34,6 +36,7 @@ export const getBurnData = async (currentWallet) => {
         PERITotal: await PeriFinance.collateral(currentWallet),
         transferablePERI: await PeriFinance.transferablePeriFinance(currentWallet),
         pUSD: value[pUSDIndex],
+        rewardEscrow: await RewardEscrow.balanceOf(currentWallet)
     }
 
     const staked = {

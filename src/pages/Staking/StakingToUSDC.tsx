@@ -64,9 +64,9 @@ const Staking = () => {
                     PERITotalBalance: data.balances['PERITotal'], 
                     debtBalanceOf: data.balances['debt'],
                     exchangeRates: data.exchangeRates,
-                    mintingAmount: '0',
+                    mintingAmount: mintingAmount['pUSD'],
                     stakingAmount,
-                    stakedAmount: stakingData.stakedAmount['USDC']
+                    stakedAmount: data.stakedAmount['USDC']
                 }
             ));
         } catch(e) {

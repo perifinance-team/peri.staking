@@ -65,6 +65,7 @@ const Claim = () => {
             currentPeriodStart && feePeriodDuration
                 ? addSeconds(currentPeriodStart, feePeriodDuration)
                 : null;
+        console.log(feePeriodDuration.toString())
         return {
             closeIn: formatDistanceToNow(currentPeriodEnd),
             isCloseFeePeriodEnabled: Math.ceil(Date.now() / 1000) > (Number(recentFeePeriods.startTime) + Number(feePeriodDuration))
@@ -203,11 +204,7 @@ const Claim = () => {
                         {claimData.isCloseFeePeriodEnabled ? (
                             <ClaimButton onClick={ () => onCloseFeePeriod()}><H4 weigth="bold">CLOSE CURRENT PERIOD</H4></ClaimButton>
                         ) : null}
-                        
-                        {claimData.claimable ? 
-                            <ClaimButton onClick={ () => onClaim()}><H4 weigth="bold">CLAIM</H4></ClaimButton>:
-                            <ClaimButton onClick={ () => init()}><H4 weigth="bold">RETRY</H4></ClaimButton>    
-                        }
+                        <ClaimButton onClick={ () => onClaim()} disabled={!claimData.claimable}><H4 weigth="bold">CLAIM</H4></ClaimButton>
                         <Fee gasPrice={seletedFee.price}/>
                     </div>
                 </ActionContainer>

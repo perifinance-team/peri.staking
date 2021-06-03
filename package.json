@@ -43,6 +43,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
+    "e2e": "cypress open",
     "deploy": "npm run deploy-s3 && npm run invalidate",
     "deploy-s3": "aws s3 sync ./build s3://peri.staking --profile=peri.staking-deploy-s3",
     "invalidate": "aws cloudfront create-invalidation --profile=peri.staking-deploy-s3 --distribution-id E10BVDVX3OHOTH --paths / /index.html /error.html /service-worker.js /manifest.json /favicon.ico"
@@ -67,6 +68,7 @@
   },
   "devDependencies": {
     "@types/react": "^17.0.3",
-    "@types/styled-components": "^5.1.9"
+    "@types/styled-components": "^5.1.9",
+    "cypress": "^7.4.0"
   }
 }

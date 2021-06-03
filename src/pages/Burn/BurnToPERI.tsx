@@ -50,7 +50,8 @@ const Burn = () => {
                 setEstimateCRatio(getBurnEstimateCRatio({
                     balances: data.balances,
                     exchangeRates: data.exchangeRates, 
-                    burningAmount
+                    burningAmount,
+                    stakedAmount: data.staked['USDC']
                 }));
             } catch(e) {
                 console.log(e)
@@ -97,8 +98,9 @@ const Burn = () => {
             exchangeRates: burnData.exchangeRates, 
             burningAmount: {
                 pUSD: value,
-                USDC: burningAmount['USDC'],    
-            }
+                USDC: burningAmount['USDC'],
+            },
+            stakedAmount: burnData.staked['USDC']
         }));
 
         setBurningAmount({

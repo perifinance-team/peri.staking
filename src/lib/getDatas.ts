@@ -132,7 +132,7 @@ export const getBalancess = async (walletAddress) => {
             balance: USDCBalance.toString(),
         }};
     }
-    
+    const debtBalance = utils.formatEther(await PeriFinance.debtBalanceOf(walletAddress, utils.formatBytes32String('pUSD')));
     const transferablePERI = utils.formatEther(await PeriFinance.transferablePeriFinance(walletAddress));
     const stakedUSDCamount = numbro(await PeriFinance.usdcStakedAmountOf(walletAddress)).divide(10**18).value().toString()
     const {balances, PERIBalanceInfo, USDCBalanceInfo} = await getPynthsBalances();
@@ -141,6 +141,7 @@ export const getBalancess = async (walletAddress) => {
     
     return {
         balances,
+        debtBalance,
         PERIBalanceInfo,
         USDCBalanceInfo,
         transferablePERI,

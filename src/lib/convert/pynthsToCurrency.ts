@@ -2,7 +2,13 @@ import { utils } from 'ethers'
 
 export const pynthsToCurrency = (amount, issuanceRatio, exchangeRates) => {
     amount = typeof amount === "string" ? utils.parseEther(amount) : amount;
-    issuanceRatio = typeof amount === "string" ? utils.parseEther(issuanceRatio) : issuanceRatio;
-    exchangeRates = typeof amount=== "string" ? utils.parseEther(exchangeRates) : exchangeRates;
+    issuanceRatio = typeof issuanceRatio === "string" ? utils.parseEther(issuanceRatio) : issuanceRatio;
+    exchangeRates = typeof exchangeRates === "string" ? utils.parseEther(exchangeRates) : exchangeRates;
+    if(
+        amount.eq(utils.parseEther('0'))
+    )  {
+        return '0';
+    }
+
     return (amount).mul(issuanceRatio).div(exchangeRates).div(100);
 }

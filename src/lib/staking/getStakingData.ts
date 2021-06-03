@@ -61,7 +61,6 @@ export const getStakingData = async (currentWallet) => {
             USDC: await ExchangeRates.rateForCurrency(currenciesToBytes['USDC']),
         }
         
-        
         const issuablepUSD = (await PeriFinance.remainingIssuablePynths(currentWallet))[0];
         
         let stakeableUSDC = (await PeriFinance.availableUSDCStakeAmount(currentWallet));
@@ -69,7 +68,7 @@ export const getStakingData = async (currentWallet) => {
         if((stakeableUSDC).gt(balances['USDC'])) {
             stakeableUSDC = balances['USDC']
         }
-        
+
         const issuable = {
             pUSD: utils.formatEther(calculator(issuablepUSD, stakedAmount['USDC'], 'sub')).toString(),
             //  .sub().mul(issuanceRatio).mul(exchangeRates['USDC']),
