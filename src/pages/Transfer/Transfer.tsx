@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import styled from 'styled-components'
 
 import { RootState } from 'config/reducers'
@@ -8,11 +8,10 @@ import { pynthetix, formatCurrency } from 'lib'
 
 import Action from 'screens/Action'
 import { utils } from 'ethers'
-import numbro from 'numbro'
 
 import { ActionContainer } from 'components/Container'
 import { BlueGreenButton } from 'components/Button'
-import { H4, H5 } from 'components/Text'
+import { H4 } from 'components/Text'
 import Fee from 'components/Fee'
 import Input from 'components/Input'
 
@@ -23,7 +22,7 @@ const Transfer = () => {
     const balances = useSelector((state: RootState) => state.balances.balances);
     const [transferData, setTransferData] = useState({});
     const [transferAmount, setTransferAmount] = useState<string>("0");
-    const [gasLimit, setGasLimit] = useState<number>(0);
+    // const [gasLimit, setGasLimit] = useState<number>(0);
     
     const { js: {PeriFinance, pUSD, Issuer, ExchangeRates} } = pynthetix as any;
 
@@ -51,17 +50,25 @@ const Transfer = () => {
                 PERIBalance,
             });
         }
+            console.log(
+            transferData,
+        )
         init();
+        // eslint-disable-next-line
     }, []);
 
-    const getGasEstimate = async (amount) => {
-        try {
-            let estimateGasLimit = await PeriFinance.contract.estimate.burnSynths(amount);
-            setGasLimit(numbro(estimateGasLimit).multiply(1.2).value());
-        } catch (e) {
-            console.log(e);
-        }
-    }
+    // const getGasEstimate = async (amount) => {
+    //     console.log(
+    //         transferData,
+    //         gasLimit
+    //     )
+    //     try {
+    //         let estimateGasLimit = await PeriFinance.contract.estimate.burnSynths(amount);
+    //         setGasLimit(numbro(estimateGasLimit).multiply(1.2).value());
+    //     } catch (e) {
+    //         console.log(e);
+    //     }
+    // }
 
     // const setCurrencyChage = (event) => {
     //     let value = event.target.value;

@@ -9,7 +9,7 @@ import { useHistory } from 'react-router-dom'
 import { RootState } from 'config/reducers'
 import { setIsLoading } from 'config/reducers/app'
 import { updateTransaction } from 'config/reducers/transaction'
-import { pynthetix, formatCurrency, currencyToPynths, calculator } from 'lib'
+import { pynthetix, formatCurrency, calculator } from 'lib'
 
 import { BlueGreenButton } from 'components/Button'
 import { H4 } from 'components/Text'

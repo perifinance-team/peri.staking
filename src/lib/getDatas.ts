@@ -1,7 +1,7 @@
 import pynthetix from './pynthetix'
 import { utils } from 'ethers'
 import numbro from 'numbro'
-import { USDC, RewardEscrow, calculator } from 'lib'
+import { USDC, RewardEscrow } from 'lib'
 
 const format = (value) => {
     if(!value) return '0.00';

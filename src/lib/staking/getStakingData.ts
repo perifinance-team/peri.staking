@@ -96,7 +96,7 @@ export const getStakingData = async (currentWallet) => {
         }
 
         const stakeable = {
-            USDC: utils.formatEther(USDCStakeableAmountToUSDC),
+            USDC: USDCStakeableAmountTopUSD.lt(utils.bigNumberify('0')) ? '0' : utils.formatEther(USDCStakeableAmountToUSDC),
             PERI: utils.formatEther(PERITotalStakealbeAmountToPERI)
         };
         
