@@ -48,7 +48,7 @@ const Staking = () => {
     });
 
     const [needApprove, setNeedApprove] = useState<boolean>(false);
-    const dataIntervalTime = 1000 * 10 * 3;
+    const dataIntervalTime = 1000 * 60 * 3;
 
     const { js: { PeriFinance } }  = pynthetix as any;
 
@@ -56,35 +56,10 @@ const Staking = () => {
         dispatch(setIsLoading(true));
         try {
             const data = await getStakingData(currentWallet);
-            
-            // .div(exchangeRates['USDC'].toString()));
             setStakingData(data);
             setMaxMintingAmount({
                 pUSD: data.issuable['all'],
             });
-        
-            const maxpUSDStakingAmount = getStakingMaxUSDCAmount({
-                mintingAmount: mintingAmount['pUSD'],
-                stakeableUSDC: data.stakeable.USDC,
-                issuanceRatio: data.issuanceRatio,
-                exchangeRates: data.exchangeRates,
-            });
-
-            setMaxStakingAmount({
-                USDC: maxpUSDStakingAmount,
-                PERI: '0'
-            });
-
-            setEstimateCRatio(getStakingEstimateCRatio(
-                { 
-                    PERITotalBalance: data.balances['PERITotal'], 
-                    debtBalanceOf: data.balances['debt'],
-                    exchangeRates: data.exchangeRates,
-                    mintingAmount: mintingAmount['pUSD'],
-                    stakingAmount,
-                    stakedAmount: data.stakedAmount['USDC']
-                }
-            ));
         } catch(e) {
             console.log(e);
         }
@@ -97,6 +72,7 @@ const Staking = () => {
         const init = async() => {
             return await getIssuanceData(); 
         }
+        
         const interval = setInterval( async () => await init(), dataIntervalTime);
         init();
         
@@ -140,6 +116,7 @@ const Staking = () => {
             stakeableUSDC: stakingData.stakeable.USDC,
             issuanceRatio: stakingData.issuanceRatio,
             exchangeRates: stakingData.exchangeRates,
+            balances: stakingData.balances
         });
 
         setMaxStakingAmount({USDC: maxpUSDStakingAmount});
@@ -175,6 +152,10 @@ const Staking = () => {
     const setUSDCAmount = useCallback( (value, isMax = false) => {
         value = value.replace(/,/g, '');
         
+        if((/\./g).test(value)) {
+            value = value.match(/\d+\.\d{0,18}/g)[0];
+        }
+
         if(isNaN(Number(value)) || value === "") {
             setStakingAmount({
                 USDC: '', PERI: stakingAmount['PERI']}

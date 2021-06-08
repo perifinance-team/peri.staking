@@ -1,7 +1,7 @@
 import { calculator } from 'lib'
 
 export const getStakingEstimateCRatio = ({ PERITotalBalance, debtBalanceOf, exchangeRates, mintingAmount, stakingAmount, stakedAmount}) => {
-	if(mintingAmount === '' || !mintingAmount) {
+    if(mintingAmount === '' || !mintingAmount) {
 		mintingAmount = '0';
 	}
 
@@ -19,6 +19,6 @@ export const getStakingEstimateCRatio = ({ PERITotalBalance, debtBalanceOf, exch
 	const totalDebt = calculator(debtBalanceOf, mintingAmount, 'add');
 	
 	const totalDebtToPERI = calculator((totalDebt).toString(), exchangeRates['PERI'], 'div');
-
+	
 	return calculator('100', calculator(totalDebtToPERI.toString(), totalPERIaddUSDC, 'div'), 'div').toString();
 }

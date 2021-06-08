@@ -1,7 +1,7 @@
-import { pynthsToCurrency, currencyToPynths } from 'lib'
+import { pynthsToCurrency, currencyToPynths, calculator } from 'lib'
 import { utils } from 'ethers';
 
-export const getBurnTransferAmount = ({amount, issuanceRatio, exchangeRates, target}) => {
+export const getBurnTransferAmount = ({amount, issuanceRatio, exchangeRates, target, PERIQuota}) => {
     if(isNaN(Number(amount)) || amount === "") {
         amount = '0';
     }
@@ -12,7 +12,13 @@ export const getBurnTransferAmount = ({amount, issuanceRatio, exchangeRates, tar
     } else if(target === 'USDC') {
         retrunValue = currencyToPynths(amount, issuanceRatio, exchangeRates['USDC']);
     } else if(target === 'pUSD') {
-        retrunValue = pynthsToCurrency(amount, issuanceRatio, exchangeRates['PERI'])
+        const unLockAmount = calculator(amount, PERIQuota, 'sub');
+        if(utils.bigNumberify('0').lt(unLockAmount)) {
+            retrunValue = pynthsToCurrency(unLockAmount, issuanceRatio, exchangeRates['PERI'])    
+        } else {
+            retrunValue = currencyToPynths('0', issuanceRatio, exchangeRates['PERI']);
+        }
+        
     }
 
     return utils.formatEther(retrunValue);

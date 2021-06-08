@@ -1,4 +1,4 @@
-import { pynthetix, RewardEscrow} from 'lib'
+import { pynthetix, RewardEscrow, currencyToPynths, calculator } from 'lib'
 import { utils } from 'ethers'
 
 export type BurnData = {
@@ -16,7 +16,8 @@ export type BurnData = {
     },
     staked: {
         USDC: utils.BigNumber
-    }
+    },
+    PERIQuota: utils.BigNumber
 }
 
 const currenciesToBytes = {
@@ -44,15 +45,26 @@ export const getBurnData = async (currentWallet) => {
     }
 
     const issuanceRatio = utils.parseEther(utils.parseEther('100').div(await Issuer.issuanceRatio()).toString());
+
     const exchangeRates = {
         PERI: await ExchangeRates.rateForCurrency(currenciesToBytes['PERI']),
         USDC: await ExchangeRates.rateForCurrency(currenciesToBytes['USDC']),
     }
+    
+    const USDCStakedAmountToUSDC = staked['USDC'];
+            
+    const USDCStakedAmountTopUSD = currencyToPynths(USDCStakedAmountToUSDC, issuanceRatio, exchangeRates['USDC']);
+
+    const PERITotalStakedAmountToPERI = calculator(calculator(balances['PERITotal'], balances['rewardEscrow'], 'sub'), balances['transferablePERI'],'sub');
+    const PERITotalStakedAmountTopUSD = currencyToPynths(PERITotalStakedAmountToPERI, issuanceRatio, exchangeRates['PERI']) ;
+    
+    const PERIQuota = calculator(calculator(balances['debt'], USDCStakedAmountTopUSD, 'sub'), PERITotalStakedAmountTopUSD, 'sub')    
 
     return {
         issuanceRatio,
         exchangeRates,
         balances,
         staked,
+        PERIQuota
     }
 }

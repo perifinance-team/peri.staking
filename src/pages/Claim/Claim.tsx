@@ -56,7 +56,7 @@ const Claim = () => {
     const { js: { FeePool } }  = pynthetix as any;
     
     const getFeePeriodCountdown = (recentFeePeriods, feePeriodDuration) => {
-        console.log(recentFeePeriods)
+        
         const currentPeriodStart =
             recentFeePeriods && recentFeePeriods.startTime
                 ? new Date(parseInt(recentFeePeriods.startTime) * 1000)
@@ -65,7 +65,7 @@ const Claim = () => {
             currentPeriodStart && feePeriodDuration
                 ? addSeconds(currentPeriodStart, feePeriodDuration)
                 : null;
-        console.log(feePeriodDuration.toString())
+        
         return {
             closeIn: formatDistanceToNow(currentPeriodEnd),
             isCloseFeePeriodEnabled: Math.ceil(Date.now() / 1000) > (Number(recentFeePeriods.startTime) + Number(feePeriodDuration))

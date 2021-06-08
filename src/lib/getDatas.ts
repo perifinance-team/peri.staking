@@ -53,10 +53,12 @@ export const getRatio = async (walletAddress) => {
 	} = pynthetix as any;
     
     const getCurrentCRatio = async () => {
+        
         return (await PeriFinance.collateralisationRatio(walletAddress)).toString();
     };
 
     const getTargetCRatio = async () => {
+        
         return (await SystemSettings.issuanceRatio()).toString();
     };
     

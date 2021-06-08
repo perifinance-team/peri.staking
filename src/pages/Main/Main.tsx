@@ -23,6 +23,7 @@ import { changeAccount, changeNetwork } from 'helpers/wallet/change'
 import { getNetworkFee } from 'helpers/defipulse'
 import { pynthetix, getExchangeRates, getRatio, getBalancess } from 'lib'
 
+
 import Home from '../Home'
 import Escrow from '../Escrow'
 import Depot from '../Depot'
@@ -63,13 +64,13 @@ const Main = () => {
             dispatch(updateIsConnected(true));
         }
         await getDatas(currentWallet.currentWallet);
-        setIntervals(
-            {data: setInterval( async () => {
-                dispatch(setIsLoading(true));
-                await getDatas(currentWallet.currentWallet)
-                dispatch(setIsLoading(false));
-            }, dataIntervalTime) }
-        )
+        // setIntervals(
+        //     {data: setInterval( async () => {
+        //         dispatch(setIsLoading(true));
+        //         await getDatas(currentWallet.currentWallet)
+        //         dispatch(setIsLoading(false));
+        //     }, dataIntervalTime) }
+        // )
         // eslint-disable-next-line
     }, []);
 

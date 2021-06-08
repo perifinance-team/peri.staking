@@ -11,7 +11,6 @@ import { H4, H6 } from 'components/Text'
 import { formatCurrency, calculator, currencyToPynths, pynthsToCurrency } from 'lib'
 import { utils } from 'ethers'
 import numbro from 'numbro'
-import Escrow from 'pages/Escrow';
 
 const TotalBalance = () => {
     // const { t } = useTranslation();
@@ -62,6 +61,12 @@ const TotalBalance = () => {
 		const stakedPERI = utils.formatEther(calculator(PERIBalance, transferablePERI, 'sub'));
 
 		const getEscrowStakeStatus = () => {
+			if(numbro(rewardEscrow).value() === 0) {
+				return {
+					staked: '0.00',
+					able: '0.00'
+				}
+			}
 			const stakedUSDCTopUSD = currencyToPynths(stakedUSDCamount, issuanceRatio, exchangeRates['USDC']);
 			const stakedPERITopUSD = currencyToPynths(stakedPERI, issuanceRatio, exchangeRates['PERI']);
 			const balanceOfStakedpUSD = calculator(stakedUSDCTopUSD, stakedPERITopUSD, 'add');
@@ -95,7 +100,7 @@ const TotalBalance = () => {
 				escrow: getRate(escrowStakeAmount.staked, rewardEscrow),
 				PERIForUSDC: getRate(
 					currencyToPynths(totalStakedPERI, issuanceRatio, exchangeRates['PERI']),
-					utils.parseEther(debtBalance)
+					currencyToPynths(stakedUSDCamount, issuanceRatio, exchangeRates['PERI']),	
 				)
 			}
 		)
@@ -104,7 +109,7 @@ const TotalBalance = () => {
 
 	useEffect( () => {
 		getStatus();
-	}, [currentWallet, transferablePERI, stakedUSDCamount, rewardEscrow, debtBalance]);
+	}, [debtBalance]);
 
 
     return (
@@ -121,13 +126,6 @@ const TotalBalance = () => {
 					</Label>
 				</BarChart>
 				<BarChart>
-					<Graph type="range" min="0" max="100" value={stakedRate.escrow} readOnly></Graph>
-					<Label>
-						<H6>Escrow : {formatCurrency(stakedAmount.escrow.staked)}</H6>
-						<H6>Stakeable : {formatCurrency(stakedAmount.escrow.able)}</H6>
-					</Label>
-				</BarChart>
-				<BarChart>
 					<Graph type="range" min="0" max="100" value={stakedRate.USDC} readOnly></Graph>
 					<Label>
 						<H6>Staked USDC : {formatCurrency(stakedAmount.USDC.staked)}</H6>
@@ -135,12 +133,19 @@ const TotalBalance = () => {
 					</Label>
 				</BarChart>
 				<BarChart>
-						<Graph type="range" min="0" max="100" value={stakedRate.PERIForUSDC} readOnly></Graph>
-						<Label>
-							<H6>Staked PERI rate : {numbro(stakedRate).value() === 0 ? '0.00' : numbro(stakedRate.PERIForUSDC).format({mantissa: 2})}%</H6>
-							<H6>Staked USDC rate : {numbro(stakedRate).value() === 0 ? '0.00' : numbro(100).subtract(numbro(stakedRate.PERIForUSDC).value()).format({mantissa: 2})}%</H6>
-						</Label>
+					<Graph type="range" min="0" max="100" value={stakedRate.escrow} readOnly></Graph>
+					<Label>
+						<H6>Staked Escrow : {formatCurrency(stakedAmount.escrow.staked)}</H6>
+						<H6>Stakeable : {formatCurrency(stakedAmount.escrow.able)}</H6>
+					</Label>
 				</BarChart>
+				{/* <BarChart>
+					<Graph type="range" min="0" max="100" value={stakedRate.PERIForUSDC} readOnly></Graph>
+					<Label>
+						<H6>Staked PERI rate : {numbro(stakedRate.PERIForUSDC).value() === 0 ? '0.00' : numbro(stakedRate.PERIForUSDC).format({mantissa: 2})}%</H6>
+						<H6>Staked USDC rate : {numbro(stakedRate.PERIForUSDC).value() === 0 ? '0.00' : numbro(100).subtract(numbro(stakedRate.PERIForUSDC).value()).format({mantissa: 2})}%</H6>
+					</Label>
+				</BarChart> */}
             </RageContainer>
         </FooterRoundContainer>
     );
@@ -151,20 +156,20 @@ export const RageContainer = styled.div`
 	width: 100%;
 	height: 200px;
 	flex-direction: column;
-	margin-top: 20px;
+	margin-top: 30px;
 `;
 
 export const BarChart = styled.div`
 	position: relative;
 	display: flex;
 	width: 100%;
-	margin: 5px 0px;
+	margin: 10px 0px;
 `;
 
 export const Graph = styled.input`
     -webkit-appearance: none;
 	overflow: hidden;
-	height: 40px;
+	height: 50px;
 	border-radius: 100px;
 	&[type='range'] {
         width: 100%;
@@ -193,7 +198,7 @@ export const Graph = styled.input`
 
 const Label = styled.div`
 	width: 100%;
-	height: 40px;
+	height: 50px;
 	padding: 0px 40px;
 	align-items: center;
 	display: flex;

@@ -117,12 +117,14 @@ const Staking = () => {
         if(utils.parseEther(maxMintingAmount['pUSD']).lt(utils.parseEther(value))) {
             value = (maxMintingAmount['pUSD']);
         }
+        
 
         const maxpUSDStakingAmount = getStakingMaxUSDCAmount({
             mintingAmount: value,
             stakeableUSDC: stakingData.stakeable.USDC,
             issuanceRatio: stakingData.issuanceRatio,
-            exchangeRates: stakingData.exchangeRates,            
+            exchangeRates: stakingData.exchangeRates,
+            balances: stakingData.balances
         });
         
         if(numbro(stakingData.allowance['USDC']).subtract(numbro(maxpUSDStakingAmount).value()).value() < 0) {
@@ -135,7 +137,6 @@ const Staking = () => {
             mintingAmount: value,
             stakingAmount: {USDC: maxpUSDStakingAmount},            
         });
-        
         
         setStakingAmount({USDC, PERI});
         setEstimateCRatio(getStakingEstimateCRatio(
@@ -232,7 +233,7 @@ const Staking = () => {
                     <Input key="USDC"
                         currencyName="USDC"
                         disabled={true}
-                        value={numbro(stakingAmount['USDC']).format({mantissa: 6})}
+                        value={stakingAmount['USDC']}
                     />                    
                 </div>
                 <div>

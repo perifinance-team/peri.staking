@@ -9,7 +9,7 @@ import { useHistory } from 'react-router-dom'
 import { RootState } from 'config/reducers'
 import { setIsLoading } from 'config/reducers/app'
 import { updateTransaction } from 'config/reducers/transaction'
-import { pynthetix, formatCurrency } from 'lib'
+import { pynthetix, formatCurrency, currencyToPynths, calculator } from 'lib'
 
 import { BlueGreenButton } from 'components/Button'
 import { H4 } from 'components/Text'
@@ -81,6 +81,14 @@ const BurnActionButtons = ({burnData, burningAmount, gasPrice}) => {
         
         // eslint-disable-next-line
     },[]);
+
+    const checkBurnningAmount = () => {
+        const USDCRemainStakedTopUSD = calculator(burnData.staked['USDC'], burningAmount['USDC'], 'sub');
+        const PERIBurningAmountTopUSD = calculator(burningAmount['pUSD'], USDCRemainStakedTopUSD, 'sub');
+        const USDCQuota = calculator(USDCRemainStakedTopUSD, utils.bigNumberify('4'), 'mul');
+        const PERIQuota = calculator(burnData.balances['debt'], PERIBurningAmountTopUSD, 'sub') ;
+        return PERIQuota.lt(USDCQuota);
+    }
     
     const onBurn = async () => {
         let transaction;
@@ -90,8 +98,20 @@ const BurnActionButtons = ({burnData, burningAmount, gasPrice}) => {
             gasPrice,
             gasLimit: await getGasEstimate()
         }
+        if(checkBurnningAmount()) {
+            NotificationManager.error('Please keep USDC to debt quota (20%)');
+            dispatch(setIsLoading(false));
+            return false;
+        }
+        // if(utils.bigNumberify('0').lt(utils.parseEther(burningAmount['PERI']))) {
+        //     NotificationManager.error('You cannot earn more than your PERI balance.');
+        //     dispatch(setIsLoading(false));
+        //     return false;
+        // }
         
+
         try {
+        
             if(await Issuer.canBurnPynths(currentWallet)) {
 
                 transaction = await PeriFinance.burnPynthsAndUnstakeUSDC(

@@ -16,7 +16,7 @@ import { formatCurrency } from 'lib'
 
 const BalanceTable = () => {
     // const { t } = useTranslation();
-    const { balances } = useSelector((state: RootState) => state.balances);
+    const { balances, debtBalance } = useSelector((state: RootState) => state.balances);
     const tableHeadding = ['COIN', 'BALANCE', '$USD']
     const borderColors = ['#5271FF', '#00F0FF', '#F8B62D'];
     return (
@@ -29,6 +29,16 @@ const BalanceTable = () => {
                 )}
             </StyledTHeader>
             <StyledTBody height={160}>
+                <Row key={debtBalance}>
+                    <CellLeft>
+                        <Flex>
+                            <Border borderColor={borderColors[0]}></Border>
+                            <Asset currencyName={'pUSD'} label={'DEBT'}></Asset>
+                        </Flex>
+                    </CellLeft>
+                    <CellRight><H6 align={"right"}>{formatCurrency(debtBalance)}</H6></CellRight>
+                    <CellRight><H6 align={"right"}>${formatCurrency(debtBalance)}</H6></CellRight>
+                </Row>
                 {balances.length > 0 && balances.map( (currency, index) => {
                     
                     return (

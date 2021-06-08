@@ -90,6 +90,7 @@ const Burn = () => {
             amount: value,
             issuanceRatio: burnData.issuanceRatio, 
             exchangeRates: burnData.exchangeRates,
+            PERIQuota: burnData.PERIQuota,
             target: 'pUSD',
         });
 

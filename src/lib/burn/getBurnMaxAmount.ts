@@ -5,18 +5,22 @@ export const getBurnMaxAmount = ({ balances, type, issuanceRatio, exchangeRates,
     let pUSD;
     
     if (balances['debt'].lte(balances['pUSD'])) {
-        if(type === 'PERI') {     
-            const PERIBalance = utils.formatEther(calculator(balances['PERI'], balances['rewardEscrow'], 'sub'));
-		    const stakedPERI = utils.formatEther(calculator(PERIBalance, balances['transferablePERI'], 'sub'));
-            const stakedUSDCTopUSD = currencyToPynths(staked['USDC'], issuanceRatio, exchangeRates['USDC']);
-			const stakedPERITopUSD = currencyToPynths(stakedPERI, issuanceRatio, exchangeRates['PERI']);
-			const balanceOfStakedpUSD = calculator(stakedUSDCTopUSD, stakedPERITopUSD, 'add');
-			const escrowStakedpUSD = calculator(balances['debt'], balanceOfStakedpUSD, 'sub');
-			const escrowStakedPERI = utils.formatEther(pynthsToCurrency(escrowStakedpUSD, issuanceRatio, exchangeRates['PERI']));
+        if(type === 'PERI') {
 
-            const totalStakedPERI = calculator(stakedPERI, escrowStakedPERI, 'add');
-
-            pUSD = currencyToPynths(totalStakedPERI, issuanceRatio, exchangeRates['PERI']).toString();
+            // const USDCTopUSD = currencyToPynths(balances['USDC'], issuanceRatio, exchangeRates['USDC']);
+            const USDCStakedAmountToUSDC = staked['USDC'];
+            
+            const USDCStakedAmountTopUSD = currencyToPynths(USDCStakedAmountToUSDC, issuanceRatio, exchangeRates['USDC']);
+    
+            const PERITotalStakedAmountToPERI = calculator(calculator(balances['PERITotal'], balances['rewardEscrow'], 'sub'), balances['transferablePERI'],'sub');
+        
+            const PERITotalStakedAmountTopUSD = currencyToPynths(PERITotalStakedAmountToPERI, issuanceRatio, exchangeRates['PERI']) ;
+            const PERITotalBurnableAmountTopUSD = calculator(
+                PERITotalStakedAmountTopUSD,
+                calculator(USDCStakedAmountTopUSD, utils.bigNumberify('4'), 'mul'),
+                'sub'
+            )
+            pUSD = PERITotalBurnableAmountTopUSD;
         } else if (type === 'USDC') {
             pUSD = currencyToPynths(staked['USDC'], issuanceRatio, exchangeRates['USDC']);
         } else {

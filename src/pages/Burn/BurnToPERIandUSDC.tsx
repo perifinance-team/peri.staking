@@ -96,6 +96,7 @@ const Burn = () => {
             issuanceRatio: burnData.issuanceRatio,
             exchangeRates: burnData.exchangeRates,
             target: 'USDC',
+            PERIQuota: burnData.PERIQuota,
         }); 
         
         let subtractUSDCAmount = calculator( value, USDCtransferTopUSD, 'sub')
@@ -105,6 +106,7 @@ const Burn = () => {
             issuanceRatio: burnData.issuanceRatio, 
             exchangeRates: burnData.exchangeRates,
             target: 'pUSD',
+            PERIQuota: burnData.PERIQuota,
             
         });
 
@@ -153,6 +155,7 @@ const Burn = () => {
                     amount: burningAmount['pUSD'],
                     issuanceRatio: burnData.issuanceRatio, 
                     exchangeRates: burnData.exchangeRates,
+                    PERIQuota: burnData.PERIQuota,
                     target: 'pUSD', 
                 }),
             });
@@ -167,6 +170,7 @@ const Burn = () => {
             amount: value, 
             issuanceRatio: burnData.issuanceRatio,
             exchangeRates: burnData.exchangeRates,
+            PERIQuota: burnData.PERIQuota,
             target: 'USDC',
         });
         
@@ -176,6 +180,7 @@ const Burn = () => {
             amount: subtractUSDCAmount,
             issuanceRatio: burnData.issuanceRatio, 
             exchangeRates: burnData.exchangeRates,
+            PERIQuota: burnData.PERIQuota,
             target: 'pUSD', 
         });
 

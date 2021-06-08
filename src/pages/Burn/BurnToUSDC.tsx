@@ -109,6 +109,7 @@ const Burn = () => {
         setBurningAmount({
             pUSD: value,
             USDC: maxBurningUSDCAmount,
+            PERI: '0'
         });
     }
 
