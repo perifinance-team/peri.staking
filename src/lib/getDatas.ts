@@ -54,7 +54,7 @@ export const getRatio = async (walletAddress) => {
     
     const getCurrentCRatio = async () => {
         
-        return (await PeriFinance.collateralisationRatio(walletAddress)).toString();
+        return (await PeriFinance.collateralisationRatio(walletAddress)).div(10**12).mul(10**12).toString()
     };
 
     const getTargetCRatio = async () => {
