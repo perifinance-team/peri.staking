@@ -70,7 +70,7 @@ export const getStakingData = async (currentWallet, type) => {
 
         const PERITotalStakedAmountToPERI = calculator(calculator(balances['PERITotal'], balances['rewardEscrow'], 'sub'), balances['transferablePERI'],'sub');
 
-        const PERITotalStakedAmountTopUSD = currencyToPynths(PERITotalStakedAmountToPERI, issuanceRatio, exchangeRates['PERI']) ;
+        const PERITotalStakedAmountTopUSD = currencyToPynths(PERITotalStakedAmountToPERI, issuanceRatio, exchangeRates['PERI']);
         
         const PERIStakedRewardEscrowTopUSD = calculator(calculator(balances['debt'], USDCStakedAmountTopUSD, 'sub'), PERITotalStakedAmountTopUSD, 'sub');
         
@@ -121,7 +121,6 @@ export const getStakingData = async (currentWallet, type) => {
             pUSD: PERITotalStakealbeAmountTopUSD.lt(utils.bigNumberify('0')) ? '0' : utils.formatEther(PERITotalStakealbeAmountTopUSD),
             USDC: USDCStakeableAmountTopUSD.lt(utils.bigNumberify('0')) ? '0' : utils.formatEther(USDCStakeableAmountTopUSD),
             all: (USDCStakeableAmountTopUSD).add(PERITotalStakealbeAmountTopUSD).lt(utils.bigNumberify('0')) ? '0' : 
-            
             utils.formatEther((USDCStakeableAmountTopUSDDecimal6).add(PERITotalStakealbeAmountTopUSD))
         }
         

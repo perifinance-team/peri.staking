@@ -28,8 +28,8 @@ type ClaimData = {
     duration: string,
     periods: string,
     rewards: {
-        exchage: string,
-        staking: string,
+        exchage: utils.BigNumber,
+        staking: utils.BigNumber,
     }
     claimable: boolean,
     isCloseFeePeriodEnabled: boolean
@@ -46,8 +46,8 @@ const Claim = () => {
         duration: '0',
         periods: '0',
         rewards: {
-            exchage: '0',
-            staking: '0'
+            exchage: utils.bigNumberify('0'),
+            staking: utils.bigNumberify('0')
         },
         claimable: false,
         isCloseFeePeriodEnabled: false
@@ -84,14 +84,14 @@ const Claim = () => {
             //reward type  array[0] = exchage | array[1] = staking
             
             const { closeIn, isCloseFeePeriodEnabled } = getFeePeriodCountdown(periods, duration);
-    
+            
             setClaimData({
                 closeIn,
                 duration,
                 periods,
                 rewards: {
-                    exchage: utils.formatEther(reward[0]),
-                    staking: utils.formatEther(reward[1]),
+                    exchage: reward[0],
+                    staking: reward[1],
                 },
                 claimable,
                 isCloseFeePeriodEnabled
@@ -190,12 +190,12 @@ const Claim = () => {
                     <div>
                         <Input key="primary"
                             currencyName="pUSD"
-                            value={`exchage rewards  : ${formatCurrency(claimData.rewards.exchage)}`}
+                            value={`exchage rewards  : ${formatCurrency(utils.formatEther(claimData.rewards.exchage))}`}
                             disabled={true}
                         />
                         <Input key="secondary"
                             currencyName="PERI"
-                            value={`staking rewards  : ${formatCurrency(claimData.rewards.staking)}`}
+                            value={`staking rewards  : ${formatCurrency(utils.formatEther(claimData.rewards.staking))}`}
                             disabled={true}
                         />
                     </div>
@@ -204,7 +204,9 @@ const Claim = () => {
                         {claimData.isCloseFeePeriodEnabled ? (
                             <ClaimButton onClick={ () => onCloseFeePeriod()}><H4 weigth="bold">CLOSE CURRENT PERIOD</H4></ClaimButton>
                         ) : null}
-                        <ClaimButton onClick={ () => onClaim()} disabled={!claimData.claimable}><H4 weigth="bold">CLAIM</H4></ClaimButton>
+                        <ClaimButton onClick={ () => onClaim()} disabled={claimData.rewards.exchage.isZero() && claimData.rewards.staking.isZero()}>
+                            <H4 weigth="bold">CLAIM</H4>
+                        </ClaimButton>
                         <Fee gasPrice={seletedFee.price}/>
                     </div>
                 </ActionContainer>

@@ -71,11 +71,13 @@ const TotalBalance = () => {
 			const stakedPERITopUSD = currencyToPynths(stakedPERI, issuanceRatio, exchangeRates['PERI']);
 			const balanceOfStakedpUSD = calculator(stakedUSDCTopUSD, stakedPERITopUSD, 'add');
 			const escrowStakedpUSD = calculator(debtBalance, balanceOfStakedpUSD, 'sub');
-			const escrowStakedPERI = utils.formatEther(pynthsToCurrency(escrowStakedpUSD, issuanceRatio, exchangeRates['PERI']));
-
+			let escrowStakedPERI = pynthsToCurrency(escrowStakedpUSD, issuanceRatio, exchangeRates['PERI']);
+			if(utils.parseEther(rewardEscrow).lt(utils.parseEther(rewardEscrow))) {
+				escrowStakedPERI = rewardEscrow;
+			}
 			return {
-				staked: numbro(escrowStakedPERI).format({mantissa: 2}),
-				able: numbro(rewardEscrow).subtract(numbro(escrowStakedPERI).value()).format({mantissa: 2})
+				staked: numbro(utils.formatEther(escrowStakedPERI)).format({mantissa: 2}),
+				able: numbro(rewardEscrow).subtract(numbro(utils.formatEther(escrowStakedPERI)).value()).format({mantissa: 2})
 			}
 		}
 		const escrowStakeAmount = getEscrowStakeStatus()
