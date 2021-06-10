@@ -3,6 +3,8 @@ import { pynthetix, USDC, calculator, currencyToPynths, RewardEscrow } from 'lib
 import { getBalance } from 'helpers/wallet/getBalance'
 import { pynthsToCurrency } from 'lib/convert';
 
+
+
 const currenciesToBytes = {
     PERI: utils.formatBytes32String('PERI'),
     pUSD: utils.formatBytes32String('pUSD'),
@@ -39,7 +41,9 @@ export type StakingData = {
     }
 }
 
-export const getStakingData = async (currentWallet) => {
+export const getStakingData = async (currentWallet, type) => {
+
+
     const { js: { PeriFinance, Issuer, ExchangeRates } }  = pynthetix as any;
     
         const balances = {
@@ -57,10 +61,11 @@ export const getStakingData = async (currentWallet) => {
             PERI: await ExchangeRates.rateForCurrency(currenciesToBytes['PERI']),
             USDC: await ExchangeRates.rateForCurrency(currenciesToBytes['USDC']),
         }
-        
-        const USDCTopUSD = currencyToPynths(balances['USDC'], issuanceRatio, exchangeRates['USDC']);
+
         const USDCStakedAmountToUSDC = await PeriFinance.usdcStakedAmountOf(currentWallet);
-        
+
+        const USDCTopUSD = currencyToPynths(balances['USDC'], issuanceRatio, exchangeRates['USDC']);
+
         const USDCStakedAmountTopUSD = currencyToPynths(USDCStakedAmountToUSDC, issuanceRatio, exchangeRates['USDC']);
 
         const PERITotalStakedAmountToPERI = calculator(calculator(balances['PERITotal'], balances['rewardEscrow'], 'sub'), balances['transferablePERI'],'sub');
@@ -74,27 +79,52 @@ export const getStakingData = async (currentWallet) => {
         const PERIStakeableRewardEscrowToPERI = calculator(balances['rewardEscrow'], PERIStakedRewardEscrowToPERI, 'sub');
 
         const PERITotalStakealbeAmountToPERI = calculator(balances['transferablePERI'], PERIStakeableRewardEscrowToPERI, 'add');
-        const PERITotalStakealbeAmountTopUSD = currencyToPynths(PERITotalStakealbeAmountToPERI, issuanceRatio, exchangeRates['PERI'])
-    
-        let USDCStakeableAmountTopUSD = calculator(calculator(PERITotalStakedAmountTopUSD, utils.bigNumberify('5'), 'div'), USDCStakedAmountTopUSD,'sub')
+        const PERITotalStakealbeAmountTopUSD = currencyToPynths(PERITotalStakealbeAmountToPERI, issuanceRatio, exchangeRates['PERI']);
+
+        let USDCStakeableAmountTopUSD;
+        if(type === 'USDC') {
+            USDCStakeableAmountTopUSD = calculator(
+                calculator(
+                    PERITotalStakedAmountTopUSD,
+                    utils.bigNumberify('5'), 
+                    'div'
+                ), 
+                USDCStakedAmountTopUSD, 
+            'sub');
+        } else if (type === 'PERIandUSDC'){
+            USDCStakeableAmountTopUSD = calculator(
+                calculator(
+                    calculator(PERITotalStakealbeAmountTopUSD, PERITotalStakedAmountTopUSD, 'add'),
+                        utils.bigNumberify('5'), 
+                        'div'
+                    ), 
+                USDCStakedAmountTopUSD, 
+            'sub');
+        } else {
+            USDCStakeableAmountTopUSD = utils.bigNumberify('0');
+        }
         
         if(USDCTopUSD.lt(USDCStakeableAmountTopUSD)) {
             USDCStakeableAmountTopUSD = USDCTopUSD
         }
 
-        if(PERITotalStakealbeAmountTopUSD.lt(utils.bigNumberify('0'))) {
+        if(PERITotalStakealbeAmountTopUSD.lt(utils.bigNumberify('0'))) {    
             const PERITotalStakealbeAmountToUSDC = currencyToPynths(PERITotalStakealbeAmountTopUSD, issuanceRatio, exchangeRates['USDC'])
             USDCStakeableAmountTopUSD = calculator(USDCStakeableAmountTopUSD, PERITotalStakealbeAmountToUSDC, 'add');
         }
-        
-        const USDCStakeableAmountToUSDC = pynthsToCurrency(USDCStakeableAmountTopUSD, issuanceRatio, exchangeRates['USDC']);
+
+        const USDCStakeableAmountToUSDC = pynthsToCurrency(USDCStakeableAmountTopUSD, issuanceRatio, exchangeRates['USDC']).div(10**12).mul(10**12);
+
+        const USDCStakeableAmountTopUSDDecimal6 = currencyToPynths(USDCStakeableAmountToUSDC, issuanceRatio, exchangeRates['USDC']);
 
         const issuable = {
             pUSD: PERITotalStakealbeAmountTopUSD.lt(utils.bigNumberify('0')) ? '0' : utils.formatEther(PERITotalStakealbeAmountTopUSD),
             USDC: USDCStakeableAmountTopUSD.lt(utils.bigNumberify('0')) ? '0' : utils.formatEther(USDCStakeableAmountTopUSD),
-            all: (USDCStakeableAmountTopUSD).add(PERITotalStakealbeAmountTopUSD).lt(utils.bigNumberify('0')) ? '0' : utils.formatEther((USDCStakeableAmountTopUSD).add(PERITotalStakealbeAmountTopUSD))
+            all: (USDCStakeableAmountTopUSD).add(PERITotalStakealbeAmountTopUSD).lt(utils.bigNumberify('0')) ? '0' : 
+            
+            utils.formatEther((USDCStakeableAmountTopUSDDecimal6).add(PERITotalStakealbeAmountTopUSD))
         }
-
+        
         const stakeable = {
             USDC: USDCStakeableAmountTopUSD.lt(utils.bigNumberify('0')) ? '0' : utils.formatEther(USDCStakeableAmountToUSDC),
             PERI: utils.formatEther(PERITotalStakealbeAmountToPERI)

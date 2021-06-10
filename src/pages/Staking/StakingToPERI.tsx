@@ -51,7 +51,7 @@ const Staking = () => {
     const getIssuanceData = useCallback(async () => {
         dispatch(setIsLoading(true));
         try {
-            const data = await getStakingData(currentWallet);
+            const data = await getStakingData(currentWallet, 'PERI');
             
             // .div(exchangeRates['USDC'].toString()));
             setStakingData(data);
@@ -81,11 +81,11 @@ const Staking = () => {
         const init = async() => {
             return await getIssuanceData(); 
         }
-        const interval = setInterval( async () => await init(), dataIntervalTime);
+        // const interval = setInterval( async () => await init(), dataIntervalTime);
         init();
-        return () => {
-            clearInterval(interval);
-        }
+        // return () => {
+        //     clearInterval(interval);
+        // }
         // eslint-disable-next-line
     } ,[currentWallet]);
     
@@ -222,7 +222,7 @@ const Staking = () => {
                     <Input key="PERI"
                         currencyName="PERI"
                         disabled= {true}
-                        value={numbro(stakingAmount['PERI']).format({mantissa: 6})}
+                        value={stakingAmount['PERI']}
                     />
                 </div>
                 <div>

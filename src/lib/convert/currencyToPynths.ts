@@ -14,5 +14,10 @@ export const currencyToPynths = (amount, issuanceRatio, exchangeRates) => {
         return utils.parseEther('0');
     }
 
-    return (amount).mul(exchangeRates).div(issuanceRatio).mul(100);
+    try {
+        return (amount).mul(exchangeRates).mul(100).div(issuanceRatio);
+    } catch(e) {
+        return utils.bigNumberify('0');
+    }
+    
 }

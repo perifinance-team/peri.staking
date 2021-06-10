@@ -1,7 +1,7 @@
 import pynthetix from './pynthetix'
 import { utils } from 'ethers'
 import numbro from 'numbro'
-import { USDC, RewardEscrow } from 'lib'
+import { USDC, RewardEscrow, calculator } from 'lib'
 
 const format = (value) => {
     if(!value) return '0.00';
@@ -88,7 +88,7 @@ export const getBalancess = async (walletAddress) => {
 	} = pynthetix as any;
 
     
-    const getPynthsBalances = async () => {
+    const getPynthsBalances = async (stakedUSDCamount) => {
         let balances = [];
         
         
@@ -114,12 +114,13 @@ export const getBalancess = async (walletAddress) => {
             })
         });
         
-        const USDCBalance = utils.formatEther(await USDC.balanceOf(walletAddress));
-        
+        const USDCBalance = await USDC.balanceOf(walletAddress);
+        const totalUSDCBalance = utils.formatEther(calculator(USDCBalance, stakedUSDCamount, 'add'));
+
         balances.push({
             coinName: 'USDC',
-            balance: USDCBalance.toString(),
-            balanceToUSD: numbro(USDCRate).multiply(numbro(USDCBalance).value()).value().toString()
+            balance: totalUSDCBalance,
+            balanceToUSD: numbro(USDCRate).multiply(numbro(totalUSDCBalance).value()).value().toString()
         });
 
         const ethBalance = utils.formatEther(await provider.getBalance(walletAddress));
@@ -131,13 +132,13 @@ export const getBalancess = async (walletAddress) => {
         
         return { balances, PERIBalanceInfo, USDCBalanceInfo: {
             coinName: 'USDC',
-            balance: USDCBalance.toString(),
+            balance: utils.formatEther(USDCBalance),
         }};
     }
     const debtBalance = utils.formatEther(await PeriFinance.debtBalanceOf(walletAddress, utils.formatBytes32String('pUSD')));
     const transferablePERI = utils.formatEther(await PeriFinance.transferablePeriFinance(walletAddress));
-    const stakedUSDCamount = numbro(await PeriFinance.usdcStakedAmountOf(walletAddress)).divide(10**18).value().toString()
-    const {balances, PERIBalanceInfo, USDCBalanceInfo} = await getPynthsBalances();
+    const stakedUSDCamount = utils.formatEther(await PeriFinance.usdcStakedAmountOf(walletAddress));
+    const {balances, PERIBalanceInfo, USDCBalanceInfo} = await getPynthsBalances(stakedUSDCamount);
     
     const rewardEscrow = utils.formatEther(await RewardEscrow.balanceOf(walletAddress));
     

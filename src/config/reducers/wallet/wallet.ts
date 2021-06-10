@@ -1,4 +1,5 @@
-import { createSlice , PayloadAction} from '@reduxjs/toolkit';
+import { createSlice , PayloadAction, createAsyncThunk} from '@reduxjs/toolkit';
+import { connectHelper } from 'helpers/wallet/connect'
 
 export type WalletState = {
 	currentWallet?: string,
@@ -8,6 +9,14 @@ export type WalletState = {
 	walletType?: string,
 	unlockReason?: string,
 }
+
+const connectWallet = createAsyncThunk(
+	`connectWallet`,
+	async (walletType) => {
+        return await connectHelper(walletType);
+    }
+);
+
 
 const clearWalletState = () => { 
 	return {
@@ -21,7 +30,6 @@ const clearWalletState = () => {
 }
 
 const initialState: WalletState = clearWalletState();
-
 
 export const wallet = createSlice({
 	name: 'wallet',
@@ -38,6 +46,11 @@ export const wallet = createSlice({
 			state = Object.assign(state, clearWalletState());
 		},
 	},
+	extraReducers: {
+		[connectWallet.fulfilled.type]: (state, actions: PayloadAction<WalletState>) => {
+			state = Object.assign(state, {...actions.payload});
+		}
+	}
 });
 
 export const { initWallet, updateWallet, clearWallet } = wallet.actions;

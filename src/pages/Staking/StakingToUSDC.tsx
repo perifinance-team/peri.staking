@@ -10,7 +10,7 @@ import { StakingData, getStakingData, pynthetix, getStakingEstimateCRatio, getSt
 import { utils } from 'ethers'
 import { useHistory } from 'react-router-dom'
 import { gasPrice } from 'helpers/gasPrice'
-
+import { NotificationManager } from 'react-notifications';
 
 import numbro from 'numbro'
 
@@ -43,7 +43,7 @@ const Staking = () => {
         pUSD: '0'
     });
 
-    const [needApprove, setNeedApprove] = useState<boolean>(false);
+    const [needApprove, setNeedApprove] = useState<boolean>(true);
     const dataIntervalTime = 1000 * 60 * 3;
 
     const { js: { PeriFinance } }  = pynthetix as any;
@@ -51,7 +51,7 @@ const Staking = () => {
     const getIssuanceData = useCallback(async () => {
         dispatch(setIsLoading(true));
         try {
-            const data = await getStakingData(currentWallet);
+            const data = await getStakingData(currentWallet, 'USDC');
             
             // .div(exchangeRates['USDC'].toString()));
             setStakingData(data);
@@ -81,11 +81,11 @@ const Staking = () => {
         const init = async() => {
             return await getIssuanceData(); 
         }
-        const interval = setInterval( async () => await init(), dataIntervalTime);
+        // const interval = setInterval( async () => await init(), dataIntervalTime);
         init();
         
         return () => {
-            clearInterval(interval);
+            // clearInterval(interval);
         }
         // eslint-disable-next-line
     } ,[currentWallet]);
@@ -206,13 +206,27 @@ const Staking = () => {
     const approve = async () => {
         dispatch(setIsLoading(true));
         try {
-            await USDC.approve();
-            setNeedApprove(false);
+            const transaction = await USDC.approve();
+            NotificationManager.info('try Approve', 'in progress', 0);
             
+            const getState = async () => {
+                const state = await pynthetix.provider.getTransactionReceipt(transaction.hash);
+                if(state) {
+                    if(state.status === 1) {
+                        NotificationManager.remove(NotificationManager.listNotify[0]);
+                        NotificationManager.success('success', 'approve')
+                        setNeedApprove(false)
+                    }
+                } else {
+                    setTimeout(() => getState(), 1000);
+                }
+            }
+            getState();
         } catch (e) {
             console.log(e);
         }
         dispatch(setIsLoading(false));
+        
         getIssuanceData();
     }
     return (

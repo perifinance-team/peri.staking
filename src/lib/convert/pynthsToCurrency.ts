@@ -13,6 +13,9 @@ export const pynthsToCurrency = (amount, issuanceRatio, exchangeRates) => {
     )  {
         return utils.parseEther('0');
     }
-
-    return (amount).mul(issuanceRatio).div(exchangeRates).div(100);
+    try {
+        return (amount).mul(issuanceRatio).div(exchangeRates).div(100);
+    } catch(e) {
+        return utils.bigNumberify('0');
+    }
 }

@@ -59,7 +59,7 @@ const TotalBalance = () => {
 		const issuanceRatio = utils.parseEther(utils.parseEther('100').div(targetCRatio).toString());
 		const PERIBalance = utils.formatEther(calculator(PERI.balance, rewardEscrow, 'sub'));
 		const stakedPERI = utils.formatEther(calculator(PERIBalance, transferablePERI, 'sub'));
-		console.log(stakedPERI)
+		
 		const getEscrowStakeStatus = () => {
 			if(numbro(rewardEscrow).value() === 0) {
 				return {

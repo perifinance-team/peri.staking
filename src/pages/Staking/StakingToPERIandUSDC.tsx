@@ -6,11 +6,11 @@ import { RootState } from 'config/reducers'
 import { setIsLoading } from 'config/reducers/app'
 import { updateTransaction } from 'config/reducers/transaction'
 
-import { StakingData, getStakingData, pynthetix, getStakingEstimateCRatio, getStakingAmount, getStakingMaxUSDCAmount, USDC } from 'lib'
+import { StakingData, getStakingData, pynthetix, getStakingEstimateCRatio, getStakingAmount, getStakingMaxUSDCAmount, USDC, calculator } from 'lib'
 import { utils } from 'ethers'
 import { useHistory } from 'react-router-dom'
 import { gasPrice } from 'helpers/gasPrice'
-
+import { NotificationManager } from 'react-notifications';
 
 import numbro from 'numbro'
 
@@ -48,14 +48,14 @@ const Staking = () => {
     });
 
     const [needApprove, setNeedApprove] = useState<boolean>(false);
-    const dataIntervalTime = 1000 * 60 * 3;
+    // const dataIntervalTime = 1000 * 60 * 3;
 
     const { js: { PeriFinance } }  = pynthetix as any;
 
     const getIssuanceData = useCallback(async () => {
         dispatch(setIsLoading(true));
         try {
-            const data = await getStakingData(currentWallet);
+            const data = await getStakingData(currentWallet, 'PERIandUSDC');
             setStakingData(data);
             setMaxMintingAmount({
                 pUSD: data.issuable['all'],
@@ -73,11 +73,11 @@ const Staking = () => {
             return await getIssuanceData(); 
         }
         
-        const interval = setInterval( async () => await init(), dataIntervalTime);
+        // const interval = setInterval( async () => await init(), dataIntervalTime);
         init();
         
         return () => {
-            clearInterval(interval);
+            // clearInterval(interval);
         }
         // eslint-disable-next-line
     } ,[currentWallet]);
@@ -153,7 +153,7 @@ const Staking = () => {
         value = value.replace(/,/g, '');
         
         if((/\./g).test(value)) {
-            value = value.match(/\d+\.\d{0,18}/g)[0];
+            value = value.match(/\d+\.\d{0,6}/g)[0];
         }
 
         if(isNaN(Number(value)) || value === "") {
@@ -224,6 +224,14 @@ const Staking = () => {
         return numbro(estimateGasLimit).multiply(1.2).value();
     }
 
+    // const checkBurnningAmount = () => {
+    //     const USDCRemainStakedTopUSD = calculator(stakingData.stakedAmount['USDC'], stakingAmount['USDC'], 'sub');
+    //     const PERIStakingAmountTopUSD = calculator(stakingAmount['pUSD'], USDCRemainStakedTopUSD, 'sub');
+    //     const USDCQuota = calculator(USDCRemainStakedTopUSD, utils.bigNumberify('4'), 'mul');
+    //     const PERIQuota = calculator(stakingData.balances['debt'], PERIStakingAmountTopUSD, 'sub') ;
+    //     return PERIQuota.lt(USDCQuota);
+    // }
+
     const onSaking = async () => {
         dispatch(setIsLoading(true));
         
@@ -231,6 +239,12 @@ const Staking = () => {
             gasPrice: gasPrice(seletedFee.price),
 			gasLimit: await getGasEstimate(),
         }
+
+        // if(checkBurnningAmount()) {
+        //     NotificationManager.error('Please keep USDC to debt quota (20%)');
+        //     dispatch(setIsLoading(false));
+        //     return false;
+        // }
         
         try {
             
@@ -259,13 +273,27 @@ const Staking = () => {
     const approve = async () => {
         dispatch(setIsLoading(true));
         try {
-            await USDC.approve();
-            setNeedApprove(false);
+            const transaction = await USDC.approve();
+            NotificationManager.info('try Approve', 'in progress', 0);
             
+            const getState = async () => {
+                const state = await pynthetix.provider.getTransactionReceipt(transaction.hash);
+                if(state) {
+                    if(state.status === 1) {
+                        NotificationManager.remove(NotificationManager.listNotify[0]);
+                        NotificationManager.success('success', 'approve')
+                        setNeedApprove(false)
+                    }
+                } else {
+                    setTimeout(() => getState(), 1000);
+                }
+            }
+            getState();
         } catch (e) {
-
+            console.log(e);
         }
         dispatch(setIsLoading(false));
+        
         getIssuanceData();
     }
     return (
@@ -303,7 +331,7 @@ const Staking = () => {
                     {
                         needApprove ? 
                         (<StakingButton onClick={ () => approve()}><H4 weigth="bold">Approve</H4></StakingButton>)
-                        : (<StakingButton onClick={ () => onSaking()} disabled={numbro(estimateCRatio).value() < 400 }>
+                        : (<StakingButton onClick={ () => onSaking()}>
                             <H4 weigth="bold">
                                 { numbro(estimateCRatio).value() < 400 ? 'Maintain the C-Ratio above 400%' : 'STAKE & MINT'}
                                 
