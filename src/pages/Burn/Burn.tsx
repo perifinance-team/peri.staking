@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from 'config/reducers'
 import { updateTransaction } from 'config/reducers/transaction'
@@ -12,14 +13,13 @@ import {
     Route,
     useHistory
 } from "react-router-dom";
-
+import { utils } from 'ethers'
 import { H5, H6 } from 'components/Text'
 import Action from 'screens/Action'
 import { ActionContainer } from 'components/Container'
 import BurnToPERI from './BurnToPERI'
 import BurnToPERIandUSDC from './BurnToPERIandUSDC'
 import BurnToUSDC from './BurnToUSDC'
-
 
 import * as S from './styles'
 
@@ -28,7 +28,23 @@ const Burn = () => {
     const dispatch = useDispatch();
     const { seletedFee } = useSelector((state: RootState) => state.seletedFee);
     const { currentWallet } = useSelector((state: RootState) => state.wallet);
+    const { currentCRatio, targetCRatio } = useSelector((state: RootState) => state.ratio);
+    const [ fitToClaimable, setFitToClaimable ] = useState<boolean>(false);
 
+    useEffect(() => {
+        const init = async() => {
+            const currentUSDCDebtQuota = await pynthetix.js.PeriFinance.currentUSDCDebtQuota(currentWallet);
+            
+            if(utils.bigNumberify(targetCRatio).lt(utils.bigNumberify(currentCRatio)) || utils.parseEther('20').lt(currentUSDCDebtQuota)) {
+                console.log(123);
+                setFitToClaimable(true);
+            } else {
+                setFitToClaimable(false);
+            }
+        }
+        init();
+    })
+    
     const burnToTarget = async () => {
         const { js: {Issuer, PeriFinance} } = pynthetix;
         dispatch(setIsLoading(true));
@@ -49,6 +65,7 @@ const Burn = () => {
             gasLimit: await getGasEstimate()
         }
         try {
+            
             if(await Issuer.canBurnPynths(currentWallet)) {
                 
                 transaction = await PeriFinance.burnPynthsAndUnstakeUSDCToTarget(
@@ -111,7 +128,9 @@ const Burn = () => {
                                 </S.ActionButtonTitle>
                             </S.ActionButtonContainer>
 
-                            <S.ActionButtonContainer onClick={() => burnToTarget()}>
+                            <S.ActionButtonContainer onClick={() => fitToClaimable ? burnToTarget() : false} 
+                                                     disabled={ !fitToClaimable }
+                            >
                                 <S.ActionImage src={`/images/dark/actions/burn.svg`}></S.ActionImage>
                                 <S.ActionButtonTitle>
                                     <H5 weigth={'bold'}>Burn</H5>

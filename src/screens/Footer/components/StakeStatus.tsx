@@ -8,7 +8,7 @@ import { FooterRoundContainer, FooterTitleContainer } from 'components/Container
 import { H4, H6 } from 'components/Text'
 // import { useTranslation } from 'react-i18next';
 
-import { formatCurrency, calculator, currencyToPynths, pynthsToCurrency } from 'lib'
+import { formatCurrency, calculator, currencyToPynths, pynthsToCurrency, pynthetix } from 'lib'
 import { utils } from 'ethers'
 import numbro from 'numbro'
 
@@ -59,6 +59,7 @@ const TotalBalance = () => {
 		const issuanceRatio = utils.parseEther(utils.parseEther('100').div(targetCRatio).toString());
 		const PERIBalance = utils.formatEther(calculator(PERI.balance, rewardEscrow, 'sub'));
 		const stakedPERI = utils.formatEther(calculator(PERIBalance, transferablePERI, 'sub'));
+		const currentUSDCDebtQuota = await pynthetix.js.PeriFinance.currentUSDCDebtQuota(currentWallet);
 		
 		const getEscrowStakeStatus = () => {
 			if(numbro(rewardEscrow).value() === 0) {
@@ -92,18 +93,13 @@ const TotalBalance = () => {
 				able: USDC.balance
 			},
 		});
-
-		const totalStakedPERI = calculator(stakedPERI, escrowStakeAmount.staked, 'add');
 		
 		setStakedRate(
 			{
 				PERI: getRate(stakedPERI, PERIBalance),
 				USDC: getRate(stakedUSDCamount, utils.formatEther(calculator(numbro(stakedUSDCamount).format({mantissa: 2}), USDC.balance, 'add'))),
 				escrow: getRate(escrowStakeAmount.staked, rewardEscrow),
-				PERIForUSDC: getRate(
-					currencyToPynths(totalStakedPERI, issuanceRatio, exchangeRates['PERI']),
-					currencyToPynths(stakedUSDCamount, issuanceRatio, exchangeRates['PERI']),	
-				)
+				PERIForUSDC: numbro(stakedPERI).value() > 0 ? utils.formatEther(utils.parseEther('100').sub(currentUSDCDebtQuota)) : '0'
 			}
 		)
 
@@ -142,13 +138,13 @@ const TotalBalance = () => {
 						<H6>Stakeable : {formatCurrency(stakedAmount.escrow.able)}</H6>
 					</Label>
 				</BarChart>
-				{/* <BarChart>
+				<BarChart>
 					<Graph type="range" min="0" max="100" value={stakedRate.PERIForUSDC} readOnly></Graph>
 					<Label>
 						<H6>Staked PERI rate : {numbro(stakedRate.PERIForUSDC).value() === 0 ? '0.00' : numbro(stakedRate.PERIForUSDC).format({mantissa: 2})}%</H6>
 						<H6>Staked USDC rate : {numbro(stakedRate.PERIForUSDC).value() === 0 ? '0.00' : numbro(100).subtract(numbro(stakedRate.PERIForUSDC).value()).format({mantissa: 2})}%</H6>
 					</Label>
-				</BarChart> */}
+				</BarChart>
             </RageContainer>
         </FooterRoundContainer>
     );
@@ -159,20 +155,20 @@ export const RageContainer = styled.div`
 	width: 100%;
 	height: 200px;
 	flex-direction: column;
-	margin-top: 30px;
+	margin-top: 25px;
 `;
 
 export const BarChart = styled.div`
 	position: relative;
 	display: flex;
 	width: 100%;
-	margin: 10px 0px;
+	margin: 5px 0px;
 `;
 
 export const Graph = styled.input`
     -webkit-appearance: none;
 	overflow: hidden;
-	height: 50px;
+	height: 40px;
 	border-radius: 100px;
 	&[type='range'] {
         width: 100%;
@@ -201,7 +197,7 @@ export const Graph = styled.input`
 
 const Label = styled.div`
 	width: 100%;
-	height: 50px;
+	height: 40px;
 	padding: 0px 40px;
 	align-items: center;
 	display: flex;

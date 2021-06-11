@@ -30,12 +30,12 @@ export const ActionButtonRow = styled.div`
 	grid-gap: 20px;
 `;
 
-export const ActionButtonContainer = styled(BlueBorderRoundContainer)`
+export const ActionButtonContainer = styled(BlueBorderRoundContainer)<{disabled?: Boolean}>`
 	margin: 0;
 	padding: 20px 10px;
-	cursor: pointer;
+	cursor: ${props => props.disabled ? 'no-drop' : 'pointer'};
 	&:hover {
-		background-color: ${props => props.theme.colors.hover.background};
+		background-color: ${props => props.disabled ? '' : props.theme.colors.hover.background};
 	}
 `;
 

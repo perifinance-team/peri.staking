@@ -331,7 +331,7 @@ const Staking = () => {
                     {
                         needApprove ? 
                         (<StakingButton onClick={ () => approve()}><H4 weigth="bold">Approve</H4></StakingButton>)
-                        : (<StakingButton onClick={ () => onSaking()}>
+                        : (<StakingButton onClick={ () => onSaking()} disabled={numbro(estimateCRatio).value() < 400} >
                             <H4 weigth="bold">
                                 { numbro(estimateCRatio).value() < 400 ? 'Maintain the C-Ratio above 400%' : 'STAKE & MINT'}
                                 
