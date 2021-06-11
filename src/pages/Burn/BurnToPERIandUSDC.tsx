@@ -136,7 +136,7 @@ const Burn = () => {
         setBurningAmount({
             pUSD: value,
             USDC: burningAmount['USDC'],
-            PERI: (numbro(pUSDtransferToPERI).format({mantissa: 6}))
+            PERI: pUSDtransferToPERI
         });
     }
 

@@ -25,6 +25,10 @@ export const getBurnMaxAmount = ({ balances, type, issuanceRatio, exchangeRates,
         pUSD = balances['debt'];
     }
 
+    if (balances['pUSD'].lte(pUSD)) {
+        pUSD = balances['pUSD'];
+    }
+
     const USDC = '0.000000';
     
     return {
