@@ -6,6 +6,7 @@ let onEvent: OnEvent;
 export const changeAccount = (dispatch, clear) => {
   if (!window.ethereum || onEvent) return;
   let timer;
+  // @ts-ignore
   onEvent = window.ethereum.on('accountsChanged', (account?: string) => {
       if (!timer) {
         timer = setTimeout(function() {
