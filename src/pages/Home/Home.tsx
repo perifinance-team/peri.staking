@@ -11,11 +11,12 @@ const Home = () => {
         'staking',
         'burn',
         'claim',
+        'vesting'
         // 'trade',
         // 'transfer',
         // 'track',
     ]
-    const history = useHistory();
+const history = useHistory();
     return (
         <>
             <S.Container>

@@ -35,6 +35,7 @@ import Transactions from '../Transactions'
 import Track from '../Track'
 import Transfer from '../Transfer'
 import LP from '../LP'
+import Vesting from '../Vesting'
 
 import MainHeader from 'screens/Header/MainHeader';
 import Footer from 'screens/Footer'
@@ -85,6 +86,8 @@ const Main = () => {
             dispatch(updateBalances(balances));
             const networkFee = await getNetworkFee();
             dispatch(updateNetworkFee(networkFee));
+            console.log(pynthetix.js.PeriFinanceEscrow)
+            console.log(await pynthetix.js.PeriFinanceEscrow.getNextVestingEntry(currentWallet))
         } catch(e) {
             console.log(e);
         }
@@ -195,6 +198,10 @@ const Main = () => {
                                 <Route path="/lp">
                                     <LP></LP>
                                 </Route>
+                                <Route path="/vesting">
+                                    <Vesting></Vesting>
+                                </Route>
+                                
                             </Switch>
                         }
                         
