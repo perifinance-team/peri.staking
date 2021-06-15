@@ -6,15 +6,22 @@ export const Row = styled.div`
     align-items: center;
 `;
 
+export const HoverRow = styled(Row)`
+    cursor: pointer;
+    &:hover {
+        background-color: ${props => props.theme.colors.background.panel};
+    };
+`
+
 export const Cell = styled.div`
+    display: inline-table;
     width: 100%;
     height: 40px;
     vertical-align: middle;
-    padding: 10px 40px;
+    padding: 5px 20px;
 `;
 
 export const HeaderCellRight = styled(Cell)`
-    padding: 10px 40px;
     text-align: right;
 `;
 
@@ -24,12 +31,10 @@ export const HeaderCellLeft = styled(Cell)`
 `;
 
 export const CellRight = styled(Cell)`
-    padding: 10px 20px;
     text-align: right;
 `;
 
 export const CellLeft = styled(Cell)`
-    padding: 10px 40px;
     text-align: left;
 `;
 

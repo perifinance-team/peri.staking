@@ -52,6 +52,9 @@ export const H5 = styled.h5<Paragraph>`
 `;
 
 export const H6 = styled.h6<Paragraph>`
+    display: table-cell;
+    vertical-align: middle;
+    justify-content: center;
     margin: 0px;
     font-size: 14px;
     text-align: ${props => props.align ? props.align : 'center'};

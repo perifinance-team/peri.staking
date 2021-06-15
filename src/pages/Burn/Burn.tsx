@@ -34,9 +34,7 @@ const Burn = () => {
     useEffect(() => {
         const init = async() => {
             const currentUSDCDebtQuota = await pynthetix.js.PeriFinance.currentUSDCDebtQuota(currentWallet);
-            
             if(utils.bigNumberify(targetCRatio).lt(utils.bigNumberify(currentCRatio)) || utils.parseEther('20').lt(currentUSDCDebtQuota)) {
-                console.log(123);
                 setFitToClaimable(true);
             } else {
                 setFitToClaimable(false);

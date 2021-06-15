@@ -1,37 +1,38 @@
 import styled from 'styled-components';
-import { BlueBorderRoundContainer } from 'components/Container'
+import { BlueBoarderRoundLink } from 'components/Container'
 import { H1, H3 } from 'components/Text'
 
 export const Container = styled.div`
-    flex: 1;
 	height: 100%;
+    flex: 1;
 	padding: 20px;
 `
 
 export const IntroContainer = styled.div`
-	margin-left: 100px;
+	float: right;
+	margin-right: 100px;
 `;
 
 export const IntroTitle = styled(H1)`
-	width: 200px;
-	text-align: left;
+	text-align: right;
 	line-height: 70px;
 	margin-top: 100px;
 	margin-bottom: 0px;
 `;
 
 export const IntroSubTitle = styled(H3)`
-	text-align: left;
+	width: 600px;
+	text-align: right;
 `;
 
 export const ActionButtonRow = styled.div`
 	display: grid;
-	grid-template-columns: repeat(3, 220px);
+	grid-template-columns: repeat(3, 210px);
 	grid-template-rows: repeat(2, 200px);
 	grid-gap: 15px;
 `;
 
-export const ActionButtonContainer = styled(BlueBorderRoundContainer)`
+export const ActionButtonContainer = styled(BlueBoarderRoundLink)`
 	margin: 0;
 	padding: 10px;
 	cursor: pointer;
@@ -48,8 +49,3 @@ export const ActionImage = styled.img`
 	height: 80px;
 	width: 80px;
 `;
-
-
-
-
-

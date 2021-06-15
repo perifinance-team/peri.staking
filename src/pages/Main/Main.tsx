@@ -154,7 +154,7 @@ const Main = () => {
         <>
         { isReady ? (
             <>
-                <Router>
+                <Router basename="/">
                     <MainHeader /> 
                     <S.BodyContainer>
                         {isConnectedWallet && 

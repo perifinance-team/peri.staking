@@ -26,6 +26,12 @@ export const en = {
 		},
 		transfer: {
 			subTitle: "Pynths transfer",
+		},
+	},
+	lp: {
+		intro: {
+			title: "LP Staking",
+			subTitle: 'This leads to the process for staking the \tLP tokens You add to the PERI Uniswap pools and earning PERI rewards.'
 		}
-	}
+	},
 }

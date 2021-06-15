@@ -79,7 +79,7 @@ const SubTitleContainer = styled.div`
 const ActionBodyContainer = styled.div`
     display: flex;
     flex-direction: column;
-    flex: 2;
+    flex: 3;
     justify-content: center;
 `
 

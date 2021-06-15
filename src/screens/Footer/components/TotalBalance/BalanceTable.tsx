@@ -3,8 +3,7 @@ import styled from 'styled-components'
 import { useSelector } from "react-redux";
 import { RootState } from 'config/reducers';
 
-import { CellRight,
-    CellLeft,
+import { Cell,
     Row,
     StyledTHeader,
     StyledTBody } from 'components/Table'
@@ -24,33 +23,33 @@ const BalanceTable = () => {
             <StyledTHeader>
                 {tableHeadding.map( headding => 
                     headding === 'COIN' ?
-                    (<CellLeft key={headding}> <H6 align={"left"}>{headding}</H6> </CellLeft>) :
-                    (<CellRight key={headding}> <H6 align={"right"}>{headding}</H6> </CellRight>)
+                    (<Cell key={headding}> <H6>{headding}</H6> </Cell>) :
+                    (<Cell key={headding}> <H6>{headding}</H6> </Cell>)
                 )}
             </StyledTHeader>
             <StyledTBody height={160}>
                 <Row key={debtBalance}>
-                    <CellLeft>
+                    <Cell>
                         <Flex>
                             <Border borderColor={borderColors[0]}></Border>
                             <Asset currencyName={'pUSD'} label={'DEBT'}></Asset>
                         </Flex>
-                    </CellLeft>
-                    <CellRight><H6 align={"right"}>{formatCurrency(debtBalance)}</H6></CellRight>
-                    <CellRight><H6 align={"right"}>${formatCurrency(debtBalance)}</H6></CellRight>
+                    </Cell>
+                    <Cell><H6>{formatCurrency(debtBalance)}</H6></Cell>
+                    <Cell><H6>${formatCurrency(debtBalance)}</H6></Cell>
                 </Row>
                 {balances.length > 0 && balances.map( (currency, index) => {
                     
                     return (
                         <Row key={currency?.coinName}>
-                            <CellLeft>
+                            <Cell>
                                 <Flex>
                                     <Border borderColor={borderColors[index%3]}></Border>
                                     <Asset currencyName={currency?.coinName} label={currency?.coinName}></Asset>
                                 </Flex>
-                            </CellLeft>
-                            <CellRight><H6 align={"right"}>{formatCurrency(currency?.balance)}</H6></CellRight>
-                            <CellRight><H6 align={"right"}>${formatCurrency(currency?.balanceToUSD)}</H6></CellRight>
+                            </Cell>
+                            <Cell><H6>{formatCurrency(currency?.balance)}</H6></Cell>
+                            <Cell><H6>${formatCurrency(currency?.balanceToUSD)}</H6></Cell>
                         </Row>
                     )
                     }

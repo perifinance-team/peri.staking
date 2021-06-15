@@ -6,7 +6,7 @@ import {
     useHistory
 } from "react-router-dom";
 
-import { H4 } from 'components/Text'
+import { H4, H5 } from 'components/Text'
 import { RootState } from 'config/reducers'
 import { setIsLoading } from 'config/reducers/app'
 import Fee from 'components/Fee'
@@ -14,7 +14,7 @@ import { ActionContainer } from 'components/Container'
 import { BlueGreenButton } from 'components/Button'
 import Input from 'components/Input'
 
-const LPStaking = () => {
+const LPReward = () => {
     const history = useHistory()
     const { seletedFee } = useSelector((state: RootState) => state.seletedFee);
 
@@ -42,4 +42,4 @@ const StakingButton = styled(BlueGreenButton)`
     height: 50px;
 `
 
-export default LPStaking;
+export default LPReward;

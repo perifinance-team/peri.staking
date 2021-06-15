@@ -2,6 +2,7 @@ import { useState } from 'react'
 import styled from 'styled-components';
 import { BlueBorderRoundContainer } from 'components/Container'
 import Asset from 'components/Asset'
+import LPAsset from 'components/Asset/LPAsset'
 import { BlueGreenButton } from 'components/Button';
 import { H6 } from 'components/Text'
 import { formatCurrency } from 'lib'
@@ -10,6 +11,7 @@ const Input = (
     {
         disabled = false, currencyName,
         onChange = undefined, onBlur = undefined, value, maxAction = undefined,
+        isLp= false,
         fixed = false,
         fixedAction = undefined,
         maxAmount = undefined,
@@ -20,9 +22,16 @@ const Input = (
     return (
         <>
             <Container>
-                <AssetContainer isCurrencies={currencies ? true: false} onClick={ () => currencies ? setIsOpen(!isOpen) : false }>
-                    <Asset currencyName={currencyName} label={currencyName}></Asset>
+            <AssetContainer isCurrencies={currencies ? true: false} onClick={ () => currencies ? setIsOpen(!isOpen) : false }>
+                {
+                    isLp ? 
+                    (<LPAsset currencyName={currencyName} label={currencyName}></LPAsset>)
+                    :
+                    (<Asset currencyName={currencyName} label={currencyName}></Asset>)
+                    
+                }
                 </AssetContainer>
+                
                 {isOpen && 
                     <CurrenciesContainer>
                         <Currencies>
@@ -39,7 +48,10 @@ const Input = (
                     { disabled || <MaxButton onClick={maxAction}>MAX</MaxButton>}
                 </InputContainer>
             </Container>
-            {maxAmount && <MaxAmount>MAX: {formatCurrency(maxAmount)} {currencyName}</MaxAmount>}
+            <MaxContainer>
+                {maxAmount && <MaxAmount>MAX: {formatCurrency(maxAmount)} {currencyName}</MaxAmount>}
+            </MaxContainer>
+            
         </>
     )
 }
@@ -113,7 +125,10 @@ const MaxButton = styled(BlueGreenButton)<{active?: boolean}>`
     margin: auto 5px;
     color: ${props => props.active ? props.theme.colors.font.red : ''};
 `;
-
+const MaxContainer = styled.div`
+    display: flex;
+    justify-content: flex-end;
+`
 const MaxAmount = styled(H6)`
     text-align: right;
     padding: 0px 10px;

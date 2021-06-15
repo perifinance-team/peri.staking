@@ -1,3 +1,10 @@
+// background_navy : #181339
+// peri_navy : #14085A
+// peri_blue : #11077A
+// peri_lightblue : #5271FF
+// peri_skyblue : #00F0FF
+// peri_yellow : #F8B62D
+
 const navy = '#181339'
 //main backgorund
 const lightBlue = 'rgb(82, 113, 255, 0.1)'

@@ -11,6 +11,7 @@ const Asset = ({currencyName, label}) => {
 }
 
 const AssetContainer = styled.div`
+    height: 30px;
     display: flex;
     vertical-align: middle;
     flex-direction: row;

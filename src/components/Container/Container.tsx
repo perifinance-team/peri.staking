@@ -1,4 +1,26 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
+import { Link } from "react-router-dom";
+
+const roundContainer = css`
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	color: ${props => props.theme.colors.font.secondary};
+	background-color: ${props => props.theme.colors.background.panel};
+	border-radius: 25px;
+	height: 40px;
+	margin: 0px 10px;
+`;
+
+const blueBorderRoundContainer = css`
+	flex: 1;
+	flex-direction: column;
+	width: 100%;
+	height: 100%;
+	border: 2px solid ${props => props.theme.colors.border};
+	padding: 20px 10px;
+	background-color: transparent;
+`
 
 export const BodyContainer = styled.div`
 	display: flex;
@@ -18,25 +40,29 @@ export const MainContainer =  styled.div`
 `;
 
 export const RoundContainer = styled.div`
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	color: ${props => props.theme.colors.font.secondary};
-	background-color: ${props => props.theme.colors.background.panel};
-	border-radius: 25px;
-	height: 40px;
-	margin: 0px 10px;
+	${roundContainer}
 `;
 
-export const BlueBorderRoundContainer = styled(RoundContainer)`
-	flex: 1;
-	flex-direction: column;
-	width: 100%;
-	height: 100%;
-	border: 2px solid ${props => props.theme.colors.border};
-	padding: 20px 10px;
-	background-color: transparent;
-`
+export const BlueBorderRoundContainer = styled.div`
+	${roundContainer}
+	${blueBorderRoundContainer}
+`;
+
+export const BlueBoarderRoundLink = styled(Link)`
+	${roundContainer}
+	${blueBorderRoundContainer}
+	margin: 0;
+	padding: 10px;
+	cursor: pointer;
+	justify-content: start;
+	text-decoration: none;
+	&:hover {
+		background-color: ${props => props.theme.colors.hover.background};
+	}
+	H4 {
+		margin: 10px;
+	}
+`;
 
 export const HeaderContainer = styled.div`
 	display: flex;
