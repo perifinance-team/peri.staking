@@ -16,8 +16,9 @@ import { formatCurrency } from 'lib'
 
 const BalanceTable = () => {
     // const { t } = useTranslation();
-    const { balances, debtBalance } = useSelector((state: RootState) => state.balances);
-    const tableHeadding = ['COIN', 'BALANCE', '$USD']
+    const { transferables } = useSelector((state: RootState) => state.balances);
+    const transferablesArray = Object.keys(transferables);
+    const tableHeadding = ['COIN', 'TRANSFERABLE', '$USD']
     const borderColors = ['#5271FF', '#00F0FF', '#F8B62D'];
     return (
         <TableContainer>
@@ -29,28 +30,18 @@ const BalanceTable = () => {
                 )}
             </StyledTHeader>
             <StyledTBody height={160}>
-                <Row key={debtBalance}>
-                    <CellLeft>
-                        <Flex>
-                            <Border borderColor={borderColors[0]}></Border>
-                            <Asset currencyName={'pUSD'} label={'DEBT'}></Asset>
-                        </Flex>
-                    </CellLeft>
-                    <CellRight><H6 align={"right"}>{formatCurrency(debtBalance)}</H6></CellRight>
-                    <CellRight><H6 align={"right"}>${formatCurrency(debtBalance)}</H6></CellRight>
-                </Row>
-                {balances.length > 0 && balances.map( (currency, index) => {
+                {transferablesArray.length > 0 && transferablesArray.map( (currency, index) => {
                     
                     return (
-                        <Row key={currency?.coinName}>
+                        <Row key={currency}>
                             <CellLeft>
                                 <Flex>
                                     <Border borderColor={borderColors[index%3]}></Border>
-                                    <Asset currencyName={currency?.coinName} label={currency?.coinName}></Asset>
+                                    <Asset currencyName={currency} label={currency}></Asset>
                                 </Flex>
                             </CellLeft>
-                            <CellRight><H6 align={"right"}>{formatCurrency(currency?.balance)}</H6></CellRight>
-                            <CellRight><H6 align={"right"}>${formatCurrency(currency?.balanceToUSD)}</H6></CellRight>
+                            <CellRight><H6 align={"right"}>{formatCurrency(transferables[currency].balance)}</H6></CellRight>
+                            <CellRight><H6 align={"right"}>${formatCurrency(transferables[currency].balanceToUSD)}</H6></CellRight>
                         </Row>
                     )
                     }

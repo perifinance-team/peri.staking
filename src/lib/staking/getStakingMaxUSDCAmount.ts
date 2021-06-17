@@ -1,5 +1,5 @@
 import { utils } from 'ethers'
-import { pynthsToCurrency, currencyToPynths, calculator } from 'lib'
+import { pynthsToCurrency } from 'lib'
 
 export const getStakingMaxUSDCAmount = ({mintingAmount, issuanceRatio, exchangeRates, stakeableUSDC, balances}) => {
     const mintAmountToMaxUSDC = pynthsToCurrency(mintingAmount, issuanceRatio, exchangeRates['USDC']);

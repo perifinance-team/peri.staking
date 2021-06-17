@@ -14,20 +14,14 @@ import numbro from 'numbro'
 
 const TotalBalance = () => {
     // const { t } = useTranslation();
-	const PERI = useSelector((state: RootState) => state.balances.PERIBalanceInfo);
-	
-	const USDC = useSelector((state: RootState) => state.balances.USDCBalanceInfo);
 	const { currentWallet } = useSelector((state: RootState) => state.wallet);
-	const { transferablePERI, stakedUSDCamount, rewardEscrow, debtBalance } = useSelector((state: RootState) => (state.balances) );
+	const { balances } = useSelector((state: RootState) => state.balances);
+
 	const exchangeRates = useSelector((state: RootState) => state.exchangeRates);
 	const targetCRatio = useSelector((state: RootState) => state.ratio.targetCRatio);
 	
 	const [stakedAmount, setStakedAmount] = useState({
 		PERI: {
-			staked: '0',
-			able: '0'
-		},
-		escrow: {
 			staked: '0',
 			able: '0'
 		},
@@ -39,7 +33,6 @@ const TotalBalance = () => {
 	})
 	const [stakedRate, setStakedRate] = useState({
 		PERI: '0',
-		escrow: '0',
 		USDC: '0',
 		PERIForUSDC: '0'
 	});
@@ -57,58 +50,49 @@ const TotalBalance = () => {
 
 	const getStatus = useCallback(async () => {
 		const issuanceRatio = utils.parseEther(utils.parseEther('100').div(targetCRatio).toString());
-		const PERIBalance = utils.formatEther(calculator(PERI.balance, rewardEscrow, 'sub'));
-		const stakedPERI = utils.formatEther(calculator(PERIBalance, transferablePERI, 'sub'));
+		const stakedUSDCamount = utils.formatEther(await await pynthetix.js.PeriFinance.usdcStakedAmountOf(currentWallet));
 		const currentUSDCDebtQuota = await pynthetix.js.PeriFinance.currentUSDCDebtQuota(currentWallet);
 		
-		const getEscrowStakeStatus = () => {
-			if(numbro(rewardEscrow).value() === 0) {
-				return {
-					staked: '0.00',
-					able: '0.00'
-				}
-			}
-			const stakedUSDCTopUSD = currencyToPynths(stakedUSDCamount, issuanceRatio, exchangeRates['USDC']);
-			const stakedPERITopUSD = currencyToPynths(stakedPERI, issuanceRatio, exchangeRates['PERI']);
-			const balanceOfStakedpUSD = calculator(stakedUSDCTopUSD, stakedPERITopUSD, 'add');
-			const escrowStakedpUSD = calculator(debtBalance, balanceOfStakedpUSD, 'sub');
-			let escrowStakedPERI = pynthsToCurrency(escrowStakedpUSD, issuanceRatio, exchangeRates['PERI']);
-			if(utils.parseEther(rewardEscrow).lt(utils.parseEther(rewardEscrow))) {
-				escrowStakedPERI = rewardEscrow;
-			}
-			return {
-				staked: numbro(utils.formatEther(escrowStakedPERI)).format({mantissa: 2}),
-				able: numbro(rewardEscrow).subtract(numbro(utils.formatEther(escrowStakedPERI)).value()).format({mantissa: 2})
-			}
+		const USDCStakedTopUSD = currencyToPynths(stakedUSDCamount, issuanceRatio, exchangeRates['USDC']);
+		const PERIDebtBalanceTopUSD = calculator(balances['debt'].balance, USDCStakedTopUSD, 'sub');
+		
+		let PERIStakedToPERI = pynthsToCurrency(PERIDebtBalanceTopUSD, issuanceRatio, exchangeRates['PERI']);
+		let PERIStakableToPERI;
+		if(utils.parseEther(balances['PERI'].balance).lt(PERIStakedToPERI)) {
+			PERIStakedToPERI = utils.parseEther(balances['PERI'].balance);
+			PERIStakableToPERI = utils.bigNumberify('0');
+		} else {
+			PERIStakableToPERI = calculator(balances['PERI'].balance, PERIStakedToPERI, 'sub');
 		}
-		const escrowStakeAmount = getEscrowStakeStatus()
+		
 		setStakedAmount({
 			PERI: {
-				staked: stakedPERI,
-				able: transferablePERI
+				staked: utils.formatEther(PERIStakedToPERI),
+				able: utils.formatEther(PERIStakableToPERI)
 			},
-			escrow: escrowStakeAmount,
+			
 			USDC: {
 				staked: stakedUSDCamount,
-				able: USDC.balance
+				able: balances['USDC'].balance
 			},
 		});
 		
 		setStakedRate(
 			{
-				PERI: getRate(stakedPERI, PERIBalance),
-				USDC: getRate(stakedUSDCamount, utils.formatEther(calculator(numbro(stakedUSDCamount).format({mantissa: 2}), USDC.balance, 'add'))),
-				escrow: getRate(escrowStakeAmount.staked, rewardEscrow),
-				PERIForUSDC: numbro(stakedPERI).value() > 0 ? utils.formatEther(utils.parseEther('100').sub(currentUSDCDebtQuota)) : '0'
+				PERI: getRate(utils.formatEther(PERIStakedToPERI), balances['PERI'].balance),
+				USDC: getRate(stakedUSDCamount, balances['USDC'].balance),
+				PERIForUSDC: numbro(PERIDebtBalanceTopUSD).value() > 0 ? utils.formatEther(utils.parseEther('100').sub(currentUSDCDebtQuota)) : '0'
 			}
 		)
 
-	}, [transferablePERI, rewardEscrow, debtBalance, PERI, USDC, stakedUSDCamount, targetCRatio, exchangeRates])
+	}, [balances, targetCRatio, exchangeRates])
 
 	useEffect( () => {
-		getStatus();
+		if(Object.keys(balances).length > 0) {
+			getStatus();
+		}
 		// eslint-disable-next-line
-	}, [currentWallet, debtBalance]);
+	}, [currentWallet, balances]);
 
 
     return (
@@ -121,23 +105,23 @@ const TotalBalance = () => {
 					<Graph type="range" min="0" max="100" value={stakedRate.PERI} readOnly></Graph>
 					<Label>
 						<H6>Staked PERI : {formatCurrency(stakedAmount.PERI.staked)}</H6>
-						<H6>Transferable : {formatCurrency(stakedAmount.PERI.able)}</H6>
+						<H6>Stakable PERI : {formatCurrency(stakedAmount.PERI.able)}</H6>
 					</Label>
 				</BarChart>
 				<BarChart>
 					<Graph type="range" min="0" max="100" value={stakedRate.USDC} readOnly></Graph>
 					<Label>
 						<H6>Staked USDC : {formatCurrency(stakedAmount.USDC.staked)}</H6>
-						<H6>Transferable : {formatCurrency(stakedAmount.USDC.able)}</H6>
+						<H6>Stakable USDC : {formatCurrency(stakedAmount.USDC.able)}</H6>
 					</Label>
 				</BarChart>
-				<BarChart>
+				{/* <BarChart>
 					<Graph type="range" min="0" max="100" value={stakedRate.escrow} readOnly></Graph>
 					<Label>
 						<H6>Staked Escrow : {formatCurrency(stakedAmount.escrow.staked)}</H6>
 						<H6>Stakeable : {formatCurrency(stakedAmount.escrow.able)}</H6>
 					</Label>
-				</BarChart>
+				</BarChart> */}
 				<BarChart>
 					<Graph type="range" min="0" max="100" value={stakedRate.PERIForUSDC} readOnly></Graph>
 					<Label>
@@ -162,13 +146,13 @@ export const BarChart = styled.div`
 	position: relative;
 	display: flex;
 	width: 100%;
-	margin: 5px 0px;
+	margin: 10px 0px;
 `;
 
 export const Graph = styled.input`
     -webkit-appearance: none;
 	overflow: hidden;
-	height: 40px;
+	height: 50px;
 	border-radius: 100px;
 	&[type='range'] {
         width: 100%;
@@ -197,7 +181,7 @@ export const Graph = styled.input`
 
 const Label = styled.div`
 	width: 100%;
-	height: 40px;
+	height: 50px;
 	padding: 0px 40px;
 	align-items: center;
 	display: flex;

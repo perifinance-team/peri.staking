@@ -8,7 +8,7 @@ import { setIsLoading } from 'config/reducers/app'
 
 import { getWalletAddresses } from 'helpers/wallet'
 import { NotificationManager } from 'react-notifications';
-import { getBalancess, formatCurrency, pynthetix } from 'lib'
+import { getBalances, formatCurrency, pynthetix } from 'lib'
 import { updateWallet, updateIsConnected } from 'config/reducers/wallet'
 
 import { CellRight,
@@ -44,12 +44,12 @@ const WalletConnection = () => {
                     let balances = [];
 
                     for await (let address of addresses) {
-                        const balance = await getBalancess(address);
+                        const balance = await getBalances(address);
                         balances.push({
                                 address,
-                                PERI: balance.balances.find(e=>e.coinName === 'PERI'),
-                                pUSD: balance.balances.find(e=>e.coinName === 'pUSD'),
-                                ETH: balance.balances.find(e=>e.coinName === 'ETH'),
+                                PERI: balance['PERI'],
+                                pUSD: balance['pUSD'],
+                                ETH: balance['ETH'],
                         });
                     }
                     let wallet = [...wallets];
