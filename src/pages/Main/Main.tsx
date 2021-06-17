@@ -21,7 +21,7 @@ import { resetTransaction } from 'config/reducers/transaction'
 import { connectHelper } from 'helpers/wallet/connect'
 import { changeAccount, changeNetwork } from 'helpers/wallet/change'
 import { getNetworkFee } from 'helpers/defipulse'
-import { pynthetix, getExchangeRates, getRatio, getBalancess } from 'lib'
+import { pynthetix, getExchangeRates, getRatio, getBalances } from 'lib'
 
 
 import Home from '../Home'
@@ -54,7 +54,7 @@ const Main = () => {
     const themeState = useSelector((state: RootState) => state.theme.theme);
     const transaction = useSelector((state: RootState) => state.transaction);
     const dataIntervalTime = 1000 * 60 * 3;
-    const [intervals, setIntervals] = useState(null);
+    // const [intervals, setIntervals] = useState(null);
     
     const connectWallet = useCallback(async () => {
         const currentWallet = await connectHelper(walletType);
@@ -81,7 +81,7 @@ const Main = () => {
             dispatch(updateExchangeRates(exchangeRates));
             const ratios = await getRatio(currentWallet);
             dispatch(updateRatio(ratios));
-            const balances = await getBalancess(currentWallet);
+            const balances = await getBalances(currentWallet);
             dispatch(updateBalances(balances));
             const networkFee = await getNetworkFee();
             dispatch(updateNetworkFee(networkFee));
