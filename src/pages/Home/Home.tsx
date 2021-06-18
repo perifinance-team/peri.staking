@@ -1,5 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { H4, H6} from 'components/Text'
+import { RootState } from 'config/reducers'
+import { useSelector } from "react-redux"
 import * as S from './styles'
 import {
     useHistory
@@ -7,16 +9,21 @@ import {
 
 const Home = () => {
     const { t } = useTranslation();
-    const actions = [
+    const history = useHistory();
+    const { vestable } = useSelector((state: RootState) => state.vestable);
+    let actions = [
         'staking',
         'burn',
         'claim',
-        'vesting'
+        
         // 'trade',
         // 'transfer',
         // 'track',
-    ]
-const history = useHistory();
+    ];
+    if(vestable) {
+        actions.push('vesting')
+    }
+
     return (
         <>
             <S.Container>

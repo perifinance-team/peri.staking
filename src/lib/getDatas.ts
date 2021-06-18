@@ -43,7 +43,7 @@ export const getExchangeRates = async () => {
 }
 
 
-export const getRatio = async (walletAddress) => {
+export const getRatio = async (currentWallet) => {
     const {
 		js: { 
             SystemSettings,
@@ -54,7 +54,7 @@ export const getRatio = async (walletAddress) => {
     
     const getCurrentCRatio = async () => {
         
-        return (await PeriFinance.collateralisationRatio(walletAddress)).div(10**12).mul(10**12).toString()
+        return (await PeriFinance.collateralisationRatio(currentWallet)).div(10**12).mul(10**12).toString()
     };
 
     const getTargetCRatio = async () => {
@@ -77,7 +77,16 @@ export const getRatio = async (walletAddress) => {
     }
 }
 
-export const getBalances = async (walletAddress) => {
+export const getVestable = async (currentWallet) => {
+    const {
+		js: { 
+            PeriFinanceEscrow
+        },
+	} = pynthetix as any;
+    return (await PeriFinanceEscrow.getNextVestingIndex(currentWallet)).toNumber() > 0;
+}
+
+export const getBalances = async (currentWallet) => {
     const {
 		js: { 
             PynthUtil,
@@ -89,14 +98,14 @@ export const getBalances = async (walletAddress) => {
 
     const periRate = utils.formatEther(await ExchangeRates.rateForCurrency(utils.formatBytes32String('PERI')));
     const USDCRate = utils.formatEther(await ExchangeRates.rateForCurrency(utils.formatBytes32String('USDC')));
-    const debtBalance = utils.formatEther(await PeriFinance.debtBalanceOf(walletAddress, utils.formatBytes32String('pUSD')));
-    const transferablePERI = utils.formatEther(await PeriFinance.transferablePeriFinance(walletAddress));
-    const periBalance = utils.formatEther(await PeriFinance.collateral(walletAddress));
-    const stakedUSDCamount = utils.formatEther(await PeriFinance.usdcStakedAmountOf(walletAddress));
-    // const rewardEscrow = utils.formatEther(await RewardEscrow.balanceOf(walletAddress));
-    const [keys, value] = await PynthUtil.pynthsBalances(walletAddress);
-    const USDCBalance = await USDC.balanceOf(walletAddress);
-    const ethBalance = utils.formatEther(await provider.getBalance(walletAddress));
+    const debtBalance = utils.formatEther(await PeriFinance.debtBalanceOf(currentWallet, utils.formatBytes32String('pUSD')));
+    const transferablePERI = utils.formatEther(await PeriFinance.transferablePeriFinance(currentWallet));
+    const periBalance = utils.formatEther(await PeriFinance.collateral(currentWallet));
+    const stakedUSDCamount = utils.formatEther(await PeriFinance.usdcStakedAmountOf(currentWallet));
+    // const rewardEscrow = utils.formatEther(await RewardEscrow.balanceOf(currentWallet));
+    const [keys, value] = await PynthUtil.pynthsBalances(currentWallet);
+    const USDCBalance = await USDC.balanceOf(currentWallet);
+    const ethBalance = utils.formatEther(await provider.getBalance(currentWallet));
 
     const getTransferables = async () => {        
         let tranferables = {};
