@@ -26,6 +26,9 @@ export const en = {
 		},
 		transfer: {
 			subTitle: "Pynths transfer",
+		},
+		vesting: {
+			subTitle: "If your PERI is still escrowed from the token sale"
 		}
 	}
 }

@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useState } from 'react'
+import { useEffect, useCallback } from 'react'
 import { useSelector, useDispatch } from "react-redux"
 
 import {
@@ -17,11 +17,12 @@ import { updateBalances } from 'config/reducers/wallet/balances'
 import { updateExchangeRates, updateRatio } from 'config/reducers/rates'
 import { updateNetworkFee } from 'config/reducers/networkFee'
 import { resetTransaction } from 'config/reducers/transaction'
+import { updateVestable } from 'config/reducers/vest'
 
 import { connectHelper } from 'helpers/wallet/connect'
 import { changeAccount, changeNetwork } from 'helpers/wallet/change'
 import { getNetworkFee } from 'helpers/defipulse'
-import { pynthetix, getExchangeRates, getRatio, getBalances } from 'lib'
+import { pynthetix, getExchangeRates, getRatio, getBalances, getVestable } from 'lib'
 
 
 import Home from '../Home'
@@ -35,6 +36,7 @@ import Transactions from '../Transactions'
 import Track from '../Track'
 import Transfer from '../Transfer'
 import LP from '../LP'
+import Vesting from '../Vesting'
 
 import MainHeader from 'screens/Header/MainHeader';
 import Footer from 'screens/Footer'
@@ -50,6 +52,7 @@ const Main = () => {
 
     const { isReady } = useSelector((state: RootState) => state.app);
     const { walletType, unlocked, currentWallet } = useSelector((state: RootState) => state.wallet);
+    
     const isConnectedWallet = useSelector((state: RootState) => state.isConnectedWallet.isConnectedWallet);
     const themeState = useSelector((state: RootState) => state.theme.theme);
     const transaction = useSelector((state: RootState) => state.transaction);
@@ -83,8 +86,11 @@ const Main = () => {
             dispatch(updateRatio(ratios));
             const balances = await getBalances(currentWallet);
             dispatch(updateBalances(balances));
+            const vestable:boolean = await getVestable(currentWallet);
+            dispatch(updateVestable({vestable}));
             const networkFee = await getNetworkFee();
             dispatch(updateNetworkFee(networkFee));
+            
         } catch(e) {
             console.log(e);
         }
@@ -195,6 +201,10 @@ const Main = () => {
                                 <Route path="/lp">
                                     <LP></LP>
                                 </Route>
+                                <Route path="/vesting">
+                                    <Vesting></Vesting>
+                                </Route>
+                                
                             </Switch>
                         }
                         

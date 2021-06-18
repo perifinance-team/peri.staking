@@ -20,6 +20,5 @@ const NETWORK_NAMES: Network_names = {
 };
 
 export const getProvider = (networkId: string) => {
-
 	return new providers.JsonRpcProvider(INFURA_URLS[networkId]);
-};
+}
