@@ -7,4 +7,4 @@ export const INFURA_URLS: object = {
 	5: `https://goerli.infura.io/v3/${INFURA_ID}`,
 	42: `https://kovan.infura.io/v3/${INFURA_ID}`,
 	80001:`https://rpc-mumbai.maticvigil.com/v1/0a42b3d2f8e47150cd1e6064eac682e9d261faf2`
-};
+}
