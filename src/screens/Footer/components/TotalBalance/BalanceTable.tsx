@@ -20,6 +20,11 @@ const BalanceTable = () => {
     const transferablesArray = Object.keys(transferables);
     const tableHeadding = ['COIN', 'TRANSFERABLE', '$USD']
     const borderColors = ['#5271FF', '#00F0FF', '#F8B62D'];
+    const currencies = [
+        'PERI',
+        'pUSD',
+        'USDC',
+    ]
     return (
         <TableContainer>
             <StyledTHeader>
@@ -31,21 +36,24 @@ const BalanceTable = () => {
             </StyledTHeader>
             <StyledTBody height={160}>
                 {transferablesArray.length > 0 && transferablesArray.map( (currency, index) => {
-                    
-                    return (
-                        <Row key={currency}>
-                            <CellLeft>
-                                <Flex>
-                                    <Border borderColor={borderColors[index%3]}></Border>
-                                    <Asset currencyName={currency} label={currency}></Asset>
-                                </Flex>
-                            </CellLeft>
-                            <CellRight><H6 align={"right"}>{formatCurrency(transferables[currency].balance)}</H6></CellRight>
-                            <CellRight><H6 align={"right"}>${formatCurrency(transferables[currency].balanceToUSD)}</H6></CellRight>
-                        </Row>
-                    )
+                    if(currencies.includes(currency)) {
+                        return (
+                            <Row key={currency}>
+                                <CellLeft>
+                                    <Flex>
+                                        <Border borderColor={borderColors[index%3]}></Border>
+                                        <Asset currencyName={currency} label={currency}></Asset>
+                                    </Flex>
+                                </CellLeft>
+                                <CellRight><H6 align={"right"}>{formatCurrency(transferables[currency].balance)}</H6></CellRight>
+                                <CellRight><H6 align={"right"}>${formatCurrency(transferables[currency].balanceToUSD)}</H6></CellRight>
+                            </Row>
+                        )
+                    } else {
+                        return null;
                     }
-                )}
+                    
+                })}
             </StyledTBody>
         </TableContainer>
     );

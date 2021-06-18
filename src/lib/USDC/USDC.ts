@@ -8,10 +8,10 @@ export const USDC = {
     address: null,
     contract: null,
     signer: null,
-    connect: async function (signer, networkId) {
+    connect: async function (signer, networkName) {
         const { js: { PeriFinance } }  = pynthetix as any;
         this.issuerAddress = await PeriFinance.getRequiredAddress(utils.formatBytes32String('Issuer'));
-        this.address = networkId === 1 ? process.env.REACT_APP_MAIN_USDC_ADDRESS : process.env.REACT_APP_KOVAN_USDC_ADDRESS;
+        this.address = process.env[`REACT_APP_${networkName}_USDC_ADDRESS`];
         this.signer = signer;
         this.contract = new ethers.Contract(this.address, ERC20.abi, signer);
         return this;
