@@ -15,9 +15,15 @@ import { formatCurrency } from 'lib'
 
 const BalanceTable = () => {
     // const { t } = useTranslation();
-    const { balances, debtBalance } = useSelector((state: RootState) => state.balances);
-    const tableHeadding = ['COIN', 'BALANCE', '$USD']
+    const { transferables } = useSelector((state: RootState) => state.balances);
+    const transferablesArray = Object.keys(transferables);
+    const tableHeadding = ['COIN', 'TRANSFERABLE', '$USD']
     const borderColors = ['#5271FF', '#00F0FF', '#F8B62D'];
+    const currencies = [
+        'PERI',
+        'pUSD',
+        'USDC',
+    ]
     return (
         <TableContainer>
             <StyledTHeader>
@@ -28,32 +34,24 @@ const BalanceTable = () => {
                 )}
             </StyledTHeader>
             <StyledTBody height={160}>
-                <Row key={debtBalance}>
-                    <Cell>
-                        <Flex>
-                            <Border borderColor={borderColors[0]}></Border>
-                            <Asset currencyName={'pUSD'} label={'DEBT'}></Asset>
-                        </Flex>
-                    </Cell>
-                    <Cell><H6>{formatCurrency(debtBalance)}</H6></Cell>
-                    <Cell><H6>${formatCurrency(debtBalance)}</H6></Cell>
-                </Row>
-                {balances.length > 0 && balances.map( (currency, index) => {
-                    
-                    return (
-                        <Row key={currency?.coinName}>
-                            <Cell>
-                                <Flex>
-                                    <Border borderColor={borderColors[index%3]}></Border>
-                                    <Asset currencyName={currency?.coinName} label={currency?.coinName}></Asset>
-                                </Flex>
-                            </Cell>
-                            <Cell><H6>{formatCurrency(currency?.balance)}</H6></Cell>
-                            <Cell><H6>${formatCurrency(currency?.balanceToUSD)}</H6></Cell>
-                        </Row>
-                    )
+                {transferablesArray.length > 0 && transferablesArray.map( (currency, index) => {
+                    if(currencies.includes(currency)) {
+                        return (
+                            <Row key={currency}>
+                                <Cell>
+                                    <Flex>
+                                        <Border borderColor={borderColors[index%3]}></Border>
+                                        <Asset currencyName={currency} label={currency}></Asset>
+                                    </Flex>
+                                </Cell>
+                                <Cell><H6 align={"right"}>{formatCurrency(transferables[currency].balance)}</H6></Cell>
+                                <Cell><H6 align={"right"}>${formatCurrency(transferables[currency].balanceToUSD)}</H6></Cell>
+                            </Row>
+                        )
+                    } else {
+                        return null;
                     }
-                )}
+                })}
             </StyledTBody>
         </TableContainer>
     );

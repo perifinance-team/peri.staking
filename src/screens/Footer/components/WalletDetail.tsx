@@ -9,7 +9,7 @@ import { updateBalances } from 'config/reducers/wallet/balances'
 import { updateExchangeRates, updateRatio } from 'config/reducers/rates'
 import { clearWallet, updateIsConnected } from 'config/reducers/wallet'
 
-import { getExchangeRates, getRatio, getBalancess, formatCurrency, calculator } from 'lib'
+import { getExchangeRates, getRatio, getBalances, formatCurrency, calculator } from 'lib'
 
 import { FooterRoundContainer, FooterTitleContainer, RoundContainer, BlueBorderRoundContainer } from 'components/Container'
 import { H3, H4, H6 } from 'components/Text'
@@ -59,7 +59,7 @@ const WalletDetail = () => {
             dispatch(updateExchangeRates(exchangeRates));
             const ratios = await getRatio(wallet.currentWallet);
             dispatch(updateRatio(ratios));
-            const balances = await getBalancess(wallet.currentWallet);
+            const balances = await getBalances(wallet.currentWallet);
             dispatch(updateBalances(balances));
             
         } catch (e) {
