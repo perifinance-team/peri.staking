@@ -10,9 +10,8 @@ import {
 import { NotificationManager } from 'react-notifications';
 
 import { RootState } from 'config/reducers'
-import { setAppReady, setIsLoading } from 'config/reducers/app'
-import { updateThemeStyles } from 'config/reducers/theme'
-import { updateWallet, initWallet, clearWallet, updateIsConnected } from 'config/reducers/wallet'
+import { setIsLoading } from 'config/reducers/app'
+import { updateWallet, clearWallet, updateIsConnected } from 'config/reducers/wallet'
 import { updateBalances } from 'config/reducers/wallet/balances'
 import { updateExchangeRates, updateRatio } from 'config/reducers/rates'
 import { updateNetworkFee } from 'config/reducers/networkFee'
@@ -20,7 +19,7 @@ import { resetTransaction } from 'config/reducers/transaction'
 import { updateVestable } from 'config/reducers/vest'
 
 import { connectHelper } from 'helpers/wallet/connect'
-import { changeAccount, changeNetwork } from 'helpers/wallet/change'
+import { changeAccount } from 'helpers/wallet/change'
 import { getNetworkFee } from 'helpers/defipulse'
 import { pynthetix, getExchangeRates, getRatio, getBalances, getVestable } from 'lib'
 
@@ -54,7 +53,7 @@ const Main = () => {
     const { walletType, unlocked, currentWallet } = useSelector((state: RootState) => state.wallet);
     
     const isConnectedWallet = useSelector((state: RootState) => state.isConnectedWallet.isConnectedWallet);
-    const themeState = useSelector((state: RootState) => state.theme.theme);
+    
     const transaction = useSelector((state: RootState) => state.transaction);
     // const dataIntervalTime = 1000 * 60 * 3;
     // const [intervals, setIntervals] = useState(null);
@@ -96,28 +95,21 @@ const Main = () => {
         }
         dispatch(setIsLoading(false));
         // eslint-disable-next-line
+
+
     }, []);
 
     useEffect(() => {
-        const init = async () => {
-            dispatch(initWallet());
-            changeNetwork();
-            dispatch(updateThemeStyles(themeState));
-            if (unlocked) {
-                await connectWallet();
-            } else {
+        if(isReady && window?.ethereum) {
+            try {
+                connectWallet();
+            } catch(e) {
                 dispatch(updateIsConnected(false));
                 history.push('/login');
             }
-            dispatch(setAppReady());
-        };
-        init();
-        return () => {
-            // clearInterval(intervals);
-            // setIntervals(null);
         }
-        // eslint-disable-next-line
-    }, []);
+    }, [isReady])
+
     useEffect(() => {
         if(isConnectedWallet) {
             changeAccount( async () => {

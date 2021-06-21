@@ -26,6 +26,7 @@ import * as S from './styles'
 const Burn = () => {
     const history = useHistory();
     const dispatch = useDispatch();
+    const isConnectedWallet = useSelector((state: RootState) => state.isConnectedWallet.isConnectedWallet);
     const { seletedFee } = useSelector((state: RootState) => state.seletedFee);
     const { currentWallet } = useSelector((state: RootState) => state.wallet);
     const { currentCRatio, targetCRatio } = useSelector((state: RootState) => state.ratio);
@@ -40,9 +41,10 @@ const Burn = () => {
                 setFitToClaimable(false);
             }
         }
-        init();
-        // eslint-disable-next-line
-    }, [currentWallet])
+        if(isConnectedWallet) {
+            init();
+        }
+    }, [currentWallet, isConnectedWallet])
     
     const burnToTarget = async () => {
         const { js: {Issuer, PeriFinance} } = pynthetix;

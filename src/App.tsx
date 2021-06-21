@@ -1,12 +1,18 @@
-
-import { useSelector } from "react-redux"
+import { useEffect } from 'react'
+import { useSelector, useDispatch } from "react-redux"
 
 import { ThemeProvider } from 'styled-components'
 import { NotificationContainer } from 'react-notifications';
 
 import { RootState } from 'config/reducers'
+import { updateWalletNetwork } from 'config/reducers/wallet'
 
 import { BodyContainer } from 'components/Container'
+
+import { setAppReady } from 'config/reducers/app'
+import { updateThemeStyles } from 'config/reducers/theme'
+import { changeNetwork } from 'helpers/wallet/change'
+
 import {
     HashRouter as Router,
     Switch,
@@ -22,6 +28,15 @@ import './App.css'
 const App = () => {
     const { isLoading } = useSelector((state: RootState) => state.app);
     const themeStyles = useSelector((state: RootState) => state.themeStyles.styles);
+    const themeState = useSelector((state: RootState) => state.theme.theme);
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        dispatch(updateThemeStyles(themeState));
+        changeNetwork((chainID) => { dispatch(updateWalletNetwork(chainID))});
+        dispatch(setAppReady());
+        // eslint-disable-next-line
+    }, []);
 
     return (
         <>     
