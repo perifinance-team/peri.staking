@@ -21,8 +21,8 @@ const connectWallet = createAsyncThunk(
 const clearWalletState = () => { 
 	return {
 		currentWallet: undefined,
-		networkId: 1,
-		networkName: undefined,
+		networkId: 42,
+		networkName: 'KOVAN',
 		unlocked: false,
 		walletType: undefined,
 		unlockReason: undefined,

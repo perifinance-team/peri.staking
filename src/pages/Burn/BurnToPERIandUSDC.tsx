@@ -7,9 +7,6 @@ import { setIsLoading } from 'config/reducers/app'
 
 import { getBurnData, BurnData, getBurnTransferAmount, getBurnMaxUSDCAmount, getBurnMaxAmount, getBurnEstimateCRatio, calculator } from 'lib'
 
-
-import numbro from 'numbro'
-
 import BurnActionButtons from './BurnActionButtons'
 import {utils} from 'ethers'
 import { ActionContainer } from 'components/Container'

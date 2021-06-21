@@ -41,7 +41,8 @@ const Burn = () => {
             }
         }
         init();
-    })
+        // eslint-disable-next-line
+    }, [currentWallet])
     
     const burnToTarget = async () => {
         const { js: {Issuer, PeriFinance} } = pynthetix;

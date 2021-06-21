@@ -9,7 +9,7 @@ import { useHistory } from 'react-router-dom'
 import { RootState } from 'config/reducers'
 import { setIsLoading } from 'config/reducers/app'
 import { updateTransaction } from 'config/reducers/transaction'
-import { pynthetix, formatCurrency, calculator, pynthsToCurrency, currencyToPynths } from 'lib'
+import { pynthetix, formatCurrency } from 'lib'
 
 import { BlueGreenButton } from 'components/Button'
 import { H4 } from 'components/Text'
@@ -83,15 +83,15 @@ const BurnActionButtons = ({burnData, burningAmount, gasPrice}) => {
         // eslint-disable-next-line
     },[]);
 
-    const checkBurnningAmount = () => {
-        const USDCRemainStakedTopUSD = 
-        currencyToPynths(calculator(burnData.staked['USDC'], burningAmount['USDC'], 'sub'), burnData.issuanceRatio, burnData.exchangeRates['USDC']);
+    // const checkBurnningAmount = () => {
+    //     const USDCRemainStakedTopUSD = 
+    //     currencyToPynths(calculator(burnData.staked['USDC'], burningAmount['USDC'], 'sub'), burnData.issuanceRatio, burnData.exchangeRates['USDC']);
 
-        const PERIBurningAmountTopUSD = calculator(burningAmount['pUSD'], USDCRemainStakedTopUSD, 'sub');
-        const USDCQuota = calculator(USDCRemainStakedTopUSD, utils.bigNumberify('4'), 'mul');
-        const PERIQuota = calculator(calculator(burnData.balances['debt'], burnData.staked['USDC'], 'sub'), PERIBurningAmountTopUSD, 'sub') ;
-        return PERIQuota.lt(USDCQuota);
-    }
+    //     const PERIBurningAmountTopUSD = calculator(burningAmount['pUSD'], USDCRemainStakedTopUSD, 'sub');
+    //     const USDCQuota = calculator(USDCRemainStakedTopUSD, utils.bigNumberify('4'), 'mul');
+    //     const PERIQuota = calculator(calculator(burnData.balances['debt'], burnData.staked['USDC'], 'sub'), PERIBurningAmountTopUSD, 'sub') ;
+    //     return PERIQuota.lt(USDCQuota);
+    // }
     
     const onBurn = async () => {
         let transaction;

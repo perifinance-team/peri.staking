@@ -6,7 +6,7 @@ import { RootState } from 'config/reducers'
 import { setIsLoading } from 'config/reducers/app'
 import { updateTransaction } from 'config/reducers/transaction'
 
-import { StakingData, getStakingData, pynthetix, getStakingEstimateCRatio, getStakingAmount, getStakingMaxUSDCAmount, USDC, calculator } from 'lib'
+import { StakingData, getStakingData, pynthetix, getStakingEstimateCRatio, getStakingAmount, getStakingMaxUSDCAmount, USDC } from 'lib'
 import { utils } from 'ethers'
 import { useHistory } from 'react-router-dom'
 import { gasPrice } from 'helpers/gasPrice'
