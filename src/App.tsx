@@ -26,7 +26,7 @@ import SubHeader from 'screens/Header/SubHeader';
 import './App.css'
 
 const App = () => {
-    const { isLoading } = useSelector((state: RootState) => state.app);
+    const { isReady, isLoading } = useSelector((state: RootState) => state.app);
     const themeStyles = useSelector((state: RootState) => state.themeStyles.styles);
     const themeState = useSelector((state: RootState) => state.theme.theme);
     const dispatch = useDispatch();
@@ -51,23 +51,25 @@ const App = () => {
             
             <>
                 <ThemeProvider theme={themeStyles}>
-                    <BodyContainer>
-                        <Router>
-                            <Switch>
-                                <Route path="/walletConnection" >
-                                    <SubHeader />
-                                    <Wallet></Wallet>
-                                </Route>
-                                <Route path="/login">
-                                    <SubHeader />
-                                    <Login />
-                                </Route>
-                                <Route path="/">
-                                    <Main />
-                                </Route>
-                            </Switch>
-                        </Router>
-                    </BodyContainer>
+                    { isReady &&
+                        <BodyContainer>
+                            <Router>
+                                <Switch>    
+                                    <Route path="/walletConnection" >
+                                        <SubHeader />
+                                        <Wallet></Wallet>
+                                    </Route>
+                                    <Route path="/login">
+                                        <SubHeader />
+                                        <Login />
+                                    </Route>
+                                    <Route path="/">
+                                        <Main/>
+                                    </Route>
+                                </Switch>
+                            </Router>
+                        </BodyContainer>
+                    }
                 </ThemeProvider>
             </>
             

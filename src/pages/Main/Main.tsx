@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react'
+import { useEffect, useCallback, useMemo } from 'react'
 import { useSelector, useDispatch } from "react-redux"
 
 import {
@@ -50,29 +50,19 @@ const Main = () => {
     const history = useHistory();
 
     const { isReady } = useSelector((state: RootState) => state.app);
-    const { walletType, unlocked, currentWallet } = useSelector((state: RootState) => state.wallet);
+    const { walletType, currentWallet } = useSelector((state: RootState) => state.wallet);
     
     const isConnectedWallet = useSelector((state: RootState) => state.isConnectedWallet.isConnectedWallet);
     
     const transaction = useSelector((state: RootState) => state.transaction);
     // const dataIntervalTime = 1000 * 60 * 3;
     // const [intervals, setIntervals] = useState(null);
-    
+
     const connectWallet = useCallback(async () => {
-        const currentWallet = await connectHelper(walletType);
-        
-        dispatch(updateWallet(currentWallet));
-        if (currentWallet.unlocked) {
-            dispatch(updateIsConnected(true));
-        }
-        await getDatas(currentWallet.currentWallet);
-        // setIntervals(
-        //     setInterval( async () => {
-        //         dispatch(setIsLoading(true));
-        //         await getDatas(currentWallet.currentWallet)
-        //         dispatch(setIsLoading(false));
-        //     }, dataIntervalTime) 
-        // )
+        const connectCurrenctWallet = await connectHelper(walletType);
+        dispatch(updateWallet(connectCurrenctWallet));
+        dispatch(updateIsConnected(true));
+        return connectCurrenctWallet;
         //eslint-disable-next-line
     }, []);
 
@@ -95,32 +85,33 @@ const Main = () => {
         }
         dispatch(setIsLoading(false));
         // eslint-disable-next-line
-
-
     }, []);
+
+    const init = useCallback(async () => {
+        try {
+            const connectCurrenctWallet = await connectWallet();
+            await getDatas(connectCurrenctWallet.currentWallet);
+        } catch(e) {
+            dispatch(updateIsConnected(false));
+            history.push('/login');
+        }
+    }, [connectWallet, getDatas])    
 
     useEffect(() => {
         if(isReady && window?.ethereum) {
-            try {
-                connectWallet();
-            } catch(e) {
-                dispatch(updateIsConnected(false));
-                history.push('/login');
-            }
+            init();
         }
-    }, [isReady])
+    }, [isReady, init])
 
     useEffect(() => {
         if(isConnectedWallet) {
             changeAccount( async () => {
-                // clearInterval(intervals);
-                // setIntervals(null);
-                await connectWallet();
+                init();
             }, () => { dispatch(clearWallet()); dispatch(updateIsConnected(false)); });
         }
         
         // eslint-disable-next-line
-    }, [isConnectedWallet]);
+    }, [isConnectedWallet, connectWallet, init]);
 
     useEffect(() => {
         if(transaction.hash) {
@@ -150,56 +141,52 @@ const Main = () => {
 
     return (
         <>
-        { isReady ? (
+        { isConnectedWallet ? (
             <>
                 <Router>
                     <MainHeader /> 
                     <S.BodyContainer>
-                        {isConnectedWallet && 
-                            <Switch>
-                                <Route exact path="/">
-                                    <Home></Home>
-                                </Route>
-                                <Route path="/walletConnection">
-                                    <WalletConnection></WalletConnection>
-                                </Route>
-                                <Route path="/staking">
-                                    <Staking></Staking>
-                                </Route>
-                                <Route path="/burn">
-                                    <Burn></Burn>
-                                </Route>
-                                <Route path="/claim">
-                                    <Claim></Claim>
-                                </Route>
-                                <Route path="/transfer">
-                                    <Transfer></Transfer>
-                                </Route>
-                                <Route path="/trade">
-                                    <Trade></Trade>
-                                </Route>
-                                <Route path="/transactions">
-                                    <Transactions></Transactions>
-                                </Route>
-                                <Route path="/track">
-                                    <Track></Track>
-                                </Route>
-                                <Route path="/escrow">
-                                    <Escrow></Escrow>
-                                </Route>
-                                <Route path="/depot">
-                                    <Depot></Depot>
-                                </Route>
-                                <Route path="/lp">
-                                    <LP></LP>
-                                </Route>
-                                <Route path="/vesting">
-                                    <Vesting></Vesting>
-                                </Route>
-                                
-                            </Switch>
-                        }
-                        
+                        <Switch>
+                            <Route exact path="/">
+                                <Home></Home>
+                            </Route>
+                            <Route path="/walletConnection">
+                                <WalletConnection></WalletConnection>
+                            </Route>
+                            <Route path="/staking">
+                                <Staking></Staking>
+                            </Route>
+                            <Route path="/burn">
+                                <Burn></Burn>
+                            </Route>
+                            <Route path="/claim">
+                                <Claim></Claim>
+                            </Route>
+                            <Route path="/transfer">
+                                <Transfer></Transfer>
+                            </Route>
+                            <Route path="/trade">
+                                <Trade></Trade>
+                            </Route>
+                            <Route path="/transactions">
+                                <Transactions></Transactions>
+                            </Route>
+                            <Route path="/track">
+                                <Track></Track>
+                            </Route>
+                            <Route path="/escrow">
+                                <Escrow></Escrow>
+                            </Route>
+                            <Route path="/depot">
+                                <Depot></Depot>
+                            </Route>
+                            <Route path="/lp">
+                                <LP></LP>
+                            </Route>
+                            <Route path="/vesting">
+                                <Vesting></Vesting>
+                            </Route>
+                        </Switch>
                     </S.BodyContainer>
                 </Router>
                 <Footer></Footer>
