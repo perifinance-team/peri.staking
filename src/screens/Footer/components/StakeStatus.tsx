@@ -98,7 +98,7 @@ const TotalBalance = () => {
     return (
         <FooterRoundContainer>
             <FooterTitleContainer>
-                <H4 weigth="bold">TOTAL STAKE</H4>
+                <H4 weigth="bold">MY TOTAL STAKE</H4>
             </FooterTitleContainer>
             <RageContainer>
 				<BarChart>

@@ -26,6 +26,7 @@ import * as S from './styles'
 const Burn = () => {
     const history = useHistory();
     const dispatch = useDispatch();
+    const isConnectedWallet = useSelector((state: RootState) => state.isConnectedWallet.isConnectedWallet);
     const { seletedFee } = useSelector((state: RootState) => state.seletedFee);
     const { currentWallet } = useSelector((state: RootState) => state.wallet);
     const { currentCRatio, targetCRatio } = useSelector((state: RootState) => state.ratio);
@@ -33,17 +34,18 @@ const Burn = () => {
 
     useEffect(() => {
         const init = async() => {
+            console.log(pynthetix)
             const currentUSDCDebtQuota = await pynthetix.js.PeriFinance.currentUSDCDebtQuota(currentWallet);
-            
             if(utils.bigNumberify(targetCRatio).lt(utils.bigNumberify(currentCRatio)) || utils.parseEther('20').lt(currentUSDCDebtQuota)) {
-                console.log(123);
                 setFitToClaimable(true);
             } else {
                 setFitToClaimable(false);
             }
         }
+        console.log(123);
+        console.log(currentWallet);
         init();
-    })
+    }, [currentWallet])
     
     const burnToTarget = async () => {
         const { js: {Issuer, PeriFinance} } = pynthetix;

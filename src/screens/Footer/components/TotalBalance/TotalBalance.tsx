@@ -9,7 +9,7 @@ const PeriBalance = () => {
     return (
         <FooterRoundContainer>
             <FooterTitleContainer>
-                <H4 weigth="bold">TOTAL BALANCE</H4>
+                <H4 weigth="bold">MY TOTAL BALANCE</H4>
             </FooterTitleContainer>
             <BalanceTable></BalanceTable>
         </FooterRoundContainer>
