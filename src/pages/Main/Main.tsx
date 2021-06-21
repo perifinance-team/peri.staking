@@ -92,6 +92,7 @@ const Main = () => {
             const connectCurrenctWallet = await connectWallet();
             await getDatas(connectCurrenctWallet.currentWallet);
         } catch(e) {
+            console.log(e);
             dispatch(updateIsConnected(false));
             history.push('/login');
         }

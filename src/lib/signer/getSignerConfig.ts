@@ -27,11 +27,13 @@ export const getSignerConfig = (type, networkId) => {
 			appLogoUrl: `${window.location.origin}/images/pynths.png`,
 			jsonRpcUrl: INFURA_URLS[networkId],
 			networkId,
+			provider: customProvider,
 		};
 	}
-
-
-	return {};
+	
+	return {
+		provider: customProvider,
+	};
 };
 
 export default getSignerConfig;

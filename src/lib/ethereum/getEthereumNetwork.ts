@@ -20,10 +20,8 @@ export async function getEthereumNetwork() {
                 networkId: wallet.networkId
             };
         }
-	} catch (e) {
-        
+	} catch (e) {   
 		console.log(e);
 	}
-    console.log(network);
     return network;
 }

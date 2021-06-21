@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useCallback } from 'react'
 import { useSelector, useDispatch } from "react-redux"
 
 import { ThemeProvider } from 'styled-components'
@@ -12,6 +12,7 @@ import { BodyContainer } from 'components/Container'
 import { setAppReady } from 'config/reducers/app'
 import { updateThemeStyles } from 'config/reducers/theme'
 import { changeNetwork } from 'helpers/wallet/change'
+import { connectHelper } from 'helpers/wallet/connect'
 
 import {
     HashRouter as Router,
@@ -30,6 +31,8 @@ const App = () => {
     const themeStyles = useSelector((state: RootState) => state.themeStyles.styles);
     const themeState = useSelector((state: RootState) => state.theme.theme);
     const dispatch = useDispatch();
+
+    const pynthsConnet = useCallback(async() => {await connectHelper(''); return true} , [connectHelper]);
 
     useEffect(() => {
         dispatch(updateThemeStyles(themeState));
