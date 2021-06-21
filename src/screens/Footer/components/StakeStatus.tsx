@@ -85,7 +85,7 @@ const TotalBalance = () => {
 			}
 		)
 
-	}, [balances, targetCRatio, exchangeRates])
+	}, [currentWallet, balances, targetCRatio, exchangeRates])
 
 	useEffect( () => {
 		if(Object.keys(balances).length > 0) {

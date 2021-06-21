@@ -5,7 +5,7 @@ type Wallet = {
     networkId?: String
 }
 export async function getEthereumNetwork() {
-    const wallet: Wallet = JSON.parse(window.localStorage.getItem('wallet'));
+    const wallet: Wallet = JSON.parse(JSON.parse(window.localStorage.getItem('persist:app')).wallet);
     let network;
     try {
         let networkId = await getEthereumNetworkId();
@@ -21,7 +21,9 @@ export async function getEthereumNetwork() {
             };
         }
 	} catch (e) {
+        
 		console.log(e);
 	}
+    console.log(network);
     return network;
 }

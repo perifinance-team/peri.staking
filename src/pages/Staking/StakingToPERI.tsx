@@ -43,7 +43,7 @@ const Staking = () => {
         pUSD: '0'
     });
     
-    const dataIntervalTime = 1000 * 60 * 3;
+    // const dataIntervalTime = 1000 * 60 * 3;
 
     const { js: { PeriFinance } }  = pynthetix as any;
     

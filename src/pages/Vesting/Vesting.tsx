@@ -3,7 +3,7 @@ import { useState, useEffect} from 'react'
 import { useSelector, useDispatch } from "react-redux"
 import * as dateFns from 'date-fns';
 import numbro from 'numbro'
-import { useHistory, useLocation } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 import { pynthetix, calculator } from 'lib'
 import { utils } from 'ethers'
@@ -21,8 +21,7 @@ import { Cell,
     StyledTBody, 
     StyledTHeader,
 } from 'components/Table'
-import { H3, H4, H6 } from 'components/Text'
-import { LightBlueButton } from 'components/Button';
+import { H4, H6 } from 'components/Text'
 import { BlueGreenButton } from 'components/Button'
 import Input from 'components/Input'
 import Fee from 'components/Fee'
@@ -31,7 +30,6 @@ import Fee from 'components/Fee'
 
 const Vesting = () => {
     const history = useHistory();
-    const location = useLocation();
     const dispatch = useDispatch();
 
     const { currentWallet } = useSelector((state: RootState) => state.wallet);
@@ -51,7 +49,8 @@ const Vesting = () => {
             let index = 0;
             let totalVesting = utils.bigNumberify('0');
 
-            for await (let data of datas) {
+            // eslint-disable-next-line
+            for await (let data of datas) {    
                 const [date, quantity] = await PeriFinanceEscrow.getVestingScheduleEntry(currentWallet, index);
                 datas[index] = {
                     date: date.isZero() ? '-' : dateFns.format(calculator(date, utils.bigNumberify('1000'), 'mul').toNumber(), 'yyyy-MM-dd hh:mm'),
@@ -142,23 +141,10 @@ const Vesting = () => {
         </Action>
     );
 }
-const Cancel = styled(LightBlueButton)`
-    height: 40px;
-    width: 120px;
-`
-
-const Arrow = styled.img`
-    width: 15px;
-    margin: 0px 5px;
-`
 
 const VestingStyledTHeader = styled(StyledTHeader)`
     flex: 1 2 3 3;
 `
-
-const TableTitle = styled(H3)`
-    margin: 10px;
-`;
 
 const StyledCell = styled(Cell)`
     padding: 10px;

@@ -56,7 +56,7 @@ const Main = () => {
     const isConnectedWallet = useSelector((state: RootState) => state.isConnectedWallet.isConnectedWallet);
     const themeState = useSelector((state: RootState) => state.theme.theme);
     const transaction = useSelector((state: RootState) => state.transaction);
-    const dataIntervalTime = 1000 * 60 * 3;
+    // const dataIntervalTime = 1000 * 60 * 3;
     // const [intervals, setIntervals] = useState(null);
     
     const connectWallet = useCallback(async () => {
