@@ -6,18 +6,19 @@ import {
     useHistory
 } from "react-router-dom";
 
+import Fee from 'components/Fee'
+import Input from 'components/Input'
 import { H4 } from 'components/Text'
 import { RootState } from 'config/reducers'
 import { setIsLoading } from 'config/reducers/app'
-import Fee from 'components/Fee'
 import { ActionContainer } from 'components/Container'
 import { BlueGreenButton } from 'components/Button'
-import Input from 'components/Input'
+import {pynthetix} from 'lib'
 
 const LPStaking = () => {
     const history = useHistory()
     const { seletedFee } = useSelector((state: RootState) => state.seletedFee);
-
+    console.log(pynthetix)
     return (
         <ActionContainer>
             <div>

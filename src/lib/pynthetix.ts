@@ -1,5 +1,5 @@
 import { PeriFinanceJs } from '@perifinance/peri-finance-js';
-
+console.log(PeriFinanceJs);
 type Pynthetix = {
 	initialized: boolean,
 	signers: PeriFinanceJs.signers,

@@ -1,130 +1,83 @@
-import styled from 'styled-components'
+
 import {
     HashRouter as Router,
     Switch,
     Route,
     NavLink,
-    useLocation
+    useHistory
 } from "react-router-dom";
 
 import { useTranslation } from 'react-i18next';
-import { TableContainer } from 'components/Container'
-import { Cell, HoverRow, StyledTHeader, StyledTBody } from 'components/Table'
-import { getLPList } from 'lib'
-import { H4, H6 } from 'components/Text'
-import LPAsset from 'components/Asset/LPAsset'
+
+import Action from 'screens/Action'
+import { H5, H6 } from 'components/Text'
+
 import LPStaking from './LPStaking'
 import LPUnstaking from './LPUnstaking'
 import LPReward from './LPReward'
 
 import * as S from './styles'
 import { useEffect } from 'react';
+import { ActionContainer } from 'components/Container'
+import { LPContract } from 'lib'
+
 const LP = () => {
+    
     const { t } = useTranslation();
-    const location = useLocation();
+    const history = useHistory();
     const actions = [
         'staking',
         'unstaking',
         'reward',
     ]
-
+    
     useEffect( () => {
-        getLPList();
+        LPContract.balanceOf('0xc421A355648B66D3E872D6489Ab202C7d0D139d1').then((e)=> {
+            console.log(e);
+        });
     }, [])
 
     return (
-        <>
-            <S.Container>
-                <LPContainer>
-                    <StyledTHeader>
-                        <LPTableCell><H6>PooL</H6></LPTableCell>
-                        <LPTableCell><H6>Liquidity</H6></LPTableCell>
-                        <LPTableCell><H6>Staked</H6></LPTableCell>
-                        <LPTableCell><H6>Rewards</H6></LPTableCell>
-                    </StyledTHeader>
-                    <LPCStyledTBody>
-                        <NavLink to={"/lp/PERI&ETH"}>
-                            <HoverRow>
-                                <LPTableCell>
-                                    <LPAsset currencyName={'PERI_ETH'} label={'PERI/ETH LP'}></LPAsset>
-                                </LPTableCell>
-                                <LPTableCell><H6>0.0000</H6></LPTableCell>
-                                <LPTableCell><H6>0.0000</H6></LPTableCell>
-                                <LPTableCell><H6>0.0000</H6></LPTableCell>
-                            </HoverRow>
-                        </NavLink>
-                    </LPCStyledTBody>
-                </LPContainer>
-            </S.Container>
-            <S.Container>
+        <Action title="LP STAKING"
+            subTitles={[
+                "Mint pUSD by staking your PERI.",
+                "This gives you a Collateralization Ratio and a debt, allowing you to earn staking rewards."
+            ]}
+        >
+            <Switch>
                 <Router basename="/lp">
                     <Switch>
                         <Route exact path="/">
-                            <S.IntroContainer>
-                                <S.IntroTitle>
-                                    {t('lp.intro.title')}
-                                </S.IntroTitle>
-                                <S.IntroSubTitle weigth={"regular"}>
-                                    {t('lp.intro.subTitle')}
-                                </S.IntroSubTitle>
-                            </S.IntroContainer> 
+                            <ActionContainer>
+                                <S.ActionButtonRow>
+                                    {actions.map((action) => 
+                                        (
+                                            <S.ActionButtonContainer onClick={() => history.push(`/lp/${action}`)} key={action}>
+                                                <S.ActionImage src={`/images/dark/actions/${action}.svg`}></S.ActionImage>
+                                                <S.ActionButtonTitle>
+                                                    <H5 weigth={'bold'}>{action.toLocaleUpperCase()}</H5>
+                                                    <H6 weigth={'bold'}>{t(`lp.${action}.subTitle`)}</H6>
+                                                </S.ActionButtonTitle>
+                                            </S.ActionButtonContainer>
+                                        )
+                                    )}
+                                </S.ActionButtonRow>
+                            </ActionContainer>
                         </Route>
-                        <Route exact path="/:pair">
-                            <S.ActionButtonRow>
-                                {actions.map((action) => 
-                                    (<S.ActionButtonContainer to={`${location.pathname.replace('/lp', '')}/${action}`} key={action}>
-                                        <S.ActionImage src={`/images/dark/actions/${action}.svg`}></S.ActionImage>
-                                        <H4 weigth={'bold'}>{action.toLocaleUpperCase()}</H4>
-                                        <H6>{t(`home.${action}.subTitle`)}</H6>
-                                    </S.ActionButtonContainer>)
-                                )}
-                            </S.ActionButtonRow>
+                        <Route exact path="/staking">
+                            <LPStaking></LPStaking>
                         </Route>
-                        <Route exact path="/:pair/Staking">
-                        <LPStaking></LPStaking>
+                        <Route exact path="/unstaking">
+                            <LPUnstaking></LPUnstaking>
                         </Route>
-                        <Route exact path="/:pair/unstaking">
-                        <LPUnstaking></LPUnstaking>
-                        </Route>
-                        <Route exact path="/:pair/reward">
-                        <LPReward></LPReward>
+                        <Route exact path="/reward">
+                            <LPReward></LPReward>
                         </Route>
                     </Switch>
                 </Router>
-            </S.Container>
-        </>
-
-
-        // <Action title="LP Staking & Reward"
-        //     subTitles={[
-        //         "This leads to the process for staking the LP tokens",
-        //         "You add to the PERI Uniswap pools and earning PERI rewards."
-        //     ]}
-        // >
-            // <Switch>
-            //     <Route exact path="/lp/:type">
-                    
-            //     </Route>
-            
-            // </Switch>
-
-
-
-        // </Action>
+            </Switch>
+        </Action>
     );
 }
-
-const LPCStyledTBody = styled(StyledTBody)`
-    height: 360px;
-`
-
-const LPContainer = styled(TableContainer)`
-    height: 100%;
-    margin: 0;
-`
-
-const LPTableCell = styled(Cell)`
-    padding: 5px 10px;
-`
 
 export default LP;

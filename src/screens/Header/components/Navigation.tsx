@@ -5,7 +5,6 @@ import {
     useHistory,
     useLocation,
 } from "react-router-dom";
-import { current } from 'immer';
 
 const Navigation = () => {
     const history = useHistory();
@@ -31,14 +30,14 @@ const Navigation = () => {
         }
     }
     const navs = [
-        {
-            name: 'LP',
-            to: 'lp'
-        },
-        {
-            name: 'HOME',
-            to: '',
-        }
+        // {
+        //     name: 'LP',
+        //     to: 'lp'
+        // },
+        // {
+        //     name: 'HOME',
+        //     to: '',
+        // }
     ]
     
     return (

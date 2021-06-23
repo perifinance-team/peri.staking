@@ -29,9 +29,21 @@ export const en = {
 		},
 		vesting: {
 			subTitle: "If your PERI is still escrowed from the token sale"
+		},
+		lp: {
+			subTitle: "staking PERI&ETH LP"
 		}
 	},
 	lp: {
+		staking: {
+			subTitle: 'LP TOKEN staking'
+		},
+		unstaking: {
+			subTitle: 'LP TOKEN unstaking'
+		},
+		reward: {
+			subTitle: 'staking reward from PERI'
+		},
 		intro: {
 			title: "LP Staking",
 			subTitle: 'This leads to the process for staking the \tLP tokens You add to the PERI Uniswap pools and earning PERI rewards.'

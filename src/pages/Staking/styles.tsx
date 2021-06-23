@@ -12,7 +12,6 @@ export const IntroContainer = styled.div`
 `;
 
 export const IntroTitle = styled(H1)`
-	width: 200px;
 	text-align: left;
 	line-height: 70px;
 	margin-bottom: 0px;

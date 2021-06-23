@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-import { H2, H5 } from 'components/Text';
+import { H1, H4 } from 'components/Text';
 import { LightBlueButton } from 'components/Button';
 import { useHistory, useLocation } from 'react-router-dom';
 
@@ -29,10 +29,10 @@ const Action = ({children, title, subTitles}) => {
                     CANCEL
                 </Cancel>
                 <TitleContainer>
-                    <Title color={'primary'} weigth={'black'}>{title}</Title>
+                    <Title color={'primary'}>{title}</Title>
                     <SubTitleContainer>
                         {subTitles.map((text, index) => (
-                            <H5 key={index}>{text}</H5>
+                            <H4 key={index} align={'left'}>{text}</H4>
                         ))}
                     </SubTitleContainer>
                 </TitleContainer>
@@ -62,10 +62,10 @@ const LeftContainer = styled.div`
 
 const TitleContainer = styled.div`
     justify-content: center;
-    padding: 100px 100px 100px 0px;
+    padding: 100px 0px 0px 0px;
 `
 
-const Title = styled(H2)`
+const Title = styled(H1)`
     margin: 0;
     text-align: left;
 `

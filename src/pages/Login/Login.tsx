@@ -3,9 +3,11 @@ import { useDispatch } from 'react-redux'
 import { useHistory } from 'react-router-dom'
 import { useTranslation } from 'react-i18next';
 
-import { updateWallet, clearWallet } from 'config/reducers/wallet'
+import { getProvider } from 'helpers/provider'
+
+import { updateWalletNetwork, updateWalletType, clearWallet } from 'config/reducers/wallet'
 import { updateIsConnected } from 'config/reducers/wallet/isConnectedWallet'
-import { changeAccount } from 'helpers/wallet/change'
+import { pynthetix, getEthereumNetworkId } from 'lib'
 import { NotificationManager } from 'react-notifications';
 import { setIsLoading } from 'config/reducers/app'
 import { connectHelper } from 'helpers/wallet/connect'
@@ -45,16 +47,14 @@ const Login = () => {
                     });
                     return false;
                 }
-                const currentWallet = await connectHelper(walletType);
-                dispatch(updateWallet(currentWallet));
+                const networkId = await getEthereumNetworkId();
+                const provider = await getProvider(networkId)
+    
+                dispatch(updateWalletType(walletType));
+                dispatch(updateWalletNetwork(networkId));
+                pynthetix.setContractSettings({ networkId, provider });
                 
-                if((currentWallet.unlocked && walletType === 'Metamask') || walletType === 'Coinbase') {
-                    
-                    changeAccount(async () => {
-                        const connect = await connectHelper(walletType);
-                        dispatch(updateWallet(connect));
-                    }, () => dispatch(clearWallet()));
-                    dispatch(updateIsConnected(true));
+                if(walletType === 'Metamask' || walletType === 'Coinbase') {
                     history.push('/#')
                 } else {
                     history.push('/walletConnection')

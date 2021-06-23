@@ -1,51 +1,50 @@
 import styled from 'styled-components';
-import { BlueBoarderRoundLink } from 'components/Container'
-import { H1, H3 } from 'components/Text'
+import { BlueBorderRoundContainer } from 'components/Container'
+import { H1, H3} from 'components/Text'
 
 export const Container = styled.div`
-	height: 100%;
     flex: 1;
-	padding: 20px;
+	padding: 10px 20px;
 `
 
 export const IntroContainer = styled.div`
-	float: right;
-	margin-right: 100px;
+	margin-left: 100px;
 `;
 
 export const IntroTitle = styled(H1)`
-	text-align: right;
+	text-align: left;
 	line-height: 70px;
-	margin-top: 100px;
 	margin-bottom: 0px;
 `;
 
 export const IntroSubTitle = styled(H3)`
-	width: 600px;
-	text-align: right;
+	text-align: left;
 `;
 
 export const ActionButtonRow = styled.div`
+	margin: auto;
 	display: grid;
-	grid-template-columns: repeat(3, 210px);
-	grid-template-rows: repeat(2, 200px);
-	grid-gap: 15px;
+	grid-template-columns: repeat(3, 200px);
+	grid-template-rows: repeat(2, 190px);
+	grid-gap: 20px;
 `;
 
-export const ActionButtonContainer = styled(BlueBoarderRoundLink)`
+export const ActionButtonContainer = styled(BlueBorderRoundContainer)`
 	margin: 0;
-	padding: 10px;
+	padding: 20px 10px;
 	cursor: pointer;
-	justify-content: start;
 	&:hover {
 		background-color: ${props => props.theme.colors.hover.background};
-	}
-	H4 {
-		margin: 10px;
 	}
 `;
 
 export const ActionImage = styled.img`
 	height: 80px;
 	width: 80px;
+	margin-bottom: 20px;
 `;
+
+export const ActionButtonTitle = styled.div`
+	display: flex;
+	flex-direction: column;
+`

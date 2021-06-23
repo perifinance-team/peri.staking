@@ -15,7 +15,7 @@ const Home = () => {
         'staking',
         'burn',
         'claim',
-        
+        'lp'
         // 'trade',
         // 'transfer',
         // 'track',

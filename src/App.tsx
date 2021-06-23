@@ -1,12 +1,19 @@
-
-import { useSelector } from "react-redux"
+import { useEffect, useCallback } from 'react'
+import { useSelector, useDispatch } from "react-redux"
 
 import { ThemeProvider } from 'styled-components'
 import { NotificationContainer } from 'react-notifications';
 
 import { RootState } from 'config/reducers'
+import { updateWalletNetwork } from 'config/reducers/wallet'
 
 import { BodyContainer } from 'components/Container'
+
+import { setAppReady } from 'config/reducers/app'
+import { updateThemeStyles } from 'config/reducers/theme'
+import { changeNetwork } from 'helpers/wallet/change'
+import { connectHelper } from 'helpers/wallet/connect'
+
 import {
     HashRouter as Router,
     Switch,
@@ -20,8 +27,19 @@ import SubHeader from 'screens/Header/SubHeader';
 import './App.css'
 
 const App = () => {
-    const { isLoading } = useSelector((state: RootState) => state.app);
+    const { isReady, isLoading } = useSelector((state: RootState) => state.app);
     const themeStyles = useSelector((state: RootState) => state.themeStyles.styles);
+    const themeState = useSelector((state: RootState) => state.theme.theme);
+    const dispatch = useDispatch();
+
+    const pynthsConnet = useCallback(async() => {await connectHelper(''); return true} , [connectHelper]);
+
+    useEffect(() => {
+        dispatch(updateThemeStyles(themeState));
+        changeNetwork((chainID) => { dispatch(updateWalletNetwork(chainID))});
+        dispatch(setAppReady());
+        // eslint-disable-next-line
+    }, []);
 
     return (
         <>     
@@ -36,23 +54,25 @@ const App = () => {
             
             <>
                 <ThemeProvider theme={themeStyles}>
-                    <BodyContainer>
-                        <Router>
-                            <Switch>
-                                <Route path="/walletConnection" >
-                                    <SubHeader />
-                                    <Wallet></Wallet>
-                                </Route>
-                                <Route path="/login">
-                                    <SubHeader />
-                                    <Login />
-                                </Route>
-                                <Route path="/">
-                                    <Main />
-                                </Route>
-                            </Switch>
-                        </Router>
-                    </BodyContainer>
+                    { isReady &&
+                        <BodyContainer>
+                            <Router>
+                                <Switch>    
+                                    <Route path="/walletConnection" >
+                                        <SubHeader />
+                                        <Wallet></Wallet>
+                                    </Route>
+                                    <Route path="/login">
+                                        <SubHeader />
+                                        <Login />
+                                    </Route>
+                                    <Route path="/">
+                                        <Main/>
+                                    </Route>
+                                </Switch>
+                            </Router>
+                        </BodyContainer>
+                    }
                 </ThemeProvider>
             </>
             

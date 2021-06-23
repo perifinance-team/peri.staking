@@ -16,6 +16,7 @@ export const IntroContainer = styled.div`
 `;
 
 export const IntroTitle = styled(H1)`
+	text-align: center;
 	width: 500px;
 	margin: auto;
 `;
