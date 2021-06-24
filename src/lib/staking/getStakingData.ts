@@ -1,5 +1,5 @@
 import { utils } from 'ethers';
-import { pynthetix, USDC, calculator, currencyToPynths, RewardEscrow } from 'lib';
+import { pynthetix, USDCContract, calculator, currencyToPynths, RewardEscrow } from 'lib';
 import { getBalance } from 'helpers/wallet/getBalance'
 import { pynthsToCurrency } from 'lib/convert';
 
@@ -48,7 +48,7 @@ export const getStakingData = async (currentWallet, type) => {
     
         const balances = {
             debt: await PeriFinance.debtBalanceOf(currentWallet, currenciesToBytes['pUSD']),
-            USDC: await USDC.balanceOf(currentWallet),
+            USDC: await USDCContract.balanceOf(currentWallet),
             PERITotal: await PeriFinance.collateral(currentWallet),
             transferablePERI: await PeriFinance.transferablePeriFinance(currentWallet),
             pUSD: await getBalance(currentWallet, 'pUSD'),
@@ -130,7 +130,7 @@ export const getStakingData = async (currentWallet, type) => {
         };
         
         const allowance = {
-            USDC: await USDC.allowance(currentWallet)
+            USDC: await USDCContract.allowance(currentWallet)
         };
 
         return {

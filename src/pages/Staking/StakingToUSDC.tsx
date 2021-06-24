@@ -6,7 +6,7 @@ import { RootState } from 'config/reducers'
 import { setIsLoading } from 'config/reducers/app'
 import { updateTransaction } from 'config/reducers/transaction'
 
-import { StakingData, getStakingData, pynthetix, getStakingEstimateCRatio, getStakingAmount, getStakingMaxUSDCAmount, USDC } from 'lib'
+import { StakingData, getStakingData, pynthetix, getStakingEstimateCRatio, getStakingAmount, getStakingMaxUSDCAmount, USDCContract } from 'lib'
 import { utils } from 'ethers'
 import { useHistory } from 'react-router-dom'
 import { gasPrice } from 'helpers/gasPrice'
@@ -206,7 +206,7 @@ const Staking = () => {
     const approve = async () => {
         dispatch(setIsLoading(true));
         try {
-            const transaction = await USDC.approve();
+            const transaction = await USDCContract.approve();
             NotificationManager.info('try Approve', 'in progress', 0);
             
             const getState = async () => {

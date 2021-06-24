@@ -1,7 +1,7 @@
 import pynthetix from './pynthetix'
 import { utils } from 'ethers'
 import numbro from 'numbro'
-import { USDC } from 'lib'
+import { USDCContract } from 'lib'
 
 const format = (value) => {
     if(!value) return '0.00';
@@ -104,7 +104,7 @@ export const getBalances = async (currentWallet) => {
     const stakedUSDCamount = utils.formatEther(await PeriFinance.usdcStakedAmountOf(currentWallet));
     // const rewardEscrow = utils.formatEther(await RewardEscrow.balanceOf(currentWallet));
     const [keys, value] = await PynthUtil.pynthsBalances(currentWallet);
-    const USDCBalance = await USDC.balanceOf(currentWallet);
+    const USDCBalance = await USDCContract.balanceOf(currentWallet);
     const ethBalance = utils.formatEther(await provider.getBalance(currentWallet));
 
     const getTransferables = async () => {        
