@@ -1,1 +1,1 @@
-export * from './USDC'
+export * from './USDCContract'

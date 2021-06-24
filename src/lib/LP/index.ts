@@ -1,2 +1,2 @@
 export * from './getLPList'
-export * from './LP'
+export * from './LPContract'

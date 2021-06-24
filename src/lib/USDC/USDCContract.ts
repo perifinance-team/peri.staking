@@ -3,7 +3,7 @@ import { ethers, utils } from 'ethers';
 import { getEthereumNetworkId } from 'lib/ethereum'
 import { pynthetix } from 'lib'
 
-export const USDC = {
+export const USDCContract = {
     isConnect: false,
     address: null,
     contract: null,
