@@ -17,9 +17,7 @@ import LPUnstaking from './LPUnstaking'
 import LPReward from './LPReward'
 
 import * as S from './styles'
-import { useEffect } from 'react';
 import { ActionContainer } from 'components/Container'
-import { LPContract } from 'lib'
 
 const LP = () => {
     
@@ -31,11 +29,7 @@ const LP = () => {
         'reward',
     ]
     
-    useEffect( () => {
-        LPContract.balanceOf('0xc421A355648B66D3E872D6489Ab202C7d0D139d1').then((e)=> {
-            console.log(e);
-        });
-    }, [])
+    
 
     return (
         <Action title="LP STAKING"

@@ -10,7 +10,6 @@ import { updateIsConnected } from 'config/reducers/wallet/isConnectedWallet'
 import { pynthetix, getEthereumNetworkId } from 'lib'
 import { NotificationManager } from 'react-notifications';
 import { setIsLoading } from 'config/reducers/app'
-import { connectHelper } from 'helpers/wallet/connect'
 import { SUPPORTED_WALLETS } from 'helpers/wallet'
 import detectEthereumProvider from '@metamask/detect-provider';
 
@@ -53,7 +52,6 @@ const Login = () => {
                 dispatch(updateWalletType(walletType));
                 dispatch(updateWalletNetwork(networkId));
                 pynthetix.setContractSettings({ networkId, provider });
-                
                 if(walletType === 'Metamask' || walletType === 'Coinbase') {
                     history.push('/#')
                 } else {

@@ -11,15 +11,19 @@ const Home = () => {
     const { t } = useTranslation();
     const history = useHistory();
     const { vestable } = useSelector((state: RootState) => state.vestable);
+    const { isLPConnect } = useSelector((state: RootState) => state.lp);
+
     let actions = [
         'staking',
         'burn',
         'claim',
-        'lp'
         // 'trade',
         // 'transfer',
         // 'track',
     ];
+    if(isLPConnect) {
+        actions.push('lp')
+    }
     if(vestable) {
         actions.push('vesting')
     }

@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useMemo } from 'react'
+import { useEffect, useCallback } from 'react'
 import { useSelector, useDispatch } from "react-redux"
 
 import {
@@ -17,12 +17,12 @@ import { updateExchangeRates, updateRatio } from 'config/reducers/rates'
 import { updateNetworkFee } from 'config/reducers/networkFee'
 import { resetTransaction } from 'config/reducers/transaction'
 import { updateVestable } from 'config/reducers/vest'
+import { setLPConnect } from 'config/reducers/LP'
 
 import { connectHelper } from 'helpers/wallet/connect'
 import { changeAccount } from 'helpers/wallet/change'
 import { getNetworkFee } from 'helpers/defipulse'
-import { pynthetix, getExchangeRates, getRatio, getBalances, getVestable } from 'lib'
-
+import { pynthetix, getExchangeRates, getRatio, getBalances, getVestable, LPContract } from 'lib'
 
 import Home from '../Home'
 import Escrow from '../Escrow'
@@ -60,8 +60,22 @@ const Main = () => {
 
     const connectWallet = useCallback(async () => {
         const connectCurrenctWallet = await connectHelper(walletType);
+
         dispatch(updateWallet(connectCurrenctWallet));
+
         dispatch(updateIsConnected(true));
+
+        let isLPConnect = false;
+
+        try {
+            await LPContract.connect(pynthetix.signer, connectCurrenctWallet.networkName);
+            isLPConnect = true;
+        } catch (e) {
+            console.log(e);
+            isLPConnect = false;
+        }
+        dispatch(setLPConnect(isLPConnect));
+
         return connectCurrenctWallet;
         //eslint-disable-next-line
     }, []);
@@ -91,6 +105,7 @@ const Main = () => {
         try {
             const connectCurrenctWallet = await connectWallet();
             await getDatas(connectCurrenctWallet.currentWallet);
+            
         } catch(e) {
             console.log(e);
             dispatch(updateIsConnected(false));

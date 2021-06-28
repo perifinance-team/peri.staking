@@ -3,6 +3,12 @@ import { ethers, utils } from 'ethers';
 import { getEthereumNetworkId } from 'lib/ethereum'
 import { pynthetix } from 'lib'
 
+const addressList = {
+    KOVAN: '0x98da9a82224E7A5896D6227382F7a52c82082146',
+    MUMBAI: '0xcE954FC4c52A9E6e25306912A36eC59293da41E3',
+    MAINNET: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+}
+
 export const USDCContract = {
     isConnect: false,
     address: null,
@@ -11,7 +17,7 @@ export const USDCContract = {
     connect: async function (signer, networkName) {
         const { js: { PeriFinance } }  = pynthetix as any;
         this.issuerAddress = await PeriFinance.getRequiredAddress(utils.formatBytes32String('Issuer'));
-        this.address = process.env[`REACT_APP_${networkName}_USDC_ADDRESS`];
+        this.address = addressList[networkName];
         this.signer = signer;
         this.contract = new ethers.Contract(this.address, ERC20.abi, signer);
         return this;
@@ -29,7 +35,7 @@ export const USDCContract = {
             await this.connect(pynthetix.signer, await getEthereumNetworkId());
         }
         
-        return await this.contract.connect(this.signer).approve(this.issuerAddress, '11579208923731619542357098500868790785326998466');
+        return await this.contract.approve(this.issuerAddress, '11579208923731619542357098500868790785326998466');
     },
 
     balanceOf: async function (currentAddress) {

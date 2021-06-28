@@ -32,8 +32,6 @@ const App = () => {
     const themeState = useSelector((state: RootState) => state.theme.theme);
     const dispatch = useDispatch();
 
-    const pynthsConnet = useCallback(async() => {await connectHelper(''); return true} , [connectHelper]);
-
     useEffect(() => {
         dispatch(updateThemeStyles(themeState));
         changeNetwork((chainID) => { dispatch(updateWalletNetwork(chainID))});

@@ -35,12 +35,10 @@ const connect = async (walletType, networkName, networkId) => {
 }
 export const connectHelper = async (walletType) => {
 	const { networkName, networkId } = await getEthereumNetwork();
-	
+
 	const { signer } = setSigner(walletType, networkId);
-	
 	const walletStatus = await connect(walletType, networkName, networkId);
 	await USDCContract.connect(signer, networkName);
-	await LPContract.connect(signer);
-
+	
 	return walletStatus;
 };
