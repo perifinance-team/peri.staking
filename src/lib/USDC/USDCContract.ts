@@ -17,7 +17,9 @@ export const USDCContract = {
     signer: null,
     connect: async function (signer, networkName) {
         const { js: { PeriFinance } }  = pynthetix as any;
+        console.log(123);
         this.issuerAddress = await PeriFinance.getRequiredAddress(utils.formatBytes32String('Issuer'));
+        console.log(this.issuerAddress);
         this.address = addressList[networkName];
         this.signer = signer;
         this.contract = new ethers.Contract(this.address, ERC20.abi, signer);

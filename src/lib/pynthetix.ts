@@ -18,6 +18,7 @@ export const pynthetix: Pynthetix = {
 	setContractSettings: function (contractSettings) {		
 		this.initialized = true;
 		this.js = new PeriFinanceJs(contractSettings);
+		this.js['PeriFinance'] = this.js[contractSettings.networkId > 50 ? 'PeriFinanceToPolygon': 'PeriFinanceToEthereum']
 		this.pynths = this.js.contractSettings.pynths;
 		this.signer = this.js.contractSettings.signer;
 		this.provider = this.js.contractSettings.provider;

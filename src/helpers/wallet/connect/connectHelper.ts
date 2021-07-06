@@ -38,7 +38,11 @@ export const connectHelper = async (walletType) => {
 
 	const { signer } = setSigner(walletType, networkId);
 	const walletStatus = await connect(walletType, networkName, networkId);
-	await USDCContract.connect(signer, networkName);
-	
+	try {
+		await USDCContract.connect(signer, networkName);
+	}catch(e) {
+		console.log(e)
+	} 
+
 	return walletStatus;
 };
