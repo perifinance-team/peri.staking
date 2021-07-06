@@ -4,5 +4,6 @@ export const SUPPORTED_NETWORKS = {
 	4: 'RINKEBY',
 	5: 'GOERLI',
 	42: 'KOVAN',
+	137: 'MATIC',
 	80001: 'MUMBAI'
 };

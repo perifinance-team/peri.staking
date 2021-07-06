@@ -1,5 +1,6 @@
 import { createSlice , PayloadAction, createAsyncThunk} from '@reduxjs/toolkit';
 import { connectHelper } from 'helpers/wallet/connect'
+import { SUPPORTED_NETWORKS } from 'helpers/network/supportedNetWorks'
 
 export type WalletState = {
 	currentWallet?: string,
@@ -30,14 +31,7 @@ const clearWalletState = () => {
 }
 
 const initialState: WalletState = clearWalletState();
-const networkNames = {
-	1: 'mainnet', 
-	4: 'rinkeby',
-	3: 'ropsten',
-	5: 'goerli',
-	42: 'kovan',
-	80001: 'mumbai'
-}
+
 export const wallet = createSlice({
 	name: 'wallet',
 	initialState,
@@ -57,7 +51,7 @@ export const wallet = createSlice({
 		},
 		updateWalletNetwork(state, actions: PayloadAction<number>) {
 			state.networkId = actions.payload;
-			state.networkName = networkNames[actions.payload].toUpperCase();
+			state.networkName = SUPPORTED_NETWORKS[actions.payload].toUpperCase();
 		}
 	},
 	extraReducers: {
