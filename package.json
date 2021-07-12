@@ -6,7 +6,7 @@
   "dependencies": {
     "@ethereumjs/config-typescript": "^2.0.0",
     "@metamask/detect-provider": "^1.2.0",
-    "@perifinance/peri-finance-js": "0.0.3",
+    "@perifinance/peri-finance-js": "^0.0.6",
     "@reduxjs/toolkit": "^1.5.0",
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^11.2.5",
@@ -46,7 +46,10 @@
     "e2e": "cypress open",
     "deploy": "npm run build && npm run deploy-s3 && npm run invalidate",
     "deploy-s3": "aws s3 sync ./build s3://peri.staking --profile=peri.staking-deploy-s3",
-    "invalidate": "aws cloudfront create-invalidation --profile=peri.staking-deploy-s3 --distribution-id E10BVDVX3OHOTH --paths / /index.html /error.html /service-worker.js /manifest.json /favicon.ico"
+    "invalidate": "aws cloudfront create-invalidation --profile=peri.staking-deploy-s3 --distribution-id E10BVDVX3OHOTH --paths / /index.html /error.html /service-worker.js /manifest.json /favicon.ico",
+    "test-deploy": "npm run build && npm run test-deploy-s3 && npm run test-invalidate",
+    "test-deploy-s3": "aws s3 sync ./build s3://test.peri.staking --profile=test.peri.staking-deploy-s3",
+    "test-invalidate": "aws cloudfront create-invalidation --profile=test.peri.staking-deploy-s3 --distribution-id E3O6OMR9TOEU8H --paths / /index.html /error.html /service-worker.js /manifest.json /favicon.ico"
   },
   "eslintConfig": {
     "extends": [
