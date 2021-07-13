@@ -69,7 +69,7 @@ const WalletDetail = () => {
         dispatch(setIsLoading(false));
     }
 
-    const disconnet = async () => {
+    const disconnect = async () => {
         history.push('/login');
         dispatch(updateIsConnected(false));
         dispatch(clearWallet());
@@ -80,8 +80,8 @@ const WalletDetail = () => {
             <FooterTitleContainer>
                 <H4 weigth="bold">{t('walletDetail.title')}</H4>
                 <FooterTitleLeftContainver>
-                    <DelegateContainer onClick={()=> {disconnet()}}>
-                        <DelegateText>DISCONNET</DelegateText>
+                    <DelegateContainer onClick={()=> {disconnect()}}>
+                        <DelegateText>DISCONNECT</DelegateText>
                     </DelegateContainer>
                     <RefreshContainer onClick={()=> {getDatas()}}>
                         <img src={"/images/dark/refresh.svg"} alt="refresh"/>

@@ -50,14 +50,13 @@ const Main = () => {
     const history = useHistory();
 
     const { isReady } = useSelector((state: RootState) => state.app);
-    const { walletType, currentWallet } = useSelector((state: RootState) => state.wallet);
+    const { walletType, currentWallet, networkId } = useSelector((state: RootState) => state.wallet);
     
     const isConnectedWallet = useSelector((state: RootState) => state.isConnectedWallet.isConnectedWallet);
     
     const transaction = useSelector((state: RootState) => state.transaction);
     // const dataIntervalTime = 1000 * 60 * 3;
     // const [intervals, setIntervals] = useState(null);
-
     const connectWallet = useCallback(async () => {
         const connectCurrenctWallet = await connectHelper(walletType);
 
@@ -80,7 +79,7 @@ const Main = () => {
         //eslint-disable-next-line
     }, []);
 
-    const getDatas = useCallback(async (currentWallet) => {
+    const getDatas = useCallback(async (currentWallet, networkId) => {
         dispatch(setIsLoading(true));
         try {
             const exchangeRates = await getExchangeRates();
@@ -91,7 +90,7 @@ const Main = () => {
             dispatch(updateBalances(balances));
             const vestable:boolean = await getVestable(currentWallet);
             dispatch(updateVestable({vestable}));
-            const networkFee = await getNetworkFee();
+            const networkFee = await getNetworkFee(networkId);
             dispatch(updateNetworkFee(networkFee));
             
         } catch(e) {
@@ -104,8 +103,7 @@ const Main = () => {
     const init = useCallback(async () => {
         try {
             const connectCurrenctWallet = await connectWallet();
-            await getDatas(connectCurrenctWallet.currentWallet);
-            
+            await getDatas(connectCurrenctWallet.currentWallet, connectCurrenctWallet.networkId);
         } catch(e) {
             console.log(e);
             dispatch(updateIsConnected(false));
@@ -114,8 +112,13 @@ const Main = () => {
     }, [connectWallet, getDatas])    
 
     useEffect(() => {
-        if(isReady && window?.ethereum) {
-            init();
+        if(isReady) {
+            if(window?.ethereum) {
+                init();
+            } else {
+                dispatch(updateIsConnected(false));
+                history.push('/login');        
+            }
         }
     }, [isReady, init])
 
@@ -142,7 +145,7 @@ const Main = () => {
                     if(state.status === 1) {
                         dispatch(resetTransaction());
                         NotificationManager.success(`${transaction.type} success`, 'success');
-                        await getDatas(currentWallet);
+                        await getDatas(currentWallet, networkId);
                     } else {
                         NotificationManager.error(`${transaction.type} error`, 'error');
                     }

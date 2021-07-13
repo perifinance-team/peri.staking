@@ -20,7 +20,8 @@ const Login = () => {
     const dispatch = useDispatch();
     const history = useHistory();
     const [isMetamask, setIsMetamask] = useState(false);
-
+    //지갑연결 분기
+    
     useEffect(() => {
         const init = async () => {
             dispatch(setIsLoading(true));
@@ -52,6 +53,7 @@ const Login = () => {
                 dispatch(updateWalletType(walletType));
                 dispatch(updateWalletNetwork(networkId));
                 pynthetix.setContractSettings({ networkId, provider });
+
                 if(walletType === 'Metamask' || walletType === 'Coinbase') {
                     history.push('/#')
                 } else {

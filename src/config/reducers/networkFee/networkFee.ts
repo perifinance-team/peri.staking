@@ -7,7 +7,6 @@ type value = {
 export type NetworkFeeState = {
 	AVERAGE: value
 	FAST: value
-	FASTEST: value,
 }
 
 const initialState: NetworkFeeState = {
@@ -16,10 +15,6 @@ const initialState: NetworkFeeState = {
 		wait: 0
 	},
 	FAST: {
-		price: 0,
-		wait: 0
-	},
-	FASTEST: {
 		price: 0,
 		wait: 0
 	},
@@ -33,7 +28,6 @@ export const NetworkFeeSlice = createSlice({
 		updateNetworkFee(state, actions: PayloadAction<NetworkFeeState>) {
 			state.AVERAGE = actions.payload.AVERAGE;
 			state.FAST = actions.payload.FAST;
-			state.FASTEST = actions.payload.FASTEST;
 		},
 	},
 });
