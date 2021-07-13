@@ -61,3 +61,11 @@ export const H6 = styled.h6<Paragraph>`
     font-weight: 400;
     color: ${props => props.theme.colors.font[props.color || 'secondary']};
 `;
+
+export const H7 = styled.p<Paragraph>`
+    font-size: 10px;
+    text-align: ${props => props.align ? props.align : 'center'};
+    font-weight: 400;
+    margin: 0px;
+    color: ${props => props.theme.colors.font[props.color || 'secondary']};
+`
