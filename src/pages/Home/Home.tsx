@@ -6,35 +6,13 @@ import * as S from './styles'
 import {
     useHistory
 } from "react-router-dom";
-import { useEffect, useState } from 'react';
-import { pynthetix, calculator, formatCurrency } from 'lib'
-import { utils } from 'ethers'
 
 const Home = () => {
     const { t } = useTranslation();
     const history = useHistory();
-    const exchangeRates = useSelector((state: RootState) => state.exchangeRates);
-	const targetCRatio = useSelector((state: RootState) => state.ratio.targetCRatio);
 
     const { vestable } = useSelector((state: RootState) => state.vestable);
     const { isLPConnect } = useSelector((state: RootState) => state.lp);
-    const [ APR, setAPR ] = useState<utils.BigNumber>(utils.bigNumberify('0'));
-
-    const getData = async () => {
-        const issuanceRatio = utils.parseEther(utils.parseEther('100').div(targetCRatio).toString());
-        let totalMintpUSD = await pynthetix.js.pUSD.totalSupply();
-
-        const totalDebt = calculator(totalMintpUSD, utils.bigNumberify('4'), 'mul');
-        const rewardsAmount = calculator(calculator(utils.parseEther('76924'), exchangeRates['PERI'], 'mul'), utils.bigNumberify('52'), 'mul');
-        
-        setAPR(calculator(calculator(rewardsAmount, totalDebt, 'div'), utils.bigNumberify('100'), 'mul'));
-    }
-
-    useEffect(() => {
-        if(targetCRatio !== '0') {
-            getData();
-        }
-    }, [targetCRatio])
 
     let actions = [
         'staking',
@@ -71,7 +49,6 @@ const Home = () => {
                             
                             <H4 weigth={'bold'}>{action.toLocaleUpperCase()}</H4>
                             <H6>{t(`home.${action}.subTitle`)}</H6>
-                            {action ==='staking' ? <H7>APR: {formatCurrency(utils.formatEther(APR), 2)}%</H7> : null}
                         </S.ActionButtonContainer>)
                     )}
                 </S.ActionButtonRow>

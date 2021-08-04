@@ -37,6 +37,7 @@ const LP = () => {
                 "Mint pUSD by staking your PERI.",
                 "This gives you a Collateralization Ratio and a debt, allowing you to earn staking rewards."
             ]}
+            PY={[]}
         >
             <Switch>
                 <Router basename="/lp">

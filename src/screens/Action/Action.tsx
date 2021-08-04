@@ -2,9 +2,10 @@ import styled from 'styled-components';
 
 import { H1, H4 } from 'components/Text';
 import { LightBlueButton } from 'components/Button';
+import { BlueBorderRoundContainer } from 'components/Container';
 import { useHistory, useLocation } from 'react-router-dom';
 
-const Action = ({children, title, subTitles}) => {
+const Action = ({children, title, subTitles, PY}) => {
     const history = useHistory();
     const location = useLocation();
 
@@ -35,6 +36,10 @@ const Action = ({children, title, subTitles}) => {
                             <H4 key={index} align={'left'}>{text}</H4>
                         ))}
                     </SubTitleContainer>
+                    <br></br>
+                    
+                    { PY.length > 0 && <APY><H4 align={'left'} color={'primary'}> {PY.join(', ')} </H4> </APY>}
+                    
                 </TitleContainer>
             </LeftContainer>
             <ActionBodyContainer>
@@ -45,7 +50,11 @@ const Action = ({children, title, subTitles}) => {
         </ActionContainer>
     );
 }
-
+const APY = styled(BlueBorderRoundContainer)`
+    width: 200px;
+    height: 30px;
+    margin: 0;
+`
 const ActionContainer = styled.div`
     display: flex;
     height: 100%;

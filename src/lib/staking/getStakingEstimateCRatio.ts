@@ -19,6 +19,7 @@ export const getStakingEstimateCRatio = ({ PERITotalBalance, debtBalanceOf, exch
 	const totalDebt = calculator(debtBalanceOf, mintingAmount, 'add');
 	
 	const totalDebtToPERI = calculator((totalDebt).toString(), exchangeRates['PERI'], 'div');
-	
+	console.log(totalDebtToPERI.toString());
+	console.log(totalPERIaddUSDC.toString());
 	return calculator('100', calculator(totalDebtToPERI.toString(), totalPERIaddUSDC, 'div'), 'div').toString();
 }

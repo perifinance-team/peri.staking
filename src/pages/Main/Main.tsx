@@ -133,8 +133,7 @@ const Main = () => {
     }, [isConnectedWallet, connectWallet, init]);
 
     useEffect(() => {
-        if(transaction.hash) {
-            
+        if(transaction.hash) {    
             const getState = async (init) => {
                 if(init) {
                     NotificationManager.info(transaction.message, 'in progress', 0);

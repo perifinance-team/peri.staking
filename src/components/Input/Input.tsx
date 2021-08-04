@@ -67,7 +67,6 @@ const CurrenciesContainer = styled.div`
 	border-radius: 5px;
 `
 const Currencies = styled.div`
-
 `
 
 const Container = styled(BlueBorderRoundContainer)`
@@ -107,7 +106,6 @@ const AmountInput = styled.input`
     font-size: 16px;
     border: none;
     background: transparent;
-
     color: ${props => props.theme.colors.font.secondary};
     :focus {
         outline: none;

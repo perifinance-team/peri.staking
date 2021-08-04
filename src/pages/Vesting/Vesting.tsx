@@ -107,7 +107,7 @@ const Vesting = () => {
     }
 
     return (
-        <Action title="VEST" subTitles={[1, 2]}>
+        <Action title="VEST" subTitles={[]} PY={[]}>
             <Container>    
                 <VestingStyledTHeader>
                     <StyledCell><H6>No</H6></StyledCell>

@@ -8,7 +8,7 @@ import { FooterRoundContainer, FooterTitleContainer } from 'components/Container
 import { H4, H6 } from 'components/Text'
 // import { useTranslation } from 'react-i18next';
 
-import { formatCurrency, calculator, currencyToPynths, pynthsToCurrency, pynthetix } from 'lib'
+import { formatCurrency, calculator, currencyToPynths, pynthsToCurrency, pynthetix, RewardEscrow } from 'lib'
 import { utils } from 'ethers'
 import numbro from 'numbro'
 
@@ -19,6 +19,7 @@ const TotalBalance = () => {
 
 	const exchangeRates = useSelector((state: RootState) => state.exchangeRates);
 	const targetCRatio = useSelector((state: RootState) => state.ratio.targetCRatio);
+	const [totalRewardEscrow, setTotalRewardEscrow] = useState(utils.bigNumberify('0'))
 	
 	const [stakedAmount, setStakedAmount] = useState({
 		PERI: {
@@ -64,7 +65,8 @@ const TotalBalance = () => {
 		} else {
 			PERIStakableToPERI = calculator(balances['PERI'].balance, PERIStakedToPERI, 'sub');
 		}
-		
+		const totalRewardEscrow = await RewardEscrow.balanceOf(currentWallet);
+		setTotalRewardEscrow(totalRewardEscrow)
 		setStakedAmount({
 			PERI: {
 				staked: utils.formatEther(PERIStakedToPERI),
@@ -99,7 +101,12 @@ const TotalBalance = () => {
         <FooterRoundContainer>
             <FooterTitleContainer>
                 <H4 weigth="bold">MY TOTAL STAKE</H4>
+				<EscrowReward>
+				<H6>Escrow Reward:</H6>
+				<H6>{formatCurrency(utils.formatEther(totalRewardEscrow))}</H6>
+			</EscrowReward>
             </FooterTitleContainer>
+			
             <RageContainer>
 				<BarChart>
 					<Graph type="range" min="0" max="100" value={stakedRate.PERI} readOnly></Graph>
@@ -139,8 +146,18 @@ export const RageContainer = styled.div`
 	width: 100%;
 	height: 200px;
 	flex-direction: column;
-	margin-top: 25px;
+	
 `;
+
+export const EscrowReward = styled.div`
+	
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	
+	
+`
+
 
 export const BarChart = styled.div`
 	position: relative;

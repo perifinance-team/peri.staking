@@ -63,7 +63,7 @@ export const H6 = styled.h6<Paragraph>`
 `;
 
 export const H7 = styled.p<Paragraph>`
-    font-size: 10px;
+    font-size: 12px;
     text-align: ${props => props.align ? props.align : 'center'};
     font-weight: 400;
     margin: 0px;

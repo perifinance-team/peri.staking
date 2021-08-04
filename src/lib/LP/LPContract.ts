@@ -5,6 +5,7 @@ import { getEthereumNetworkId } from 'lib/ethereum'
 import { pynthetix } from 'lib'
 const addressList = {
     KOVAN: '0x57ed66ca0e67a97e217e617b1ba6b75e87db118d',
+    MUMBAI: '0x1357a050b0895535A173B0aaD97d1A2DEC48398B'
 }
 
 export const LPContract = {
@@ -17,7 +18,6 @@ export const LPContract = {
         this.address = PeriFinance.contractSettings.addressList['StakingRewardsPERIUniV2'];
         this.signer = signer;
         this.contract = new ethers.Contract(this.address, StakingRewards, signer);
-        console.log(this.contract);
         this.balanceContract = new ethers.Contract(addressList[networkName], ERC20.abi, signer);
         return this;
     },

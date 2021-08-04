@@ -8,7 +8,8 @@ import { addSeconds, formatDistanceToNow } from 'date-fns';
 import { RootState } from 'config/reducers'
 import { setIsLoading } from 'config/reducers/app'
 
-import { pynthetix, formatCurrency } from 'lib'
+import { pynthetix, formatCurrency, RewardEscrow } from 'lib'
+
 
 import { updateTransaction } from 'config/reducers/transaction'
 import { NotificationManager } from 'react-notifications';
@@ -20,7 +21,7 @@ import { H4, H5 } from 'components/Text'
 import Fee from 'components/Fee'
 import Input from 'components/Input'
 import numbro from 'numbro'
-import {utils} from 'ethers'
+import { utils } from 'ethers'
 import { gasPrice } from 'helpers/gasPrice'
 
 type ClaimData = {
@@ -75,9 +76,8 @@ const Claim = () => {
 
     const init = async () => {
         dispatch(setIsLoading(true));
-        
         try {
-            const duration = await FeePool.feePeriodDuration();
+            const duration = await FeePool.feePeriodDuration();            
             const periods = await FeePool.recentFeePeriods(0);
             const claimable = await FeePool.isFeesClaimable(currentWallet);
             const reward = await FeePool.feesAvailable(currentWallet);
@@ -175,6 +175,7 @@ const Claim = () => {
                 "PERI staking rewards"
                 // , and Pynths exchange rewards generated on Kwenta.io.
             ]}
+            PY={[]}
         >
                 <ActionContainer>
                     <ClaimInfoContainer>
@@ -198,6 +199,12 @@ const Claim = () => {
                             value={`staking rewards  : ${formatCurrency(utils.formatEther(claimData.rewards.staking))}`}
                             disabled={true}
                         />
+                        {/* <Input key="primary"
+                            currencyName="PERI"
+                            value={`total rewards  : ${formatCurrency(utils.formatEther(claimData.totalRewardEscrow))}`}
+                            disabled={true}
+                        /> */}
+
                     </div>
 
                     <div>

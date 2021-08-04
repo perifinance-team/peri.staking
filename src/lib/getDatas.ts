@@ -69,7 +69,6 @@ export const getRatio = async (currentWallet) => {
 
     const targetCRatio = await getTargetCRatio();
     const liquidationRatio = await getLiquidationRatio();
-    
     return {
         currentCRatio,
         targetCRatio,

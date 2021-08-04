@@ -101,6 +101,7 @@ const Transfer = () => {
             subTitles={[
                 "Transfer your ETH, PERI or Pynths.",
             ]}
+            PY={[]}
              
         >
             <ActionContainer>

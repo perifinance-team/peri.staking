@@ -99,6 +99,7 @@ const Burn = () => {
                 "If you have staked your PERI and minted pUSD, you are eligible to collect two kinds of rewards :",
                 "allowing you to transfer your non-escrowed PERI."
             ]}
+            PY={[]}
         >
             
             <Switch>

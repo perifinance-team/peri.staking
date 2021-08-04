@@ -78,7 +78,7 @@ const WalletDetail = () => {
     return (
         <FooterRoundContainer>
             <FooterTitleContainer>
-                <H4 weigth="bold">{t('walletDetail.title')}</H4>
+            <H4 weigth="bold">{t('walletDetail.title')}</H4>
                 <FooterTitleLeftContainver>
                     <DelegateContainer onClick={()=> {disconnect()}}>
                         <DelegateText>DISCONNECT</DelegateText>
