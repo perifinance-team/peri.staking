@@ -1,4 +1,3 @@
-import { fontFamilies } from '../font'
 import { dark } from './dark'
 import { light } from './light'
 import { DefaultTheme } from 'styled-components'
@@ -9,6 +8,5 @@ export const theme: Theme = (themeName: string) => {
 	const colors = themeName === 'dark' ? dark : light;
     return {
         colors,
-        fontFamilies,
     }
 }

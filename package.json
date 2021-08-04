@@ -1,42 +1,45 @@
 {
   "name": "peri.staking",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "private": true,
   "author": "perifinance",
+  "types": "lib/index.d.ts",
+  "main": "dist/esm.js",
+  "directories": {
+    "example": "example"
+  },
   "dependencies": {
-    "@ethereumjs/config-typescript": "^2.0.0",
+    "@egjs/react-flicking": "^4.1.2",
     "@metamask/detect-provider": "^1.2.0",
-    "@perifinance/peri-finance-js": "0.0.5",
+    "@perifinance/peri-finance": "^0.1.0",
     "@reduxjs/toolkit": "^1.5.0",
-    "@testing-library/jest-dom": "^5.11.9",
-    "@testing-library/react": "^11.2.5",
-    "@testing-library/user-event": "^12.8.1",
     "@types/node": "^14.14.37",
     "@types/react-redux": "^7.1.16",
     "@types/react-router-dom": "^5.1.7",
+    "babel": "^6.23.0",
+    "babel-plugin-styled-components": "^1.13.2",
+    "babel-preset-react-app": "^10.0.0",
+    "bnc-onboard": "^1.30.0",
     "date-fns": "^2.21.1",
-    "ethers": "^4.0.48",
-    "history": "^5.0.0",
+    "ethers": "^5.4.1",
     "i18next": "^19.9.1",
     "i18next-browser-languagedetector": "^6.0.1",
     "i18next-xhr-backend": "^3.2.2",
-    "lodash": "^4.17.21",
-    "npm": "^7.6.3",
-    "numbro": "^2.3.2",
-    "react": "^17.0.1",
-    "react-calendar": "^3.4.0",
-    "react-dom": "^17.0.1",
+    "npm": "^7.19.1",
     "react-i18next": "^11.8.8",
     "react-notifications": "^1.7.2",
     "react-outside-click-handler": "^1.3.0",
     "react-redux": "^7.2.2",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "4.0.3",
+    "react-scripts": "^4.0.3",
     "redux": "^4.0.5",
     "redux-persist": "^6.0.0",
-    "styled-components": "^5.2.1",
+    "rollup-plugin-typescript2": "^0.30.0",
+    "styled-components": "^5.3.0",
+    "swiper": "^6.7.5",
     "typescript": "^4.2.3",
-    "web-vitals": "^1.1.0"
+    "web-vitals": "^1.1.0",
+    "webpack": "^4.46.0"
   },
   "scripts": {
     "start": "set HTTPS=true && react-scripts --max-old-space-size=4096 start",
@@ -44,6 +47,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "e2e": "cypress open",
+    "rollup-build": "rollup -c",
+    "rollup-watch": "rollup -cw",
     "deploy": "npm run build && npm run deploy-s3 && npm run invalidate",
     "deploy-s3": "aws s3 sync ./build s3://peri.staking --profile=peri.staking-deploy-s3",
     "invalidate": "aws cloudfront create-invalidation --profile=peri.staking-deploy-s3 --distribution-id E10BVDVX3OHOTH --paths / /index.html /error.html /service-worker.js /manifest.json /favicon.ico",
@@ -59,9 +64,9 @@
   },
   "browserslist": {
     "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
     ],
     "development": [
       "last 1 chrome version",
@@ -70,8 +75,14 @@
     ]
   },
   "devDependencies": {
+    "@babel/plugin-syntax-bigint": "^7.8.3",
+    "@rollup/plugin-commonjs": "^19.0.1",
+    "@rollup/plugin-json": "^4.1.0",
+    "@rollup/plugin-node-resolve": "^13.0.2",
     "@types/react": "^17.0.3",
     "@types/styled-components": "^5.1.9",
-    "cypress": "^7.4.0"
+    "rollup": "^2.53.2",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-postcss": "^4.0.0"
   }
 }

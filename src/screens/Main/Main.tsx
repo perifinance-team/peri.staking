@@ -1,0 +1,74 @@
+import styled from 'styled-components';
+
+import {
+    HashRouter as Router,
+    Switch,
+    Route,
+    Redirect
+} from "react-router-dom";
+
+import LeftAside from 'screens/LeftAside'
+import RightAside from 'screens/RightAside'
+import Header from 'screens/Header'
+
+import Stake from 'pages/Stake'
+import Balance from 'pages/Balance'
+import Vesting from 'pages/Vesting'
+
+const Main = () => {
+
+    return (
+        <MainContainer>
+            <Router>
+                <LeftAside></LeftAside>
+                <RightSection>
+                    <Header></Header>
+                    <ContentSection>
+                        <Content>
+                            <Switch>
+                                <Route path="/stake">
+                                    <Stake></Stake>
+                                </Route>
+                                <Route path="/balance">
+                                    <Balance></Balance>
+                                </Route>
+                                <Route path="/vesting">
+                                    <Vesting></Vesting>
+                                </Route>
+                                <Route exact path="/">
+                                    <Redirect to="/stake"/>
+                                </Route>
+                            </Switch>
+                        </Content>
+                        <RightAside></RightAside>
+                    </ContentSection>
+                    
+                </RightSection>
+            </Router>
+
+        </MainContainer>
+    );
+}
+const MainContainer = styled.div`
+    display: flex;
+    height: 100vh;
+    flex-direction: row;
+`
+const RightSection = styled.div`
+    flex: 3;
+    display: flex;
+    flex-direction: column;
+    background-color: ${props => props.theme.colors.background.body};
+`
+const ContentSection = styled.div`
+    flex: 15;
+    display: flex;
+    flex-direction: row;
+`;
+
+const Content = styled.div`
+    flex: 3;
+`
+
+
+export default Main;

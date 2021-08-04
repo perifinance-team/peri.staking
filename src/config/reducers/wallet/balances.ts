@@ -1,13 +1,38 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 
 type BalanceState = {
+	isReady: boolean;
     balances: Object,
-	transferables: Object,
 }
 
 const initialState: BalanceState = {
-    balances: {},
-	transferables: {},
+	isReady: false,
+    balances: {
+		DEBT: {
+			decimal: 18,
+			active: true
+		},
+		PERI: {
+			decimal: 18,
+			active: true,
+		},
+		pUSD: {
+			decimal: 18,
+			active: true
+		},
+		LP: {
+			decimal: 18,
+			active: true,
+		},
+		USDC: {
+			decimal: 6,
+			active: true,
+		},
+		DAI: {
+			decimal: 18,
+			active: true,
+		}
+	}
 }
 
 
@@ -15,13 +40,28 @@ export const ExchangeRatesSlice = createSlice({
 	name: 'exchangeRates',
 	initialState,
 	reducers: {
-		updateBalances(state,  actions: PayloadAction<BalanceState>) {
-			state.balances = actions.payload.balances
-			state.transferables = actions.payload.transferables
+		initCurrecy(state, actions) {
+			state.isReady = true;
+			state.balances = actions.payload;
 		},
+		updateBalances(state, actions) {
+			state.balances[actions.payload.currencyName][actions.payload.value] = actions.payload.balance;
+		},
+		clearBalances(state) {
+			Object.keys(state.balances).forEach(e => {
+				Object.keys(state.balances[e]).forEach(a => {
+					if(a === 'decimal' || a === 'active') {
+						
+					} else {
+						state.balances[e][a] = 0n;
+					}
+					
+				})
+			});
+		}
 	},
 });
 
-export const { updateBalances } = ExchangeRatesSlice.actions;
+export const { initCurrecy, updateBalances, clearBalances } = ExchangeRatesSlice.actions;
 
 export default ExchangeRatesSlice.reducer;

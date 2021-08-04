@@ -1,9 +1,7 @@
-import numbro from 'numbro';
-
+import { utils } from 'ethers'
 export const formatCurrency = (value, decimals = 2) => {
-	if (!value) return "0";
-	if (!Number(value)) return "0";
-	// const regex = 
-	const discardValue = numbro(value).format({mantissa: decimals}).match(/(\d+\.)+\d{0,4}/g);
-	return numbro(discardValue[0]).format( {thousandSeparated: true, mantissa: decimals} ).toString();
+	if(!value) return '0';
+	const regexp = new RegExp(`(\\d+\\.)+\\d{0,${decimals}}`, 'g');
+	const cutDecimals = Number(utils.formatEther(value.toString()).match(regexp)[0]).toLocaleString();
+	return cutDecimals ? cutDecimals : value.toLocaleString();
 };

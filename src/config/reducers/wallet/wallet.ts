@@ -1,66 +1,48 @@
-import { createSlice , PayloadAction, createAsyncThunk} from '@reduxjs/toolkit';
-import { connectHelper } from 'helpers/wallet/connect'
-import { SUPPORTED_NETWORKS } from 'helpers/network/supportedNetWorks'
+import { createSlice , PayloadAction } from '@reduxjs/toolkit';
+import { SUPPORTED_NETWORKS, SUPPORTED_NETWORKS_CONFIRM } from 'lib/network'
 
 export type WalletState = {
-	currentWallet?: string,
+	address?: string,
+	networkName?: string,
 	networkId?: number,
-	networkName?: string, 
-	unlocked?: boolean,
-	walletType?: string,
-	unlockReason?: string,
+	isConnect?: boolean,
+	confirm?: number,
+	
 }
 
-const connectWallet = createAsyncThunk(
-	`connectWallet`,
-	async (walletType) => {
-        return await connectHelper(walletType);
-    }
-);
 
-
-const clearWalletState = () => { 
-	return {
-		currentWallet: undefined,
-		networkId: 42,
-		networkName: 'KOVAN',
-		unlocked: false,
-		walletType: undefined,
-		unlockReason: undefined,
-	}
-}
-
-const initialState: WalletState = clearWalletState();
+const initialState: WalletState = {
+	address: null,
+	networkName: null,
+	networkId: Number(process.env.REACT_APP_DEFAULT_NETWORK_ID),
+	isConnect: false,
+	confirm: 12,
+};
 
 export const wallet = createSlice({
 	name: 'wallet',
 	initialState,
 	reducers: {
-		initWallet(state) {
-			state.unlockReason = undefined;
-			state.unlocked = false;
+		updateAddress(state, actions: PayloadAction<WalletState>) {
+			state.address = actions.payload.address;
 		},
-		updateWallet(state, actions: PayloadAction<WalletState>) {
-			state = Object.assign(state, {...actions.payload});
+		updateNetwork(state, actions: PayloadAction<WalletState>) {
+			state.networkId = actions.payload.networkId;
+			state.networkName = SUPPORTED_NETWORKS[actions.payload.networkId];
+			state.confirm = SUPPORTED_NETWORKS_CONFIRM[actions.payload.networkId];
 		},
+
+		updateIsConnect(state, actions: PayloadAction<boolean>) {
+			state.isConnect = actions.payload;
+		},
+
 		clearWallet(state) {
-			state = Object.assign(state, clearWalletState());
+			state.address = null;
+			state.isConnect = false;
 		},
-		updateWalletType(state, actions: PayloadAction<string>) {
-			state.walletType = actions.payload;
-		},
-		updateWalletNetwork(state, actions: PayloadAction<number>) {
-			state.networkId = actions.payload;
-			state.networkName = SUPPORTED_NETWORKS[actions.payload].toUpperCase();
-		}
 	},
-	extraReducers: {
-		[connectWallet.fulfilled.type]: (state, actions: PayloadAction<WalletState>) => {
-			state = Object.assign(state, {...actions.payload});
-		}
-	}
 });
 
-export const { initWallet, updateWallet, clearWallet, updateWalletType, updateWalletNetwork } = wallet.actions;
+export const { updateAddress, updateNetwork, updateIsConnect, clearWallet } = wallet.actions;
 
 export default wallet.reducer;

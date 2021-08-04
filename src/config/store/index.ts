@@ -3,12 +3,6 @@ import reducers from '../reducers';
 import {
 	persistStore,
 	persistReducer,
-	FLUSH,
-	REHYDRATE,
-	PAUSE,
-	PERSIST,
-	PURGE,
-	REGISTER
   } from 'redux-persist'
 
 import storage from 'redux-persist/lib/storage';
@@ -16,7 +10,7 @@ import storage from 'redux-persist/lib/storage';
 const persistConfig  = {
 	key: 'app',
 	storage,
-	whitelist: ["theme", "wallet"]
+	whitelist: ["theme"]
 }
 
 const persistedReducers = persistReducer(persistConfig, reducers);
@@ -24,9 +18,7 @@ const persistedReducers = persistReducer(persistConfig, reducers);
 export const store = configureStore({
 	reducer: persistedReducers,
 	middleware: getDefaultMiddleware({
-		serializableCheck: {
-			ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER]
-		}
+		serializableCheck: false
 	})
 });
 

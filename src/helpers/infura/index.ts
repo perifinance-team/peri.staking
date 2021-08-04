@@ -1,1 +1,0 @@
-export { INFURA_ID, INFURA_URLS } from './infura';

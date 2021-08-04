@@ -1,95 +1,48 @@
-import { useState } from 'react'
 import styled from 'styled-components';
-import { BlueBorderRoundContainer } from 'components/Container'
-import Asset from 'components/Asset'
-import LPAsset from 'components/Asset/LPAsset'
-import { BlueGreenButton } from 'components/Button';
-import { H6 } from 'components/Text'
-import { formatCurrency } from 'lib'
 
-const Input = (
+export const Input = (
     {
+        height = 30,
         disabled = false, currencyName,
-        onChange = undefined, onBlur = undefined, value, maxAction = undefined,
-        isLp= false,
-        fixed = false,
-        fixedAction = undefined,
-        maxAmount = undefined,
-        currencies = undefined
+        onChange = undefined, value = '0',
+        color,
+        isLP = false
     }) => {
-    const [isOpen, setIsOpen] = useState<boolean>(false);
 
     return (
         <>
-            <Container>
-            <AssetContainer isCurrencies={currencies ? true: false} onClick={ () => currencies ? setIsOpen(!isOpen) : false }>
-                {
-                    isLp ? 
-                    (<LPAsset currencyName={currencyName} label={currencyName}></LPAsset>)
-                    :
-                    (<Asset currencyName={currencyName} label={currencyName}></Asset>)
-                    
-                }
+            <Container color={color} disabled={disabled} height={height}>
+                <AssetContainer height={height} isLP={isLP}>
+                    <img src={`/images/currencies/${currencyName}.png`} alt="currency"></img>
                 </AssetContainer>
-                
-                {isOpen && 
-                    <CurrenciesContainer>
-                        <Currencies>
-                            123123
-                        </Currencies>
-                    </CurrenciesContainer>
-                }
-
-                <Border></Border>
-                
                 <InputContainer>
-                    <AmountInput disabled={disabled} onChange={onChange} defaultValue="" value={value} onBlur={onBlur}></AmountInput>
-                    { fixedAction && <MaxButton active={fixed} onClick={fixedAction}>Fixed{fixed}</MaxButton>}
-                    { disabled || <MaxButton onClick={maxAction}>MAX</MaxButton>}
+                    <AmountInput type="text" height={height} disabled={disabled} onChange={onChange} value={value}></AmountInput>
                 </InputContainer>
             </Container>
-            <MaxContainer>
-                {maxAmount && <MaxAmount>MAX: {formatCurrency(maxAmount)} {currencyName}</MaxAmount>}
-            </MaxContainer>
-            
         </>
     )
 }
-const CurrenciesContainer = styled.div`
-    z-index: 11;
-	position: absolute;
-    top: 60px;
-    width: 250px;
-	height: 240px;
-	padding: 16px;
-    background: transparent;
-    border: 2px solid ${props => props.theme.colors.border};
-	border-radius: 5px;
-`
-const Currencies = styled.div`
-`
 
-const Container = styled(BlueBorderRoundContainer)`
-    position: relative;
-    height: 50px;
-    flex-direction: row;
-    flex: 1 2;
-    justify-content: space-between;
-    margin: 10px 0px 0px 0px;
-`
-
-const AssetContainer = styled.div<{isCurrencies?: boolean}>`
-    flex: 1;
-    padding: 10px;
+const Container = styled.div<{color: string, disabled: boolean, height: number}>`
     display: flex;
-    align-items: center;
-    cursor: ${props => props.isCurrencies ? 'pointer' : 'default'};
+    flex-direction: row;
+    height: ${props => `${props.height}px`};
+    width: 320px;
+    flex-direction: row;
+    justify-content: space-between;
+    border-radius: 25px;
+    margin: 0px 10px;
+    opacity: ${props => props.disabled ? 0.5 : 1};
+    background-color: ${props => props.theme.colors.background.input[props.color]};
 `
 
-const Border = styled.div`
-    height: 25px;
-    margin: 10px;
-    border-right: 2px solid ${props => props.theme.colors.border};
+const AssetContainer = styled.div<{height: number, isLP?: boolean}>`
+    height: ${props => `${props.height}px`};
+    padding: 5px 10px;
+    img {
+        width: ${props => props.isLP ? '32px' : `20px`};
+        height: '22px';
+    }
 `
 
 const InputContainer = styled.div`
@@ -100,38 +53,20 @@ const InputContainer = styled.div`
     background: transparent;
 `
 
-const AmountInput = styled.input`
-    height: 50px;
+const AmountInput = styled.input<{height: number}>`
+    margin: auto;
+    height: ${props => `${props.height}px`};
     width: 100%;
+    font-weight: 500;
     font-size: 16px;
     border: none;
     background: transparent;
-    color: ${props => props.theme.colors.font.secondary};
+    text-align: right;
+    color: ${props => props.theme.colors.font.primary};
     :focus {
         outline: none;
     }
     :disabled {
         opacity: 0.5
     }
-    
 `
-
-const MaxButton = styled(BlueGreenButton)<{active?: boolean}>`
-    font-size: 14px;
-    width: 70px;
-    height: 30px;
-    margin: auto 5px;
-    color: ${props => props.active ? props.theme.colors.font.red : ''};
-`;
-const MaxContainer = styled.div`
-    display: flex;
-    justify-content: flex-end;
-`
-const MaxAmount = styled(H6)`
-    text-align: right;
-    padding: 0px 10px;
-`;
-
-
-
-export default Input;

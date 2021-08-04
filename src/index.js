@@ -4,11 +4,10 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { Provider } from 'react-redux';
 import { PersistGate } from "redux-persist/integration/react";
-import {store, persistor} from './config/store';
+import { store, persistor } from './config/store';
 import './i18n';
-import './index.css';
 import 'react-notifications/lib/notifications.css';
-import 'react-calendar/dist/Calendar.css';
+import './index.css';
 
 ReactDOM.render(
   <Suspense fallback={<div />}>

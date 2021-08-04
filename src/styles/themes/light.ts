@@ -1,46 +1,64 @@
-const navy = '#181339'
-//main backgorund
-const lightBlue = 'rgb(82, 113, 255, 0.1)'
-//panel
-const blueGreen = '#184771'
-//button
-const white = '#FFFFFF'
-//subtext
-const skyblue = 'rgb(0, 238, 255, 1)';
-//title, button
 
-const skyblueBorder = 'rgb(0, 238, 255, 0.2)';
+const blue = '#2184F8';
 
-const red = 'rgb(217, 68, 84)';
+const navy = '#14085A';
+
+const gray = '#252A3E';
+
+const black = '#0E101F';
+
+const white = '#FFFFFF';
+const whiteBlue = '#FCFDFF';
+
+const red = '#C45375';
+
+const green = '#3ABDCF';
 
 export const light = {
     background: {
-        body: navy,
-
-        // #23265f
-        panel: lightBlue,
-        button: skyblueBorder
+        body: whiteBlue,
+        aside: blue,
+        panel: white,
+        button: {
+            primary: blue,
+            secondary: green,
+            tertiary: gray,
+            fourth: white,
+        },
+        THeader: blue,
+        reFresh: blue,
+        input: {
+            primary: black,
+            secondary: blue
+        }
     },
-    button: {
-        primary: lightBlue,
-        secondary: blueGreen
+    border: {
+        primary: blue,
+        secondary: green,
+        tertiary: white,
+        barChart: blue,
+        tableRow: 'rgba(255, 255, 255, 0.1)',
     },
-    border: skyblueBorder,
     hover: {
-        button: skyblue,
-        background: lightBlue
+        panel: blue,
+    },
+    link: {
+        active: blue,
     },
     font: {
-        primary: skyblue,
-        secondary: white,
-        red
+        primary: white,
+        secondary: navy,
+        tertiary: gray,
+        fourth: blue,
+        fifth: black,
     },
     barChart: {
-        left: skyblueBorder,
-        right: lightBlue
+        primary: blue,
+        secondary: green,
+        warning: red
     },
     table: {
-        theader: lightBlue
+        tHeader: blue
     }
     
 }

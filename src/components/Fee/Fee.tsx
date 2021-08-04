@@ -1,53 +1,21 @@
-import { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from 'config/reducers'
 import styled from 'styled-components'
-import { updateSelectedFee } from 'config/reducers/networkFee'
+import { H5 } from 'components/headding'
 
-import { H6 } from 'components/Text'
-// import { SkeyBlueButton } from 'components/Button'
-// import numbro from 'numbro'
-
-const Fee = ({gasPrice}) => {
-    const dispatch = useDispatch();
-    const { ETH } = useSelector((state: RootState) => state.exchangeRates);
-    const networkFee = useSelector((state: RootState) => state.networkFee);
-    const { seletedFee } = useSelector((state: RootState) => state.seletedFee);
-    const [feeToGwei, setFeeToGwei] = useState<number>(0);
-    // const [feeToUSD, setFeeToUSD] = useState<number>(0);
-    useEffect(() => {
-        try {
-            dispatch(updateSelectedFee(networkFee.AVERAGE));
-            setFeeToGwei(seletedFee.price);
-            // setFeeToUSD(
-            //     numbro(feeToGwei).multiply(numbro(ETH).value()).value()
-            // )
-        } catch(e) {
-            console.log(e);
-            setFeeToGwei(0);
-        }
-        // eslint-disable-next-line
-    }, [gasPrice, networkFee, seletedFee, ETH, feeToGwei])
+export const Fee = () => {
+    const { gasPrice } = useSelector((state: RootState) => state.networkFee);
     
     return (
         <FeeContainer>
-            <H6>network fees : {feeToGwei} GWEI</H6>
-            {/* <EditButton>
-                <H6 color={'primary'}>edit</H6>
-            </EditButton> */}
+            <H5 color={'primary'}>network fees : {(gasPrice / 1000000000n).toString() } GWEI</H5>
         </FeeContainer>
     );
 }
 
 const FeeContainer = styled.div`
-    margin: 10px;
+    margin-top: 5px;
     display: flex;
     justify-content: center;
     vertical-align: middle;
 `
-
-// const EditButton = styled(SkeyBlueButton)`
-//     padding: 0px 10px;
-//     margin: 0px 10px;
-// `
-export default Fee

@@ -1,23 +1,17 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export type ExchangeRatesState = {
-	PERI: string,
-	USDC: string,
-	ETH: string,
-	iBTC: string,
-	iETH: string,
-	pBTC: string,
-	pETH: string,
+	isReady?: boolean;
+	PERI: bigint,
+	USDC: bigint,
+	DAI: bigint
 }
 
 const initialState: ExchangeRatesState = {
-	PERI: "0.00",
-	USDC: "0.00",
-	ETH: "0.00",
-	iBTC: "0.00",
-	iETH: "0.00",
-	pBTC: "0.00",
-	pETH: "0.00",
+	isReady: false,
+	PERI: 0n,
+	USDC: 0n,
+	DAI: 0n
 }
 
 
@@ -26,13 +20,10 @@ export const ExchangeRatesSlice = createSlice({
 	initialState,
 	reducers: {
 		updateExchangeRates(state,  actions: PayloadAction<ExchangeRatesState>) {
+			state.isReady = true;
 			state.PERI = actions.payload.PERI;
-			state.ETH = actions.payload.ETH;
 			state.USDC = actions.payload.USDC;
-			state.iBTC = actions.payload.iBTC;
-			state.iETH = actions.payload.iETH;
-			state.pBTC = actions.payload.pBTC;
-			state.pETH = actions.payload.pETH;
+			state.DAI = actions.payload.DAI;
 		},
 	},
 });

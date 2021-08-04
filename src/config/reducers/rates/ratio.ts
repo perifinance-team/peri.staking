@@ -1,14 +1,14 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 export type RatiosState = {
-    currentCRatio: string
-	targetCRatio: string
-    liquidationRatio: string
+    currentCRatio: bigint
+	targetCRatio: bigint
+    liquidationRatio: bigint
 }
 
 const initialState: RatiosState = {
-	currentCRatio: '0',
-	targetCRatio: '0',
-    liquidationRatio: '0',
+	currentCRatio: 0n,
+	targetCRatio: 250000000000000000n,
+    liquidationRatio: 666666666666666666n,
 }
 
 export const RatioSlice = createSlice({
@@ -16,13 +16,18 @@ export const RatioSlice = createSlice({
 	initialState,
 	reducers: {
 		updateRatio(state,  actions: PayloadAction<RatiosState>) {
-			state.currentCRatio = actions.payload.currentCRatio;
+			if(actions.payload.currentCRatio > 0n) {
+				state.currentCRatio = actions.payload.currentCRatio;
+			}
 			state.targetCRatio = actions.payload.targetCRatio;
 			state.liquidationRatio = actions.payload.liquidationRatio;
 		},
+		updateCRatio(state) {
+			state.currentCRatio = 0n;
+		}
 	},
 });
 
-export const { updateRatio } = RatioSlice.actions;
+export const { updateRatio, updateCRatio } = RatioSlice.actions;
 
 export default RatioSlice.reducer;

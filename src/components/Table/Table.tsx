@@ -1,10 +1,16 @@
 import styled from 'styled-components'
 
 export const Row = styled.div`
+    width: 100%;
     display: flex;
     flex-direction: row;
     align-items: center;
+    height: 45px;
 `;
+
+export const BorderRow = styled(Row)`
+    border-bottom: ${props => `1px solid ${props.theme.colors.border.tableRow}`};
+`
 
 export const HoverRow = styled(Row)`
     cursor: pointer;
@@ -16,9 +22,7 @@ export const HoverRow = styled(Row)`
 export const Cell = styled.div`
     display: inline-table;
     width: 100%;
-    height: 40px;
     vertical-align: middle;
-    padding: 5px 20px;
 `;
 
 export const HeaderCellRight = styled(Cell)`
@@ -39,33 +43,17 @@ export const CellLeft = styled(Cell)`
 `;
 
 export const StyledTHeader = styled(Row)`
+    width: 100%;
+    height: 50px;
     display: flex;
     flex-direction: row;
-    background-color: ${props => props.theme.colors.background.panel};
+    background-color: ${props => props.theme.colors.background.THeader};
 `;
 
 export const StyledTBody = styled.div<{'height'?: number}>`
     width: 100%;
-    margin-top: 15px;
     display: flex;
     flex-direction: column;
-    height: ${props => props['height'] ? `${props['height']}px` : `100%`};
+    height: ${props => props['height'] ? `${props['height']}vh` : `100%`};
     overflow-y: scroll;
-
-    ::-webkit-scrollbar {
-	    width: 7px;
-    }
-
-    ::-webkit-scrollbar-thumb {
-        
-        background-color:#313d8f;
-        border-radius: 100px;
-        background-clip: padding-box;
-    }
-
-    ::-webkit-scrollbar-track {
-        margin-bottom: 10px;
-        background-color: #23265f;
-        border-radius: 5px;
-    }
 `;

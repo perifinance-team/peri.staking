@@ -1,165 +1,177 @@
-import styled from 'styled-components'
-import { useState, useEffect} from 'react'
+import { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from "react-redux"
-import * as dateFns from 'date-fns';
-import numbro from 'numbro'
-import { useHistory } from 'react-router-dom';
-
-import { pynthetix, calculator } from 'lib'
-import { utils } from 'ethers'
-
 import { RootState } from 'config/reducers'
-import { setIsLoading } from 'config/reducers/app'
+import styled from 'styled-components';
+import { H1, H4 } from 'components/headding'
+import { RoundButton } from 'components/button/RoundButton'
+import { Input } from 'components/input'
+import { StyledTHeader, StyledTBody, Row, Cell, BorderRow } from 'components/Table'
+import { contracts } from 'lib/contract'
+import { formatCurrency } from 'lib'
+import * as dateFns from 'date-fns';
 import { updateTransaction } from 'config/reducers/transaction'
-import { gasPrice } from 'helpers/gasPrice'
-
-
-import Action from 'screens/Action'
-
-import { Cell,
-    Row,
-    StyledTBody, 
-    StyledTHeader,
-} from 'components/Table'
-import { H4, H6 } from 'components/Text'
-import { BlueGreenButton } from 'components/Button'
-import Input from 'components/Input'
-import Fee from 'components/Fee'
-
-
 
 const Vesting = () => {
-    const history = useHistory();
-    const dispatch = useDispatch();
-
-    const { currentWallet } = useSelector((state: RootState) => state.wallet);
-    const { seletedFee } = useSelector((state: RootState) => state.seletedFee);
-
-    const {js: {PeriFinanceEscrow}} = pynthetix as any
+    const dispatch = useDispatch()
+    const { address, isConnect } = useSelector((state: RootState) => state.wallet);
+    const { gasPrice } = useSelector((state: RootState) => state.networkFee);
     const [vestingData, setVestingData] = useState([]);
-    const [totalVesting, setTotalVesting] = useState('0');
+    const [totalVesting, setTotalVesting] = useState(0n);
+
+    const getGasEstimate = async () => {
+        let gasLimit = 200000n;
+        try {
+            gasLimit = BigInt((await contracts.signers.PeriFinanceEscrow.estimateGas.vest()).toString());
+        } catch(e) {
+            console.log(e);
+        }
+        return (gasLimit * 12n /10n).toString();
+    }
+
+    const onVest = async () => {
+        const transactionSettings = {
+            gasPrice: gasPrice.toString(),
+			gasLimit: await getGasEstimate(),
+        }
+
+        try {
+            const transaction = await contracts.signers.PeriFinanceEscrow.vest(transactionSettings);
+                dispatch(updateTransaction({
+                    hash: transaction.hash,
+                    message: `vesting rewards`,
+                    type: 'CLAIM'
+                }
+            ));
+        } catch(e) {
+
+        }
+    }
 
     useEffect(() => {
         const init = async () => {
-            const vestingTotalCount = await PeriFinanceEscrow.numVestingEntries(currentWallet);
-            const nextVestingIndex:number = (await PeriFinanceEscrow.getNextVestingIndex(currentWallet)).toNumber();
+
+            const vestingTotalCount = await contracts.PeriFinanceEscrow.numVestingEntries(address);
+            const nextVestingIndex:number = (await contracts.PeriFinanceEscrow.getNextVestingIndex(address)).toNumber();
             const nowToEpoch = Math.floor(new Date().getTime() / 1000);
             
             let datas = new Array(Number(vestingTotalCount.toString()))
             let index = 0;
-            let totalVesting = utils.bigNumberify('0');
+            let totalVesting = 0n;
 
             // eslint-disable-next-line
             for await (let data of datas) {    
-                const [date, quantity] = await PeriFinanceEscrow.getVestingScheduleEntry(currentWallet, index);
+                let [date, quantity] = await contracts.PeriFinanceEscrow.getVestingScheduleEntry(address, index);
+                date = BigInt(date.toString());
+                quantity = BigInt(quantity.toString());
+
                 datas[index] = {
-                    date: date.isZero() ? '-' : dateFns.format(calculator(date, utils.bigNumberify('1000'), 'mul').toNumber(), 'yyyy-MM-dd hh:mm'),
-                    quantity: quantity.isZero() ? 'already received' : utils.formatEther(quantity)
+                    date: dateFns.format(Number((date * 1000n).toString()), 'yyyy-MM-dd hh:mm'),
+                    quantity: quantity
                 };
                 
-                if(!quantity.isZero() && index >= nextVestingIndex) {
-                    if(date.toNumber() < nowToEpoch) {
-                        totalVesting = calculator(totalVesting, quantity, 'add');
+                if(quantity !== 0n && index >= nextVestingIndex) {
+                    if(Number(date.toString()) < nowToEpoch) {
+                        totalVesting = totalVesting + quantity;
                     }
                 }
                 index++;
             }
 
-            setTotalVesting(utils.formatEther(totalVesting));
+            setTotalVesting(totalVesting);
             setVestingData(datas);
         }
-        init();
+        if(isConnect) {
+            init();
+        } else {
+            window.location.replace('/')
+        }
+        
         // eslint-disable-next-line
-    }, [currentWallet])
-
-    const getGasEstimate = async () => {
-        let estimateGasLimit;
-        try {
-            estimateGasLimit = await PeriFinanceEscrow.contract.estimate.vest();
-        } catch (e) {
-            estimateGasLimit = 200000;
-            console.log(e);
-        }
-        return numbro(estimateGasLimit).multiply(1.2).value();
-    }
-
-    const onVest = async () => {
-        dispatch(setIsLoading(true));
-
-        const transactionSettings = {
-            gasPrice: gasPrice(seletedFee.price),
-			gasLimit: getGasEstimate(),
-        }
-
-        try {
-            const transaction = await PeriFinanceEscrow.vest(transactionSettings);
-            history.push('/')
-            dispatch(updateTransaction({
-                hash: transaction.hash,
-                message: `Claimed rewards`,
-                type: 'CLAIM'
-            }
-        ));
-        }catch(e) {
-
-        }
-        dispatch(setIsLoading(false));
-    }
+    }, [isConnect])
 
     return (
-        <Action title="VEST" subTitles={[]} PY={[]}>
-            <Container>    
-                <VestingStyledTHeader>
-                    <StyledCell><H6>No</H6></StyledCell>
-                    <StyledCell><H6>QUANTITY</H6></StyledCell>
-                    <StyledCell><H6>VESTABLE DATE</H6></StyledCell>
-                </VestingStyledTHeader>
-                <StyledTBody height={200}>
-                    {vestingData.length > 0 ? 
-                        vestingData.map((data, index) => (
-                            <Row key={index}>
-                                <StyledCell><H6>{index+1}</H6></StyledCell>
-                                <StyledCell><H6>{data.quantity}</H6></StyledCell>
-                                <StyledCell><H6>{data.date}</H6></StyledCell>
-                            </Row>
-                    )) : null
-                    }
+        <Container>
+            <Title> <H1>VESTING</H1> </Title>
+            <TableContainer>
+                <StyledTHeader>
+                    <Row>
+                        <Cell><H4 weigth={'b'}>No</H4></Cell>
+                        <Cell><H4 weigth={'b'}>QUANTITY</H4></Cell>
+                        <Cell><H4 weigth={'b'}>VESTABLE DATE</H4></Cell>
+                    </Row>
+                </StyledTHeader>
+                <StyledTBody height={20}>
+                    {vestingData.map((e, index) => (
+                        <BorderRow key={index}>
+                        <Cell><H4 weigth={'m'}>{index+1}</H4></Cell>
+                        <Cell><H4 weigth={'m'}>{e.quantity === 0n ? 'Already Received' : formatCurrency(e.quantity, 18)}</H4></Cell>
+                        <Cell><H4 weigth={'m'}>{e.date === 0n ? '-' : e.date}</H4></Cell>
+                        </BorderRow>    
+                    ))}
                 </StyledTBody>
-                <div>
-                    <Input key="primary"
-                        currencyName="PERI"
-                        value={`current vestable rewards  : ${totalVesting}`}
-                        disabled={true}
-                    />   
-                    <VestButton onClick={ () => onVest()} disabled={Number(totalVesting) === 0}>
-                        <H4 weigth="bold">VEST</H4>
-                    </VestButton>
-                
-                    <Fee gasPrice={seletedFee.price}/>
-                </div> 
-            </Container>
-        </Action>
+            </TableContainer>            
+            <Content>
+                <RowContainer>
+                    <Lable>{'PERI'}</Lable>
+                    <Input height={40} currencyName={'PERI'} value={formatCurrency(totalVesting, 18)} color={'secondary'} disabled={true}/>
+                </RowContainer>
+                <RowContainer>
+                    <RoundButton disabled={totalVesting === 0n} height={40} onClick={() => {onVest()}} padding={0} color={'primary'} border={'none'} width={320} margin={'0px 0px 0px 50px'}>
+                        <H4 weigth={'b'} color={'primary'}>VEST</H4>
+                    </RoundButton>
+                </RowContainer>
+            </Content>
+        </Container>
     );
 }
-
-const VestingStyledTHeader = styled(StyledTHeader)`
-    flex: 1 2 3 3;
+const RowContainer = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 10px;
+    img{
+        margin-top: 2px;
+        width: 25px;
+        height: 25px;
+    }
 `
-
-const StyledCell = styled(Cell)`
-    padding: 10px;
-`
-
 const Container = styled.div`
+    display: flex;
+    flex: 1;
     width: 100%;
     height: 100%;
+    position: relative;
+    flex-direction: column;
+    justify-content: center;
 `
 
-const VestButton = styled(BlueGreenButton)`
-    width: 100%;
-    margin-top: 10px;
-    height: 50px;
+const Title = styled.div`
+    margin-left: 100px;
+    position: absolute;
+    z-index: 0;
+    top: 5vh;
+`;
+
+const Content = styled.div`
+    margin-top: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 `
+const Lable = styled(H4)`
+    width: 50px;
+`
+
+const TableContainer = styled.div`
+    z-index: 1;
+    border-radius: 25px;
+    height: 30vh;
+    max-height: 550px;
+    margin: 0 70px;
+    padding: 5vh 70px;
+    background-color: ${props => props.theme.colors.background.panel};
+    box-shadow: ${props => `0px 0px 25px ${props.theme.colors.border.primary}`};
+    border: ${props => `2px solid ${props.theme.colors.border.primary}`};
+`
+
 export default Vesting;
-
-
