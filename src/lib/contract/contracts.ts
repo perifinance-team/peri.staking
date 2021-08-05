@@ -9,17 +9,17 @@ const naming = {
     RewardEscrowV2: 'RewardEscrowV2',
     Issuer: 'Issuer',
     ExchangeRates: 'ExchangeRates',
-    FeePool: 'FeePool',
+    ProxyFeePool: 'FeePool',
     Liquidations: 'Liquidations',
     SystemSettings: 'SystemSettings',
     PynthUtil: 'PynthUtil',
     PeriFinanceEscrow: 'PeriFinanceEscrow',
-    PeriFinance: ['PeriFinanceToEthereum', 'PeriFinanceToPolygon', 'PeriFinanceToBSC'],
+    ProxyERC20: ['PeriFinanceToEthereum', 'PeriFinanceToPolygon', 'PeriFinanceToBSC'],
     ExternalTokenStakeManager: 'ExternalTokenStakeManager',
     RewardsDistribution: 'RewardsDistribution',
     USDC: 'USDC',
     DAI: 'DAI',
-    PynthpUSD: 'PynthpUSD'
+    ProxyERC20pUSD: 'PynthpUSD'
 } 
 
 const stable = {
@@ -32,7 +32,9 @@ const stable = {
         DAI: '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063'
     }
 }
-
+// FeePool
+// PynthpUSD
+// Pynth
 type Contracts = {
     networkId: number
     RewardEscrow?: any
@@ -89,11 +91,21 @@ export const contracts: Contracts = {
         this.sources = perifinance.getSource({network: SUPPORTED_NETWORKS[this.networkId].toLowerCase()});
         this.addressList = perifinance.getTarget({network: SUPPORTED_NETWORKS[this.networkId].toLowerCase()});
         this.provider = new providers.JsonRpcProvider(RPC_URLS[this.networkId], this.networkId);
-        
+
         Object.keys(this.addressList).forEach(name => {
             if(naming[name]) {
                 const source = typeof naming[name] === 'string' ? this.sources[naming[name]] : this.sources[naming[name].find(e => this.sources[e])]
                 this[name] = new ethers.Contract(this.addressList[name].address, source ? source.abi : ERC20.abi, this.provider);
+                
+                if(name === 'ProxyERC20') {
+                    this['PeriFinance'] = this[name];
+                }
+                if(name === 'ProxyFeePool') {
+                    this['FeePool'] = this[name];
+                }
+                if(name === 'ProxyERC20pUSD') {
+                    this['PynthpUSD'] = this[name];
+                }
             }
         });
         if(stable[this.networkId]) {
@@ -115,6 +127,16 @@ export const contracts: Contracts = {
             if(naming[name]) {
                 const source = typeof naming[name] === 'string' ? this.sources[naming[name]] : this.sources[naming[name].find(e => this.sources[e])]
                 this.signers[name] = new ethers.Contract(this.addressList[name].address, source ? source.abi : ERC20.abi, this.signer);
+                if(name === 'ProxyERC20') {
+                    this.signers['PeriFinance'] = this.signers[name];
+                }
+                
+                if(name === 'ProxyFeePool') {
+                    this.signers['FeePool'] = this.signers[name];
+                }
+                if(name === 'ProxyERC20pUSD') {
+                    this.signers['PynthpUSD'] = this.signers[name];
+                }
             }
         });
 
@@ -144,6 +166,15 @@ export const contracts: Contracts = {
             if(naming[name]) {
                 const source = typeof naming[name] === 'string' ? this.sources[naming[name]] : this.sources[naming[name].find(e => this.sources[e])]
                 this[name] = new ethers.Contract(this.addressList[name].address, source ? source.abi : ERC20.abi, this.provider);
+                if(name === 'ProxyERC20') {
+                    this['PeriFinance'] = this[name];
+                }
+                if(name === 'ProxyFeePool') {
+                    this['FeePool'] = this[name];
+                }
+                if(name === 'ProxyERC20pUSD') {
+                    this['PynthpUSD'] = this[name];
+                }
             }
         });
         if(stable[this.networkId]) {
