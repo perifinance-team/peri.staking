@@ -147,29 +147,22 @@ const App = () => {
 
     useEffect(() => {
         if(transaction.hash) {
-            const getState = async (init) => {
-                const state = await contracts.provider.getTransactionReceipt(transaction.hash);
-                if(state) {
-                    if(state.status !== 1) {
+            const getState = async () => {
+                await contracts.provider.once(transaction.hash, async (transactionState) => {
+                    console.log(transactionState)
+                    if(transactionState.status !== 1) {
                         NotificationManager.remove(NotificationManager.listNotify[0])
                         NotificationManager.warning(`${transaction.type} error`, 'ERROR');
-                        return false;
-                    }
-
-                    if(state.confirmations >= confirm) {
+                    } else {
                         await getSystemData();
                         NotificationManager.remove(NotificationManager.listNotify[0])
                         NotificationManager.success(`${transaction.type} success`, 'SUCCESS');
                         dispatch(resetTransaction());
-                    } else {
-                        setTimeout(() => getState(false), 1000);    
                     }
-                } else {
-                    setTimeout(() => getState(false), 1000);    
-                }
+                });
             }
+            getState();
             NotificationManager.info(transaction.message, 'In progress', 0);
-            setTimeout(() => getState(true), 1000);
         }
         // eslint-disable-next-line
     }, [transaction])
