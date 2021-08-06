@@ -14,6 +14,7 @@ import { updateTransaction } from 'config/reducers/transaction'
 import { contracts } from 'lib/contract'
 import { onboard } from 'lib/onboard'
 import { getExchangeRatesLP } from 'lib/rates'
+import { getLpRewards } from 'lib/reward'
 
 SwiperCore.use([Mousewheel, Virtual]);
 const Earn = () => {
@@ -94,8 +95,11 @@ const Earn = () => {
     const getAPY = async () => {
         try {
             const {PERIBalance, PoolTotal} = await getExchangeRatesLP(networkId);
+            const lpRewards = (await getLpRewards());
             const totalStakeAmount = BigInt((await contracts['LP'].totalStakeAmount()).toString());
-            const reward = 2000n * BigInt(Math.pow(10, 18).toString()) * BigInt(Math.pow(10, 18).toString()) * (52n) * (100n) / (totalStakeAmount * PERIBalance / PoolTotal);
+
+            const reward = BigInt(lpRewards[networkId]) * BigInt(Math.pow(10, 18).toString()) * (52n) * (100n) / (totalStakeAmount * PERIBalance / PoolTotal);
+            
             setRewardsAmountToAPY(reward);
         } catch(e) {
             console.log(e);

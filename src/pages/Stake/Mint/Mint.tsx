@@ -15,6 +15,8 @@ import { updateBalances } from 'config/reducers/wallet'
 import { updateTransaction } from 'config/reducers/transaction'
 import { onboard } from 'lib/onboard'
 import { getTotalDebtCache } from 'lib/balance'
+import { getLpRewards } from 'lib/reward'
+
 SwiperCore.use([Mousewheel, Virtual]);
 
 const currencies = [
@@ -181,8 +183,9 @@ const Mint = () => {
     const getAPY = async () => {
         try {
             const totalMintpUSD = await getTotalDebtCache();
-            console.log(utils.formatEther(totalMintpUSD));
-            const reward = (76924n * BigInt(Math.pow(10, 18).toString())) * exchangeRates['PERI'] * (52n) * (100n) / (totalMintpUSD * 4n);
+            const totalLpMint = (await getLpRewards()).total;
+
+            const reward = ((76924n * BigInt(Math.pow(10, 18).toString())) - totalLpMint) * exchangeRates['PERI'] * (52n) * (100n) / (totalMintpUSD * 4n);
             setRewardsAmountToAPY(reward);
         } catch(e) {
             console.log(e);
@@ -226,6 +229,12 @@ const Mint = () => {
     useEffect(() => {
         if(exchangeIsReady) {
             getAPY();
+        }
+    }, [exchangeIsReady]);
+
+
+    useEffect(() => {
+        if(exchangeIsReady) {
             if(balancesIsReady && isConnect) {
                 getMaxAmount(currencies[slideIndex]);
                 getCRatio(currencies[slideIndex].name, mintAmount, stakeAmount);

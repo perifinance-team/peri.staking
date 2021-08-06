@@ -149,7 +149,6 @@ const App = () => {
         if(transaction.hash) {
             const getState = async () => {
                 await contracts.provider.once(transaction.hash, async (transactionState) => {
-                    console.log(transactionState)
                     if(transactionState.status !== 1) {
                         NotificationManager.remove(NotificationManager.listNotify[0])
                         NotificationManager.warning(`${transaction.type} error`, 'ERROR');

@@ -1,5 +1,6 @@
 import ERC20 from '../abi/ERC20.json';
-import StakingRewards from '../abi/StakingRewards.json'
+import { contracts } from 'lib/contract'
+
 import { ethers } from 'ethers';
 
 const tokenAddress = {
@@ -24,12 +25,12 @@ export const LPContract = {
         if(networkId) {
             this.networkId = networkId;
         }
-        this.contract = new ethers.Contract(contractAddress[this.networkId], StakingRewards, provider);
+        this.contract = new ethers.Contract(contractAddress[this.networkId], contracts.sources.StakingRewards.abi, provider);
         this.balanceContract = new ethers.Contract(tokenAddress[this.networkId], ERC20.abi, provider);
     },
 
     connect(signer) {
-        this.contract = new ethers.Contract(contractAddress[this.networkId], StakingRewards, signer);
+        this.contract = new ethers.Contract(contractAddress[this.networkId], contracts.sources.StakingRewards.abi, signer);
         this.balanceContract = new ethers.Contract(tokenAddress[this.networkId], ERC20.abi, signer);
     },
 
