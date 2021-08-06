@@ -1,6 +1,6 @@
 import { RPC_URLS } from 'lib/rpcUrl'
 import { providers, Contract } from 'ethers'
-import debtCashe from 'lib/contract/abi/debtCashe.json'
+import debtCache from 'lib/contract/abi/debtCache.json'
 const networks = [ 1, 56, 137 ];
 
 const debtCacheAddress = {
@@ -15,7 +15,7 @@ export const getTotalDebtCache = async () => {
     for await (let networkId of networks) {
         if(debtCacheAddress[networkId]) {
             const provider = new providers.JsonRpcProvider(RPC_URLS[networkId], networkId);
-            const contract = new Contract(debtCacheAddress[networkId], debtCashe, provider);
+            const contract = new Contract(debtCacheAddress[networkId], debtCache, provider);
             
             totalDebt = totalDebt + BigInt((await contract.cachedDebt()).toString());
         }
