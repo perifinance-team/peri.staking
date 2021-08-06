@@ -37,17 +37,19 @@ const stable = {
 // Pynth
 type Contracts = {
     networkId: number
+    sources?: any
     RewardEscrow?: any
     provider?: any, 
+    StakingRewards: any,
     wallet?: any,
     Issuer?: any
+    RewardsDistribution?: any
     ExchangeRates?: any
     FeePool?: any
     Liquidations?: any
     SystemSettings?: any
     PynthUtil?: any
     PeriFinanceEscrow?: any
-    RewardsDistribution?: any,
     PeriFinance?: any
     PynthpUSD?: any
     ExternalTokenStakeManager?: any
@@ -67,7 +69,6 @@ type Contracts = {
         SystemSettings?: any
         PynthUtil?: any
         PeriFinanceEscrow?: any
-        RewardsDistribution?: any,
         PeriFinance?: any
         PynthpUSD?: any
         ExternalTokenStakeManager?: any
