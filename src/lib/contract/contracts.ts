@@ -40,7 +40,6 @@ type Contracts = {
     sources?: any
     RewardEscrow?: any
     provider?: any, 
-    StakingRewards: any,
     wallet?: any,
     Issuer?: any
     RewardsDistribution?: any
