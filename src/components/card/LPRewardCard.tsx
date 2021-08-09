@@ -34,7 +34,7 @@ export const LPRewardCard = ({isActive, actionName, rewardAction, data}) => {
                 </RowContainer>
                 <RowContainer>
                     <Lable>{'PERI'}</Lable>
-                    <Input currencyName={'PERI'} value={ isActive ? formatCurrency(data.rewardEscrow, 2) : ''} color={'primary'} disabled={true}/>
+                    <Input currencyName={'PERI'} value={ isActive ? formatCurrency(data.rewardEscrow, 18) : ''} color={'primary'} disabled={true}/>
                 </RowContainer>
                 <ColContainer>
                     {/* <RoundButton height={30} onClick={() => periodAction()} padding={0} color={'primary'} border={'none'} width={320} margin={'0px 20px 10px 0px'}>

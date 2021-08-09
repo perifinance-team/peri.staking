@@ -11,20 +11,26 @@ const debtCacheAddress = {
 
 export const getTotalDebtCache = async () => {
     let totalDebt = 0n;
+    let values = {
+        56: 0n,
+        137: 0n, 
+        total: 0n,
+    };
 
     for await (let networkId of networks) {
         if(debtCacheAddress[networkId]) {
             const provider = new providers.JsonRpcProvider(RPC_URLS[networkId], networkId);
             const contract = new Contract(debtCacheAddress[networkId], contracts.sources.DebtCache.abi, provider);
-            let debtCache = 0n;
+            let value = 0n;
             try {
-                debtCache = BigInt((await contract.cachedDebt()).toString());
+                value = BigInt((await contract.cachedDebt()).toString());
             } catch (e) {
-                debtCache = 0n;
+                value = 0n;
             }
-            totalDebt = totalDebt + debtCache;
+            values[networkId] = value;
+            values['total'] = values['total'] + value;
         }
         
     }
-    return totalDebt;
+    return values;
 }

@@ -35,7 +35,7 @@ const Mint = () => {
     const { hash } = useSelector((state: RootState) => state.transaction);
     const { gasPrice } = useSelector((state: RootState) => state.networkFee);
 
-    const { isConnect, confirm } = useSelector((state: RootState) => state.wallet);
+    const { isConnect, confirm, networkId } = useSelector((state: RootState) => state.wallet);
     const [ slideIndex, setSlideIndex ] = useState(0);
     const [ activeCurrency, setActiveCurrency] = useState(null);
     const [ maxStakeAmount, setMaxStakeAmount ] = useState('0');
@@ -183,9 +183,18 @@ const Mint = () => {
     const getAPY = async () => {
         try {
             const totalMintpUSD = await getTotalDebtCache();
-            const totalLpMint = (await getLpRewards()).total;
+            const totalLpMint = (await getLpRewards());
 
-            const reward = ((76924n * BigInt(Math.pow(10, 18).toString())) - totalLpMint) * exchangeRates['PERI'] * (52n) * (100n) / (totalMintpUSD * 4n);
+            let reward = ((76924n * BigInt(Math.pow(10, 18).toString())));
+            
+            if(networkId === 137) {
+                reward = ((reward * 8n / 10n) - totalLpMint[networkId]) * exchangeRates['PERI'] * (52n) * (100n) / (totalMintpUSD[networkId] * 4n);
+            } else if(networkId === 56) {
+                reward = ((reward * 2n / 10n) - totalLpMint[networkId]) * exchangeRates['PERI'] * (52n) * (100n) / (totalMintpUSD[networkId] * 4n);
+            } else {
+                reward = (reward) * exchangeRates['PERI'] * (52n) * (100n) / (totalMintpUSD.total * 4n);
+            }
+            console.log(utils.formatEther(totalMintpUSD.total));
             setRewardsAmountToAPY(reward);
         } catch(e) {
             console.log(e);
@@ -230,7 +239,7 @@ const Mint = () => {
         if(exchangeIsReady) {
             getAPY();
         }
-    }, [exchangeIsReady]);
+    }, [exchangeIsReady, networkId,]);
 
 
     useEffect(() => {
