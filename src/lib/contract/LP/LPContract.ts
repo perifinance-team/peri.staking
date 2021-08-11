@@ -4,6 +4,7 @@ import { contracts } from 'lib/contract'
 import { ethers } from 'ethers';
 
 const tokenAddress = {
+    1: '0x3530A9461788891b7f5b94148a6E82FFa6fd236a',
     42: '0x57ed66ca0e67a97e217e617b1ba6b75e87db118d',
     56: '0xb68ebcec4c7aba66f5b8ed62e8c98b269cf918c8',
     97: '0xB28a19ec5a6f4269f47a486f467690Bd3376D203',
@@ -12,6 +13,7 @@ const tokenAddress = {
 }
 
 const contractAddress = {
+    1: '0xc0Ea07dA274Ab54D3A6d76293100f7370d74f0E8',
     42: '0x4c40b3E3AeC2505e801Db038821989FB0bd144fe',
     56: '0xCA4f304F58dF2231ef04E63d85C88A9D46d0ca94',
     97: '0x5e8fd0bADC50628ea179997a7669c15a2D0bF72b',

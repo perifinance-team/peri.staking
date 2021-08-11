@@ -17,7 +17,7 @@ export const getBalances = async (currentWallet, currencies, exchangeRates, targ
     const debtBalance = BigInt((await PeriFinance.debtBalanceOf(currentWallet, utils.formatBytes32String('pUSD'))).toString());
     
     const periBalance = BigInt((await PeriFinance.collateral(currentWallet)).toString());
-    const transferablePERI = BigInt((await PeriFinance.transferablePeriFinance(currentWallet)).toString());
+    const transferablePERI = 0n;
     
     const PERIRewardEscrow = BigInt((await RewardEscrowV2.balanceOf(currentWallet)).toString());
     const LPRewardEscrow = contracts['LP'] ? BigInt((await contracts['LP'].earned(currentWallet)).toString()) : 0n;

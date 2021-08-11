@@ -3,6 +3,7 @@ import { contracts } from 'lib/contract';
 import ERC20 from 'lib/contract/abi/ERC20.json';
 
 const tokenAddress = {
+    1: '0x3530A9461788891b7f5b94148a6E82FFa6fd236a',
     42: '0x57ed66ca0e67a97e217e617b1ba6b75e87db118d',
     97: '0xB28a19ec5a6f4269f47a486f467690Bd3376D203',
     56: '0xb68ebcec4c7aba66f5b8ed62e8c98b269cf918c8',

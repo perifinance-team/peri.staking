@@ -4,13 +4,12 @@ import { contracts } from 'lib/contract'
 const networks = [ 1, 56, 137 ];
 
 const debtCacheAddress = {
-    1: null,
+    1: '0x9cec55DEDf0F59dDCe77c1c9067fA92f256202Fd',
     56: '0xa960A3FB10349637e0401547380d05DFeFbf60f8',
     137: '0x2CC685fc9C1574fE8400548392067eC0B9eA1095'
 }
 
 export const getTotalDebtCache = async () => {
-    let totalDebt = 0n;
     let values = {
         56: 0n,
         137: 0n, 

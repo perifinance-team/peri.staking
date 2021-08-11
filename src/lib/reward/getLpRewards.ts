@@ -3,7 +3,7 @@ import { providers, Contract } from 'ethers'
 import { contracts } from 'lib/contract'
 
 const rewardsDistributionAddress = {
-    1: null,
+    1: '0x4f9a594Cb81565371165dD20e2239286F9BDAd53',
     56: '0x5c69Bf45A9dBfCdc0044eC66cdfFDCD44cd5F8f2',
     137: '0xf747063DA5721Cc9581D7D367aF58cc7ABd3077C'
 }

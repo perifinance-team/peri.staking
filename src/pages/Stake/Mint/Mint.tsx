@@ -192,7 +192,7 @@ const Mint = () => {
             } else if(networkId === 56) {
                 reward = ((reward * 2n / 10n) - totalLpMint[networkId]) * exchangeRates['PERI'] * (52n) * (100n) / (totalMintpUSD[networkId] * 4n);
             } else {
-                reward = (reward) * exchangeRates['PERI'] * (52n) * (100n) / (totalMintpUSD.total * 4n);
+                reward = (reward - totalLpMint['total']) * exchangeRates['PERI'] * (52n) * (100n) / (totalMintpUSD.total * 4n);
             }
             console.log(utils.formatEther(totalMintpUSD.total));
             setRewardsAmountToAPY(reward);
