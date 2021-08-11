@@ -98,7 +98,7 @@ const Earn = () => {
             const lpRewards = (await getLpRewards());
             const totalStakeAmount = BigInt((await contracts['LP'].totalStakeAmount()).toString());
 
-            const reward = BigInt(lpRewards[networkId]) * BigInt(Math.pow(10, 18).toString()) * (52n) * (100n) / (1n * PERIBalance / PoolTotal);
+            const reward = BigInt(lpRewards[networkId]) * BigInt(Math.pow(10, 18).toString()) * (52n) * (100n) / (totalStakeAmount * PERIBalance / PoolTotal);
             
             setRewardsAmountToAPY(reward);
         } catch(e) {
