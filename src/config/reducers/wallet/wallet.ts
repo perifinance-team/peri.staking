@@ -29,6 +29,9 @@ export const wallet = createSlice({
 		updateNetwork(state, actions: PayloadAction<WalletState>) {
 			state.networkId = actions.payload.networkId;
 			state.networkName = SUPPORTED_NETWORKS[actions.payload.networkId];
+			if(state.networkName === 'MAINNET' ) {
+				state.networkName  = 'ETHEREUM'
+			}
 			state.confirm = SUPPORTED_NETWORKS_CONFIRM[actions.payload.networkId];
 		},
 
