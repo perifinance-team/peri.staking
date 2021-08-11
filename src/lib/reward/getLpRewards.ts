@@ -11,6 +11,8 @@ const rewardsDistributionAddress = {
 
 let value = {
     1: 0n,
+    5: 0n,
+    42: 0n,
     56: 0n,
     97: 0n,
     137: 0n,
