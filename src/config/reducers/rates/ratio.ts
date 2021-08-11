@@ -16,9 +16,7 @@ export const RatioSlice = createSlice({
 	initialState,
 	reducers: {
 		updateRatio(state,  actions: PayloadAction<RatiosState>) {
-			if(actions.payload.currentCRatio > 0n) {
-				state.currentCRatio = actions.payload.currentCRatio;
-			}
+			state.currentCRatio = actions.payload.currentCRatio;
 			state.targetCRatio = actions.payload.targetCRatio;
 			state.liquidationRatio = actions.payload.liquidationRatio;
 		},
