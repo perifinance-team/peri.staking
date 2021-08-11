@@ -23,11 +23,11 @@ export const RewardCard = ({isActive, actionName, rewardAction, periodAction, da
                 </RowContainer>
                 <RowContainer>
                     <Lable>{'PERI'}</Lable>
-                    <Input currencyName={'PERI'} value={formatCurrency(data.rewards.staking, 18)} color={'primary'} disabled={true}/>
+                    <Input currencyName={'PERI'} value={formatCurrency(data.rewards.staking, 8)} color={'primary'} disabled={true}/>
                 </RowContainer>
                 <RowContainer>
                     <Lable>{'pUSD'}</Lable>
-                    <Input currencyName={'pUSD'} value={formatCurrency(data.rewards.exchage, 18)} color={'primary'} disabled={true}/>
+                    <Input currencyName={'pUSD'} value={formatCurrency(data.rewards.exchage, 8)} color={'primary'} disabled={true}/>
                 </RowContainer>
 
                 <ColContainer>
