@@ -1,6 +1,6 @@
 {
   "name": "peri.staking",
-  "version": "1.4.1",
+  "version": "1.5.2",
   "private": true,
   "author": "perifinance",
   "types": "lib/index.d.ts",
@@ -19,7 +19,7 @@
     "babel": "^6.23.0",
     "babel-plugin-styled-components": "^1.13.2",
     "babel-preset-react-app": "^10.0.0",
-    "bnc-onboard": "^1.30.0",
+    "bnc-onboard": "^1.33.0",
     "date-fns": "^2.21.1",
     "ethers": "^5.4.1",
     "i18next": "^19.9.1",
