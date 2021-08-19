@@ -63,75 +63,52 @@ const App = () => {
         let networkId = Number(process.env.REACT_APP_DEFAULT_NETWORK_ID);
         contracts.init(networkId);
         dispatch(updateNetwork({networkId: networkId}));
-
+        try{ 
         InitOnboard(networkId, {
-            wallet: wallet => {
+            wallet: async wallet => {
                 if (wallet.provider) {
                     contracts.wallet = wallet;
                     localStorage.setItem('selectedWallet', wallet.name);
                 }
             },
             address:async (newAddress) => {
-                if(newAddress && onboard.getState().wallet.connect) {
-                    if(contracts.wallet && SUPPORTED_NETWORKS[contracts.wallet.provider.networkVersion]) {
+                if(newAddress) {
+                    if(SUPPORTED_NETWORKS[onboard.getState().network]) {
                         contracts.connect(newAddress);
-                        dispatch(updateAddress({address: newAddress}));
+                        dispatch(updateAddress({address: newAddress}));                    
                         dispatch(updateIsConnect(true));
                     } else {
-                        contracts.clear();
-                        // NotificationManager.warning(`This network is not supported. Please change to bsc or polygon network`, 'ERROR');
                         onboard.walletReset();
-                        localStorage.removeItem('selectedWallet');
-                        dispatch(updateIsConnect(false));
-                        dispatch(clearWallet());
-                        dispatch(updateCRatio());
-                        dispatch(clearBalances());
-                        dispatch(updateVestable({vestable: false}));
-                        clearInterval(intervals)
                     }
                 }
             },
             network: async (network) => {
-                if(network && onboard.getState().wallet.connect) {
-                    if(SUPPORTED_NETWORKS[network]) {
-                        onboard.config({ networkId: network });
-                        dispatch(updateNetwork({networkId: network}));
-                        contracts.init(network);
-                        const wallet = onboard.getState().wallet;
-                        if(wallet.connect) {
-                            await wallet.connect();
-                            contracts.wallet = onboard.getState().wallet;
-                            contracts.connect(address);
-                            dispatch(updateIsConnect(true));
+                    if(network) {
+                        if(SUPPORTED_NETWORKS[network]) {
+                            contracts.init(network);                    
+                            onboard.config({ networkId: network });
+                            dispatch(updateNetwork({networkId: network}));
+                        } else {
+                            NotificationManager.warning(`This network is not supported. Please change to bsc or polygon or ethereum network`, 'ERROR');
+                            onboard.walletReset();
+                            onboard.config({ networkId: network });
+                            dispatch(updateNetwork({networkId: network}));
+                            dispatch(updateIsConnect(false));
+                            localStorage.removeItem('selectedWallet');
+                            dispatch(clearWallet());
+                            dispatch(updateCRatio());
+                            dispatch(clearBalances());
+                            dispatch(updateVestable({vestable: false}));
+                            clearInterval(intervals)
                         }
-                    } else {
-                        onboard.walletReset();
-                        onboard.config({ networkId: network });
-                        contracts.clear();
-                        NotificationManager.warning(`This network is not supported. Please change to bsc or polygon network`, 'ERROR');
-                        localStorage.removeItem('selectedWallet');
-                        dispatch(updateIsConnect(false));
-                        dispatch(clearWallet());
-                        dispatch(updateCRatio());
-                        dispatch(clearBalances());
-                        dispatch(updateVestable({vestable: false}));
-                        clearInterval(intervals)
                     }
-                } else {
-                    onboard.walletReset();
-                    onboard.config({ networkId: network });
-                    contracts.clear();
-                    localStorage.removeItem('selectedWallet');
-                    dispatch(updateIsConnect(false));
-                    dispatch(clearWallet());
-                    dispatch(updateCRatio());
-                    dispatch(clearBalances());
-                    dispatch(updateVestable({vestable: false}));
-                    clearInterval(intervals)
-                }
-            },
-        }, themeState === 'dark' );
-
+                },
+            }, themeState === 'dark' );
+        } catch(e) {
+            console.log(e);
+            localStorage.clear();
+            // window.location.reload()
+        }
         const selectedWallet = localStorage.getItem('selectedWallet');
         
         if(selectedWallet) {
@@ -175,7 +152,7 @@ const App = () => {
     }, []);
 
     useEffect(() => {
-        if(onboardInit && networkId !== 0 && (networkId || address)) {
+        if(onboardInit && networkId !== 0) {
             getSystemData();
             if(intervals) {
                 clearInterval(intervals);
