@@ -23,6 +23,10 @@ const naming = {
 } 
 
 const stable = {
+    1: {
+        USDC: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+        DAI: '0x6b175474e89094c44da98b954eedeac495271d0f'
+    },
     56: {
         USDC: '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d',
         DAI: '0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3',
@@ -88,6 +92,7 @@ export const contracts: Contracts = {
         }
         this.sources = perifinance.getSource({network: SUPPORTED_NETWORKS[this.networkId].toLowerCase()});
         this.addressList = perifinance.getTarget({network: SUPPORTED_NETWORKS[this.networkId].toLowerCase()});
+
         this.provider = new providers.JsonRpcProvider(RPC_URLS[this.networkId], this.networkId);
 
         Object.keys(this.addressList).forEach(name => {
