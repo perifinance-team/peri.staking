@@ -6,7 +6,7 @@ import { H4 } from 'components/headding'
 import { onboard } from 'lib/onboard'
 import { updateVestable } from 'config/reducers/vest'
 
-import { updateCRatio } from 'config/reducers/rates'
+import { clearCRatio } from 'config/reducers/rates'
 
 const Connect = () => {
     const dispatch = useDispatch();
@@ -27,7 +27,7 @@ const Connect = () => {
         onboard.walletReset();
         localStorage.removeItem('selectedWallet');
         dispatch(clearWallet());
-        dispatch(updateCRatio());
+        dispatch(clearCRatio());
         dispatch(clearBalances());
         dispatch(updateVestable({vestable: false}));
     }

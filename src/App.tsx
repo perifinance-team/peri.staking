@@ -17,7 +17,7 @@ import { getNetworkFee } from 'lib/fee'
 import { SUPPORTED_NETWORKS } from 'lib/network'
 
 import { clearWallet, clearBalances } from 'config/reducers/wallet'
-import { updateCRatio } from 'config/reducers/rates'
+import { clearCRatio } from 'config/reducers/rates'
 
 import { initCurrecy } from 'config/reducers/wallet'
 import { InitOnboard, onboard } from 'lib/onboard/onboard'
@@ -86,6 +86,7 @@ const App = () => {
                         if(SUPPORTED_NETWORKS[onboard.getState().network]) {
                             contracts.connect(newAddress);
                             dispatch(clearBalances());
+                            dispatch(clearCRatio());
                             dispatch(updateAddress({address: newAddress}));                    
                             dispatch(updateIsConnect(true));
                         } else {
@@ -108,7 +109,7 @@ const App = () => {
                                 dispatch(updateIsConnect(false));
                                 localStorage.removeItem('selectedWallet');
                                 dispatch(clearWallet());
-                                dispatch(updateCRatio());
+                                dispatch(clearCRatio());
                                 dispatch(clearBalances());
                                 dispatch(updateVestable({vestable: false}));
                                 clearInterval(intervals)

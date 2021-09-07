@@ -20,12 +20,12 @@ export const RatioSlice = createSlice({
 			state.targetCRatio = actions.payload.targetCRatio;
 			state.liquidationRatio = actions.payload.liquidationRatio;
 		},
-		updateCRatio(state) {
+		clearCRatio(state) {
 			state.currentCRatio = 0n;
 		}
 	},
 });
 
-export const { updateRatio, updateCRatio } = RatioSlice.actions;
+export const { updateRatio, clearCRatio } = RatioSlice.actions;
 
 export default RatioSlice.reducer;
