@@ -12,6 +12,7 @@ import { updateVestable } from 'config/reducers/vest'
 import { updateAddress, updateNetwork, updateIsConnect } from 'config/reducers/wallet'
 import { updateNetworkFee } from 'config/reducers/networkFee'
 import { resetTransaction } from 'config/reducers/transaction'
+import { setLoading} from 'config/reducers/loading'
 import { getNetworkFee } from 'lib/fee'
 import { SUPPORTED_NETWORKS } from 'lib/network'
 
@@ -24,7 +25,7 @@ import { contracts } from 'lib/contract'
 import { getVestable } from 'lib/vest'
 import { getBalances } from 'lib/balance'
 import { getRatios } from 'lib/rates'
-
+import Loading from './screens/Loading'
 import Main from './screens/Main'
 import './App.css'
 
@@ -42,21 +43,30 @@ const App = () => {
     const [ intervals, setIntervals ] = useState(null);
     const [onboardInit, setOnboardInit] = useState(false);
 
-    const getSystemData = useCallback(async () => {
-        const ratios = await getRatios(address);
-        dispatch(updateRatio(ratios.ratio));
-        dispatch(updateExchangeRates(ratios.exchangeRates));
-        if(address) {
-            const balancesData = await getBalances(address, balances, ratios.exchangeRates, ratios.ratio.targetCRatio, ratios.ratio.currentCRatio);
-            dispatch(initCurrecy(balancesData)); 
-            //todo:: code move call
-            const vestable: boolean = await getVestable(address);
-            dispatch(updateVestable({vestable}));
+    const getSystemData = useCallback(async (isLoading) => {
+        dispatch(setLoading({name: 'balance', value: isLoading}));
+        try {
+            const [ratios, gasPrice] = await Promise.all([getRatios(address), getNetworkFee(networkId)]);
+            
+            dispatch(updateRatio(ratios.ratio));
+            dispatch(updateExchangeRates(ratios.exchangeRates));
+
+            dispatch(updateNetworkFee({gasPrice}));   
+
+            if(address) {
+                const [balancesData, vestable] = await Promise.all([
+                    getBalances(address, balances, ratios.exchangeRates, ratios.ratio.targetCRatio, ratios.ratio.currentCRatio),
+                    getVestable(address),
+                ])
+                dispatch(initCurrecy(balancesData)); 
+                //todo:: code move call
+                dispatch(updateVestable({vestable}));
+            }     
+        } catch(e) {
+
         }
-        const gasPrice = await getNetworkFee(networkId);
-        
-        dispatch(updateNetworkFee({gasPrice}));
-    }, [address, networkId])
+        dispatch(setLoading({name: 'balance', value: false}));
+    }, [address, networkId, setLoading])
 
 
     const setOnbaord = async () => {
@@ -64,46 +74,49 @@ const App = () => {
         contracts.init(networkId);
         dispatch(updateNetwork({networkId: networkId}));
         try{ 
-        InitOnboard(networkId, {
-            wallet: async wallet => {
-                if (wallet.provider) {
-                    contracts.wallet = wallet;
-                    localStorage.setItem('selectedWallet', wallet.name);
-                }
-            },
-            address:async (newAddress) => {
-                if(newAddress) {
-                    if(SUPPORTED_NETWORKS[onboard.getState().network]) {
-                        contracts.connect(newAddress);
-                        dispatch(updateAddress({address: newAddress}));                    
-                        dispatch(updateIsConnect(true));
-                    } else {
-                        onboard.walletReset();
+            InitOnboard(networkId, {
+                wallet: async wallet => {
+                    if (wallet.provider) {
+                        contracts.wallet = wallet;
+                        localStorage.setItem('selectedWallet', wallet.name);
                     }
-                }
-            },
-            network: async (network) => {
-                    if(network) {
-                        if(SUPPORTED_NETWORKS[network]) {
-                            contracts.init(network);                    
-                            onboard.config({ networkId: network });
-                            dispatch(updateNetwork({networkId: network}));
-                        } else {
-                            NotificationManager.warning(`This network is not supported. Please change to bsc or polygon or ethereum network`, 'ERROR');
-                            onboard.walletReset();
-                            onboard.config({ networkId: network });
-                            dispatch(updateNetwork({networkId: network}));
-                            dispatch(updateIsConnect(false));
-                            localStorage.removeItem('selectedWallet');
-                            dispatch(clearWallet());
-                            dispatch(updateCRatio());
+                },
+                address:async (newAddress) => {
+                    if(newAddress) {
+                        if(SUPPORTED_NETWORKS[onboard.getState().network]) {
+                            contracts.connect(newAddress);
                             dispatch(clearBalances());
-                            dispatch(updateVestable({vestable: false}));
-                            clearInterval(intervals)
+                            dispatch(updateAddress({address: newAddress}));                    
+                            dispatch(updateIsConnect(true));
+                        } else {
+                            onboard.walletReset();
                         }
                     }
                 },
-            }, themeState === 'dark' );
+                network: async (network) => {
+                        if(network) {
+                            if(SUPPORTED_NETWORKS[network]) {
+                                contracts.init(network);                    
+                                onboard.config({ networkId: network });
+                                dispatch(updateNetwork({networkId: network}));
+                                contracts.connect(address);
+                            } else {
+                                NotificationManager.warning(`This network is not supported. Please change to bsc or polygon or ethereum network`, 'ERROR');
+                                onboard.walletReset();
+                                onboard.config({ networkId: network });
+                                dispatch(updateNetwork({networkId: network}));
+                                dispatch(updateIsConnect(false));
+                                localStorage.removeItem('selectedWallet');
+                                dispatch(clearWallet());
+                                dispatch(updateCRatio());
+                                dispatch(clearBalances());
+                                dispatch(updateVestable({vestable: false}));
+                                clearInterval(intervals)
+                            }
+                        }
+                    },
+                }, 
+            themeState === 'dark' );
         } catch(e) {
             console.log(e);
             localStorage.clear();
@@ -130,7 +143,7 @@ const App = () => {
                         NotificationManager.remove(NotificationManager.listNotify[0])
                         NotificationManager.warning(`${transaction.type} error`, 'ERROR');
                     } else {
-                        await getSystemData();
+                        await getSystemData(true);
                         NotificationManager.remove(NotificationManager.listNotify[0])
                         NotificationManager.success(`${transaction.type} success`, 'SUCCESS');
                         dispatch(resetTransaction());
@@ -148,26 +161,27 @@ const App = () => {
             setOnbaord();
         }
         dispatch(updateThemeStyles(themeState));
+
         // eslint-disable-next-line
     }, []);
 
     useEffect(() => {
         if(onboardInit && networkId !== 0) {
-            getSystemData();
+            getSystemData(true);
             if(intervals) {
                 clearInterval(intervals);
             } 
             setIntervals(
-                (setInterval(() => getSystemData(), intervelTime))
+                (setInterval(() => getSystemData(false), intervelTime))
             )
         }
         // eslint-disable-next-line
     }, [networkId, address, onboardInit]);
-
     
     
     return (
-        <>     
+        <>
+            <Loading></Loading>
             <ThemeProvider theme={themeStyles}>
                 <Main></Main>
             </ThemeProvider>

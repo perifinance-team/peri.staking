@@ -13,6 +13,7 @@ import { contracts } from 'lib/contract'
 import { formatCurrency } from 'lib'
 import { utils } from 'ethers'
 import { updateTransaction } from 'config/reducers/transaction'
+import { setLoading } from 'config/reducers/loading'
 import { onboard } from 'lib/onboard'
 
 SwiperCore.use([Mousewheel, Virtual]);
@@ -158,6 +159,7 @@ const Burn = () => {
 
     const getGasEstimate = async (currency) => {
         let gasLimit = 600000n;
+        dispatch(setLoading({name: 'gasEstimate', value: true}));
         if(currency.name === "LP") {
             try {
                 gasLimit = BigInt((await contracts.signers.LP.contract.estimateGas.withdraw(
@@ -176,7 +178,7 @@ const Burn = () => {
                 console.log(e);
             }
         }
-        
+        dispatch(setLoading({name: 'gasEstimate', value: false}));
         
         return (gasLimit * 12n /10n).toString()
     }
@@ -276,6 +278,8 @@ const Burn = () => {
 
     const getIssuanceDelayCheck = async() => {
         //todo:: need improvement
+        dispatch(setLoading({name: 'burnAble', value: true}));
+
         const canBurnPynths = await contracts.Issuer.canBurnPynths(address);
         const lastIssueEvent = await contracts.Issuer.lastIssueEvent(address);
         const minimumStakeTime = await contracts.Issuer.minimumStakeTime();
@@ -294,8 +298,10 @@ const Burn = () => {
                     ${secondsToTime(issuanceDelay)} before attempting to burn pUSD.`, 'NOTE', 0
                 )
             }
+            dispatch(setLoading({name: 'burnAble', value: false}));
             return issuanceDelay;
         } else {
+            dispatch(setLoading({name: 'burnAble', value: false}));
             return 1;
         }
     };

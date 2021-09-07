@@ -13,7 +13,7 @@ import { updateRatio } from 'config/reducers/rates'
 import { updateExchangeRates } from 'config/reducers/rates'
 import { updateVestable } from 'config/reducers/vest'
 import { updateNetworkFee } from 'config/reducers/networkFee'
-
+import { setLoading} from 'config/reducers/loading'
 
 const Refresh = () => {
     const dispatch = useDispatch();
@@ -22,22 +22,30 @@ const Refresh = () => {
     const themeState = useSelector((state: RootState) => state.theme.theme);
     const [ isLoading, setIsLoading ] = useState(false);
     
-    const getSystemData = async () => {
-        setIsLoading(true);
-        const ratios = await getRatios(address);
-        dispatch(updateRatio(ratios.ratio));
-        dispatch(updateExchangeRates(ratios.exchangeRates));
-        
-        const balancesData = await getBalances(address, balances, ratios.exchangeRates, ratios.ratio.targetCRatio, ratios.ratio.currentCRatio);
-        dispatch(initCurrecy(balancesData)); 
+    const getSystemData = (async () => {
+        dispatch(setLoading({name: 'balance', value: true}));
+        try {
+            const [ratios, gasPrice] = await Promise.all([getRatios(address), getNetworkFee(networkId)]);
+            
+            dispatch(updateRatio(ratios.ratio));
+            dispatch(updateExchangeRates(ratios.exchangeRates));
 
-        const vestable:boolean = await getVestable(address);
-        dispatch(updateVestable({vestable}));
+            dispatch(updateNetworkFee({gasPrice}));   
 
-        const gasPrice = await getNetworkFee(networkId);
-        dispatch(updateNetworkFee({gasPrice}));
-        setIsLoading(false);
-    }
+            if(address) {
+                const [balancesData, vestable] = await Promise.all([
+                    getBalances(address, balances, ratios.exchangeRates, ratios.ratio.targetCRatio, ratios.ratio.currentCRatio),
+                    getVestable(address),
+                ])
+                dispatch(initCurrecy(balancesData)); 
+                //todo:: code move call
+                dispatch(updateVestable({vestable}));
+            }     
+        } catch(e) {
+
+        }
+        dispatch(setLoading({name: 'balance', value: false}));
+    });
 
     return (
         <Container disabled={isLoading} onClick={() => getSystemData()}>

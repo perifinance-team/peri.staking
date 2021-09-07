@@ -9,6 +9,7 @@ import { StyledTHeader, StyledTBody, Row, Cell, BorderRow } from 'components/Tab
 import { contracts } from 'lib/contract'
 import { formatCurrency } from 'lib'
 import * as dateFns from 'date-fns';
+import { setLoading } from 'config/reducers/loading'
 import { updateTransaction } from 'config/reducers/transaction'
 
 const Vesting = () => {
@@ -20,11 +21,13 @@ const Vesting = () => {
 
     const getGasEstimate = async () => {
         let gasLimit = 200000n;
+        dispatch(setLoading({name: 'gasEstimate', value: true}));
         try {
             gasLimit = BigInt((await contracts.signers.PeriFinanceEscrow.estimateGas.vest()).toString());
         } catch(e) {
             console.log(e);
         }
+        dispatch(setLoading({name: 'gasEstimate', value: false}));
         return (gasLimit * 12n /10n).toString();
     }
 
@@ -49,7 +52,7 @@ const Vesting = () => {
 
     useEffect(() => {
         const init = async () => {
-
+            dispatch(setLoading({name: 'vestingData', value: true}));
             const vestingTotalCount = await contracts.PeriFinanceEscrow.numVestingEntries(address);
             const nextVestingIndex:number = (await contracts.PeriFinanceEscrow.getNextVestingIndex(address)).toNumber();
             const nowToEpoch = Math.floor(new Date().getTime() / 1000);
@@ -76,7 +79,7 @@ const Vesting = () => {
                 }
                 index++;
             }
-
+            dispatch(setLoading({name: 'vestingData', value: false}));
             setTotalVesting(totalVesting);
             setVestingData(datas);
         }

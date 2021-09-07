@@ -14,52 +14,83 @@ export const getBalances = async (currentWallet, currencies, exchangeRates, targ
     const USDCDecimal = contracts.networkId === 56 ? 18 : currencies['USDC'].decimal;
     const DAIDecimal = currencies['DAI'].decimal;
     
-    const debtBalance = BigInt((await PeriFinance.debtBalanceOf(currentWallet, utils.formatBytes32String('pUSD'))).toString());
-    
-    const periBalance = BigInt((await PeriFinance.collateral(currentWallet)).toString());
-    const transferablePERI = BigInt((await PeriFinance.transferablePeriFinance(currentWallet)).toString());
-    
-    const PERIRewardEscrow = BigInt((await RewardEscrowV2.balanceOf(currentWallet)).toString());
-    const LPRewardEscrow = contracts['LP'] ? BigInt((await contracts['LP'].earned(currentWallet)).toString()) : 0n;
-    
-    const stakedUSDC = BigInt((await ExternalTokenStakeManager.stakedAmountOf(currentWallet, utils.formatBytes32String('USDC'), utils.formatBytes32String('USDC'))).toString());
-    const stakedDAI = BigInt((await ExternalTokenStakeManager.stakedAmountOf(currentWallet, utils.formatBytes32String('DAI'), utils.formatBytes32String('DAI'))).toString());
+    const [
+        debtBalance,
+        pUSDBalance,
+        USDCBalance,
+        DAIBalance,
+        periBalance, 
+        transferablePERI, 
+        PERIRewardEscrow
+    ] = await Promise.all([
+        (async() => BigInt((await PeriFinance.debtBalanceOf(currentWallet, utils.formatBytes32String('pUSD')))))(),
+        await getBalance(currentWallet, 'PynthpUSD', currencies['pUSD'].decimal),
+        await getBalance(currentWallet, 'USDC', USDCDecimal),
+        await getBalance(currentWallet, 'DAI', DAIDecimal),
+        (async() => BigInt((await PeriFinance.collateral(currentWallet))))(),
+        (async() => BigInt((await PeriFinance.transferablePeriFinance(currentWallet))))(),
+        (async() => BigInt((await RewardEscrowV2.balanceOf(currentWallet))))(),
+    ])
 
-    const stakedLP = contracts['LP'] ?  BigInt((await contracts['LP'].stakedAmountOf(currentWallet)).toString()) : 0n;
-    
-    const pUSDBalance = await getBalance(currentWallet, 'PynthpUSD', currencies['pUSD'].decimal);
-    const USDCBalance = await getBalance(currentWallet, 'USDC', USDCDecimal);
-    const DAIBalance = await getBalance(currentWallet, 'DAI', DAIDecimal);
-    const LPBalance = contracts['LP'] ? await getBalance(currentWallet, 'LP', currencies['LP'].decimal): 0n;
-    
-    const USDCDEBT = (stakedUSDC * exchangeRates['USDC'] / BigInt(Math.pow(10, 18).toString()) / (BigInt(Math.pow(10, 18).toString()) / targetCRatio));
-    const DAIDEBT = (stakedDAI * exchangeRates['DAI'] / BigInt(Math.pow(10, 18).toString()) / (BigInt(Math.pow(10, 18).toString()) / targetCRatio));
-    const stableDEBT = USDCDEBT + DAIDEBT;
-    const PERIDEBT = debtBalance - stableDEBT;
-    
-    
-    let mintableStable = ((PERIDEBT / 4n) - (stableDEBT));
-    mintableStable = mintableStable <= 0n ? 0n : mintableStable;
+    let USDCAllowance, DAIAllowance, LPAllowance = 0n;
 
-    let USDCStakable = stakeAble ? mintableStable * (BigInt(Math.pow(10, 18).toString()) / targetCRatio) * BigInt(Math.pow(10, 18).toString()) / exchangeRates['USDC'] : 0n
-    let DAIStakable = stakeAble ? mintableStable * (BigInt(Math.pow(10, 18).toString()) / targetCRatio) * BigInt(Math.pow(10, 18).toString()) / exchangeRates['DAI'] : 0n
-
-    if(USDCStakable > USDCBalance) {
-        USDCStakable = USDCBalance;
+    if(pUSDBalance > 0n) {
+        USDCAllowance = formatDecimal(BigInt((await contracts['USDC'].allowance(currentWallet, contracts?.addressList['ExternalTokenStakeManager'].address)).toString()), USDCDecimal);
+    }
+    if(USDCBalance > 0n) {
+        DAIAllowance = formatDecimal(BigInt((await contracts['DAI'].allowance(currentWallet, contracts?.addressList['ExternalTokenStakeManager'].address)).toString()), DAIDecimal);
     }
 
-    if(DAIStakable > DAIBalance) {
-        DAIStakable = DAIBalance;
+    if(DAIBalance > 0n) {
+        LPAllowance = contracts['LP'] ? BigInt((await contracts['LP'].allowance(currentWallet)).toString()) : 0n
     }
 
-    let PERIStaked = PERIDEBT * (BigInt(Math.pow(10, 18).toString()) / targetCRatio) * BigInt(Math.pow(10, 18).toString()) / exchangeRates['PERI'];
-    PERIStaked = periBalance < PERIStaked ? periBalance : PERIStaked;
-    let PERIStakable = periBalance - PERIStaked;
-    PERIStakable = PERIStakable <= 0n ? 0n : PERIStakable;
+    let [
+        LPBalance,
+        LPRewardEscrow,
+        stakedLP,
+    ] = contracts['LP'] ? await Promise.all([
+        await getBalance(currentWallet, 'LP', currencies['LP'].decimal),
+        (async() => BigInt((await contracts['LP'].earned(currentWallet))))(),
+        (async() => BigInt((await contracts['LP'].stakedAmountOf(currentWallet))))()
+    ]) : [0n, 0n, 0n]
 
-    const USDCAllowance = formatDecimal(BigInt((await contracts['USDC'].allowance(currentWallet, contracts?.addressList['ExternalTokenStakeManager'].address)).toString()), USDCDecimal);
-    const DAIAllowance = formatDecimal(BigInt((await contracts['DAI'].allowance(currentWallet, contracts?.addressList['ExternalTokenStakeManager'].address)).toString()), DAIDecimal);
-    const LPAllowance = contracts['LP'] ? BigInt((await contracts['LP'].allowance(currentWallet)).toString()) : 0n
+    
+    let [stakedUSDC, stakedDAI] = debtBalance > 0n ? await Promise.all([
+        (async() => BigInt((await ExternalTokenStakeManager.stakedAmountOf(currentWallet, utils.formatBytes32String('USDC'), utils.formatBytes32String('USDC')))))(),
+        (async() => BigInt((await ExternalTokenStakeManager.stakedAmountOf(currentWallet, utils.formatBytes32String('DAI'), utils.formatBytes32String('DAI')))))(),
+    ]) : [0n, 0n, 0n, 0n, 0n];
+
+    
+    let USDCDEBT, DAIDEBT, stableDEBT, PERIDEBT, mintableStable, USDCStakable, DAIStakable, PERIStaked, PERIStakable: bigint = 0n;
+
+    try {
+        USDCDEBT = (BigInt(stakedUSDC) * exchangeRates['USDC'] / BigInt(Math.pow(10, 18).toString()) / (BigInt(Math.pow(10, 18).toString()) / targetCRatio));
+        DAIDEBT = (BigInt(stakedDAI) * exchangeRates['DAI'] / BigInt(Math.pow(10, 18).toString()) / (BigInt(Math.pow(10, 18).toString()) / targetCRatio));
+        stableDEBT = USDCDEBT + DAIDEBT;
+        PERIDEBT = debtBalance - stableDEBT;
+
+        mintableStable = ((PERIDEBT / 4n) - (stableDEBT));
+        mintableStable = mintableStable <= 0n ? 0n : mintableStable;
+        USDCStakable = stakeAble ? mintableStable * (BigInt(Math.pow(10, 18).toString()) / targetCRatio) * BigInt(Math.pow(10, 18).toString()) / exchangeRates['USDC'] : 0n
+        DAIStakable = stakeAble ? mintableStable * (BigInt(Math.pow(10, 18).toString()) / targetCRatio) * BigInt(Math.pow(10, 18).toString()) / exchangeRates['DAI'] : 0n
+        
+        if(USDCStakable > USDCBalance) {
+            USDCStakable = USDCBalance;
+        }
+
+        if(DAIStakable > DAIBalance) {
+            DAIStakable = DAIBalance;
+        }
+
+        PERIStaked = PERIDEBT * (BigInt(Math.pow(10, 18).toString()) / targetCRatio) * BigInt(Math.pow(10, 18).toString()) / exchangeRates['PERI'];
+        PERIStaked = periBalance < PERIStaked ? periBalance : PERIStaked;
+        PERIStakable = BigInt(periBalance) - PERIStaked;
+        PERIStakable = PERIStakable <= 0n ? 0n : PERIStakable;
+    } catch(e) {
+        console.log(e);
+    }
+    
     
     return {
         DEBT: {

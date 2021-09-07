@@ -15,6 +15,7 @@ import { contracts } from 'lib/contract'
 import { onboard } from 'lib/onboard'
 import { getExchangeRatesLP } from 'lib/rates'
 import { getLpRewards } from 'lib/reward'
+import { setLoading } from 'config/reducers/loading'
 
 SwiperCore.use([Mousewheel, Virtual]);
 const Earn = () => {
@@ -93,6 +94,7 @@ const Earn = () => {
     }
 
     const getAPY = async () => {
+        dispatch(setLoading({name: 'apy', value: true}));
         try {
             const {PERIBalance, PoolTotal} = await getExchangeRatesLP(networkId);
             const lpRewards = (await getLpRewards());
@@ -105,12 +107,13 @@ const Earn = () => {
             console.log(e);
             setRewardsAmountToAPY(0n);
         }
-        
+        dispatch(setLoading({name: 'apy', value: false}));
         
     }
 
     const getGasEstimate = async () => {
         let gasLimit = 600000n;
+        dispatch(setLoading({name: 'gasEstimate', value: true}));
         try {
             gasLimit = BigInt((await contracts.signers.LP.contract.estimateGas.stake(
                 utils.parseEther(stakeAmount)
@@ -118,6 +121,7 @@ const Earn = () => {
         } catch(e) {
             console.log(e);
         }
+        dispatch(setLoading({name: 'gasEstimate', value: false}));
         return (gasLimit * 12n /10n).toString()
     }
 

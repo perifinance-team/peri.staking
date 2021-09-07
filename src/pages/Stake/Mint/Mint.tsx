@@ -13,6 +13,7 @@ import { contracts }  from 'lib/contract'
 import { formatCurrency } from 'lib'
 import { updateBalances } from 'config/reducers/wallet'
 import { updateTransaction } from 'config/reducers/transaction'
+import { setLoading } from 'config/reducers/loading'
 import { onboard } from 'lib/onboard'
 import { getTotalDebtCache } from 'lib/balance'
 import { getLpRewards } from 'lib/reward'
@@ -100,6 +101,7 @@ const Mint = () => {
 
     const getGasEstimate = async () => {
         let gasLimit = 600000n;
+        dispatch(setLoading({name: 'gasEstimate', value: true}));
         try {
             gasLimit = BigInt((await contracts.signers.PeriFinance.estimateGas.issuePynths(
                 utils.formatBytes32String(activeCurrency.name),
@@ -108,6 +110,7 @@ const Mint = () => {
         } catch(e) {
             console.log(e);
         }
+        dispatch(setLoading({name: 'gasEstimate', value: false}));
         return (gasLimit * 12n /10n).toString()
     }
     
@@ -117,19 +120,14 @@ const Mint = () => {
         NotificationManager.info('Approve', 'In progress', 0);
 
         const getState = async () => {
-            const state = await contracts.provider.getTransactionReceipt(transaction.hash);
-            if(state) {
-                if(state.confirmations >= confirm) {
+            await contracts.provider.once(transaction.hash, async (transactionState) => {
+                if(transactionState.status === 1) {
                     NotificationManager.remove(NotificationManager.listNotify[0])
                     NotificationManager.success(`Approve success`, 'SUCCESS');
                     dispatch(updateBalances({currencyName, value: 'allowance', amount}))
                     setIsApprove(false);
-                } else {
-                    setTimeout(() => getState(), 1000);    
                 }
-            } else {
-                setTimeout(() => getState(), 1000);
-            }
+            });
         }
         getState();        
     }
@@ -181,6 +179,7 @@ const Mint = () => {
     }
 
     const getAPY = async () => {
+        dispatch(setLoading({name: 'apy', value: true}));
         try {
             const totalMintpUSD = await getTotalDebtCache();
             const totalLpMint = (await getLpRewards());
@@ -202,6 +201,7 @@ const Mint = () => {
             console.log(e);
             setRewardsAmountToAPY(0n);
         }
+        dispatch(setLoading({name: 'apy', value: false}));
         
         
     }

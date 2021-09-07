@@ -14,6 +14,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import SwiperCore, { Mousewheel, Virtual } from 'swiper/core';
 import { addSeconds, formatDistanceToNow } from 'date-fns';
 import { updateTransaction } from 'config/reducers/transaction'
+import { setLoading } from 'config/reducers/loading'
 import { onboard } from 'lib/onboard'
 import { formatCurrency } from 'lib'
 
@@ -81,6 +82,7 @@ const Reward = () => {
 
     const getGasEstimate = async (name, type) => {
         let gasLimit = 600000n;
+        dispatch(setLoading({name: 'gasEstimate', value: true}));
         if(name === 'CLAIM') { 
             try {
                 gasLimit = BigInt((await contracts.signers.FeePool.estimateGas[type]()).toString());;
@@ -95,7 +97,7 @@ const Reward = () => {
             }
             
         }
-        
+        dispatch(setLoading({name: 'gasEstimate', value: false}));
         return (gasLimit * 12n /10n).toString();
     }
 
@@ -104,7 +106,7 @@ const Reward = () => {
             try {
                 const transaction = await contracts.signers.FeePool.closeCurrentFeePeriod({
                     gasPrice: gasPrice.toString(),
-                    gasLimit: getGasEstimate(name, 'closeCurrentFeePeriod'),
+                    gasLimit: await getGasEstimate(name, 'closeCurrentFeePeriod'),
                 });
 
                 dispatch(updateTransaction(
@@ -122,7 +124,6 @@ const Reward = () => {
         } else {
             
         }
-		
 	};
 
     const connectHelp = async () => {
@@ -182,7 +183,7 @@ const Reward = () => {
 
             transaction = await contracts.signers['LP'].getReward({
                 gasPrice: gasPrice.toString(),
-                gasLimit: getGasEstimate(name, 'closeCurrentFeePeriod'),
+                gasLimit: await getGasEstimate(name, 'closeCurrentFeePeriod'),
             });
             dispatch(updateTransaction(
                 {
@@ -199,6 +200,7 @@ const Reward = () => {
     }
 
     const getData = async () => {
+        dispatch(setLoading({name: 'rewardData', value: true}));
         try {
             const duration = await contracts.FeePool.feePeriodDuration();            
             const periods = await contracts.FeePool.recentFeePeriods(0);
@@ -222,6 +224,7 @@ const Reward = () => {
         } catch(e) {
             console.log(e);   
         }
+        dispatch(setLoading({name: 'rewardData', value: false}));
     }
 
     useEffect(() => {

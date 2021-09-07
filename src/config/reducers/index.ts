@@ -16,6 +16,7 @@ import networkFee from './networkFee/networkFee'
 import transaction from './transaction/transaction' 
 import vestable from './vest/vestable'
 import lp from './LP/lp'
+import loading from './loading/loading'
 
 const reducer = combineReducers({
     app,
@@ -28,7 +29,8 @@ const reducer = combineReducers({
     networkFee,
     transaction,
     vestable,
-    lp
+    lp,
+    loading
 });
 
 export type RootState = ReturnType<typeof reducer>;

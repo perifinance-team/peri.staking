@@ -94,7 +94,7 @@ export const contracts: Contracts = {
         this.addressList = perifinance.getTarget({network: SUPPORTED_NETWORKS[this.networkId].toLowerCase()});
 
         this.provider = new providers.JsonRpcProvider(RPC_URLS[this.networkId], this.networkId);
-
+        
         Object.keys(this.addressList).forEach(name => {
             if(naming[name]) {
                 const source = typeof naming[name] === 'string' ? this.sources[naming[name]] : this.sources[naming[name].find(e => this.sources[e])]
