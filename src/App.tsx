@@ -31,7 +31,7 @@ import './App.css'
 
 
 const App = () => {
-    const { address, networkId, confirm } = useSelector((state: RootState) => state.wallet);
+    const { address, networkId } = useSelector((state: RootState) => state.wallet);
     const { balances } = useSelector((state: RootState) => state.balances);
     const transaction = useSelector((state: RootState) => state.transaction);
     

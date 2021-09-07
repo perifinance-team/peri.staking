@@ -18,6 +18,7 @@ import { setLoading } from 'config/reducers/loading'
 import { onboard } from 'lib/onboard'
 import { formatCurrency } from 'lib'
 import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from 'constants';
+import networkFee from 'config/reducers/networkFee/networkFee';
 
 SwiperCore.use([Mousewheel, Virtual]);
 
@@ -40,7 +41,7 @@ const Reward = () => {
     const exchangeIsReady = useSelector((state: RootState) => state.exchangeRates.isReady);
 
     const { hash } = useSelector((state: RootState) => state.transaction);
-    const { address, isConnect } = useSelector((state: RootState) => state.wallet);
+    const { address, isConnect, networkId } = useSelector((state: RootState) => state.wallet);
     const { gasPrice } = useSelector((state: RootState) => state.networkFee);
     const { currentCRatio } = useSelector((state: RootState) => state.ratio);
     const { balances } = useSelector((state: RootState) => state.balances);
@@ -231,10 +232,11 @@ const Reward = () => {
     }
 
     useEffect(() => {
+        if(exchangeIsReady) {
+            getData();
+        }
         
-        getData();
-        
-    },[hash, isConnect])
+    },[hash, isConnect, exchangeIsReady])
 
     return (
         <Container>
