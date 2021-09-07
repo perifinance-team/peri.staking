@@ -135,15 +135,22 @@ const Burn = () => {
         } else {
             if(currency.isStable) {
                 burnAmount = balances['DEBT'][currency.name];
+
+                if(burnAmount > balances['pUSD'].transferable) {
+                    burnAmount = balances['pUSD'].transferable;
+                }
+
                 unStakeAmount = balances[currency.name].staked;
             } else {
                 burnAmount = balances['DEBT'].PERI - (balances['DEBT'].stable * 4n);
                 burnAmount = burnAmount < 0n ? 0n : burnAmount;
+
+                if(burnAmount > balances['pUSD'].transferable) {
+                    burnAmount = balances['pUSD'].transferable;
+                }
+                
                 unStakeAmount = (burnAmount * (BigInt(Math.pow(10, 18).toString()) / targetCRatio) * BigInt(Math.pow(10, 18).toString()) / exchangeRates['PERI']);
             }
-        }
-        if(burnAmount > balances['pUSD'].transferable) {
-            burnAmount = balances['pUSD'].transferable;
         }
         
         setMaxBurnAmount(utils.formatEther(burnAmount.toString()));
