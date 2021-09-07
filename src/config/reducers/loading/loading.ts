@@ -22,7 +22,6 @@ export const loadingSlice = createSlice({
 	reducers: {
 		setLoading: (state, actions) => {
 			state.loadings[actions.payload.name] = actions.payload.value;
-			console.log(actions);
 		},
 	},
 });
