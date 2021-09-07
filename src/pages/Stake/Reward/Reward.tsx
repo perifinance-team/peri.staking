@@ -17,19 +17,20 @@ import { updateTransaction } from 'config/reducers/transaction'
 import { setLoading } from 'config/reducers/loading'
 import { onboard } from 'lib/onboard'
 import { formatCurrency } from 'lib'
+import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from 'constants';
 
 SwiperCore.use([Mousewheel, Virtual]);
 
 type ClaimData = {
-    closeIn: string,
-    duration: string,
-    periods: string,
-    rewards: {
+    closeIn?: string,
+    duration?: string,
+    periods?: string,
+    rewards?: {
         exchage: bigint,
         staking: bigint,
     }
-    claimable: boolean,
-    isCloseFeePeriodEnabled: boolean
+    claimable?: boolean,
+    isCloseFeePeriodEnabled?: boolean
 }
 
 const Reward = () => {
@@ -204,8 +205,8 @@ const Reward = () => {
         try {
             const duration = await contracts.FeePool.feePeriodDuration();            
             const periods = await contracts.FeePool.recentFeePeriods(0);
-            const claimable = await contracts.FeePool.isFeesClaimable(address);
-            const reward = await contracts.FeePool.feesAvailable(address);
+            const claimable = address ? await contracts.FeePool.isFeesClaimable(address) : false;
+            const reward = address ? await contracts.FeePool.feesAvailable(address) : [];
             //reward type  array[0] = exchage | array[1] = staking
             
             const { closeIn, isCloseFeePeriodEnabled } = getFeePeriodCountdown(periods, duration);
@@ -215,8 +216,8 @@ const Reward = () => {
                 duration,
                 periods,
                 rewards: {
-                    exchage: BigInt(reward[0].toString()),
-                    staking: BigInt(reward[1].toString()),
+                    exchage: isConnect ? BigInt(reward[0].toString()) : 0n,
+                    staking: isConnect ? BigInt(reward[1].toString()) : 0n,
                 },
                 claimable,
                 isCloseFeePeriodEnabled
@@ -224,14 +225,16 @@ const Reward = () => {
         } catch(e) {
             console.log(e);   
         }
+    
+        
         dispatch(setLoading({name: 'rewardData', value: false}));
     }
 
     useEffect(() => {
-        if(isConnect && address && exchangeIsReady && balancesIsReady) {
-            getData();
-        }
-    },[hash, isConnect, address, exchangeIsReady, balancesIsReady])
+        
+        getData();
+        
+    },[hash, isConnect])
 
     return (
         <Container>
