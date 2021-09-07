@@ -142,6 +142,9 @@ const Burn = () => {
                 unStakeAmount = (burnAmount * (BigInt(Math.pow(10, 18).toString()) / targetCRatio) * BigInt(Math.pow(10, 18).toString()) / exchangeRates['PERI']);
             }
         }
+        if(burnAmount > balances['pUSD'].transferable) {
+            burnAmount = balances['pUSD'].transferable;
+        }
         
         setMaxBurnAmount(utils.formatEther(burnAmount.toString()));
         setMaxUnStakeAmount(utils.formatEther(unStakeAmount.toString()));
