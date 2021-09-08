@@ -4,14 +4,18 @@ import { RootState } from 'config/reducers'
 import { H4 } from 'components/headding'
 import { contracts } from 'lib/contract'
 import { updateTransaction } from 'config/reducers/transaction'
+import { NotificationManager } from 'react-notifications';
+import { setLoading } from 'config/reducers/loading'
 
 const Exit = () => {
     const dispatch = useDispatch();
     const { gasPrice } = useSelector((state: RootState) => state.networkFee);
+    const { balances } = useSelector((state: RootState) => state.balances);
     const { currentCRatio } = useSelector((state: RootState) => state.ratio);
 
     const getGasEstimate = async () => {
         let gasLimit = 600000n;
+        dispatch(setLoading({name: 'gasEstimate', value: true}));
         try {
             gasLimit = BigInt((await contracts.signers.PeriFinance.estimateGas.exit(
                 
@@ -19,10 +23,16 @@ const Exit = () => {
         } catch(e) {
             console.log(e);
         }
+        dispatch(setLoading({name: 'gasEstimate', value: false}));
         return (gasLimit * 12n /10n).toString()
     }
 
     const exit = async () => {
+        if(balances['DEBT'].balance > balances['pUSD'].transferable) {
+            NotificationManager.error("To unstake all, pUSD must be greater than DEBT", 'ERROR', 5000);
+            return false;
+        }
+
         const transactionSettings = {
             gasPrice: gasPrice.toString(),
             gasLimit: await getGasEstimate(),
@@ -46,10 +56,9 @@ const Exit = () => {
     }
     return (
         <>
-        {currentCRatio > 0n && <Container onClick={() => exit()}>
-            <H4 weigth={'b'}>UNSTAKE ALL</H4>
-        </Container>}
-        
+            {currentCRatio > 0n && <Container onClick={() => exit()}>
+                <H4 weigth={'b'}>UNSTAKE ALL</H4>
+            </Container>} 
         </>
     );
 }

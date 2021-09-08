@@ -4,25 +4,44 @@ import { RootState } from 'config/reducers'
 import { H3 } from 'components/headding'
 import { contracts } from 'lib/contract'
 import { updateTransaction } from 'config/reducers/transaction'
-
+import { setLoading } from 'config/reducers/loading'
+import { NotificationManager } from 'react-notifications';
+import { formatCurrency } from 'lib'
 
 const FitToClaimable = () => {
     const dispatch = useDispatch();
     const { gasPrice } = useSelector((state: RootState) => state.networkFee);
     const { currentCRatio } = useSelector((state: RootState) => state.ratio);
-    
+    const { balances } = useSelector((state: RootState) => state.balances);
+    const { address } = useSelector((state: RootState) => state.wallet);
+
     const getGasEstimate = async () => {
         let gasLimit = 600000n;
+        dispatch(setLoading({name: 'gasEstimate', value: true}));
         try {
             gasLimit = BigInt((await contracts.signers.PeriFinance.estimateGas.fitToClaimable(
             )).toString());
         } catch(e) {
             console.log(e);
         }
+        dispatch(setLoading({name: 'gasEstimate', value: false}));
         return (gasLimit * 12n /10n).toString()
     }
 
     const fitToClaimable = async () => {
+        dispatch(setLoading({name: 'amountsToFitClaimable', value: true}));
+        try {
+            const ableAmount = BigInt((await contracts.signers.PeriFinance.amountsToFitClaimable(address))[0]);
+            dispatch(setLoading({name: 'amountsToFitClaimable', value: false}));
+            if(balances['pUSD'].transferable <= ableAmount) {
+                NotificationManager.error(`To Fit To Claimable, pUSD must be greater than ${formatCurrency(ableAmount, 2)}`, 'ERROR');
+                return false;
+            }
+        } catch (e) {
+            console.log(e)
+            dispatch(setLoading({name: 'amountsToFitClaimable', value: false}));
+        }
+        
         const transactionSettings = {
             gasPrice: gasPrice.toString(),
             gasLimit: await getGasEstimate(),

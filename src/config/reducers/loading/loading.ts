@@ -12,7 +12,8 @@ const initialState: Loading = {
         gasEstimate: false,
 		closeCurrentFeePeriod: false,
 		rewardData: false,
-		vestingData: false
+		vestingData: false,
+		amountsToFitClaimable: false
     },
 };
 
