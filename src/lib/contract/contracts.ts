@@ -14,7 +14,15 @@ const naming = {
     SystemSettings: 'SystemSettings',
     PynthUtil: 'PynthUtil',
     PeriFinanceEscrow: 'PeriFinanceEscrow',
-    ProxyERC20: ['PeriFinanceToEthereum', 'PeriFinanceToPolygon', 'PeriFinanceToBSC'],
+    ProxyERC20: {
+        1: 'PeriFinanceToEthereum',
+        5: 'PeriFinanceToEthereum',
+        42: 'PeriFinanceToEthereum',
+        56: 'PeriFinanceToBSC',
+        97: 'PeriFinanceToBSC',
+        137: 'PeriFinanceToPolygon',
+        80001: 'PeriFinanceToPolygon'
+    },
     ExternalTokenStakeManager: 'ExternalTokenStakeManager',
     RewardsDistribution: 'RewardsDistribution',
     USDC: 'USDC',
@@ -92,12 +100,12 @@ export const contracts: Contracts = {
         }
         this.sources = perifinance.getSource({network: SUPPORTED_NETWORKS[this.networkId].toLowerCase()});
         this.addressList = perifinance.getTarget({network: SUPPORTED_NETWORKS[this.networkId].toLowerCase()});
-
+        
         this.provider = new providers.JsonRpcProvider(RPC_URLS[this.networkId], this.networkId);
         
         Object.keys(this.addressList).forEach(name => {
             if(naming[name]) {
-                const source = typeof naming[name] === 'string' ? this.sources[naming[name]] : this.sources[naming[name].find(e => this.sources[e])]
+                const source = typeof naming[name] === 'string' ? this.sources[naming[name]] : this.sources[naming[name][this.networkId]]
                 this[name] = new ethers.Contract(this.addressList[name].address, source ? source.abi : ERC20.abi, this.provider);
                 
                 if(name === 'ProxyERC20') {
@@ -128,7 +136,7 @@ export const contracts: Contracts = {
         this.signer = new providers.Web3Provider(this.wallet.provider).getSigner(address);
         Object.keys(this.addressList).forEach(name => {
             if(naming[name]) {
-                const source = typeof naming[name] === 'string' ? this.sources[naming[name]] : this.sources[naming[name].find(e => this.sources[e])]
+                const source = typeof naming[name] === 'string' ? this.sources[naming[name]] : this.sources[naming[name][this.networkId]]
                 this.signers[name] = new ethers.Contract(this.addressList[name].address, source ? source.abi : ERC20.abi, this.signer);
                 if(name === 'ProxyERC20') {
                     this.signers['PeriFinance'] = this.signers[name];
@@ -167,7 +175,7 @@ export const contracts: Contracts = {
         
         Object.keys(this.addressList).forEach(name => {
             if(naming[name]) {
-                const source = typeof naming[name] === 'string' ? this.sources[naming[name]] : this.sources[naming[name].find(e => this.sources[e])]
+                const source = typeof naming[name] === 'string' ? this.sources[naming[name]] : this.sources[naming[name][this.networkId]]
                 this[name] = new ethers.Contract(this.addressList[name].address, source ? source.abi : ERC20.abi, this.provider);
                 if(name === 'ProxyERC20') {
                     this['PeriFinance'] = this[name];
