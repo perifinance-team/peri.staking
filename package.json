@@ -1,6 +1,6 @@
 {
   "name": "peri.staking",
-  "version": "1.7.4",
+  "version": "1.7.5",
   "private": true,
   "author": "perifinance",
   "types": "lib/index.d.ts",
@@ -11,7 +11,7 @@
   "dependencies": {
     "@egjs/react-flicking": "^4.1.2",
     "@metamask/detect-provider": "^1.2.0",
-    "@perifinance/peri-finance": "^0.1.5",
+    "@perifinance/peri-finance": "^0.1.7",
     "@reduxjs/toolkit": "^1.5.0",
     "@types/node": "^14.14.37",
     "@types/react-redux": "^7.1.16",
