@@ -29,18 +29,21 @@ const FitToClaimable = () => {
     }
 
     const fitToClaimable = async () => {
-        dispatch(setLoading({name: 'amountsToFitClaimable', value: true}));
-        try {
-            const ableAmount = BigInt((await contracts.signers.PeriFinance.amountsToFitClaimable(address))[0]);
-            dispatch(setLoading({name: 'amountsToFitClaimable', value: false}));
-            if(balances['pUSD'].transferable <= ableAmount) {
-                NotificationManager.error(`To Fit To Claimable, pUSD must be greater than ${formatCurrency(ableAmount, 2)}`, 'ERROR');
-                return false;
+        if(contracts.signers.PeriFinance.amountsToFitClaimable) {
+            dispatch(setLoading({name: 'amountsToFitClaimable', value: true}));
+            try {
+                const ableAmount = BigInt((await contracts.signers.PeriFinance.amountsToFitClaimable(address))[0]);
+                dispatch(setLoading({name: 'amountsToFitClaimable', value: false}));
+                if(balances['pUSD'].transferable/10n*10n <= ableAmount/10n*10n) {
+                    NotificationManager.error(`To Fit To Claimable, pUSD must be greater than ${formatCurrency(ableAmount, 2)}`, 'ERROR');
+                    return false;
+                }
+            } catch (e) {
+                console.log(e)
+                dispatch(setLoading({name: 'amountsToFitClaimable', value: false}));
             }
-        } catch (e) {
-            console.log(e)
-            dispatch(setLoading({name: 'amountsToFitClaimable', value: false}));
         }
+        
         
         const transactionSettings = {
             gasPrice: gasPrice.toString(),

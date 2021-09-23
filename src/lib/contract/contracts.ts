@@ -134,6 +134,7 @@ export const contracts: Contracts = {
 
     connect(address) {
         this.signer = new providers.Web3Provider(this.wallet.provider).getSigner(address);
+        
         Object.keys(this.addressList).forEach(name => {
             if(naming[name]) {
                 const source = typeof naming[name] === 'string' ? this.sources[naming[name]] : this.sources[naming[name][this.networkId]]

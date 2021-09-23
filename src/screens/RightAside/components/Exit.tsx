@@ -28,7 +28,7 @@ const Exit = () => {
     }
 
     const exit = async () => {
-        if(balances['DEBT'].balance > balances['pUSD'].transferable) {
+        if(balances['DEBT'].balance/10n*10n > balances['pUSD'].transferable/10n*10n) {
             NotificationManager.error("To unstake all, pUSD must be greater than DEBT", 'ERROR', 5000);
             return false;
         }

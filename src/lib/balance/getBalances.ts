@@ -34,15 +34,12 @@ export const getBalances = async (currentWallet, currencies, exchangeRates, targ
 
     let USDCAllowance, DAIAllowance, LPAllowance = 0n;
 
-    if(pUSDBalance > 0n) {
+    if(debtBalance > 0n) {
         USDCAllowance = formatDecimal(BigInt((await contracts['USDC'].allowance(currentWallet, contracts?.addressList['ExternalTokenStakeManager'].address)).toString()), USDCDecimal);
     }
-    if(USDCBalance > 0n) {
-        DAIAllowance = formatDecimal(BigInt((await contracts['DAI'].allowance(currentWallet, contracts?.addressList['ExternalTokenStakeManager'].address)).toString()), DAIDecimal);
-    }
 
-    if(DAIBalance > 0n) {
-        LPAllowance = contracts['LP'] ? BigInt((await contracts['LP'].allowance(currentWallet)).toString()) : 0n
+    if(debtBalance > 0n) {
+        DAIAllowance = formatDecimal(BigInt((await contracts['DAI'].allowance(currentWallet, contracts?.addressList['ExternalTokenStakeManager'].address)).toString()), DAIDecimal);
     }
 
     let [
@@ -55,6 +52,9 @@ export const getBalances = async (currentWallet, currencies, exchangeRates, targ
         (async() => BigInt((await contracts['LP'].stakedAmountOf(currentWallet))))()
     ]) : [0n, 0n, 0n]
 
+    if(LPBalance > 0n) {
+        LPAllowance = contracts['LP'] ? BigInt((await contracts['LP'].allowance(currentWallet)).toString()) : 0n
+    }
     
     let [stakedUSDC, stakedDAI] = debtBalance > 0n ? await Promise.all([
         (async() => BigInt((await ExternalTokenStakeManager.stakedAmountOf(currentWallet, utils.formatBytes32String('USDC'), utils.formatBytes32String('USDC')))))(),

@@ -54,6 +54,7 @@ const Earn = () => {
         } 
 
         if(BigInt(utils.parseEther(stakeAmount).toString()) > balances[currencyName].allowance) {
+            
             setIsApprove(true);
         }
         
@@ -61,24 +62,19 @@ const Earn = () => {
     }
 
     const approveAction = async (currencyName) => {
+        const amount = BigInt('11579208923731619542357098500868790785326998466');
         const transaction = await contracts[currencyName].approve();
         NotificationManager.info('Approve', 'In progress', 0);
 
         const getState = async () => {
-            const state = await contracts.provider.getTransactionReceipt(transaction.hash);
-            if(state) {
-                if(state.confirmations >= confirm) {
+            await contracts.provider.once(transaction.hash, async (transactionState) => {
+                if(transactionState.status === 1) {
                     NotificationManager.remove(NotificationManager.listNotify[0])
                     NotificationManager.success(`Approve success`, 'SUCCESS');
-                    const amount = BigInt((await contracts[currencyName].allowance(address)).toString());
                     dispatch(updateBalances({currencyName, value: 'allowance', amount}))
                     setIsApprove(false);
-                } else {
-                    setTimeout(() => getState(), 1000);    
                 }
-            } else {
-                setTimeout(() => getState(), 1000);
-            }
+            });
         }
         getState();  
     }
