@@ -21,6 +21,7 @@ const naming = {
         56: 'PeriFinanceToBSC',
         97: 'PeriFinanceToBSC',
         137: 'PeriFinanceToPolygon',
+        1287: 'PeriFinance',
         80001: 'PeriFinanceToPolygon'
     },
     ExternalTokenStakeManager: 'ExternalTokenStakeManager',
@@ -100,7 +101,6 @@ export const contracts: Contracts = {
         }
         this.sources = perifinance.getSource({network: SUPPORTED_NETWORKS[this.networkId].toLowerCase()});
         this.addressList = perifinance.getTarget({network: SUPPORTED_NETWORKS[this.networkId].toLowerCase()});
-        
         this.provider = new providers.JsonRpcProvider(RPC_URLS[this.networkId], this.networkId);
         
         Object.keys(this.addressList).forEach(name => {
