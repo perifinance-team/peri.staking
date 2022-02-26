@@ -186,16 +186,8 @@ const Mint = () => {
 
             let reward = ((76924n * BigInt(Math.pow(10, 18).toString())));
             
-            if(networkId === 137) {
-                reward = ((reward * 5n / 10n) - totalLpMint[networkId]) * exchangeRates['PERI'] * (52n) * (100n) / (totalMintpUSD[networkId] * 4n);
-            } else if(networkId === 56) {
-                reward = ((reward * 15n / 100n) - totalLpMint[networkId]) * exchangeRates['PERI'] * (52n) * (100n) / (totalMintpUSD[networkId] * 4n);
-            } else if(networkId === 1) {
-                reward = ((reward * 35n / 100n) - totalLpMint[networkId]) * exchangeRates['PERI'] * (52n) * (100n) / (totalMintpUSD[networkId] * 4n);
-            } else {
-                reward = (reward - totalLpMint['total']) * exchangeRates['PERI'] * (52n) * (100n) / (totalMintpUSD.total * 4n);
-            }
- 
+            reward = (reward - totalLpMint['total']) * exchangeRates['PERI'] * (52n) * (100n) / (totalMintpUSD.total * 4n);
+            
             setRewardsAmountToAPY(reward);
         } catch(e) {
             console.log(e);

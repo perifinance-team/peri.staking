@@ -292,7 +292,7 @@ const Burn = () => {
 
         const canBurnPynths = await contracts.Issuer.canBurnPynths(address);
         const lastIssueEvent = await contracts.Issuer.lastIssueEvent(address);
-        const minimumStakeTime = await contracts.SystemSettings.minimumStakeTime();
+        const minimumStakeTime = await contracts.SystemSettings.();
 
         if (Number(lastIssueEvent) && Number(minimumStakeTime)) {
             const burnUnlockDate = addSeconds(Number(lastIssueEvent) * 1000, Number(minimumStakeTime));
