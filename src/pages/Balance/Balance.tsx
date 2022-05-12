@@ -18,6 +18,7 @@ const Balance = () => {
         137: 'QUICK',
         80001: 'QUICK'
     }
+
     return (
         <Container>
             <Title> <H1>TOTAL BALANCE</H1> </Title>
@@ -33,8 +34,10 @@ const Balance = () => {
                     </Row>
                 </StyledTHeader>
                 <StyledTBody>
-                    {Object.keys(balances).map( (currencyName) => 
-                        (<BorderRow key={currencyName}>
+                    {Object.keys(balances).map( (currencyName) => {
+                        if((networkId === 1287 || networkId === 1285) && currencyName === 'LP')
+                            return;
+                        else return (<BorderRow key={currencyName}>
                             <AssetCell>
                                 <Asset isLP={currencyName === 'LP'}>
                                     <img src={`/images/currencies/${ currencyName === 'LP' ? `${currencyName}_${swapName[networkId]}.png` : `${currencyName}.png`}`} alt="lp"></img>
@@ -56,14 +59,11 @@ const Balance = () => {
                             <AmountCell><H4 weigth={'m'} align={'right'}>
                                 {formatCurrency(balances[currencyName].balance)}
                                 </H4></AmountCell>
-                        </BorderRow>)
+                        </BorderRow>);
+                    }
                     )}
-                    
                 </StyledTBody>
             </TableContainer>   
-            
-                     
-            
         </Container>
     );
 }

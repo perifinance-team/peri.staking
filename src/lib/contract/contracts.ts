@@ -21,6 +21,7 @@ const naming = {
         56: 'PeriFinanceToBSC',
         97: 'PeriFinanceToBSC',
         137: 'PeriFinanceToPolygon',
+        1285: 'PeriFinance',
         1287: 'PeriFinance',
         80001: 'PeriFinanceToPolygon'
     },
@@ -43,6 +44,22 @@ const stable = {
     137: {
         USDC: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
         DAI: '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063'
+    },
+    97: {
+        USDC: '0x8EDc640693b518c8d531A8516A5C0Ae98b641a03',
+        DAI: '0x52306d4521eFF70Ba555A578a66705b3352e8B3a'
+    },
+    1285: {
+        USDC: '0xE3F5a90F9cb311505cd691a46596599aA1A0AD7D',
+        DAI: '0x80A16016cC4A2E6a2CACA8a4a498b1699fF0f844'
+    },
+    1287: {
+        USDC: '0xDF17D7AaCC4cE7f675d3600A07b3CEA843F3669f',
+        DAI: '0x33B86de94702C5Ff1ECba36D38Ea2Fc238894315'
+    },
+    80001: {
+        USDC: '0xcE954FC4c52A9E6e25306912A36eC59293da41E3',
+        DAI: '0xAcC78d249781EDb5feB50027971EF4D60f144325'
     }
 }
 
@@ -99,8 +116,8 @@ export const contracts: Contracts = {
         } else {
             return false;
         }
-        this.sources = perifinance.getSource({network: SUPPORTED_NETWORKS[this.networkId].toLowerCase()});
-        this.addressList = perifinance.getTarget({network: SUPPORTED_NETWORKS[this.networkId].toLowerCase()});
+        this.sources = perifinance.getSource({network: SUPPORTED_NETWORKS[this.networkId]?.toLowerCase()});
+        this.addressList = perifinance.getTarget({network: SUPPORTED_NETWORKS[this.networkId]?.toLowerCase()});
         this.provider = new providers.JsonRpcProvider(RPC_URLS[this.networkId], this.networkId);
         
         Object.keys(this.addressList).forEach(name => {

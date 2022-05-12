@@ -8,7 +8,7 @@ import { getBalances } from 'lib/balance'
 import { getRatios } from 'lib/rates'
 import { getNetworkFee } from 'lib/fee'
 
-import { initCurrecy } from 'config/reducers/wallet'
+import { initCurrency } from 'config/reducers/wallet'
 import { updateRatio } from 'config/reducers/rates'
 import { updateExchangeRates } from 'config/reducers/rates'
 import { updateVestable } from 'config/reducers/vest'
@@ -37,7 +37,7 @@ const Refresh = () => {
                     getBalances(address, balances, ratios.exchangeRates, ratios.ratio.targetCRatio, ratios.ratio.currentCRatio),
                     getVestable(address),
                 ])
-                dispatch(initCurrecy(balancesData)); 
+                dispatch(initCurrency(balancesData)); 
                 //todo:: code move call
                 dispatch(updateVestable({vestable}));
             }     

@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 
 const Logo = () => {
     const { vestable } = useSelector((state: RootState) => state.vestable);
+    const { address, networkId } = useSelector((state: RootState) => state.wallet);
     
     let nav = [
         {
@@ -52,11 +53,14 @@ const Logo = () => {
             {nav.map((item) => {
                 let childrenLink;
                 if(item.children?.length > 0) {
-                    childrenLink = item.children.map((childrenItem) => 
-                        (<ChildrenLink to={`${item.to}${childrenItem.to}`} key={childrenItem.name}>
-                            {childrenItem.name.toLocaleUpperCase()}
-                        </ChildrenLink>)
-                    );
+                    childrenLink = item.children.map((childrenItem) => {
+                        if(networkId === 1285 && childrenItem.name === 'earn')
+                            return <></>;
+                        else
+                            return (<ChildrenLink to={`${item.to}${childrenItem.to}`} key={childrenItem.name}>
+                                {childrenItem.name.toLocaleUpperCase()}
+                                </ChildrenLink>);
+                    });
                 }
                 if(item.name === 'vesting' && vestable === false) {
                     

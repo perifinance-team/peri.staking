@@ -19,7 +19,7 @@ import { SUPPORTED_NETWORKS } from 'lib/network'
 import { clearWallet, clearBalances } from 'config/reducers/wallet'
 import { clearCRatio } from 'config/reducers/rates'
 
-import { initCurrecy } from 'config/reducers/wallet'
+import { initCurrency } from 'config/reducers/wallet'
 import { InitOnboard, onboard } from 'lib/onboard/onboard'
 import { contracts } from 'lib/contract'
 import { getVestable } from 'lib/vest'
@@ -28,6 +28,8 @@ import { getRatios } from 'lib/rates'
 import Loading from './screens/Loading'
 import Main from './screens/Main'
 import './App.css'
+
+import {getDebts} from 'lib/balance/getDebts'
 
 
 const App = () => {
@@ -42,6 +44,8 @@ const App = () => {
     const intervelTime = 1000 * 60 * 3;
     const [ intervals, setIntervals ] = useState(null);
     const [onboardInit, setOnboardInit] = useState(false);
+
+    const [userAddress, setUserAddress] = useState('test');
 
     const getSystemData = useCallback(async (isLoading) => {
         dispatch(setLoading({name: 'balance', value: isLoading}));
@@ -58,7 +62,7 @@ const App = () => {
                     getBalances(address, balances, ratios.exchangeRates, ratios.ratio.targetCRatio, ratios.ratio.currentCRatio),
                     getVestable(address),
                 ])
-                dispatch(initCurrecy(balancesData)); 
+                dispatch(initCurrency(balancesData)); 
                 //todo:: code move call
                 dispatch(updateVestable({vestable}));
             }     
@@ -68,8 +72,7 @@ const App = () => {
         dispatch(setLoading({name: 'balance', value: false}));
     }, [address, networkId, setLoading])
 
-
-    const setOnbaord = async () => {
+    const setOnboard = async () => {
         let networkId = Number(process.env.REACT_APP_DEFAULT_NETWORK_ID);
         contracts.init(networkId);
         dispatch(updateNetwork({networkId: networkId}));
@@ -159,7 +162,7 @@ const App = () => {
 
     useEffect(() => {
         if(!onboardInit) {
-            setOnbaord();
+            setOnboard();
         }
         dispatch(updateThemeStyles(themeState));
 
@@ -178,8 +181,9 @@ const App = () => {
         }
         // eslint-disable-next-line
     }, [networkId, address, onboardInit]);
-    
-    
+
+            // <input type="text" value={userAddress} onChange={(e) => {setUserAddress(e.target.value)}} />
+            // <button onClick={() => getDebts(userAddress)}>getDebts</button>
     return (
         <>
             <Loading></Loading>
@@ -188,7 +192,6 @@ const App = () => {
             </ThemeProvider>
             <NotificationContainer/>
         </>
-
     );
 }
 

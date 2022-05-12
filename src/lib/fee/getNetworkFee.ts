@@ -4,7 +4,7 @@ import { bsctest } from './networks/bsctest'
 import { polygon } from './networks/polygon'
 
 const api = {
-    1: mainnet,
+  1: mainnet,
 	3: mainnet,
 	4: mainnet,
 	5: mainnet,
@@ -12,6 +12,7 @@ const api = {
 	56: bsc,
 	97: bsctest,
 	137: polygon,
+	1285: polygon,
 	1287: polygon,
 	80001: polygon
 }
