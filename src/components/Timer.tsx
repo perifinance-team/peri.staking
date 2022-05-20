@@ -4,20 +4,14 @@ import styled from "styled-components";
 
 const Timer = (onTimerHandler: any) => {
   const [time, setTime] = useState("24:00");
-  const callbackTime = useRef<any>();
+
+  // 블록체인에서 받아온 리퀴데이션 된 시간 - 현재 시간 = 남은 시간 (00:00 에서 종료)
+  // setTime('받아온 시간')
 
   let hours: number | string = 24;
   let minutes: number | string = 60;
   let seconds: number | string = 60;
   let allTime = hours * minutes * seconds;
-
-  const callback = (time: string) => {
-    setTime(time);
-  };
-
-  useEffect(() => {
-    callbackTime.current = callback;
-  });
 
   useEffect(() => {
     const tick = () => {
@@ -27,7 +21,8 @@ const Timer = (onTimerHandler: any) => {
       hours = hours < 10 ? "0" + hours : hours;
       minutes = minutes < 10 ? "0" + minutes : minutes;
       seconds = seconds < 10 ? "0" + seconds : seconds;
-      callbackTime.current(`${hours}:${minutes}`);
+
+      setTime(`${hours}:${minutes}`);
 
       --allTime;
     };
@@ -36,7 +31,7 @@ const Timer = (onTimerHandler: any) => {
 
     return () => clearInterval(timeSet);
   }, []);
-  console.log("time", time);
+
   return <TimerContainer>{time}</TimerContainer>;
 };
 
