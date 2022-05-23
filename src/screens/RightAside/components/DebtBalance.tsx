@@ -5,12 +5,14 @@ import { RootState } from "config/reducers";
 import { H3, H4 } from "components/headding";
 import { formatCurrency } from "lib";
 import { useEffect, useState } from "react";
+import Timer from "components/Timer";
 
 const DebtBalance = () => {
   const { balances } = useSelector((state: RootState) => state.balances);
 
   return (
     <DebtBalanceContainer>
+      <Timer />
       <H3 align={"left"}>DEBT</H3>
       <BalanceContainer>
         <img src={`/images/currencies/pUSD.png`}></img>

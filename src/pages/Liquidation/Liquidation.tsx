@@ -83,7 +83,7 @@ const Liquidation = () => {
                   <H4 weigth={"m"}>{statusList[el.status]}</H4>
                 </AmountCell>
                 <AmountCell>
-                  <TakeBtn>Take</TakeBtn>
+                  {el.status === 0 && <TakeBtn>Take</TakeBtn>}
                 </AmountCell>
               </BorderRow>
             );

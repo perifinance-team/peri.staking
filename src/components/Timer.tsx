@@ -1,50 +1,57 @@
-import React, { useEffect, useLayoutEffect } from "react";
-import { useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import styled from "styled-components";
 
+// import Countdown from "react-countdown";
+
 const Timer = (onTimerHandler: any) => {
-  const [time, setTime] = useState("24:00");
-
-  // 블록체인에서 받아온 리퀴데이션 된 시간 - 현재 시간 = 남은 시간 (00:00 에서 종료)
-  // setTime('받아온 시간')
-
   let today = new Date();
-  let liquidTime = "17:00:10";
-  let remainTime = `${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}`;
-  console.log("remainTime", remainTime);
-  let hours: number | string = 24;
-  let minutes: number | string = 60;
-  let seconds: number | string = 60;
+  let startTime = today.getTime();
+  let setTime = 86400000; // 24
 
-  let allTime = hours * minutes * seconds;
+  const [escape, setEscape] = useState(false);
 
-  useLayoutEffect(() => {
-    const tick = () => {
-      hours = parseInt(String((allTime / 3600) % 24), 10);
-      minutes = parseInt(String((allTime / 60) % 60), 10);
-      seconds = parseInt(String(allTime % 60), 10);
-      hours = hours < 10 ? "0" + hours : hours;
-      minutes = minutes < 10 ? "0" + minutes : minutes;
-      seconds = seconds < 10 ? "0" + seconds : seconds;
+  const onEscapeHandler = () => {
+    console.log("onEscapeHander");
+  };
 
-      setTime(`${hours}:${minutes}`);
-      //   onTimerHandler(time);
+  return (
+    <TimerContainer>
+      {/* <Countdown date={startTime + setTime}></Countdown> */}
+      <span>24:00</span>
 
-      --allTime;
-    };
-
-    const timeSet = setInterval(tick, 1000);
-
-    return () => clearInterval(timeSet);
-  }, []);
-
-  return <TimerContainer>{time}</TimerContainer>;
+      <EscapeBtn onClick={() => onEscapeHandler()} disabled={escape}>
+        escape
+      </EscapeBtn>
+    </TimerContainer>
+  );
 };
 
 const TimerContainer = styled.div`
-  color: ${(props) => props.theme.colors.font["warning"]};
-  font-size: 4rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+
+  span {
+    color: ${(props) => props.theme.colors.font["warning"]};
+    font-size: 4rem;
+    font-weight: bold;
+  }
+`;
+
+const EscapeBtn = styled.button`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  background: #2284e0;
+  border: none;
+  outline: none;
+  font-size: 2rem;
   font-weight: bold;
+  letter-spacing: 1px;
+  width: 10rem;
+  padding: 0.4rem;
 `;
 
 export default Timer;

@@ -14,11 +14,20 @@ const Ratios = () => {
     return ((BigInt(Math.pow(10, 18).toString()) * 100n) / value).toString();
   };
 
+  const liquidator = Number(ratioToPer(currentCRatio)) < 150;
+
+  const onLiquidHandler = () => {
+    console.log("onLiquidHandler");
+  };
+
   return (
     <Container>
-      <Row>
+      <Row style={{ position: "relative" }}>
+        {liquidator && (
+          <LiquidationBtn onClick={() => onLiquidHandler()}>!</LiquidationBtn>
+        )}
         <H3 weigth={"sm"}>C-Ratio</H3>
-        <H3 weigth={"eb"} color={"fourth"}>
+        <H3 weigth={"eb"} color={liquidator ? "warning" : "fourth"}>
           {ratioToPer(currentCRatio)}%
         </H3>
       </Row>
@@ -49,6 +58,22 @@ const Row = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+`;
+
+const LiquidationBtn = styled.button`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  border: none;
+  outline: none;
+  background: ${(props) => props.theme.colors.font["warning"]};
+  position: absolute;
+  left: -24px;
+  top: 2px;
+  font-weight: bold;
 `;
 
 export default Ratios;
