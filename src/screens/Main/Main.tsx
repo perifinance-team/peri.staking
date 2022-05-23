@@ -15,6 +15,7 @@ import Header from "screens/Header";
 import Stake from "pages/Stake";
 import Balance from "pages/Balance";
 import Vesting from "pages/Vesting";
+import Liquidation from "pages/Liquidation";
 
 const Main = () => {
   return (
@@ -34,6 +35,9 @@ const Main = () => {
                 </Route>
                 <Route path="/vesting">
                   <Vesting></Vesting>
+                </Route>
+                <Route path="/liquidation">
+                  <Liquidation></Liquidation>
                 </Route>
                 <Route exact path="/">
                   <Redirect to="/stake" />

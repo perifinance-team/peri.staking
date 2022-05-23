@@ -1,1 +1,1 @@
-export { default } from "./Liquidation";
+export { default } from "../Balance/Balance";
