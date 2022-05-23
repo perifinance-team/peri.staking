@@ -16,6 +16,7 @@ import Stake from "pages/Stake";
 import Balance from "pages/Balance";
 import Vesting from "pages/Vesting";
 import Liquidation from "pages/Liquidation";
+import LiquidNotification from "components/LiquidNotification";
 
 const Main = () => {
   return (
@@ -48,6 +49,7 @@ const Main = () => {
           </ContentSection>
         </RightSection>
       </Router>
+      <LiquidNotification />
     </MainContainer>
   );
 };
@@ -55,6 +57,7 @@ const MainContainer = styled.div`
   display: flex;
   height: 100vh;
   flex-direction: row;
+  position: relative;
 `;
 const RightSection = styled.div`
   flex: 3;

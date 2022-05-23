@@ -12,6 +12,8 @@ const Timer = (onTimerHandler: any) => {
 
   const onEscapeHandler = () => {
     console.log("onEscapeHander");
+    // 탈출 대상자인지 검사
+    true ? setEscape(true) : setEscape(false);
   };
 
   return (
@@ -20,7 +22,7 @@ const Timer = (onTimerHandler: any) => {
       <span>24:00</span>
 
       <EscapeBtn onClick={() => onEscapeHandler()} disabled={escape}>
-        escape
+        Escape
       </EscapeBtn>
     </TimerContainer>
   );
@@ -51,7 +53,7 @@ const EscapeBtn = styled.button`
   font-weight: bold;
   letter-spacing: 1px;
   width: 10rem;
-  padding: 0.4rem;
+  padding: 0.4rem 0.2rem;
 `;
 
 export default Timer;

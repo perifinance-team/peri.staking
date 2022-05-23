@@ -10,21 +10,16 @@ import {
   Cell,
   BorderRow,
 } from "components/Table";
-import { formatCurrency } from "lib";
+
 const Liquidation = () => {
   const { balances } = useSelector((state: RootState) => state.balances);
-  const { networkId } = useSelector((state: RootState) => state.wallet);
   const { temp } = useSelector((state: RootState) => state.liquidation);
 
   const statusList = ["Open", "Taken", "Closed"];
 
   return (
     <Container>
-      {/* <Title>
-        {" "}
-        <H1>TOTAL BALANCE</H1>{" "}
-      </Title> */}
-      <TableContainer style={{ overflowY: "hidden" }}>
+      <TableContainer style={{ overflowY: "hidden", maxHeight: "70vh" }}>
         <StyledTHeader>
           <Row>
             <AmountCell>
@@ -54,15 +49,18 @@ const Liquidation = () => {
         <StyledTBody>
           {temp.map((el, idx) => {
             return (
-              <BorderRow key={el} style={{ height: "10rem" }}>
+              <BorderRow
+                key={el}
+                style={{ minHeight: "9rem", height: "10rem" }}
+              >
                 <AmountCell>
                   <H4 weigth={"m"}>{el.idx}</H4>
                 </AmountCell>
                 <AmountCell>
-                  <H4 weigth={"m"}>{el.debt}</H4>
+                  <H4 weigth={"m"}>{`${el.cRatio}%`}</H4>
                 </AmountCell>
                 <AmountCell>
-                  <H4 weigth={"m"}>{el.cRatio}</H4>
+                  <H4 weigth={"m"}>{`${el.debt} pUSD`}</H4>
                 </AmountCell>
                 <AmountCell style={{ width: "30rem" }}>
                   <CollateralList>
@@ -150,7 +148,7 @@ const TakeBtn = styled.button`
   background: #505050;
   color: white;
   font-weight: bold;
-  width: 6rem;
+  width: 5.5rem;
   padding: 0.5rem 0;
 `;
 

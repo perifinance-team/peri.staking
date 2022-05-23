@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
-import { ThemeProvider } from "styled-components";
+import styled, { ThemeProvider } from "styled-components";
 import {
   NotificationContainer,
   NotificationManager,
@@ -37,6 +37,7 @@ import Main from "./screens/Main";
 import "./App.css";
 
 import { getDebts } from "lib/balance/getDebts";
+import LiquidNotification from "components/LiquidNotification";
 
 const App = () => {
   const { address, networkId } = useSelector(
@@ -214,6 +215,7 @@ const App = () => {
 
   // <input type="text" value={userAddress} onChange={(e) => {setUserAddress(e.target.value)}} />
   // <button onClick={() => getDebts(userAddress)}>getDebts</button>
+
   return (
     <>
       <Loading></Loading>
