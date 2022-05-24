@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "config/reducers";
 import { H3, H4 } from "components/headding";
 import { formatCurrency } from "lib";

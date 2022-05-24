@@ -1,9 +1,15 @@
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import { toggleNoti } from "config/reducers/liquidation";
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "config/reducers";
 import styled from "styled-components";
 
 // import Countdown from "react-countdown";
 
-const Timer = (onTimerHandler: any) => {
+const Timer = () => {
+  const dispatch = useDispatch();
+  const { liquidation } = useSelector((state: RootState) => state.liquidation);
+
   let today = new Date();
   let startTime = today.getTime();
   let setTime = 86400000; // 24
@@ -11,9 +17,14 @@ const Timer = (onTimerHandler: any) => {
   const [escape, setEscape] = useState(false);
 
   const onEscapeHandler = () => {
-    console.log("onEscapeHander");
-    // 탈출 대상자인지 검사
-    true ? setEscape(true) : setEscape(false);
+    // ! 에러 바인딩 해줘야됨
+    if (liquidation) {
+      setEscape(true);
+    } else {
+      setEscape(false);
+    }
+
+    dispatch(toggleNoti({ notification: true }));
   };
 
   return (

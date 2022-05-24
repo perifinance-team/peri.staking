@@ -4,11 +4,12 @@ export type LiquidState = {
   liquidation: boolean;
   temp: any;
   list: any;
+  notification: boolean;
 };
 
 // ratio가 150아래로 떨어졌을때 대상자에 넣어주면됨
 const initialState: LiquidState = {
-  liquidation: false,
+  liquidation: false, // 청산대상자 여부
   temp: [
     {
       idx: "oxlx2y",
@@ -243,21 +244,34 @@ const initialState: LiquidState = {
     },
   ],
   list: [],
+  notification: false, // 알림창 여부
 };
 
 export const TransactionSlice = createSlice({
   name: "liquidation",
   initialState,
   reducers: {
-    sample(state, actions: PayloadAction<LiquidState>) {
+    toggleLiquid(state, actions) {
       state.liquidation = actions.payload.liquidation;
     },
     ratioAdd(state, actions: PayloadAction<LiquidState>) {
       state.temp = actions.payload.temp;
     },
+    toggleNoti(state, action) {
+      state.notification = action.payload.notification;
+    },
+    getTaken(state, actions) {
+      state.temp.forEach((el: any) => {
+        if (el.idx === actions.payload) {
+          el.status = 1;
+        }
+      });
+      console.log(state.temp);
+    },
   },
 });
 
-export const { sample, ratioAdd } = TransactionSlice.actions;
+export const { toggleLiquid, ratioAdd, toggleNoti, getTaken } =
+  TransactionSlice.actions;
 
 export default TransactionSlice.reducer;

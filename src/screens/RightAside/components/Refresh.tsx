@@ -32,6 +32,8 @@ const Refresh = () => {
         getNetworkFee(networkId),
       ]);
 
+      console.log("ratios.exchangeRates", ratios.exchangeRates);
+
       dispatch(updateRatio(ratios.ratio));
       dispatch(updateExchangeRates(ratios.exchangeRates));
 

@@ -1,5 +1,5 @@
 import React from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "config/reducers";
 import styled from "styled-components";
 import { H4 } from "components/headding";
@@ -10,12 +10,20 @@ import {
   Cell,
   BorderRow,
 } from "components/Table";
+import { getTaken } from "config/reducers/liquidation";
 
 const Liquidation = () => {
+  const dispatch = useDispatch();
   const { balances } = useSelector((state: RootState) => state.balances);
   const { temp } = useSelector((state: RootState) => state.liquidation);
 
   const statusList = ["Open", "Taken", "Closed"];
+
+  const onTakeHandler = (id) => {
+    console.log("id", id);
+    // 조건에 맞는다면 status Taken으로 변경
+    dispatch(getTaken(id));
+  };
 
   return (
     <Container>
@@ -50,7 +58,7 @@ const Liquidation = () => {
           {temp.map((el, idx) => {
             return (
               <BorderRow
-                key={el}
+                key={`row${idx}`}
                 style={{ minHeight: "9rem", height: "10rem" }}
               >
                 <AmountCell>
@@ -65,9 +73,9 @@ const Liquidation = () => {
                 <AmountCell style={{ width: "30rem" }}>
                   <CollateralList>
                     {el.collateral.map(
-                      (item) =>
+                      (item, idx) =>
                         item.value !== 0 && (
-                          <Image>
+                          <Image key={`image${idx}`}>
                             <img
                               src={`/images/currencies/${item.name.toUpperCase()}.png`}
                             ></img>
@@ -81,7 +89,11 @@ const Liquidation = () => {
                   <H4 weigth={"m"}>{statusList[el.status]}</H4>
                 </AmountCell>
                 <AmountCell>
-                  {el.status === 0 && <TakeBtn>Take</TakeBtn>}
+                  {el.status === 0 && (
+                    <TakeBtn onClick={() => onTakeHandler(el.idx)}>
+                      Take
+                    </TakeBtn>
+                  )}
                 </AmountCell>
               </BorderRow>
             );

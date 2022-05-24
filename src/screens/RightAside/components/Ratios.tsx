@@ -1,10 +1,13 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "config/reducers";
 import { H3, H4 } from "components/headding";
 import { utils } from "ethers";
+import { toggleLiquid, toggleNoti } from "config/reducers/liquidation";
+
 const Ratios = () => {
+  const dispatch = useDispatch();
   const { targetCRatio, currentCRatio, liquidationRatio } = useSelector(
     (state: RootState) => state.ratio
   );
@@ -14,10 +17,20 @@ const Ratios = () => {
     return ((BigInt(Math.pow(10, 18).toString()) * 100n) / value).toString();
   };
 
-  const liquidator = Number(ratioToPer(currentCRatio)) < 150;
+  const [liquidator, setLiquidator] = useState(false);
+
+  useEffect(() => {
+    if (Number(ratioToPer(currentCRatio)) < 150) {
+      setLiquidator(true);
+      dispatch(toggleLiquid({ liquidation: true }));
+    } else {
+      setLiquidator(false);
+      dispatch(toggleLiquid({ liquidation: false }));
+    }
+  }, [currentCRatio, dispatch]);
 
   const onLiquidHandler = () => {
-    console.log("onLiquidHandler");
+    dispatch(toggleNoti({ notification: true }));
   };
 
   return (
@@ -74,6 +87,7 @@ const LiquidationBtn = styled.button`
   left: -24px;
   top: 2px;
   font-weight: bold;
+  cursor: pointer;
 `;
 
 export default Ratios;
