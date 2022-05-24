@@ -4,7 +4,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "config/reducers";
 import { H3, H4 } from "components/headding";
 import { utils } from "ethers";
-import { toggleLiquid, toggleNoti } from "config/reducers/liquidation";
+import {
+  getTimestamp,
+  toggleLiquid,
+  toggleNoti,
+} from "config/reducers/liquidation";
 
 const Ratios = () => {
   const dispatch = useDispatch();
@@ -23,6 +27,11 @@ const Ratios = () => {
     if (Number(ratioToPer(currentCRatio)) < 150) {
       setLiquidator(true);
       dispatch(toggleLiquid({ liquidation: true }));
+      // ! 체인에 보냄
+      // ! 처음 한번만 보내야됨
+      let today = new Date();
+      let startTime = today.getTime();
+      dispatch(getTimestamp(startTime));
     } else {
       setLiquidator(false);
       dispatch(toggleLiquid({ liquidation: false }));

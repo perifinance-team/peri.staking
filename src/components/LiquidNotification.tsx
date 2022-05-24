@@ -22,11 +22,11 @@ const LiquidNotification = () => {
   };
 
   return (
-    <LiquidationNoti toggle={notification} liquidation={!liquidation}>
+    <LiquidationNoti toggle={notification} liquidation={liquidation}>
       <div className="icon">!</div>
       <div className="notiContainer">
-        <h4>{liquidAlert[!liquidation ? 0 : 1].title}</h4>
-        <span>{liquidAlert[!liquidation ? 0 : 1].desc}</span>
+        <h4>{liquidAlert[liquidation ? 0 : 1].title}</h4>
+        <span>{liquidAlert[liquidation ? 0 : 1].desc}</span>
       </div>
       <div className="closeBtn" onClick={() => onToggleHandler()}>
         <div className="sect01">

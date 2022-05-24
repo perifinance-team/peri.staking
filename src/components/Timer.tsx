@@ -3,22 +3,21 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "config/reducers";
 import styled from "styled-components";
-
-// import Countdown from "react-countdown";
+import Countdown from "react-countdown";
 
 const Timer = () => {
   const dispatch = useDispatch();
-  const { liquidation } = useSelector((state: RootState) => state.liquidation);
+  const { liquidation, timestamp } = useSelector(
+    (state: RootState) => state.liquidation
+  );
 
-  let today = new Date();
-  let startTime = today.getTime();
   let setTime = 86400000; // 24
 
   const [escape, setEscape] = useState(false);
 
   const onEscapeHandler = () => {
     // ! 에러 바인딩 해줘야됨
-    if (liquidation) {
+    if (!liquidation) {
       setEscape(true);
     } else {
       setEscape(false);
@@ -27,10 +26,23 @@ const Timer = () => {
     dispatch(toggleNoti({ notification: true }));
   };
 
+  const renderer = ({ hours, minutes, completed }) => {
+    if (completed) {
+      return <span>00:00</span>;
+    } else {
+      return (
+        <span>
+          {hours}:{minutes}
+        </span>
+      );
+    }
+  };
+
   return (
     <TimerContainer>
-      {/* <Countdown date={startTime + setTime}></Countdown> */}
-      <span>24:00</span>
+      <Countdown date={timestamp + setTime} renderer={renderer}>
+        <span>00:00</span>
+      </Countdown>
 
       <EscapeBtn onClick={() => onEscapeHandler()} disabled={escape}>
         Escape
