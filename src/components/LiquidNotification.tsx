@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "config/reducers";
@@ -7,7 +7,6 @@ import { toggleNoti } from "config/reducers/liquidation";
 const LiquidNotification = () => {
   const dispatch = useDispatch();
   const { notification } = useSelector((state: RootState) => state.liquidation);
-  const { liquidation } = useSelector((state: RootState) => state.liquidation);
 
   const liquidAlert = [
     { title: "Success", desc: "Liquidation escape complete" },
@@ -18,21 +17,21 @@ const LiquidNotification = () => {
   ];
 
   const onToggleHandler = () => {
-    dispatch(toggleNoti({ notification: false }));
+    dispatch(toggleNoti({ toggle: false, title: 0 }));
   };
 
   return (
-    <LiquidationNoti toggle={notification} liquidation={liquidation}>
+    <LiquidationNoti toggle={notification.toggle} title={notification.title}>
       <div className="icon">!</div>
       <div className="notiContainer">
-        <h4>{liquidAlert[liquidation ? 0 : 1].title}</h4>
-        <span>{liquidAlert[liquidation ? 0 : 1].desc}</span>
+        <h4>{liquidAlert[notification.title].title}</h4>
+        <span>{liquidAlert[notification.title].desc}</span>
       </div>
       <div className="closeBtn" onClick={() => onToggleHandler()}>
         <div className="sect01">
           <div className="line-box">
-            <span className="line-01"></span>
-            <span className="line-02"></span>
+            <span className="line-01" />
+            <span className="line-02" />
           </div>
         </div>
       </div>
@@ -42,14 +41,14 @@ const LiquidNotification = () => {
 
 interface ILiquidationNoti {
   toggle: boolean;
-  liquidation: boolean;
+  title: any;
 }
 
 const LiquidationNoti = styled.div<ILiquidationNoti>`
   display: ${(props) => (props.toggle ? "flex" : "none")};
   align-items: center;
   position: absolute;
-  background: ${(props) => (props.liquidation ? "#5cb85c" : "#fc3b3b")};
+  background: ${(props) => (props.title === 0 ? "#5cb85c" : "#fc3b3b")};
   color: white;
   bottom: 30px;
   right: 0;
@@ -61,7 +60,7 @@ const LiquidationNoti = styled.div<ILiquidationNoti>`
     justify-content: center;
     align-items: center;
     background: white;
-    color: ${(props) => (props.liquidation ? "#5cb85c" : "#fc3b3b")};
+    color: ${(props) => (props.title === 0 ? "#5cb85c" : "#fc3b3b")};
     font-weight: bold;
     font-size: 1.6rem;
     width: 20px;

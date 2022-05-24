@@ -1,55 +1,48 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "config/reducers";
-import { H3, H4 } from "components/headding";
+import { H3 } from "components/headding";
 import { utils } from "ethers";
-import {
-  getTimestamp,
-  toggleLiquid,
-  toggleNoti,
-} from "config/reducers/liquidation";
+import { toggleNoti } from "config/reducers/liquidation";
 
 const Ratios = () => {
   const dispatch = useDispatch();
   const { targetCRatio, currentCRatio, liquidationRatio } = useSelector(
     (state: RootState) => state.ratio
   );
+  const { liquidation } = useSelector((state: RootState) => state.liquidation);
 
   const ratioToPer = (value) => {
     if (value === 0n) return "0";
     return ((BigInt(Math.pow(10, 18).toString()) * 100n) / value).toString();
   };
 
-  const [liquidator, setLiquidator] = useState(false);
+  // ! 체인에서 대상여부 판단할거라 생각해서 주석처리
+  //   const [liquidator, setLiquidator] = useState(false);
 
-  useEffect(() => {
-    if (Number(ratioToPer(currentCRatio)) < 150) {
-      setLiquidator(true);
-      dispatch(toggleLiquid({ liquidation: true }));
-      // ! 체인에 보냄
-      // ! 처음 한번만 보내야됨
-      let today = new Date();
-      let startTime = today.getTime();
-      dispatch(getTimestamp(startTime));
-    } else {
-      setLiquidator(false);
-      dispatch(toggleLiquid({ liquidation: false }));
-    }
-  }, [currentCRatio, dispatch]);
+  //   useEffect(() => {
+  //     if (Number(ratioToPer(currentCRatio)) < 150) {
+  //       setLiquidator(true);
+  //       dispatch(toggleLiquid({ liquidation: true }));
+  //     } else {
+  //       setLiquidator(false);
+  //       dispatch(toggleLiquid({ liquidation: false }));
+  //     }
+  //   }, [currentCRatio, dispatch]);
 
   const onLiquidHandler = () => {
-    dispatch(toggleNoti({ notification: true }));
+    dispatch(toggleNoti({ toggle: true, title: 1 }));
   };
 
   return (
     <Container>
       <Row style={{ position: "relative" }}>
-        {liquidator && (
+        {liquidation && (
           <LiquidationBtn onClick={() => onLiquidHandler()}>!</LiquidationBtn>
         )}
         <H3 weigth={"sm"}>C-Ratio</H3>
-        <H3 weigth={"eb"} color={liquidator ? "warning" : "fourth"}>
+        <H3 weigth={"eb"} color={liquidation ? "warning" : "fourth"}>
           {ratioToPer(currentCRatio)}%
         </H3>
       </Row>

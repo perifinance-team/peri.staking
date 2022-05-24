@@ -1,4 +1,4 @@
-import { toggleNoti } from "config/reducers/liquidation";
+import { toggleLiquid, toggleNoti } from "config/reducers/liquidation";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "config/reducers";
@@ -7,9 +7,11 @@ import Countdown from "react-countdown";
 
 const Timer = () => {
   const dispatch = useDispatch();
-  const { liquidation, timestamp } = useSelector(
-    (state: RootState) => state.liquidation
-  );
+  const { liquidation } = useSelector((state: RootState) => state.liquidation);
+
+  // ! 블록체인에서 청산된 타임스탬프 가져와서 사용
+  let today = new Date();
+  let startTime = false ? today.getTime() : 1653379594992; // 22.05.24 5.07pm
 
   let setTime = 86400000; // 24
 
@@ -17,17 +19,21 @@ const Timer = () => {
 
   const onEscapeHandler = () => {
     // ! 에러 바인딩 해줘야됨
-    if (!liquidation) {
-      setEscape(true);
-    } else {
-      setEscape(false);
-    }
 
-    dispatch(toggleNoti({ notification: true }));
+    // 청산 가능 cratio를 올려야됨 누가 taken을 해주거나
+    if (true) {
+      setEscape(false);
+      dispatch(toggleLiquid({ liquidation: false }));
+      dispatch(toggleNoti({ toggle: true, title: 0 }));
+    } else {
+      setEscape(true);
+      dispatch(toggleNoti({ toggle: true, title: 1 }));
+    }
   };
 
   const renderer = ({ hours, minutes, completed }) => {
     if (completed) {
+      setEscape(true);
       return <span>00:00</span>;
     } else {
       return (
@@ -40,11 +46,11 @@ const Timer = () => {
 
   return (
     <TimerContainer>
-      <Countdown date={timestamp + setTime} renderer={renderer}>
+      <Countdown date={startTime + setTime} renderer={renderer}>
         <span>00:00</span>
       </Countdown>
 
-      <EscapeBtn onClick={() => onEscapeHandler()} disabled={escape}>
+      <EscapeBtn onClick={() => onEscapeHandler()} disabled={!liquidation}>
         Escape
       </EscapeBtn>
     </TimerContainer>

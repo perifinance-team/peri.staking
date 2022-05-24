@@ -2,19 +2,14 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export type LiquidState = {
   liquidation: boolean;
-  timestamp: number;
   temp: any;
   list: any;
-  notification: boolean;
+  notification: any;
 };
-
-let today = new Date();
-let startTime = today.getTime();
 
 // ratio가 150아래로 떨어졌을때 대상자에 넣어주면됨
 const initialState: LiquidState = {
-  liquidation: false, // 청산대상자 여부
-  timestamp: startTime,
+  liquidation: true, // 청산대상자 여부
   temp: [
     {
       idx: "oxlx2y",
@@ -249,7 +244,7 @@ const initialState: LiquidState = {
     },
   ],
   list: [],
-  notification: false, // 알림창 여부
+  notification: { toggle: false, title: 1 },
 };
 
 export const TransactionSlice = createSlice({
@@ -263,7 +258,7 @@ export const TransactionSlice = createSlice({
       state.temp = actions.payload.temp;
     },
     toggleNoti(state, action) {
-      state.notification = action.payload.notification;
+      state.notification = action.payload;
     },
     getTaken(state, actions) {
       state.temp.forEach((el: any) => {
@@ -273,13 +268,10 @@ export const TransactionSlice = createSlice({
       });
       console.log(state.temp);
     },
-    getTimestamp(state, actions) {
-      state.timestamp === 0 && (state.timestamp = actions.payload);
-    },
   },
 });
 
-export const { toggleLiquid, ratioAdd, toggleNoti, getTaken, getTimestamp } =
+export const { toggleLiquid, ratioAdd, toggleNoti, getTaken } =
   TransactionSlice.actions;
 
 export default TransactionSlice.reducer;

@@ -37,7 +37,6 @@ import Main from "./screens/Main";
 import "./App.css";
 
 import { getDebts } from "lib/balance/getDebts";
-import LiquidNotification from "components/LiquidNotification";
 
 const App = () => {
   const { address, networkId } = useSelector(
