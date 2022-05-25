@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from "react-redux"
 import { RootState } from 'config/reducers'
 import styled from 'styled-components';
-import { H1, H4 } from 'components/headding'
+import { H1, H4 } from 'components/heading'
 import { RoundButton } from 'components/button/RoundButton'
 import { Input } from 'components/input'
 import { StyledTHeader, StyledTBody, Row, Cell, BorderRow } from 'components/Table'
@@ -57,17 +57,17 @@ const Vesting = () => {
             const nextVestingIndex:number = (await contracts.PeriFinanceEscrow.getNextVestingIndex(address)).toNumber();
             const nowToEpoch = Math.floor(new Date().getTime() / 1000);
             
-            let datas = new Array(Number(vestingTotalCount.toString()))
+            let dataList = new Array(Number(vestingTotalCount.toString()))
             let index = 0;
             let totalVesting = 0n;
 
             // eslint-disable-next-line
-            for await (let data of datas) {    
+            for await (let data of dataList) {    
                 let [date, quantity] = await contracts.PeriFinanceEscrow.getVestingScheduleEntry(address, index);
                 date = BigInt(date.toString());
                 quantity = BigInt(quantity.toString());
 
-                datas[index] = {
+                dataList[index] = {
                     date: dateFns.format(Number((date * 1000n).toString()), 'yyyy-MM-dd hh:mm'),
                     quantity: quantity
                 };
@@ -81,7 +81,7 @@ const Vesting = () => {
             }
             dispatch(setLoading({name: 'vestingData', value: false}));
             setTotalVesting(totalVesting);
-            setVestingData(datas);
+            setVestingData(dataList);
         }
         if(isConnect) {
             init();
@@ -98,29 +98,29 @@ const Vesting = () => {
             <TableContainer>
                 <StyledTHeader>
                     <Row>
-                        <Cell><H4 weigth={'b'}>No</H4></Cell>
-                        <Cell><H4 weigth={'b'}>QUANTITY</H4></Cell>
-                        <Cell><H4 weigth={'b'}>VESTABLE DATE</H4></Cell>
+                        <Cell><H4 weight={'b'}>No</H4></Cell>
+                        <Cell><H4 weight={'b'}>QUANTITY</H4></Cell>
+                        <Cell><H4 weight={'b'}>VESTABLE DATE</H4></Cell>
                     </Row>
                 </StyledTHeader>
                 <StyledTBody height={20}>
                     {vestingData.map((e, index) => (
                         <BorderRow key={index}>
-                        <Cell><H4 weigth={'m'}>{index+1}</H4></Cell>
-                        <Cell><H4 weigth={'m'}>{e.quantity === 0n ? 'Already Received' : formatCurrency(e.quantity, 18)}</H4></Cell>
-                        <Cell><H4 weigth={'m'}>{e.date === 0n ? '-' : e.date}</H4></Cell>
+                        <Cell><H4 weight={'m'}>{index+1}</H4></Cell>
+                        <Cell><H4 weight={'m'}>{e.quantity === 0n ? 'Already Received' : formatCurrency(e.quantity, 18)}</H4></Cell>
+                        <Cell><H4 weight={'m'}>{e.date === 0n ? '-' : e.date}</H4></Cell>
                         </BorderRow>    
                     ))}
                 </StyledTBody>
             </TableContainer>            
             <Content>
                 <RowContainer>
-                    <Lable>{'PERI'}</Lable>
+                    <Label>{'PERI'}</Label>
                     <Input height={40} currencyName={'PERI'} value={formatCurrency(totalVesting, 18)} color={'secondary'} disabled={true}/>
                 </RowContainer>
                 <RowContainer>
                     <RoundButton disabled={totalVesting === 0n} height={40} onClick={() => {onVest()}} padding={0} color={'primary'} border={'none'} width={320} margin={'0px 0px 0px 50px'}>
-                        <H4 weigth={'b'} color={'primary'}>VEST</H4>
+                        <H4 weight={'b'} color={'primary'}>VEST</H4>
                     </RoundButton>
                 </RowContainer>
             </Content>
@@ -161,7 +161,7 @@ const Content = styled.div`
     flex-direction: column;
     justify-content: center;
 `
-const Lable = styled(H4)`
+const Label = styled(H4)`
     width: 50px;
 `
 

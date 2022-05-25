@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { H4 } from 'components/headding'
+import { H4 } from 'components/heading'
 
 export const MaxButton = ({color, onClick, fontColor, disabled = false}) => {
 

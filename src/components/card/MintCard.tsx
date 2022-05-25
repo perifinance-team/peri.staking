@@ -1,5 +1,5 @@
 import styled, { css } from 'styled-components';
-import { H3, H4, H5 } from 'components/headding'
+import { H3, H4 } from 'components/heading'
 import { RoundButton } from 'components/button/RoundButton'
 import { Input } from 'components/input'
 import { MaxButton } from 'components/button/MaxButton'
@@ -17,31 +17,31 @@ export const MintCard = ({isActive, currencyName, cRatio = 0n, isApprove = false
         <Card isActive={isActive}>
             <IconContainer>
                 {isActive && <img src={`/images/icon/${currencyName}.svg`} alt="mint"></img>}
-                <H3 weigth={'sb'}>{currencyName}</H3>
-                <H4 weigth={'b'}>Staked: {formatCurrency(balances[currencyName]?.staked, 2)}</H4>
+                <H3 weight={'sb'}>{currencyName}</H3>
+                <H4 weight={'b'}>Staked: {formatCurrency(balances[currencyName]?.staked, 2)}</H4>
             </IconContainer>
             <InputContainer>
                 <RowContainer margin={'0px'}>
-                    {isActive && <H4 align={'right'} weigth={'sb'}>EST APY: {formatCurrency(apy, 2)}%</H4>}
-                    {isActive && <Ratio align={'right'} weigth={'sb'}>EST C-RATIO: {cRatio.toString()}%</Ratio>}
+                    {isActive && <H4 align={'right'} weight={'sb'}>EST APY: {formatCurrency(apy, 2)}%</H4>}
+                    {isActive && <Ratio align={'right'} weight={'sb'}>EST C-RATIO: {cRatio.toString()}%</Ratio>}
                 </RowContainer>
                 <RowContainer>
-                    <Lable>{'pUSD'}</Lable>
+                    <Label>{'pUSD'}</Label>
                     <Input disabled={!isActive} currencyName={'pUSD'} value={isActive ? mintAmount : '0' } onChange={(e) => onChange(e.target.value, currencyName)} color={'primary'}/>
                     <MaxButton color={'secondary'} disabled={!isActive} fontColor={'primary'} onClick={() => maxAction()}/>
                 </RowContainer>
 
                 <RowContainer>
-                    <Lable>{currencyName}</Lable>
+                    <Label>{currencyName}</Label>
                     <Input disabled={true} currencyName={currencyName} value={isActive? stakeAmount : '0' } color={'primary'}/>
                 </RowContainer>
                 <ColContainer>
                     {isApprove ? (
                         <RoundButton height={30} disabled={!isActive} onClick={() => isConnect ? approveAction() : false} padding={0} color={'secondary'} width={320} border={'none'} margin={'0px 20px 0px 0px'}>
-                            <H4 weigth={'sb'}>Approve</H4>
+                            <H4 weight={'sb'}>Approve</H4>
                         </RoundButton>) : 
                         (<RoundButton height={30} disabled={!isActive} onClick={() => mintAction()} padding={0} color={'secondary'} width={320} border={'none'} margin={'0px 20px 0px 0px'}>
-                            <H4 weigth={'sb'}>MINT</H4>
+                            <H4 weight={'sb'}>MINT</H4>
                         </RoundButton>)
                     }
                     
@@ -118,6 +118,6 @@ const ColContainer = styled.div`
     align-items: center;
 `
 
-const Lable = styled(H4)`
+const Label = styled(H4)`
     width: 50px;
 `

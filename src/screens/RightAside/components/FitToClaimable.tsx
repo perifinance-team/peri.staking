@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { useSelector, useDispatch } from "react-redux"
 import { RootState } from 'config/reducers'
-import { H3 } from 'components/headding'
+import { H3 } from 'components/heading'
 import { contracts } from 'lib/contract'
 import { updateTransaction } from 'config/reducers/transaction'
 import { setLoading } from 'config/reducers/loading'

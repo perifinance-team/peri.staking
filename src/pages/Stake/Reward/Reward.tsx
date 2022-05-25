@@ -6,7 +6,7 @@ import { NotificationManager } from 'react-notifications';
 
 import { contracts } from 'lib/contract'
 
-import { H1 } from 'components/headding'
+import { H1 } from 'components/heading'
 import { RewardCard } from 'components/card/RewardCard'
 import { LPRewardCard } from 'components/card/LPRewardCard'
 
@@ -17,8 +17,8 @@ import { updateTransaction } from 'config/reducers/transaction'
 import { setLoading } from 'config/reducers/loading'
 import { onboard } from 'lib/onboard'
 import { formatCurrency } from 'lib'
-import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from 'constants';
-import networkFee from 'config/reducers/networkFee/networkFee';
+// import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from 'constants';
+// import networkFee from 'config/reducers/networkFee/networkFee';
 
 SwiperCore.use([Mousewheel, Virtual]);
 
@@ -27,7 +27,7 @@ type ClaimData = {
     duration?: string,
     periods?: string,
     rewards?: {
-        exchage: bigint,
+        exchange: bigint,
         staking: bigint,
     }
     claimable?: boolean,
@@ -37,7 +37,7 @@ type ClaimData = {
 const Reward = () => {
     const dispatch = useDispatch();
     const [slideIndex, setSlideIndex] = useState(0);
-    const balancesIsReady = useSelector((state: RootState) => state.balances.isReady);
+    // const balancesIsReady = useSelector((state: RootState) => state.balances.isReady);
     const exchangeIsReady = useSelector((state: RootState) => state.exchangeRates.isReady);
 
     const { hash } = useSelector((state: RootState) => state.transaction);
@@ -50,7 +50,7 @@ const Reward = () => {
         duration: '0',
         periods: '0',
         rewards: {
-            exchage: 0n,
+            exchange: 0n,
             staking: 0n
         },
         claimable: false,
@@ -208,7 +208,7 @@ const Reward = () => {
             const periods = await contracts.FeePool.recentFeePeriods(0);
             const claimable = address ? await contracts.FeePool.isFeesClaimable(address) : false;
             const reward = address ? await contracts.FeePool.feesAvailable(address) : [];
-            //reward type  array[0] = exchage | array[1] = staking
+            //reward type  array[0] = exchange | array[1] = staking
             
             const { closeIn, isCloseFeePeriodEnabled } = getFeePeriodCountdown(periods, duration);
             
@@ -217,7 +217,7 @@ const Reward = () => {
                 duration,
                 periods,
                 rewards: {
-                    exchage: isConnect ? BigInt(reward[0].toString()) : 0n,
+                    exchange: isConnect ? BigInt(reward[0].toString()) : 0n,
                     staking: isConnect ? BigInt(reward[1].toString()) : 0n,
                 },
                 claimable,

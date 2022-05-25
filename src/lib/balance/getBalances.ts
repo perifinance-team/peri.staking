@@ -62,7 +62,7 @@ export const getBalances = async (currentWallet, currencies, exchangeRates, targ
     ]) : [0n, 0n, 0n, 0n, 0n];
 
     
-    let USDCDEBT, DAIDEBT, stableDEBT, PERIDEBT, mintableStable, USDCStakable, DAIStakable, PERIStaked, PERIStakable: bigint = 0n;
+    let USDCDEBT, DAIDEBT, stableDEBT, PERIDEBT, mintableStable, USDCStakeable, DAIStakeable, PERIStaked, PERIStakeable: bigint = 0n;
 
     try {
         USDCDEBT = (BigInt(stakedUSDC) * exchangeRates['USDC'] / BigInt(Math.pow(10, 18).toString()) / (BigInt(Math.pow(10, 18).toString()) / targetCRatio));
@@ -72,21 +72,21 @@ export const getBalances = async (currentWallet, currencies, exchangeRates, targ
 
         mintableStable = ((PERIDEBT / 4n) - (stableDEBT));
         mintableStable = mintableStable <= 0n ? 0n : mintableStable;
-        USDCStakable = stakeAble ? mintableStable * (BigInt(Math.pow(10, 18).toString()) / targetCRatio) * BigInt(Math.pow(10, 18).toString()) / exchangeRates['USDC'] : 0n
-        DAIStakable = stakeAble ? mintableStable * (BigInt(Math.pow(10, 18).toString()) / targetCRatio) * BigInt(Math.pow(10, 18).toString()) / exchangeRates['DAI'] : 0n
+        USDCStakeable = stakeAble ? mintableStable * (BigInt(Math.pow(10, 18).toString()) / targetCRatio) * BigInt(Math.pow(10, 18).toString()) / exchangeRates['USDC'] : 0n
+        DAIStakeable = stakeAble ? mintableStable * (BigInt(Math.pow(10, 18).toString()) / targetCRatio) * BigInt(Math.pow(10, 18).toString()) / exchangeRates['DAI'] : 0n
         
-        if(USDCStakable > USDCBalance) {
-            USDCStakable = USDCBalance;
+        if(USDCStakeable > USDCBalance) {
+            USDCStakeable = USDCBalance;
         }
 
-        if(DAIStakable > DAIBalance) {
-            DAIStakable = DAIBalance;
+        if(DAIStakeable > DAIBalance) {
+            DAIStakeable = DAIBalance;
         }
 
         PERIStaked = PERIDEBT * (BigInt(Math.pow(10, 18).toString()) / targetCRatio) * BigInt(Math.pow(10, 18).toString()) / exchangeRates['PERI'];
         PERIStaked = periBalance < PERIStaked ? periBalance : PERIStaked;
-        PERIStakable = BigInt(periBalance) - PERIStaked;
-        PERIStakable = PERIStakable <= 0n ? 0n : PERIStakable;
+        PERIStakeable = BigInt(periBalance) - PERIStaked;
+        PERIStakeable = PERIStakeable <= 0n ? 0n : PERIStakeable;
     } catch(e) {
         console.log(e);
     }
@@ -107,7 +107,7 @@ export const getBalances = async (currentWallet, currencies, exchangeRates, targ
             ...currencies['PERI'],
             balance: periBalance,
             staked: PERIStaked,
-            stakable: PERIStakable,
+            stakeable: PERIStakeable,
             transferable: transferablePERI,
             rewardEscrow: PERIRewardEscrow,
             
@@ -123,7 +123,7 @@ export const getBalances = async (currentWallet, currencies, exchangeRates, targ
             balance: USDCBalance + stakedUSDC,
             transferable: USDCBalance,
             staked: stakedUSDC,
-            stakable: USDCStakable,
+            stakeable: USDCStakeable,
             mintable: stakeAble ? mintableStable : 0n,
             allowance: USDCAllowance,
             
@@ -134,7 +134,7 @@ export const getBalances = async (currentWallet, currencies, exchangeRates, targ
             transferable: DAIBalance,
             staked: stakedDAI,
             mintable: stakeAble ? mintableStable : 0n,
-            stakable: DAIStakable,
+            stakeable: DAIStakeable,
             allowance: DAIAllowance,
             
         },
@@ -144,7 +144,7 @@ export const getBalances = async (currentWallet, currencies, exchangeRates, targ
             transferable: LPBalance,
             allowance: LPAllowance,
             staked: stakedLP,
-            stakable: LPBalance,
+            stakeable: LPBalance,
             rewardEscrow: LPRewardEscrow,
         },
     }

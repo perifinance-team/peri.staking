@@ -7,7 +7,7 @@ import styled, { css } from 'styled-components';
 
 import { RootState } from 'config/reducers'
 
-import { H1, H2 } from 'components/headding'
+import { H1, H2 } from 'components/heading'
 import { Paragraph } from 'components/paragraph'
 
 import Mint from './Mint'
@@ -42,7 +42,7 @@ const Stake = () => {
                                             (<img src={`/images/${themeState}/${link}.svg`} alt="link"/>)
                                         }
                                         
-                                        <Paragraph fontSize={1.8} weigth={'m'}>
+                                        <Paragraph fontSize={1.8} weight={'m'}>
                                             {t(`stake.explanation.${link}`)}
                                         </Paragraph>
                                     </StyledLink>

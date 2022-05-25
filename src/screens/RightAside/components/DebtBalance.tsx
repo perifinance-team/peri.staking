@@ -1,9 +1,9 @@
 import styled from 'styled-components';
 import { useSelector } from "react-redux"
 import { RootState } from 'config/reducers'
-import { H3, H4 } from 'components/headding'
+import { H3, H4 } from 'components/heading'
 import { formatCurrency } from 'lib'
-import { useEffect, useState } from 'react';
+// import { useEffect, useState } from 'react';
 
 const DebtBalance = () => {
     const { balances } = useSelector((state: RootState) => state.balances);
@@ -12,7 +12,7 @@ const DebtBalance = () => {
         <DebtBalanceContainer>
             <H3 align={'left'}>DEBT</H3>
             <BalanceContainer>
-                <img src={`/images/currencies/pUSD.png`}></img>
+                <img alt={"pUSD"} src={`/images/currencies/pUSD.png`}></img>
                 
                 <H4 align={'right'}>${formatCurrency(balances['DEBT']?.balance ? balances['DEBT']?.balance : 0n)}</H4>
             </BalanceContainer>

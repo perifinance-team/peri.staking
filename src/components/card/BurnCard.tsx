@@ -1,5 +1,5 @@
 import styled, { css } from 'styled-components';
-import { H3, H4, H5 } from 'components/headding'
+import { H3, H4 } from 'components/heading'
 import { RoundButton } from 'components/button/RoundButton'
 import { Input } from 'components/input'
 import { MaxButton } from 'components/button/MaxButton'
@@ -26,35 +26,35 @@ export const BurnCard = ({isActive, currencyName, burnAmount, unStakeAmount, bur
         <Card isActive={isActive}>
             <IconContainer>
                 {isActive && <img src={`/images/icon/${isLP ? `${currencyName}_${swapName[networkId]}.png` : `${currencyName}.svg`}`} alt="burn"></img>}
-                <H3 weigth={'sb'}>{isLP ? `${swapName[networkId]}SWAP` : currencyName}</H3>
-                <H4 weigth={'b'}>Staked: {formatCurrency(balances[currencyName]?.staked, 2)}</H4>
+                <H3 weight={'sb'}>{isLP ? `${swapName[networkId]}SWAP` : currencyName}</H3>
+                <H4 weight={'b'}>Staked: {formatCurrency(balances[currencyName]?.staked, 2)}</H4>
             </IconContainer>
             <InputContainer>
                 {!isLP &&
                     <RowContainer margin={'0px'}>
-                        {isActive && <Ratio align={'right'} weigth={'sb'}>EST C-RATIO: {cRatio.toString()}%</Ratio>}
+                        {isActive && <Ratio align={'right'} weight={'sb'}>EST C-RATIO: {cRatio.toString()}%</Ratio>}
                     </RowContainer>
                 }
                 {!isLP && 
                     <RowContainer>
-                        <Lable>{'pUSD'}</Lable>
+                        <Label>{'pUSD'}</Label>
                         <Input disabled={!isActive} currencyName={'pUSD'} value={ isConnect ? burnAmount : ''} onChange={(e) => onChange(e.target.value, currencyName)} color={'primary'}/>
                         <MaxButton disabled={!isActive} color={'fourth'} fontColor={'fifth'} onClick={() => maxAction()}/>
                     </RowContainer>
                 }
                 
                 <RowContainer>
-                    <Lable>{currencyName}</Lable>
+                    <Label>{currencyName}</Label>
                     <Input disabled={!isLP || !isActive} isLP={isLP} currencyName={isLP ? `${currencyName}_${swapName[networkId]}` : currencyName} value={isActive ? unStakeAmount : ''} onChange={(e) => onChange(e.target.value, currencyName)} color={'primary'}/>
                     {isLP && <MaxButton color={'fourth'} fontColor={'fifth'} onClick={() => maxAction()} disabled={!isActive} />}
                 </RowContainer>
                 <ColContainer>
                     {!isLP ? 
                         (<RoundButton height={30} disabled={!isActive} onClick={() => burnAction()} padding={0} color={'fourth'} width={320} border={'none'} margin={'0px 20px 0px 0px'}>
-                            <H4 weigth={'sb'} color={'fifth'}>BURN</H4>
+                            <H4 weight={'sb'} color={'fifth'}>BURN</H4>
                         </RoundButton>) :
                         (<RoundButton height={30} disabled={!isActive} onClick={() => burnAction()} padding={0} color={'fourth'} width={320} border={'none'} margin={'0px 20px 0px 0px'}>
-                            <H4 weigth={'sb'} color={'fifth'}>UNSTAKE</H4>
+                            <H4 weight={'sb'} color={'fifth'}>UNSTAKE</H4>
                         </RoundButton>)
                     }
                     {isActive && <FeeAndPrice currencyName={currencyName}></FeeAndPrice>}
@@ -128,6 +128,6 @@ const ColContainer = styled.div`
     align-items: center;
 `
 
-const Lable = styled(H4)`
+const Label = styled(H4)`
     width: 50px;
 `

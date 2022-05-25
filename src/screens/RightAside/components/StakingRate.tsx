@@ -1,7 +1,7 @@
 import styled, { css } from 'styled-components';
 import { useSelector } from "react-redux"
 import { RootState } from 'config/reducers'
-import { H4 } from 'components/headding'
+import { H4 } from 'components/heading'
 import { useEffect, useState } from 'react';
 
 const StakingRate = () => {
@@ -22,7 +22,7 @@ const StakingRate = () => {
             setPERIStakingPer(Math.ceil(Number(per.toString())));
         }
         
-    }, [balances, exchangeIsReady, balancesIsReady]);
+    }, [balances, exchangeIsReady, balancesIsReady]); // , exchangeRates
 
     return (
         <>

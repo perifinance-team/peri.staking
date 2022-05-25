@@ -4,7 +4,7 @@ import { RootState } from 'config/reducers'
 import { NotificationManager } from 'react-notifications';
 
 import styled, { css } from 'styled-components';
-import { H1 } from 'components/headding'
+import { H1 } from 'components/heading'
 import { EarnCard } from 'components/card/EarnCard'
 import { Swiper, SwiperSlide } from 'swiper/react';
 import SwiperCore, { Mousewheel, Virtual } from 'swiper/core';
@@ -37,7 +37,7 @@ const Earn = () => {
         {name: 'LP', isStable: true}
     ]
 
-    const onChageStakingAmount = (value, currencyName) => {
+    const onChangeStakingAmount = (value, currencyName) => {
         if((/\./g).test(value)) {
             value = value.match(/\d+\.\d{0,17}/g)[0];
         }
@@ -210,10 +210,10 @@ const Earn = () => {
                 {coins.map((coin, index) => (
                     <SwiperSlide key={coin.name} virtualIndex={index}> 
                         <EarnCard isActive={index === slideIndex} coinName={coin.name}
-                                onChange={onChageStakingAmount}
+                                onChange={onChangeStakingAmount}
                                 apy={rewardsAmountToAPY}
                                 stakeAmount={stakeAmount}
-                                maxAction={() => isConnect ? onChageStakingAmount(maxStakeAmount, coin.name) : connectHelp()}
+                                maxAction={() => isConnect ? onChangeStakingAmount(maxStakeAmount, coin.name) : connectHelp()}
                                 isApprove={isApprove} approveAction={() => approveAction(coin.name)} stakeAction={() => stakeAction()}
                         ></EarnCard> 
                     </SwiperSlide>

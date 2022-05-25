@@ -2,7 +2,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState } from 'config/reducers'
 import { clearWallet, clearBalances } from 'config/reducers/wallet'
 import { RoundButton } from 'components/button'
-import { H4 } from 'components/headding'
+import { H4 } from 'components/heading'
 import { onboard } from 'lib/onboard'
 import { updateVestable } from 'config/reducers/vest'
 
@@ -34,7 +34,7 @@ const Connect = () => {
 
     return (
         <RoundButton height={30} padding={'0px 15px'} onClick={() => { isConnect ? onDisConnect() : onConnect() }} color={'tertiary'} margin={'0px'} border={'none'} width={120}>
-            <H4 fontSize={1.4} weigth={'b'} color={'primary'}>{isConnect ? 'DISCONNECT' : 'CONNECT'}</H4>
+            <H4 fontSize={1.4} weight={'b'} color={'primary'}>{isConnect ? 'DISCONNECT' : 'CONNECT'}</H4>
         </RoundButton>
     );
 }

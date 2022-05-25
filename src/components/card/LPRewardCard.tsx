@@ -1,5 +1,5 @@
 import styled, { css } from 'styled-components';
-import { H3, H4 } from 'components/headding'
+import { H3, H4 } from 'components/heading'
 import { RoundButton } from 'components/button/RoundButton'
 import { Input } from 'components/input'
 import { Fee } from 'components/Fee'
@@ -25,23 +25,23 @@ export const LPRewardCard = ({isActive, actionName, rewardAction, data}) => {
         <Card isActive={isActive}>
             <IconContainer>
                 {isActive && <img src={`/images/icon/${actionName}_${swapName[networkId]}.png`} alt="LP"></img>}
-                <H3 weigth={'sb'}>{swapName[networkId]}SWAP</H3>
+                <H3 weight={'sb'}>{swapName[networkId]}SWAP</H3>
             </IconContainer>
             <InputContainer>
                 <RowContainer margin={'0px'}>
-                    {isActive && <H4 align={'right'} weigth={'sb'}>TIME LEFT: {data.closeIn}</H4>}
-                    {isActive && <ClaimAble align={'right'} weigth={'sb'}>STATUS: {'OPEN'}</ClaimAble>}
+                    {isActive && <H4 align={'right'} weight={'sb'}>TIME LEFT: {data.closeIn}</H4>}
+                    {isActive && <ClaimAble align={'right'} weight={'sb'}>STATUS: {'OPEN'}</ClaimAble>}
                 </RowContainer>
                 <RowContainer>
-                    <Lable>{'PERI'}</Lable>
+                    <Label>{'PERI'}</Label>
                     <Input currencyName={'PERI'} value={ isActive ? formatCurrency(data.rewardEscrow, 8) : ''} color={'primary'} disabled={true}/>
                 </RowContainer>
                 <ColContainer>
                     {/* <RoundButton height={30} onClick={() => periodAction()} padding={0} color={'primary'} border={'none'} width={320} margin={'0px 20px 10px 0px'}>
-                        <H4 weigth={'b'} color={'primary'}>CLOSE CURRENT PERIOD</H4>
+                        <H4 weight={'b'} color={'primary'}>CLOSE CURRENT PERIOD</H4>
                     </RoundButton> */}
                     <RoundButton disabled={!isActive} height={30} onClick={() => rewardAction()} padding={0} color={'tertiary'} border={'tertiary'} width={320} margin={'0px 20px 0px 0px'}>
-                        <H4 weigth={'b'} color={'primary'}>CLAIM</H4>
+                        <H4 weight={'b'} color={'primary'}>CLAIM</H4>
                     </RoundButton>
                     {isActive && <Fee></Fee>}
                 </ColContainer>
@@ -115,6 +115,6 @@ const ColContainer = styled.div`
     align-items: center;
 `
 
-const Lable = styled(H4)`
+const Label = styled(H4)`
     width: 50px;
 `

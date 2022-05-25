@@ -17,10 +17,10 @@ const RightAside = () => {
                 <StakingRate></StakingRate>
                 <FitToClaimable></FitToClaimable>
                 <StakingStatus></StakingStatus>
-                <FelxRow>
+                <FlexRow>
                     <Refresh></Refresh>
                     <Exit></Exit>
-                </FelxRow>
+                </FlexRow>
             </Container>
         </Aside>
     );
@@ -30,7 +30,7 @@ const Aside = styled.aside`
     
 `
 
-const FelxRow = styled.div`
+const FlexRow = styled.div`
     margin-top: 20px;
     display: flex;
     flex-direction: row;

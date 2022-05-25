@@ -1,8 +1,8 @@
-import styled,{ css } from 'styled-components';
+import styled from 'styled-components';
 import { NavLink, useRouteMatch } from 'react-router-dom';
 import { RootState } from 'config/reducers'
 import { useSelector } from "react-redux"
-import { useEffect } from 'react';
+// import { useEffect } from 'react';
 
 const Logo = () => {
     const { vestable } = useSelector((state: RootState) => state.vestable);
@@ -63,7 +63,7 @@ const Logo = () => {
                     });
                 }
                 if(item.name === 'vesting' && vestable === false) {
-                    
+                    return <></>;
                 } else {
                     return <ParentLinkContainer key={item.name}>
                         <ParentLink to={item.to}>{item.name.toLocaleUpperCase()}</ParentLink>

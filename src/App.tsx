@@ -29,7 +29,7 @@ import Loading from './screens/Loading'
 import Main from './screens/Main'
 import './App.css'
 
-import {getDebts} from 'lib/balance/getDebts'
+// import {getDebts} from 'lib/balance/getDebts'
 
 
 const App = () => {
@@ -41,11 +41,11 @@ const App = () => {
     const themeState = useSelector((state: RootState) => state.theme.theme);
     
     const dispatch = useDispatch();
-    const intervelTime = 1000 * 60 * 3;
+    const intervalTime = 1000 * 60 * 3;
     const [ intervals, setIntervals ] = useState(null);
     const [onboardInit, setOnboardInit] = useState(false);
 
-    const [userAddress, setUserAddress] = useState('test');
+//     const [userAddress, setUserAddress] = useState('test');
 
     const getSystemData = useCallback(async (isLoading) => {
         dispatch(setLoading({name: 'balance', value: isLoading}));
@@ -176,7 +176,7 @@ const App = () => {
                 clearInterval(intervals);
             } 
             setIntervals(
-                (setInterval(() => getSystemData(false), intervelTime))
+                (setInterval(() => getSystemData(false), intervalTime))
             )
         }
         // eslint-disable-next-line

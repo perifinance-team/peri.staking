@@ -1,5 +1,5 @@
 import styled, { css } from 'styled-components';
-import { H3, H4, H5 } from 'components/headding'
+import { H3, H4 } from 'components/heading'
 import { RoundButton } from 'components/button/RoundButton'
 import { Input } from 'components/input'
 import { MaxButton } from 'components/button/MaxButton'
@@ -27,25 +27,25 @@ export const EarnCard = ({isActive, coinName, isStable = false, isApprove = fals
         <Card isActive={isActive}>
             <IconContainer>
                 {isActive && <img src={`/images/icon/${coinName}_${swapName[networkId]}.png`} alt="earn"></img>}
-                <H3 weigth={'sb'}>{swapName[networkId]}SWAP</H3>
-                <H4 weigth={'b'}>Staked: {formatCurrency(balances[coinName]?.staked, 2)}</H4>
+                <H3 weight={'sb'}>{swapName[networkId]}SWAP</H3>
+                <H4 weight={'b'}>Staked: {formatCurrency(balances[coinName]?.staked, 2)}</H4>
             </IconContainer>
             <InputContainer>
                 <RowContainer margin={'0px'}>
-                    {isActive && <APY align={'left'} weigth={'sb'}>EST APY: {formatCurrency(apy, 2)}%</APY>}
+                    {isActive && <APY align={'left'} weight={'sb'}>EST APY: {formatCurrency(apy, 2)}%</APY>}
                 </RowContainer>
                 <RowContainer>
-                    <Lable>{coinName}</Lable>
+                    <Label>{coinName}</Label>
                     <Input disabled={!isActive} isLP={true} currencyName={`${coinName}_${swapName[networkId]}`} value={stakeAmount} onChange={(e) => {onChange(e.target.value, coinName)}} color={'primary'}/>
                     <MaxButton disabled={!isActive} color={'primary'} fontColor={'primary'} onClick={() => maxAction()}/>
                 </RowContainer>
                 <ColContainer>
                     {isApprove ? (
                         <RoundButton height={30} disabled={!isActive} onClick={() => approveAction()} padding={0} color={'primary'} width={320} border={'none'} margin={'0px 20px 0px 0px'}>
-                            <H4 weigth={'sb'}>Approve</H4>
+                            <H4 weight={'sb'}>Approve</H4>
                         </RoundButton>) : 
                         (<RoundButton height={30} disabled={!isActive} onClick={() => stakeAction()} padding={0} color={'primary'} width={320} border={'none'} margin={'0px 20px 0px 0px'}>
-                            <H4 weigth={'sb'}>STAKE</H4>
+                            <H4 weight={'sb'}>STAKE</H4>
                         </RoundButton>)
                     }
                     {isActive && <Fee></Fee>}
@@ -119,6 +119,6 @@ const ColContainer = styled.div`
     align-items: center;
 `
 
-const Lable = styled(H4)`
+const Label = styled(H4)`
     width: 50px;
 `

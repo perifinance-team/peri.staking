@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { useSelector, useDispatch } from "react-redux"
 import { RootState } from 'config/reducers'
-import { H4 } from 'components/headding'
+import { H4 } from 'components/heading'
 import { contracts } from 'lib/contract'
 import { updateTransaction } from 'config/reducers/transaction'
 import { NotificationManager } from 'react-notifications';
@@ -57,7 +57,7 @@ const Exit = () => {
     return (
         <>
             {currentCRatio > 0n && <Container onClick={() => exit()}>
-                <H4 weigth={'b'}>UNSTAKE ALL</H4>
+                <H4 weight={'b'}>UNSTAKE ALL</H4>
             </Container>} 
         </>
     );

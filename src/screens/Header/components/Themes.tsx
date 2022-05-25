@@ -8,14 +8,14 @@ const Connect = () => {
     const themeState = useSelector((state: RootState) => state.theme.theme);
     const dispatch = useDispatch();
 
-    const themeExchage = () => {
+    const themeExchange = () => {
         dispatch(updateThemeStyles(themeState === 'dark' ? "lite" : "dark"));
         dispatch(updateTheme(themeState === 'dark' ? "lite" : "dark"));
         onboard.config({ darkMode: themeState === 'dark' ? false : true})
     }
 
     return (
-        <ThemesButton onClick={() => themeExchage()}>
+        <ThemesButton onClick={() => themeExchange()}>
             <img src={`/images/${themeState}/${themeState}.svg`} alt="theme"/>
         </ThemesButton>
     );
