@@ -3,7 +3,9 @@ import { contracts } from "lib/contract";
 export const getCurrentCRatio = async (currentWallet) => {
   const { PeriFinance } = contracts as any;
 
-  console.log("contracts", contracts.Liquidations.LIQUIDATION_CALLER);
+  //   contracts.callStatic.Liquidations();
+
+  console.log("contracts", contracts);
 
   if (currentWallet) {
     try {

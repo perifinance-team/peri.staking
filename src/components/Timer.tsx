@@ -46,7 +46,7 @@ const Timer = () => {
 
   return (
     <TimerContainer>
-      <Countdown date={startTime + setTime} renderer={renderer}>
+      <Countdown date={startTime + setTime} zeroPadTime={2} renderer={renderer}>
         <span>00:00</span>
       </Countdown>
 
