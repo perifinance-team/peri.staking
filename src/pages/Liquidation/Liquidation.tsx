@@ -15,7 +15,7 @@ import { getTaken } from "config/reducers/liquidation";
 const Liquidation = () => {
   const dispatch = useDispatch();
   const { balances } = useSelector((state: RootState) => state.balances);
-  const { temp } = useSelector((state: RootState) => state.liquidation);
+  const { list } = useSelector((state: RootState) => state.liquidation);
 
   const statusList = ["Open", "Taken", "Closed"];
 
@@ -55,7 +55,7 @@ const Liquidation = () => {
           </Row>
         </StyledTHeader>
         <StyledTBody>
-          {temp.map((el, idx) => {
+          {list.map((el, idx) => {
             return (
               <BorderRow
                 key={`row${idx}`}

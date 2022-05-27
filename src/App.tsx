@@ -37,6 +37,7 @@ import Main from "./screens/Main";
 import "./App.css";
 
 import { getDebts } from "lib/balance/getDebts";
+import { updateList } from "config/reducers/liquidation";
 
 const App = () => {
   const { address, networkId } = useSelector(
@@ -211,6 +212,260 @@ const App = () => {
     }
     // eslint-disable-next-line
   }, [networkId, address, onboardInit]);
+
+  useEffect(() => {
+    // ! 컨트랙트와 연결해서 리스트 재가공 후 스토어에 업데이트
+
+    const template = {
+      idx: "oxlx2y",
+      cRatio: "0",
+      debt: 0,
+      collateral: [
+        { name: "Peri", value: 0 },
+        { name: "Dai", value: 0 },
+        { name: "USDC", value: 0 },
+      ],
+      status: 0,
+    };
+
+    const liquidationList = [
+      {
+        idx: "oxlx2y",
+        cRatio: "140",
+        debt: 100,
+        collateral: [
+          { name: "Peri", value: 95 },
+          { name: "Dai", value: 5 },
+          { name: "USDC", value: 5 },
+        ],
+        status: 0,
+      },
+      {
+        idx: "oxlx3y",
+        cRatio: "120",
+        debt: 50,
+        collateral: [
+          { name: "Peri", value: 95 },
+          { name: "Dai", value: 5 },
+          { name: "USDC", value: 0 },
+        ],
+        status: 1,
+      },
+      {
+        idx: "oxlx4y",
+        cRatio: "110",
+        debt: 500,
+        collateral: [
+          { name: "Peri", value: 95 },
+          { name: "Dai", value: 0 },
+          { name: "USDC", value: 5 },
+        ],
+        status: 2,
+      },
+      {
+        idx: "oxlx4y",
+        cRatio: "110",
+        debt: 500,
+        collateral: [
+          { name: "Peri", value: 95 },
+          { name: "Dai", value: 0 },
+          { name: "USDC", value: 5 },
+        ],
+        status: 2,
+      },
+      {
+        idx: "oxlx4y",
+        cRatio: "110",
+        debt: 500,
+        collateral: [
+          { name: "Peri", value: 95 },
+          { name: "Dai", value: 0 },
+          { name: "USDC", value: 5 },
+        ],
+        status: 2,
+      },
+      {
+        idx: "oxlx4y",
+        cRatio: "110",
+        debt: 500,
+        collateral: [
+          { name: "Peri", value: 95 },
+          { name: "Dai", value: 0 },
+          { name: "USDC", value: 5 },
+        ],
+        status: 2,
+      },
+      {
+        idx: "oxlx4y",
+        cRatio: "110",
+        debt: 500,
+        collateral: [
+          { name: "Peri", value: 95 },
+          { name: "Dai", value: 0 },
+          { name: "USDC", value: 5 },
+        ],
+        status: 2,
+      },
+      {
+        idx: "oxlx4y",
+        cRatio: "110",
+        debt: 500,
+        collateral: [
+          { name: "Peri", value: 95 },
+          { name: "Dai", value: 0 },
+          { name: "USDC", value: 5 },
+        ],
+        status: 2,
+      },
+      {
+        idx: "oxlx4y",
+        cRatio: "110",
+        debt: 500,
+        collateral: [
+          { name: "Peri", value: 95 },
+          { name: "Dai", value: 0 },
+          { name: "USDC", value: 5 },
+        ],
+        status: 2,
+      },
+      {
+        idx: "oxlx4y",
+        cRatio: "110",
+        debt: 500,
+        collateral: [
+          { name: "Peri", value: 95 },
+          { name: "Dai", value: 0 },
+          { name: "USDC", value: 5 },
+        ],
+        status: 2,
+      },
+      {
+        idx: "oxlx4y",
+        cRatio: "110",
+        debt: 500,
+        collateral: [
+          { name: "Peri", value: 95 },
+          { name: "Dai", value: 0 },
+          { name: "USDC", value: 5 },
+        ],
+        status: 2,
+      },
+      {
+        idx: "oxlx4y",
+        cRatio: "110",
+        debt: 500,
+        collateral: [
+          { name: "Peri", value: 95 },
+          { name: "Dai", value: 0 },
+          { name: "USDC", value: 5 },
+        ],
+        status: 2,
+      },
+      {
+        idx: "oxlx4y",
+        cRatio: "110",
+        debt: 500,
+        collateral: [
+          { name: "Peri", value: 95 },
+          { name: "Dai", value: 0 },
+          { name: "USDC", value: 5 },
+        ],
+        status: 2,
+      },
+      {
+        idx: "oxlx4y",
+        cRatio: "110",
+        debt: 500,
+        collateral: [
+          { name: "Peri", value: 95 },
+          { name: "Dai", value: 0 },
+          { name: "USDC", value: 5 },
+        ],
+        status: 2,
+      },
+      {
+        idx: "oxlx4y",
+        cRatio: "110",
+        debt: 500,
+        collateral: [
+          { name: "Peri", value: 95 },
+          { name: "Dai", value: 0 },
+          { name: "USDC", value: 5 },
+        ],
+        status: 2,
+      },
+      {
+        idx: "oxlx4y",
+        cRatio: "110",
+        debt: 500,
+        collateral: [
+          { name: "Peri", value: 95 },
+          { name: "Dai", value: 0 },
+          { name: "USDC", value: 5 },
+        ],
+        status: 2,
+      },
+      {
+        idx: "oxlx4y",
+        cRatio: "110",
+        debt: 500,
+        collateral: [
+          { name: "Peri", value: 95 },
+          { name: "Dai", value: 0 },
+          { name: "USDC", value: 5 },
+        ],
+        status: 2,
+      },
+      {
+        idx: "oxlx4y",
+        cRatio: "110",
+        debt: 500,
+        collateral: [
+          { name: "Peri", value: 95 },
+          { name: "Dai", value: 0 },
+          { name: "USDC", value: 5 },
+        ],
+        status: 2,
+      },
+      {
+        idx: "oxlx4y",
+        cRatio: "110",
+        debt: 500,
+        collateral: [
+          { name: "Peri", value: 95 },
+          { name: "Dai", value: 0 },
+          { name: "USDC", value: 5 },
+        ],
+        status: 2,
+      },
+      {
+        idx: "oxlx4y",
+        cRatio: "110",
+        debt: 500,
+        collateral: [
+          { name: "Peri", value: 95 },
+          { name: "Dai", value: 0 },
+          { name: "USDC", value: 5 },
+        ],
+        status: 2,
+      },
+      {
+        idx: "oxlx4y",
+        cRatio: "110",
+        debt: 500,
+        collateral: [
+          { name: "Peri", value: 95 },
+          { name: "Dai", value: 0 },
+          { name: "USDC", value: 5 },
+        ],
+        status: 2,
+      },
+    ];
+
+    dispatch(updateList(liquidationList));
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // <input type="text" value={userAddress} onChange={(e) => {setUserAddress(e.target.value)}} />
   // <button onClick={() => getDebts(userAddress)}>getDebts</button>
