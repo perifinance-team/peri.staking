@@ -18,19 +18,6 @@ const Ratios = () => {
     return ((BigInt(Math.pow(10, 18).toString()) * 100n) / value).toString();
   };
 
-  // ! 체인에서 대상여부 판단할거라 생각해서 주석처리
-  //   const [liquidator, setLiquidator] = useState(false);
-
-  //   useEffect(() => {
-  //     if (Number(ratioToPer(currentCRatio)) < 150) {
-  //       setLiquidator(true);
-  //       dispatch(toggleLiquid({ liquidation: true }));
-  //     } else {
-  //       setLiquidator(false);
-  //       dispatch(toggleLiquid({ liquidation: false }));
-  //     }
-  //   }, [currentCRatio, dispatch]);
-
   const onLiquidHandler = () => {
     dispatch(toggleNoti({ toggle: true, title: 1 }));
   };

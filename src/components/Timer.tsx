@@ -1,5 +1,5 @@
+import React from "react";
 import { toggleLiquid, toggleNoti } from "config/reducers/liquidation";
-import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "config/reducers";
 import styled from "styled-components";
@@ -7,7 +7,9 @@ import Countdown from "react-countdown";
 
 const Timer = () => {
   const dispatch = useDispatch();
-  const { liquidation } = useSelector((state: RootState) => state.liquidation);
+  const { liquidation, thisState } = useSelector(
+    (state: RootState) => state.liquidation
+  );
 
   // ! 블록체인에서 청산된 타임스탬프 가져와서 사용
   let today = new Date();
@@ -15,25 +17,21 @@ const Timer = () => {
 
   let setTime = 86400000; // 24
 
-  const [escape, setEscape] = useState(false);
-
   const onEscapeHandler = () => {
     // ! 에러 바인딩 해줘야됨
 
-    // 청산 가능 cratio를 올려야됨 누가 taken을 해주거나
-    if (true) {
-      setEscape(false);
-      dispatch(toggleLiquid({ liquidation: false }));
-      dispatch(toggleNoti({ toggle: true, title: 0 }));
-    } else {
-      setEscape(true);
-      dispatch(toggleNoti({ toggle: true, title: 1 }));
+    if (liquidation) {
+      if (thisState.status !== 1 || Number(thisState.cRatio) >= 150) {
+        dispatch(toggleLiquid({ liquidation: false })); // ! contract를 업데이트해주는 걸로 변경
+        dispatch(toggleNoti({ toggle: true, title: 0 }));
+      } else {
+        dispatch(toggleNoti({ toggle: true, title: 1 }));
+      }
     }
   };
 
   const renderer = ({ hours, minutes, completed }) => {
     if (completed) {
-      setEscape(true);
       return <span>00:00</span>;
     } else {
       return (

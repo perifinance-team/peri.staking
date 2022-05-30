@@ -11,19 +11,17 @@ export type LiquidState = {
 const initialState: LiquidState = {
   liquidation: true, // 청산대상자 여부
   list: [],
-  thisState: [
-    {
-      idx: "oxlx2y",
-      cRatio: "140",
-      debt: 100,
-      collateral: [
-        { name: "Peri", value: 95 },
-        { name: "Dai", value: 5 },
-        { name: "USDC", value: 5 },
-      ],
-      status: 0,
-    },
-  ],
+  thisState: {
+    idx: "oxlx1y",
+    cRatio: "0",
+    debt: 0,
+    collateral: [
+      { name: "Peri", value: 0 },
+      { name: "Dai", value: 0 },
+      { name: "USDC", value: 0 },
+    ],
+    status: 0,
+  },
   notification: { toggle: false, title: 1 },
 };
 
@@ -47,10 +45,18 @@ export const TransactionSlice = createSlice({
     updateList(state, actions) {
       state.list = actions.payload;
     },
+    updateThisState(state, actions) {
+      state.thisState = actions.payload;
+    },
   },
 });
 
-export const { toggleLiquid, toggleNoti, getTaken, updateList } =
-  TransactionSlice.actions;
+export const {
+  toggleLiquid,
+  toggleNoti,
+  getTaken,
+  updateList,
+  updateThisState,
+} = TransactionSlice.actions;
 
 export default TransactionSlice.reducer;

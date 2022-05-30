@@ -37,7 +37,12 @@ import Main from "./screens/Main";
 import "./App.css";
 
 import { getDebts } from "lib/balance/getDebts";
-import { updateList } from "config/reducers/liquidation";
+import {
+  toggleLiquid,
+  updateList,
+  updateThisState,
+} from "config/reducers/liquidation";
+import axios from "axios";
 
 const App = () => {
   const { address, networkId } = useSelector(
@@ -55,8 +60,6 @@ const App = () => {
   const intervelTime = 1000 * 60 * 3;
   const [intervals, setIntervals] = useState(null);
   const [onboardInit, setOnboardInit] = useState(false);
-
-  const [userAddress, setUserAddress] = useState("test");
 
   const getSystemData = useCallback(
     async (isLoading) => {
@@ -214,8 +217,14 @@ const App = () => {
   }, [networkId, address, onboardInit]);
 
   useEffect(() => {
+    axios
+      .get("")
+      .then()
+      .catch((e) => console.log(e));
+
     // ! 컨트랙트와 연결해서 리스트 재가공 후 스토어에 업데이트
 
+    // 자기 자신 값이 필요한가?
     const template = {
       idx: "oxlx2y",
       cRatio: "0",
@@ -464,8 +473,30 @@ const App = () => {
 
     dispatch(updateList(liquidationList));
 
+    // ! 컨트랙트에서 받아온 liquidation 여부 스토어에 업데이트 ? => 스토어에 관리하지 말고 직접 받아서 사용
+    let tempLiquid = false;
+
+    dispatch(toggleLiquid(tempLiquid));
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    const thisState = {
+      idx: "oxlx1y",
+      cRatio: "0",
+      debt: 0,
+      collateral: [
+        { name: "Peri", value: 0 },
+        { name: "Dai", value: 0 },
+        { name: "USDC", value: 0 },
+      ],
+      status: 0,
+    };
+
+    dispatch(updateThisState(thisState));
+    // ! 업데이트 주기 뭐로하지
+  });
 
   // <input type="text" value={userAddress} onChange={(e) => {setUserAddress(e.target.value)}} />
   // <button onClick={() => getDebts(userAddress)}>getDebts</button>
