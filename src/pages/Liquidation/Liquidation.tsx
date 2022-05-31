@@ -11,6 +11,7 @@ import {
   BorderRow,
 } from "components/Table";
 import { getTaken } from "config/reducers/liquidation";
+import { contracts } from "lib/contract";
 
 const Liquidation = () => {
   const dispatch = useDispatch();
@@ -20,11 +21,6 @@ const Liquidation = () => {
   const statusList = ["Open", "Taken", "Closed"];
 
   const onTakeHandler = (id) => {
-    console.log("id", id);
-    // 조건에 맞는다면 status Taken으로 변경
-    // ! 조건 => 청산 대상자에  debt를 청산할 만큼 번할수 있는 pUSD를 가지고 있어야함
-    // 청산 대상자는 번된 pUSD + 패널티(10%) 만큼의 peri를 지불해야함 잔액이 부족하다면 peri 전부가 전송됨
-
     if (true) {
       dispatch(getTaken(id));
     } else {

@@ -1,15 +1,14 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export type LiquidState = {
-  liquidation: boolean;
+  liquidation?: boolean;
   thisState: any;
   list: any;
   notification: any;
 };
 
-// ratio가 150아래로 떨어졌을때 대상자에 넣어주면됨
 const initialState: LiquidState = {
-  liquidation: true, // 청산대상자 여부
+  liquidation: true,
   list: [],
   thisState: {
     idx: "oxlx1y",

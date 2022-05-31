@@ -22,6 +22,8 @@ const Ratios = () => {
     dispatch(toggleNoti({ toggle: true, title: 1 }));
   };
 
+  console.log("liquidation", liquidation);
+
   return (
     <Container>
       <Row style={{ position: "relative" }}>

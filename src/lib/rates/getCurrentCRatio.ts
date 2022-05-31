@@ -7,6 +7,8 @@ export const getCurrentCRatio = async (currentWallet) => {
 
   console.log("contracts", contracts);
 
+  console.log("liquidations", contracts.Liquidations);
+
   if (currentWallet) {
     try {
       return BigInt(

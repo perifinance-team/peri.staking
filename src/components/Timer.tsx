@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { toggleLiquid, toggleNoti } from "config/reducers/liquidation";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "config/reducers";
@@ -10,19 +10,17 @@ const Timer = () => {
   const { liquidation, thisState } = useSelector(
     (state: RootState) => state.liquidation
   );
+  // const [toggleBtn, setToggleBtn] = useState(false);
+  let toggleBtn = false;
 
-  // ! 블록체인에서 청산된 타임스탬프 가져와서 사용
   let today = new Date();
   let startTime = false ? today.getTime() : 1653379594992; // 22.05.24 5.07pm
 
   let setTime = 86400000; // 24
 
   const onEscapeHandler = () => {
-    // ! 에러 바인딩 해줘야됨
-
     if (liquidation) {
       if (thisState.status !== 1 || Number(thisState.cRatio) >= 150) {
-        dispatch(toggleLiquid({ liquidation: false })); // ! contract를 업데이트해주는 걸로 변경
         dispatch(toggleNoti({ toggle: true, title: 0 }));
       } else {
         dispatch(toggleNoti({ toggle: true, title: 1 }));
@@ -32,6 +30,7 @@ const Timer = () => {
 
   const renderer = ({ hours, minutes, completed }) => {
     if (completed) {
+      toggleBtn = true;
       return <span>00:00</span>;
     } else {
       return (
@@ -48,7 +47,7 @@ const Timer = () => {
         <span>00:00</span>
       </Countdown>
 
-      <EscapeBtn onClick={() => onEscapeHandler()} disabled={!liquidation}>
+      <EscapeBtn onClick={() => onEscapeHandler()} disabled={!toggleBtn}>
         Escape
       </EscapeBtn>
     </TimerContainer>
