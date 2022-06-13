@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
-import styled, { ThemeProvider } from "styled-components";
+import { ThemeProvider } from "styled-components";
 import {
   NotificationContainer,
   NotificationManager,
@@ -35,16 +35,12 @@ import { getRatios } from "lib/rates";
 import Loading from "./screens/Loading";
 import Main from "./screens/Main";
 import "./App.css";
-
-import { getDebts } from "lib/balance/getDebts";
-import {
-  toggleLiquid,
-  updateList,
-  updateThisState,
-} from "config/reducers/liquidation";
-import axios from "axios";
+import { toggleLiquid } from "config/reducers/liquidation";
+import { getTimeStamp } from "lib/liquidation";
 
 const App = () => {
+  let test = false; // ! test
+
   const { address, networkId } = useSelector(
     (state: RootState) => state.wallet
   );
@@ -61,6 +57,8 @@ const App = () => {
   const [intervals, setIntervals] = useState(null);
   const [onboardInit, setOnboardInit] = useState(false);
 
+  const { Liquidations } = contracts as any;
+
   const getSystemData = useCallback(
     async (isLoading) => {
       dispatch(setLoading({ name: "balance", value: isLoading }));
@@ -76,6 +74,13 @@ const App = () => {
         dispatch(updateNetworkFee({ gasPrice }));
 
         if (address) {
+          // ! test
+          const stateLiquid = await Liquidations.isOpenForLiquidation(
+            test ? "0x095fc820bf9bc4049742209f172de442c8471a0b" : address
+          );
+
+          await Promise.all([getTimeStamp(address, Liquidations)]);
+
           const [balancesData, vestable] = await Promise.all([
             getBalances(
               address,
@@ -86,7 +91,10 @@ const App = () => {
             ),
             getVestable(address),
           ]);
+
           dispatch(initCurrency(balancesData));
+
+          dispatch(toggleLiquid(stateLiquid));
           //todo:: code move call
           dispatch(updateVestable({ vestable }));
         }
@@ -99,6 +107,7 @@ const App = () => {
   const setOnboard = async () => {
     let networkId = Number(process.env.REACT_APP_DEFAULT_NETWORK_ID);
     contracts.init(networkId);
+
     dispatch(updateNetwork({ networkId: networkId }));
     try {
       InitOnboard(
@@ -170,6 +179,13 @@ const App = () => {
   };
 
   useEffect(() => {
+    if (!onboardInit) {
+      setOnboard();
+    }
+    dispatch(updateThemeStyles(themeState));
+  }, []);
+
+  useEffect(() => {
     if (transaction.hash) {
       const getState = async () => {
         await contracts.provider.once(
@@ -197,15 +213,6 @@ const App = () => {
   }, [transaction]);
 
   useEffect(() => {
-    if (!onboardInit) {
-      setOnboard();
-    }
-    dispatch(updateThemeStyles(themeState));
-
-    // eslint-disable-next-line
-  }, []);
-
-  useEffect(() => {
     if (onboardInit && networkId !== 0) {
       getSystemData(true);
       if (intervals) {
@@ -215,274 +222,6 @@ const App = () => {
     }
     // eslint-disable-next-line
   }, [networkId, address, onboardInit]);
-
-  useEffect(() => {
-    axios
-      .get("")
-      .then()
-      .catch((e) => console.log(e));
-
-    const liquidationList = [
-      {
-        idx: "oxlx2y",
-        cRatio: "140",
-        debt: 100,
-        collateral: [
-          { name: "Peri", value: 95 },
-          { name: "Dai", value: 5 },
-          { name: "USDC", value: 5 },
-        ],
-        status: 0,
-      },
-      {
-        idx: "oxlx3y",
-        cRatio: "120",
-        debt: 50,
-        collateral: [
-          { name: "Peri", value: 95 },
-          { name: "Dai", value: 5 },
-          { name: "USDC", value: 0 },
-        ],
-        status: 1,
-      },
-      {
-        idx: "oxlx4y",
-        cRatio: "110",
-        debt: 500,
-        collateral: [
-          { name: "Peri", value: 95 },
-          { name: "Dai", value: 0 },
-          { name: "USDC", value: 5 },
-        ],
-        status: 2,
-      },
-      {
-        idx: "oxlx4y",
-        cRatio: "110",
-        debt: 500,
-        collateral: [
-          { name: "Peri", value: 95 },
-          { name: "Dai", value: 0 },
-          { name: "USDC", value: 5 },
-        ],
-        status: 2,
-      },
-      {
-        idx: "oxlx4y",
-        cRatio: "110",
-        debt: 500,
-        collateral: [
-          { name: "Peri", value: 95 },
-          { name: "Dai", value: 0 },
-          { name: "USDC", value: 5 },
-        ],
-        status: 2,
-      },
-      {
-        idx: "oxlx4y",
-        cRatio: "110",
-        debt: 500,
-        collateral: [
-          { name: "Peri", value: 95 },
-          { name: "Dai", value: 0 },
-          { name: "USDC", value: 5 },
-        ],
-        status: 2,
-      },
-      {
-        idx: "oxlx4y",
-        cRatio: "110",
-        debt: 500,
-        collateral: [
-          { name: "Peri", value: 95 },
-          { name: "Dai", value: 0 },
-          { name: "USDC", value: 5 },
-        ],
-        status: 2,
-      },
-      {
-        idx: "oxlx4y",
-        cRatio: "110",
-        debt: 500,
-        collateral: [
-          { name: "Peri", value: 95 },
-          { name: "Dai", value: 0 },
-          { name: "USDC", value: 5 },
-        ],
-        status: 2,
-      },
-      {
-        idx: "oxlx4y",
-        cRatio: "110",
-        debt: 500,
-        collateral: [
-          { name: "Peri", value: 95 },
-          { name: "Dai", value: 0 },
-          { name: "USDC", value: 5 },
-        ],
-        status: 2,
-      },
-      {
-        idx: "oxlx4y",
-        cRatio: "110",
-        debt: 500,
-        collateral: [
-          { name: "Peri", value: 95 },
-          { name: "Dai", value: 0 },
-          { name: "USDC", value: 5 },
-        ],
-        status: 2,
-      },
-      {
-        idx: "oxlx4y",
-        cRatio: "110",
-        debt: 500,
-        collateral: [
-          { name: "Peri", value: 95 },
-          { name: "Dai", value: 0 },
-          { name: "USDC", value: 5 },
-        ],
-        status: 2,
-      },
-      {
-        idx: "oxlx4y",
-        cRatio: "110",
-        debt: 500,
-        collateral: [
-          { name: "Peri", value: 95 },
-          { name: "Dai", value: 0 },
-          { name: "USDC", value: 5 },
-        ],
-        status: 2,
-      },
-      {
-        idx: "oxlx4y",
-        cRatio: "110",
-        debt: 500,
-        collateral: [
-          { name: "Peri", value: 95 },
-          { name: "Dai", value: 0 },
-          { name: "USDC", value: 5 },
-        ],
-        status: 2,
-      },
-      {
-        idx: "oxlx4y",
-        cRatio: "110",
-        debt: 500,
-        collateral: [
-          { name: "Peri", value: 95 },
-          { name: "Dai", value: 0 },
-          { name: "USDC", value: 5 },
-        ],
-        status: 2,
-      },
-      {
-        idx: "oxlx4y",
-        cRatio: "110",
-        debt: 500,
-        collateral: [
-          { name: "Peri", value: 95 },
-          { name: "Dai", value: 0 },
-          { name: "USDC", value: 5 },
-        ],
-        status: 2,
-      },
-      {
-        idx: "oxlx4y",
-        cRatio: "110",
-        debt: 500,
-        collateral: [
-          { name: "Peri", value: 95 },
-          { name: "Dai", value: 0 },
-          { name: "USDC", value: 5 },
-        ],
-        status: 2,
-      },
-      {
-        idx: "oxlx4y",
-        cRatio: "110",
-        debt: 500,
-        collateral: [
-          { name: "Peri", value: 95 },
-          { name: "Dai", value: 0 },
-          { name: "USDC", value: 5 },
-        ],
-        status: 2,
-      },
-      {
-        idx: "oxlx4y",
-        cRatio: "110",
-        debt: 500,
-        collateral: [
-          { name: "Peri", value: 95 },
-          { name: "Dai", value: 0 },
-          { name: "USDC", value: 5 },
-        ],
-        status: 2,
-      },
-      {
-        idx: "oxlx4y",
-        cRatio: "110",
-        debt: 500,
-        collateral: [
-          { name: "Peri", value: 95 },
-          { name: "Dai", value: 0 },
-          { name: "USDC", value: 5 },
-        ],
-        status: 2,
-      },
-      {
-        idx: "oxlx4y",
-        cRatio: "110",
-        debt: 500,
-        collateral: [
-          { name: "Peri", value: 95 },
-          { name: "Dai", value: 0 },
-          { name: "USDC", value: 5 },
-        ],
-        status: 2,
-      },
-      {
-        idx: "oxlx4y",
-        cRatio: "110",
-        debt: 500,
-        collateral: [
-          { name: "Peri", value: 95 },
-          { name: "Dai", value: 0 },
-          { name: "USDC", value: 5 },
-        ],
-        status: 2,
-      },
-    ];
-
-    dispatch(updateList(liquidationList));
-
-    // ! 컨트랙트에서 받아온 liquidation 여부 스토어에 업데이트 ? => 스토어에 관리하지 말고 직접 받아서 사용
-
-    let tempLiquid = false;
-
-    dispatch(toggleLiquid(tempLiquid));
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    const thisState = {
-      idx: "oxlx1y",
-      cRatio: "0",
-      debt: 0,
-      collateral: [
-        { name: "Peri", value: 0 },
-        { name: "Dai", value: 0 },
-        { name: "USDC", value: 0 },
-      ],
-      status: 0,
-    };
-
-    dispatch(updateThisState(thisState));
-    // ! 업데이트 주기 뭐로하지
-  });
 
   // <input type="text" value={userAddress} onChange={(e) => {setUserAddress(e.target.value)}} />
   // <button onClick={() => getDebts(userAddress)}>getDebts</button>

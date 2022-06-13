@@ -1,10 +1,11 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 
 export type LiquidState = {
   liquidation?: boolean;
   thisState: any;
   list: any;
   notification: any;
+  timestamp: number;
 };
 
 const initialState: LiquidState = {
@@ -21,6 +22,7 @@ const initialState: LiquidState = {
     ],
     status: 0,
   },
+  timestamp: 0,
   notification: { toggle: false, title: 1 },
 };
 
@@ -47,6 +49,9 @@ export const TransactionSlice = createSlice({
     updateThisState(state, actions) {
       state.thisState = actions.payload;
     },
+    updateTimestamp(state, actions) {
+      state.timestamp = actions.payload;
+    },
   },
 });
 
@@ -56,6 +61,7 @@ export const {
   getTaken,
   updateList,
   updateThisState,
+  updateTimestamp,
 } = TransactionSlice.actions;
 
 export default TransactionSlice.reducer;

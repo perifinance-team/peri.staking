@@ -3,7 +3,6 @@ import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "config/reducers";
 import { H3 } from "components/headding";
-import { utils } from "ethers";
 import { toggleNoti } from "config/reducers/liquidation";
 
 const Ratios = () => {
@@ -22,16 +21,17 @@ const Ratios = () => {
     dispatch(toggleNoti({ toggle: true, title: 1 }));
   };
 
-  console.log("liquidation", liquidation);
-
   return (
     <Container>
       <Row style={{ position: "relative" }}>
-        {liquidation && (
+        {Number(ratioToPer(currentCRatio)) < 150 && (
           <LiquidationBtn onClick={() => onLiquidHandler()}>!</LiquidationBtn>
         )}
         <H3 weigth={"sm"}>C-Ratio</H3>
-        <H3 weigth={"eb"} color={liquidation ? "warning" : "fourth"}>
+        <H3
+          weigth={"eb"}
+          color={Number(ratioToPer(currentCRatio)) < 150 ? "warning" : "fourth"}
+        >
           {ratioToPer(currentCRatio)}%
         </H3>
       </Row>

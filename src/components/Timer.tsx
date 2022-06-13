@@ -1,35 +1,44 @@
-import React, { useState } from "react";
-import { toggleLiquid, toggleNoti } from "config/reducers/liquidation";
+import React from "react";
+import { toggleNoti } from "config/reducers/liquidation";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "config/reducers";
+import { contracts } from "lib/contract";
 import styled from "styled-components";
 import Countdown from "react-countdown";
 
 const Timer = () => {
   const dispatch = useDispatch();
-  const { liquidation, thisState } = useSelector(
+  const { liquidation, timestamp } = useSelector(
     (state: RootState) => state.liquidation
   );
-  // const [toggleBtn, setToggleBtn] = useState(false);
-  let toggleBtn = false;
+  const { address } = useSelector((state: RootState) => state.wallet);
 
-  let today = new Date();
-  let startTime = false ? today.getTime() : 1653379594992; // 22.05.24 5.07pm
+  let toggleBtn = !liquidation;
 
-  let setTime = 86400000; // 24
+  const setTime = 86400000; // 24
+  let complete = false;
 
-  const onEscapeHandler = () => {
-    if (liquidation) {
-      if (thisState.status !== 1 || Number(thisState.cRatio) >= 150) {
-        dispatch(toggleNoti({ toggle: true, title: 0 }));
-      } else {
-        dispatch(toggleNoti({ toggle: true, title: 1 }));
-      }
+  const { Liquidations } = contracts as any;
+
+  const onEscapeHandler = async () => {
+    const stateLiquid = await Liquidations.isOpenForLiquidation(address);
+
+    if (!stateLiquid) {
+      console.log("이거 동작함?");
+      await contracts.signers.Liquidations.removeAccountInLiquidation(address);
+      dispatch(toggleNoti({ toggle: true, title: 0 }));
+      toggleBtn = true;
+      complete = true;
+    } else {
+      dispatch(toggleNoti({ toggle: true, title: 1 }));
+      complete = false;
     }
   };
 
   const renderer = ({ hours, minutes, completed }) => {
-    if (completed) {
+    complete = completed;
+
+    if (complete) {
       toggleBtn = true;
       return <span>00:00</span>;
     } else {
@@ -43,7 +52,11 @@ const Timer = () => {
 
   return (
     <TimerContainer>
-      <Countdown date={startTime + setTime} zeroPadTime={2} renderer={renderer}>
+      <Countdown
+        date={timestamp === 0 ? setTime : timestamp + setTime}
+        zeroPadTime={2}
+        renderer={renderer}
+      >
         <span>00:00</span>
       </Countdown>
 

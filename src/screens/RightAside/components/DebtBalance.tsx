@@ -1,10 +1,9 @@
 import React from "react";
 import styled from "styled-components";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "config/reducers";
 import { H3, H4 } from "components/headding";
 import { formatCurrency } from "lib";
-import { useEffect, useState } from "react";
 import Timer from "components/Timer";
 
 const DebtBalance = () => {

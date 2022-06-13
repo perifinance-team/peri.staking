@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useCallback, useEffect, useLayoutEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "config/reducers";
 import styled from "styled-components";
+import { contracts } from "lib/contract";
 import { H4 } from "components/headding";
 import {
   StyledTHeader,
@@ -11,21 +12,97 @@ import {
   BorderRow,
 } from "components/Table";
 import { getTaken } from "config/reducers/liquidation";
-import { contracts } from "lib/contract";
+import { formatCurrency } from "lib";
+import { getLiquidationList } from "lib/liquidation";
+import { setLoading } from "config/reducers/loading";
 
 const Liquidation = () => {
   const dispatch = useDispatch();
-  const { balances } = useSelector((state: RootState) => state.balances);
+
+  const { address, networkId } = useSelector(
+    (state: RootState) => state.wallet
+  );
   const { list } = useSelector((state: RootState) => state.liquidation);
 
   const statusList = ["Open", "Taken", "Closed"];
 
-  const onTakeHandler = (id) => {
-    if (true) {
-      dispatch(getTaken(id));
-    } else {
-    }
+  let test = true; // ! test
+
+  let liquidationList = [
+    "0x08bcb4d98bc8af73b3d4e31e0e2de716c11c0e11",
+    "0x095fc820bf9bc4049742209f172de442c8471a0b",
+    "0x8143BF76Bcb7e6D32E17672fAe25be38c723E286", // 실제 유저
+    "0x52A659AEE22616BeB4626C8b111B6D9C31461CA8", // 실제 유저
+  ];
+
+  const onTakeHandler = async (id: number) => {
+    const tempAddress = test ? liquidationList[id] : address;
+
+    console.log("take 테스트 contracts", contracts);
+
+    // const takeFlag =
+    //   await contracts.signers.Liquidations.flagAccountForLiquidation(
+    //     tempAddress
+    //   );
+
+    // if (takeFlag) {
+    //   dispatch(getTaken(2));
+
+    //   try {
+    //     await contracts.signers.Liquidations.removeAccountInLiquidation(
+    //       tempAddress
+    //     );
+    //   } catch (e) {
+    //     console.log("take err", e);
+    //   }
+    // }
+
+    try {
+      if (
+        await contracts.signers.Liquidations.flagAccountForLiquidation(
+          tempAddress
+        )
+      ) {
+        dispatch(getTaken(2));
+
+        try {
+          await contracts.signers.Liquidations.removeAccountInLiquidation(
+            tempAddress
+          );
+        } catch (e) {
+          console.log("take err", e);
+        }
+      }
+    } catch (e) {}
   };
+
+  const ratioToPer = (value) => {
+    if (value === 0n) return "0";
+    return ((BigInt(Math.pow(10, 18).toString()) * 100n) / value).toString();
+  };
+
+  const getLiquidationData = useCallback(
+    async (isLoading) => {
+      console.log("networkId", networkId);
+
+      dispatch(setLoading({ name: "liquidation", value: isLoading }));
+      try {
+        if (address) {
+          await getLiquidationList(dispatch, networkId);
+        }
+      } catch (e) {
+        console.log("getLiquidation error", e);
+      }
+      dispatch(setLoading({ name: "liquidation", value: false }));
+    },
+    [address, networkId, setLoading]
+  );
+
+  useEffect(() => {
+    (async () => {
+      return await getLiquidationData(true);
+    })();
+  }, [getLiquidationData]);
 
   return (
     <Container>
@@ -67,10 +144,12 @@ const Liquidation = () => {
                   <H4 weigth={"m"}>{el.idx}</H4>
                 </AmountCell>
                 <AmountCell>
-                  <H4 weigth={"m"}>{`${el.cRatio}%`}</H4>
+                  <H4 weigth={"m"}>{`${ratioToPer(el.cRatio)}%`}</H4>
                 </AmountCell>
                 <AmountCell>
-                  <H4 weigth={"m"}>{`${el.debt} pUSD`}</H4>
+                  <H4 weigth={"m"}>{`${formatCurrency(
+                    el.debt ? el.debt : 0n
+                  )} pUSD`}</H4>
                 </AmountCell>
                 <AmountCell style={{ width: "30rem" }}>
                   <CollateralList>
@@ -80,8 +159,11 @@ const Liquidation = () => {
                           <Image key={`image${idx}`}>
                             <img
                               src={`/images/currencies/${item.name.toUpperCase()}.png`}
-                            ></img>
-                            <span>{`${item.name} ${item.value}`}</span>
+                              alt=""
+                            />
+                            <span>{`${item.name} ${formatCurrency(
+                              item.value
+                            )}`}</span>
                           </Image>
                         )
                     )}
@@ -92,9 +174,7 @@ const Liquidation = () => {
                 </AmountCell>
                 <AmountCell>
                   {el.status === 0 && (
-                    <TakeBtn onClick={() => onTakeHandler(el.idx)}>
-                      Take
-                    </TakeBtn>
+                    <TakeBtn onClick={() => onTakeHandler(idx)}>Take</TakeBtn>
                   )}
                 </AmountCell>
               </BorderRow>

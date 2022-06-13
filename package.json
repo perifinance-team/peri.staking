@@ -56,6 +56,10 @@
     "test-invalidate": "aws cloudfront create-invalidation --profile=test.peri.staking-deploy-s3 --distribution-id E3O6OMR9TOEU8H --paths / /index.html /error.html /service-worker.js /manifest.json /favicon.ico"
   },
   "eslintConfig": {
+    "env": {
+      "browser": true,
+      "node": true
+    },
     "extends": [
       "react-app",
       "react-app/jest"
@@ -82,10 +86,12 @@
     "@types/styled-components": "^5.1.9",
     "rollup": "^2.53.2",
     "rollup-plugin-peer-deps-external": "^2.2.4",
-    "rollup-plugin-postcss": "^4.0.0"
+    "rollup-plugin-postcss": "^4.0.0",
+    "react-error-overlay": "6.0.9"
   },
   "resolutions": {
-    "@types/react": "^17.0.3"
+    "@types/react": "^17.0.3",
+    "react-error-overlay": "6.0.9"
   },
   "overrides": {
     "@types/react": "^17.0.3"
