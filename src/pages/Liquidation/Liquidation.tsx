@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useLayoutEffect } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "config/reducers";
 import styled from "styled-components";
@@ -11,10 +11,10 @@ import {
   Cell,
   BorderRow,
 } from "components/Table";
-import { getTaken } from "config/reducers/liquidation";
 import { formatCurrency } from "lib";
 import { getLiquidationList } from "lib/liquidation";
 import { setLoading } from "config/reducers/loading";
+import { utils } from "ethers";
 
 const Liquidation = () => {
   const dispatch = useDispatch();
@@ -26,54 +26,54 @@ const Liquidation = () => {
 
   const statusList = ["Open", "Taken", "Closed"];
 
-  let test = true; // ! test
-
-  let liquidationList = [
-    "0x08bcb4d98bc8af73b3d4e31e0e2de716c11c0e11",
-    "0x095fc820bf9bc4049742209f172de442c8471a0b",
-    "0x8143BF76Bcb7e6D32E17672fAe25be38c723E286", // 실제 유저
-    "0x52A659AEE22616BeB4626C8b111B6D9C31461CA8", // 실제 유저
-  ];
-
   const onTakeHandler = async (id: number) => {
-    const tempAddress = test ? liquidationList[id] : address;
+    if (address !== list[id].address) {
+      dispatch(setLoading({ name: "liquidation", value: true }));
 
-    console.log("take 테스트 contracts", contracts);
+      const PERI = BigInt(
+        (
+          await contracts.ExchangeRates.rateForCurrency(
+            utils.formatBytes32String("PERI")
+          )
+        ).toString()
+      );
+      const USDC = BigInt(
+        (
+          await contracts.ExchangeRates.rateForCurrency(
+            utils.formatBytes32String("USDC")
+          )
+        ).toString()
+      );
+      const DAI = BigInt(
+        (
+          await contracts.ExchangeRates.rateForCurrency(
+            utils.formatBytes32String("DAI")
+          )
+        ).toString()
+      );
 
-    // const takeFlag =
-    //   await contracts.signers.Liquidations.flagAccountForLiquidation(
-    //     tempAddress
-    //   );
+      const sumCollateral = (Number(USDC) + Number(DAI) + Number(PERI)) / 1.1;
 
-    // if (takeFlag) {
-    //   dispatch(getTaken(2));
+      getState(sumCollateral, id);
+    }
+  };
 
-    //   try {
-    //     await contracts.signers.Liquidations.removeAccountInLiquidation(
-    //       tempAddress
-    //     );
-    //   } catch (e) {
-    //     console.log("take err", e);
-    //   }
-    // }
-
+  const getState = async (sumCollateral, id) => {
     try {
-      if (
-        await contracts.signers.Liquidations.flagAccountForLiquidation(
-          tempAddress
-        )
-      ) {
-        dispatch(getTaken(2));
+      const transaction =
+        await contracts.signers.PeriFinance.liquidateDelinquentAccount(
+          list[id].address,
+          BigInt(sumCollateral)
+        );
 
-        try {
-          await contracts.signers.Liquidations.removeAccountInLiquidation(
-            tempAddress
-          );
-        } catch (e) {
-          console.log("take err", e);
+      await contracts.provider.once(transaction.hash, (state) => {
+        if (state.status === 1) {
+          dispatch(setLoading({ name: "liquidation", value: false }));
         }
-      }
-    } catch (e) {}
+      });
+    } catch (e) {
+      console.log("take err", e);
+    }
   };
 
   const ratioToPer = (value) => {
@@ -83,16 +83,15 @@ const Liquidation = () => {
 
   const getLiquidationData = useCallback(
     async (isLoading) => {
-      console.log("networkId", networkId);
-
       dispatch(setLoading({ name: "liquidation", value: isLoading }));
       try {
         if (address) {
-          await getLiquidationList(dispatch, networkId);
+          await getLiquidationList(dispatch, networkId); // contract 랑 연결하는 부분
         }
       } catch (e) {
         console.log("getLiquidation error", e);
       }
+
       dispatch(setLoading({ name: "liquidation", value: false }));
     },
     [address, networkId, setLoading]
@@ -102,7 +101,7 @@ const Liquidation = () => {
     (async () => {
       return await getLiquidationData(true);
     })();
-  }, [getLiquidationData]);
+  }, [getLiquidationData, dispatch]);
 
   return (
     <Container>
@@ -153,20 +152,21 @@ const Liquidation = () => {
                 </AmountCell>
                 <AmountCell style={{ width: "30rem" }}>
                   <CollateralList>
-                    {el.collateral.map(
-                      (item, idx) =>
-                        item.value !== 0 && (
-                          <Image key={`image${idx}`}>
-                            <img
-                              src={`/images/currencies/${item.name.toUpperCase()}.png`}
-                              alt=""
-                            />
-                            <span>{`${item.name} ${formatCurrency(
-                              item.value
-                            )}`}</span>
-                          </Image>
-                        )
-                    )}
+                    {el.collateral.map((item, idx) => {
+                      return (
+                        <Image key={`image${idx}`}>
+                          <img
+                            src={`/images/currencies/${item.name.toUpperCase()}.png`}
+                            alt=""
+                          />
+                          <span>{`${item.name} ${
+                            item.name === "Peri"
+                              ? item.value
+                              : formatCurrency(item.value)
+                          }`}</span>
+                        </Image>
+                      );
+                    })}
                   </CollateralList>
                 </AmountCell>
                 <AmountCell>

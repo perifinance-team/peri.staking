@@ -23,7 +23,8 @@ const StakingRate = () => {
       const USDCDEBT = balances["USDC"].staked * exchangeRates["USDC"];
       const total = PERIDEBT + DAIDEBT + USDCDEBT;
 
-      const per = (BigInt(DAIDEBT + USDCDEBT) * 100n) / total;
+      const per =
+        total === 0n ? 0 : (BigInt(DAIDEBT + USDCDEBT) * 100n) / total;
       setPERIStakingPer(Math.ceil(Number(per.toString())));
     }
   }, [balances, exchangeIsReady, balancesIsReady]);

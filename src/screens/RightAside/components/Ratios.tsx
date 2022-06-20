@@ -10,6 +10,7 @@ const Ratios = () => {
   const { targetCRatio, currentCRatio, liquidationRatio } = useSelector(
     (state: RootState) => state.ratio
   );
+
   const { liquidation } = useSelector((state: RootState) => state.liquidation);
 
   const ratioToPer = (value) => {
@@ -24,13 +25,15 @@ const Ratios = () => {
   return (
     <Container>
       <Row style={{ position: "relative" }}>
-        {Number(ratioToPer(currentCRatio)) < 150 && (
+        {Number(ratioToPer(currentCRatio)) <= 150 && (
           <LiquidationBtn onClick={() => onLiquidHandler()}>!</LiquidationBtn>
         )}
         <H3 weigth={"sm"}>C-Ratio</H3>
         <H3
           weigth={"eb"}
-          color={Number(ratioToPer(currentCRatio)) < 150 ? "warning" : "fourth"}
+          color={
+            Number(ratioToPer(currentCRatio)) <= 150 ? "warning" : "fourth"
+          }
         >
           {ratioToPer(currentCRatio)}%
         </H3>

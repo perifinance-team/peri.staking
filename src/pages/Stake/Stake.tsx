@@ -113,7 +113,7 @@ const StyledLink = styled(Link)<{ active: boolean; margin: boolean }>`
   max-width: 340px;
   height: 40%;
   flex-direction: column;
-  margin: ${(props) => (props.margin ? "0px 25px" : "")};
+  margin: ${(props) => (props.margin ? "0px 25px" : "none")};
   color: ${(props) => props.theme.colors.font.primary};
   text-decoration: none;
   border-radius: 20px;

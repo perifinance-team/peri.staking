@@ -35,12 +35,10 @@ import { getRatios } from "lib/rates";
 import Loading from "./screens/Loading";
 import Main from "./screens/Main";
 import "./App.css";
-import { toggleLiquid } from "config/reducers/liquidation";
+import { toggleLiquid, updateTimestamp } from "config/reducers/liquidation";
 import { getTimeStamp } from "lib/liquidation";
 
 const App = () => {
-  let test = false; // ! test
-
   const { address, networkId } = useSelector(
     (state: RootState) => state.wallet
   );
@@ -74,12 +72,17 @@ const App = () => {
         dispatch(updateNetworkFee({ gasPrice }));
 
         if (address) {
-          // ! test
-          const stateLiquid = await Liquidations.isOpenForLiquidation(
-            test ? "0x095fc820bf9bc4049742209f172de442c8471a0b" : address
+          const stateLiquid = await Liquidations.isOpenForLiquidation(address);
+
+          const timestamp = await getTimeStamp(address, Liquidations);
+          console.log(
+            "timestamp",
+            new Date(parseInt(timestamp["_hex"], 16)),
+            parseInt(timestamp["_hex"], 16),
+            timestamp
           );
 
-          await Promise.all([getTimeStamp(address, Liquidations)]);
+          dispatch(updateTimestamp(timestamp));
 
           const [balancesData, vestable] = await Promise.all([
             getBalances(
@@ -95,6 +98,7 @@ const App = () => {
           dispatch(initCurrency(balancesData));
 
           dispatch(toggleLiquid(stateLiquid));
+
           //todo:: code move call
           dispatch(updateVestable({ vestable }));
         }
@@ -183,6 +187,8 @@ const App = () => {
       setOnboard();
     }
     dispatch(updateThemeStyles(themeState));
+
+    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {

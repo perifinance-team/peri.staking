@@ -296,6 +296,8 @@ const Burn = () => {
         console.log(e);
       }
     }
+
+    console.log("transaction", transaction);
   };
 
   const getCRatio = (currencyName, burnAmount, unStakeAmount) => {

@@ -37,11 +37,7 @@ export const TransactionSlice = createSlice({
       state.notification = action.payload;
     },
     getTaken(state, actions) {
-      state.list.forEach((el: any) => {
-        if (el.idx === actions.payload) {
-          el.status = 1;
-        }
-      });
+      state.list[actions.payload].status = 2;
     },
     updateList(state, actions) {
       state.list = actions.payload;
