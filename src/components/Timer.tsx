@@ -64,10 +64,6 @@ const Timer = () => {
     setToggleBtn(false);
   };
 
-  // ? 타이머 테스트용 시간
-  // Date.now() + 11100
-  // parseInt(timestamp["_hex"], 16) + setTime
-
   return (
     <TimerContainer>
       <Countdown

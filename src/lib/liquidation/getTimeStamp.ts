@@ -48,7 +48,7 @@ let sampleAddress = [
 ];
 
 export const getTimeStamp = async (address, Liquidations) => {
-  return await Liquidations.getLiquidationDeadlineForAccount(
-    sampleAddress[19]
-  ).then((data) => data);
+  return await Liquidations.getLiquidationDeadlineForAccount(address).then(
+    (data) => data
+  );
 };

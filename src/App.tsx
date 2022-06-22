@@ -75,12 +75,6 @@ const App = () => {
           const stateLiquid = await Liquidations.isOpenForLiquidation(address);
 
           const timestamp = await getTimeStamp(address, Liquidations);
-          console.log(
-            "timestamp",
-            new Date(parseInt(timestamp["_hex"], 16)),
-            parseInt(timestamp["_hex"], 16),
-            timestamp
-          );
 
           dispatch(updateTimestamp(timestamp));
 

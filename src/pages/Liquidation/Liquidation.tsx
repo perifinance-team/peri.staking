@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "config/reducers";
 import styled from "styled-components";
@@ -14,67 +14,19 @@ import {
 import { formatCurrency } from "lib";
 import { getLiquidationList } from "lib/liquidation";
 import { setLoading } from "config/reducers/loading";
-import { utils } from "ethers";
+import { NotificationManager } from "react-notifications";
+import { getTake } from "lib/liquidation/getTake";
 
 const Liquidation = () => {
   const dispatch = useDispatch();
 
+  const { balances } = useSelector((state: RootState) => state.balances);
   const { address, networkId } = useSelector(
     (state: RootState) => state.wallet
   );
   const { list } = useSelector((state: RootState) => state.liquidation);
 
   const statusList = ["Open", "Taken", "Closed"];
-
-  const onTakeHandler = async (id: number) => {
-    if (address !== list[id].address) {
-      dispatch(setLoading({ name: "liquidation", value: true }));
-
-      const PERI = BigInt(
-        (
-          await contracts.ExchangeRates.rateForCurrency(
-            utils.formatBytes32String("PERI")
-          )
-        ).toString()
-      );
-      const USDC = BigInt(
-        (
-          await contracts.ExchangeRates.rateForCurrency(
-            utils.formatBytes32String("USDC")
-          )
-        ).toString()
-      );
-      const DAI = BigInt(
-        (
-          await contracts.ExchangeRates.rateForCurrency(
-            utils.formatBytes32String("DAI")
-          )
-        ).toString()
-      );
-
-      const sumCollateral = (Number(USDC) + Number(DAI) + Number(PERI)) / 1.1;
-
-      getState(sumCollateral, id);
-    }
-  };
-
-  const getState = async (sumCollateral, id) => {
-    try {
-      const transaction =
-        await contracts.signers.PeriFinance.liquidateDelinquentAccount(
-          list[id].address,
-          BigInt(sumCollateral)
-        );
-
-      await contracts.provider.once(transaction.hash, (state) => {
-        if (state.status === 1) {
-          dispatch(setLoading({ name: "liquidation", value: false }));
-        }
-      });
-    } catch (e) {
-      console.log("take err", e);
-    }
-  };
 
   const ratioToPer = (value) => {
     if (value === 0n) return "0";
@@ -86,7 +38,7 @@ const Liquidation = () => {
       dispatch(setLoading({ name: "liquidation", value: isLoading }));
       try {
         if (address) {
-          await getLiquidationList(dispatch, networkId); // contract 랑 연결하는 부분
+          await getLiquidationList(dispatch, networkId);
         }
       } catch (e) {
         console.log("getLiquidation error", e);
@@ -94,7 +46,7 @@ const Liquidation = () => {
 
       dispatch(setLoading({ name: "liquidation", value: false }));
     },
-    [address, networkId, setLoading]
+    [address, networkId, setLoading, dispatch, networkId]
   );
 
   useEffect(() => {
@@ -103,16 +55,17 @@ const Liquidation = () => {
     })();
   }, [getLiquidationData, dispatch]);
 
+  const onMouseOverHandler = (pUSD, debt) => {
+    console.log("alert", pUSD, debt ? debt : 0n, formatCurrency(debt));
+
+    pUSD < debt && NotificationManager.error(`Not enough pUSD`, "ERROR");
+  };
+
   return (
     <Container>
       <TableContainer style={{ overflowY: "hidden", maxHeight: "70vh" }}>
         <StyledTHeader>
           <Row>
-            <AmountCell>
-              <H4 weigth={"b"} align={"center"}>
-                IDX
-              </H4>
-            </AmountCell>
             <AmountCell>
               <H4 weigth={"b"}>C-ratio</H4>
             </AmountCell>
@@ -140,9 +93,6 @@ const Liquidation = () => {
                 style={{ minHeight: "9rem", height: "10rem" }}
               >
                 <AmountCell>
-                  <H4 weigth={"m"}>{el.idx}</H4>
-                </AmountCell>
-                <AmountCell>
                   <H4 weigth={"m"}>{`${ratioToPer(el.cRatio)}%`}</H4>
                 </AmountCell>
                 <AmountCell>
@@ -161,7 +111,7 @@ const Liquidation = () => {
                           />
                           <span>{`${item.name} ${
                             item.name === "Peri"
-                              ? item.value
+                              ? item.value.staked
                               : formatCurrency(item.value)
                           }`}</span>
                         </Image>
@@ -172,9 +122,20 @@ const Liquidation = () => {
                 <AmountCell>
                   <H4 weigth={"m"}>{statusList[el.status]}</H4>
                 </AmountCell>
-                <AmountCell>
+                <AmountCell
+                  onMouseOver={() =>
+                    onMouseOverHandler(balances["pUSD"].balance, el.debt)
+                  }
+                >
                   {el.status === 0 && (
-                    <TakeBtn onClick={() => onTakeHandler(idx)}>Take</TakeBtn>
+                    <TakeBtn
+                      onClick={() =>
+                        getTake(idx, address, list, dispatch, contracts)
+                      }
+                      disabled={balances["pUSD"].balance < el.debt}
+                    >
+                      Take
+                    </TakeBtn>
                   )}
                 </AmountCell>
               </BorderRow>
