@@ -17,6 +17,7 @@ import Balance from "pages/Balance";
 import Vesting from "pages/Vesting";
 import Liquidation from "pages/Liquidation";
 import LiquidNotification from "components/LiquidNotification";
+import Escrow from "pages/Escrow";
 
 const Main = () => {
   return (
@@ -39,6 +40,9 @@ const Main = () => {
                 </Route>
                 <Route path="/liquidation">
                   <Liquidation></Liquidation>
+                </Route>
+                <Route path="/escrow">
+                  <Escrow></Escrow>
                 </Route>
                 <Route exact path="/">
                   <Redirect to="/stake" />

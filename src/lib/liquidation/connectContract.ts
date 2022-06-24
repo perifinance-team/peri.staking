@@ -34,6 +34,8 @@ export const connectContract = async (
         await PeriFinance.transferablePeriFinance(address)
       ).replace(",", "");
 
+    // staked / 10n * 18n*
+
     const stake =
       BigInt(await PeriFinance.collateral(address)) -
       BigInt(await PeriFinance.transferablePeriFinance(address));
@@ -59,6 +61,39 @@ export const connectContract = async (
   await tempPUSD().then((data) => (collaterial.pUSD = data));
   await tempUSDC().then((data) => (collaterial.USDC = data));
   await tempDAI().then((data) => (collaterial.DAI = data));
+
+  // !
+  let testAddress = "0xBd6fAE3BDD65a9502B193f0bC172fe59dec435D3";
+  const testPUSD = async () => {
+    const stake =
+      BigInt(await PeriFinance.collateral(testAddress)) -
+      BigInt(await PeriFinance.transferablePeriFinance(testAddress));
+
+    console.log("내 pusd", stake);
+  };
+
+  const testUSDC = async () => {
+    const usdc = await contracts.ExternalTokenStakeManager.stakedAmountOf(
+      testAddress,
+      usdcKey,
+      usdcKey
+    );
+
+    console.log("내 usdc", usdc);
+  };
+  const testDAI = async () => {
+    const dai = await contracts.ExternalTokenStakeManager.stakedAmountOf(
+      testAddress,
+      daiKey,
+      daiKey
+    );
+
+    console.log("내 dai", dai);
+  };
+
+  testPUSD();
+  testUSDC();
+  testDAI();
 
   const status = async () => {
     if (
