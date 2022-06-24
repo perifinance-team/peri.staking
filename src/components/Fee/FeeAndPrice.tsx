@@ -2,7 +2,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "config/reducers";
 import styled from "styled-components";
-import { H5 } from "components/headding";
+import { H5 } from "components/heading";
 import { formatCurrency } from "lib";
 
 export const FeeAndPrice = ({ currencyName = "PERI" }) => {

@@ -34,8 +34,6 @@ export const connectContract = async (
         await PeriFinance.transferablePeriFinance(address)
       ).replace(",", "");
 
-    // staked / 10n * 18n*
-
     const stake =
       BigInt(await PeriFinance.collateral(address)) -
       BigInt(await PeriFinance.transferablePeriFinance(address));

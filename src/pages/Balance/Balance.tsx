@@ -2,7 +2,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "config/reducers";
 import styled from "styled-components";
-import { H1, H4 } from "components/headding";
+import { H1, H4 } from "components/heading";
 import {
   StyledTHeader,
   StyledTBody,
@@ -36,24 +36,24 @@ const Balance = () => {
         <StyledTHeader>
           <Row>
             <Cell>
-              <H4 weigth={"b"} align={"center"}>
+              <H4 weight={"b"} align={"center"}>
                 COIN
               </H4>
             </Cell>
             <AmountCell>
-              <H4 weigth={"b"}>STAKED</H4>
+              <H4 weight={"b"}>STAKED</H4>
             </AmountCell>
             <AmountCell>
-              <H4 weigth={"b"}>STAKABLE</H4>
+              <H4 weight={"b"}>STAKEABLE</H4>
             </AmountCell>
             <AmountCell>
-              <H4 weigth={"b"}>TRANSFERABLE</H4>
+              <H4 weight={"b"}>TRANSFERABLE</H4>
             </AmountCell>
             <AmountCell>
-              <H4 weigth={"b"}>REWARD ESCROW</H4>
+              <H4 weight={"b"}>REWARD ESCROW</H4>
             </AmountCell>
             <AmountCell>
-              <H4 weigth={"b"}>TOTAL</H4>
+              <H4 weight={"b"}>TOTAL</H4>
             </AmountCell>
           </Row>
         </StyledTHeader>
@@ -63,7 +63,7 @@ const Balance = () => {
               (networkId === 1287 || networkId === 1285) &&
               currencyName === "LP"
             )
-              return;
+              return <></>;
             else
               return (
                 <BorderRow key={currencyName}>
@@ -77,33 +77,33 @@ const Balance = () => {
                         }`}
                         alt="lp"
                       ></img>
-                      <H4 weigth={"m"} align={"left"}>
+                      <H4 weight={"m"} align={"left"}>
                         {currencyName}
                       </H4>
                     </Asset>
                   </AssetCell>
                   <AmountCell>
-                    <H4 weigth={"m"} align={"right"}>
+                    <H4 weight={"m"} align={"right"}>
                       {formatCurrency(balances[currencyName].staked)}
                     </H4>
                   </AmountCell>
                   <AmountCell>
-                    <H4 weigth={"m"} align={"right"}>
-                      {formatCurrency(balances[currencyName].stakable)}
+                    <H4 weight={"m"} align={"right"}>
+                      {formatCurrency(balances[currencyName].stakeable)}
                     </H4>
                   </AmountCell>
                   <AmountCell>
-                    <H4 weigth={"m"} align={"right"}>
+                    <H4 weight={"m"} align={"right"}>
                       {formatCurrency(balances[currencyName].transferable)}
                     </H4>
                   </AmountCell>
                   <AmountCell>
-                    <H4 weigth={"m"} align={"right"}>
+                    <H4 weight={"m"} align={"right"}>
                       {formatCurrency(balances[currencyName].rewardEscrow)}
                     </H4>
                   </AmountCell>
                   <AmountCell>
-                    <H4 weigth={"m"} align={"right"}>
+                    <H4 weight={"m"} align={"right"}>
                       {formatCurrency(balances[currencyName].balance)}
                     </H4>
                   </AmountCell>

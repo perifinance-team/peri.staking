@@ -61,7 +61,6 @@ const MainContainer = styled.div`
   display: flex;
   height: 100vh;
   flex-direction: row;
-  position: relative;
 `;
 const RightSection = styled.div`
   flex: 3;

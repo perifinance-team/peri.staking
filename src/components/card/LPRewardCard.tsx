@@ -1,17 +1,15 @@
 import React from "react";
 import styled, { css } from "styled-components";
-import { H3, H4 } from "components/headding";
+import { H3, H4 } from "components/heading";
 import { RoundButton } from "components/button/RoundButton";
-import { Input } from "components/Input";
+import { Input } from "../../components/Input/index";
 import { Fee } from "components/Fee";
 import { useSelector } from "react-redux";
 import { RootState } from "config/reducers";
 import { formatCurrency } from "lib";
 
 export const LPRewardCard = ({ isActive, actionName, rewardAction, data }) => {
-  const { isConnect, networkId } = useSelector(
-    (state: RootState) => state.wallet
-  );
+  const { networkId } = useSelector((state: RootState) => state.wallet);
 
   const swapName = {
     1: "UNI",
@@ -33,23 +31,23 @@ export const LPRewardCard = ({ isActive, actionName, rewardAction, data }) => {
             alt="LP"
           ></img>
         )}
-        <H3 weigth={"sb"}>{swapName[networkId]}SWAP</H3>
+        <H3 weight={"sb"}>{swapName[networkId]}SWAP</H3>
       </IconContainer>
       <InputContainer>
         <RowContainer margin={"0px"}>
           {isActive && (
-            <H4 align={"right"} weigth={"sb"}>
+            <H4 align={"right"} weight={"sb"}>
               TIME LEFT: {data.closeIn}
             </H4>
           )}
           {isActive && (
-            <ClaimAble align={"right"} weigth={"sb"}>
+            <ClaimAble align={"right"} weight={"sb"}>
               STATUS: {"OPEN"}
             </ClaimAble>
           )}
         </RowContainer>
         <RowContainer>
-          <Lable>{"PERI"}</Lable>
+          <Label>{"PERI"}</Label>
           <Input
             currencyName={"PERI"}
             value={isActive ? formatCurrency(data.rewardEscrow, 8) : ""}
@@ -59,7 +57,7 @@ export const LPRewardCard = ({ isActive, actionName, rewardAction, data }) => {
         </RowContainer>
         <ColContainer>
           {/* <RoundButton height={30} onClick={() => periodAction()} padding={0} color={'primary'} border={'none'} width={320} margin={'0px 20px 10px 0px'}>
-                        <H4 weigth={'b'} color={'primary'}>CLOSE CURRENT PERIOD</H4>
+                        <H4 weight={'b'} color={'primary'}>CLOSE CURRENT PERIOD</H4>
                     </RoundButton> */}
           <RoundButton
             disabled={!isActive}
@@ -71,7 +69,7 @@ export const LPRewardCard = ({ isActive, actionName, rewardAction, data }) => {
             width={320}
             margin={"0px 20px 0px 0px"}
           >
-            <H4 weigth={"b"} color={"primary"}>
+            <H4 weight={"b"} color={"primary"}>
               CLAIM
             </H4>
           </RoundButton>
@@ -147,6 +145,6 @@ const ColContainer = styled.div`
   align-items: center;
 `;
 
-const Lable = styled(H4)`
+const Label = styled(H4)`
   width: 50px;
 `;

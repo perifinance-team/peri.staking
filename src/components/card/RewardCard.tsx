@@ -1,12 +1,12 @@
 import React from "react";
 import styled, { css } from "styled-components";
-import { H3, H4 } from "components/headding";
+import { H3, H4 } from "components/heading";
 import { RoundButton } from "components/button/RoundButton";
-import { Input } from "components/Input";
+import { Input } from "../../components/Input/index";
 import { Fee } from "components/Fee";
 import { formatCurrency } from "lib";
-import { useSelector } from "react-redux";
-import { RootState } from "config/reducers";
+// import { useSelector } from "react-redux"
+// import { RootState } from 'config/reducers'
 
 export const RewardCard = ({
   isActive,
@@ -15,7 +15,7 @@ export const RewardCard = ({
   periodAction,
   data,
 }) => {
-  const { isConnect } = useSelector((state: RootState) => state.wallet);
+  // const { isConnect } = useSelector((state: RootState) => state.wallet);
 
   return (
     <Card isActive={isActive}>
@@ -23,23 +23,23 @@ export const RewardCard = ({
         {isActive && (
           <img src={`/images/icon/${actionName}.svg`} alt="reward"></img>
         )}
-        <H3 weigth={"sb"}>{actionName}</H3>
+        <H3 weight={"sb"}>{actionName}</H3>
       </IconContainer>
       <InputContainer>
         <RowContainer margin={"0px"}>
           {isActive && (
-            <H4 align={"right"} weigth={"sb"}>
+            <H4 align={"right"} weight={"sb"}>
               TIME LEFT: {data.closeIn}
             </H4>
           )}
           {isActive && (
-            <ClaimAble align={"right"} weigth={"sb"}>
+            <ClaimAble align={"right"} weight={"sb"}>
               STATUS: {data.claimable ? "OPEN" : "CLOSE"}
             </ClaimAble>
           )}
         </RowContainer>
         <RowContainer>
-          <Lable>{"PERI"}</Lable>
+          <Label>{"PERI"}</Label>
           <Input
             currencyName={"PERI"}
             value={formatCurrency(data.rewards.staking, 8)}
@@ -48,10 +48,10 @@ export const RewardCard = ({
           />
         </RowContainer>
         <RowContainer>
-          <Lable>{"pUSD"}</Lable>
+          <Label>{"pUSD"}</Label>
           <Input
             currencyName={"pUSD"}
-            value={formatCurrency(data.rewards.exchage, 8)}
+            value={formatCurrency(data.rewards.Exchange, 8)}
             color={"primary"}
             disabled={true}
           />
@@ -68,7 +68,7 @@ export const RewardCard = ({
               width={320}
               margin={"0px 20px 10px 0px"}
             >
-              <H4 weigth={"b"} color={"primary"}>
+              <H4 weight={"b"} color={"primary"}>
                 CLOSE CURRENT PERIOD
               </H4>
             </RoundButton>
@@ -82,7 +82,7 @@ export const RewardCard = ({
             width={320}
             margin={"0px 20px 0px 0px"}
           >
-            <H4 weigth={"b"} color={"primary"}>
+            <H4 weight={"b"} color={"primary"}>
               CLAIM
             </H4>
           </RoundButton>
@@ -157,6 +157,6 @@ const ColContainer = styled.div`
   align-items: center;
 `;
 
-const Lable = styled(H4)`
+const Label = styled(H4)`
   width: 50px;
 `;

@@ -1,8 +1,8 @@
 import React from "react";
 import styled, { css } from "styled-components";
-import { H3, H4, H5 } from "components/headding";
+import { H3, H4 } from "components/heading";
 import { RoundButton } from "components/button/RoundButton";
-import { Input } from "components/Input";
+import { Input } from "../../components/Input/index";
 import { MaxButton } from "components/button/MaxButton";
 import { FeeAndPrice } from "components/Fee";
 import { formatCurrency } from "lib";
@@ -31,26 +31,26 @@ export const MintCard = ({
         {isActive && (
           <img src={`/images/icon/${currencyName}.svg`} alt="mint"></img>
         )}
-        <H3 weigth={"sb"}>{currencyName}</H3>
-        <H4 weigth={"b"}>
+        <H3 weight={"sb"}>{currencyName}</H3>
+        <H4 weight={"b"}>
           Staked: {formatCurrency(balances[currencyName]?.staked, 2)}
         </H4>
       </IconContainer>
       <InputContainer>
         <RowContainer margin={"0px"}>
           {isActive && (
-            <H4 align={"right"} weigth={"sb"}>
+            <H4 align={"right"} weight={"sb"}>
               EST APY: {formatCurrency(apy, 2)}%
             </H4>
           )}
           {isActive && (
-            <Ratio align={"right"} weigth={"sb"}>
+            <Ratio align={"right"} weight={"sb"}>
               EST C-RATIO: {cRatio.toString()}%
             </Ratio>
           )}
         </RowContainer>
         <RowContainer>
-          <Lable>{"pUSD"}</Lable>
+          <Label>{"pUSD"}</Label>
           <Input
             disabled={!isActive}
             currencyName={"pUSD"}
@@ -67,7 +67,7 @@ export const MintCard = ({
         </RowContainer>
 
         <RowContainer>
-          <Lable>{currencyName}</Lable>
+          <Label>{currencyName}</Label>
           <Input
             disabled={true}
             currencyName={currencyName}
@@ -87,7 +87,7 @@ export const MintCard = ({
               border={"none"}
               margin={"0px 20px 0px 0px"}
             >
-              <H4 weigth={"sb"}>Approve</H4>
+              <H4 weight={"sb"}>Approve</H4>
             </RoundButton>
           ) : (
             <RoundButton
@@ -100,7 +100,7 @@ export const MintCard = ({
               border={"none"}
               margin={"0px 20px 0px 0px"}
             >
-              <H4 weigth={"sb"}>MINT</H4>
+              <H4 weight={"sb"}>MINT</H4>
             </RoundButton>
           )}
 
@@ -178,6 +178,6 @@ const ColContainer = styled.div`
   align-items: center;
 `;
 
-const Lable = styled(H4)`
+const Label = styled(H4)`
   width: 50px;
 `;

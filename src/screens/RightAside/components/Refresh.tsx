@@ -58,7 +58,7 @@ const Refresh = () => {
 
   return (
     <Container disabled={isLoading} onClick={() => getSystemData()}>
-      <img src={`/images/${themeState}/reFresh.svg`} alt="reFresh"></img>
+      <img src={`/images/${themeState}/refresh.svg`} alt="refresh"></img>
     </Container>
   );
 };

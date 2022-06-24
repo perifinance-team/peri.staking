@@ -1,8 +1,8 @@
 import React from "react";
 import styled, { css } from "styled-components";
-import { H3, H4, H5 } from "components/headding";
+import { H3, H4 } from "components/heading";
 import { RoundButton } from "components/button/RoundButton";
-import { Input } from "components/Input";
+import { Input } from "../../components/Input/index";
 import { MaxButton } from "components/button/MaxButton";
 import { FeeAndPrice } from "components/Fee";
 import { useSelector } from "react-redux";
@@ -48,10 +48,17 @@ export const BurnCard = ({
             alt="burn"
           ></img>
         )}
+<<<<<<< HEAD
         <H3 weigth={"sb"}>
           {isLP ? `${swapName[networkId]}SWAP` : currencyName}
         </H3>
         <H4 weigth={"b"}>
+=======
+        <H3 weight={"sb"}>
+          {isLP ? `${swapName[networkId]}SWAP` : currencyName}
+        </H3>
+        <H4 weight={"b"}>
+>>>>>>> b538daaf97158332cf6bb56674e17159e800e24a
           Staked: {formatCurrency(balances[currencyName]?.staked, 2)}
         </H4>
       </IconContainer>
@@ -59,7 +66,11 @@ export const BurnCard = ({
         {!isLP && (
           <RowContainer margin={"0px"}>
             {isActive && (
+<<<<<<< HEAD
               <Ratio align={"right"} weigth={"sb"}>
+=======
+              <Ratio align={"right"} weight={"sb"}>
+>>>>>>> b538daaf97158332cf6bb56674e17159e800e24a
                 EST C-RATIO: {cRatio.toString()}%
               </Ratio>
             )}
@@ -67,7 +78,11 @@ export const BurnCard = ({
         )}
         {!isLP && (
           <RowContainer>
+<<<<<<< HEAD
             <Lable>{"pUSD"}</Lable>
+=======
+            <Label>{"pUSD"}</Label>
+>>>>>>> b538daaf97158332cf6bb56674e17159e800e24a
             <Input
               disabled={!isActive}
               currencyName={"pUSD"}
@@ -85,7 +100,11 @@ export const BurnCard = ({
         )}
 
         <RowContainer>
+<<<<<<< HEAD
           <Lable>{currencyName}</Lable>
+=======
+          <Label>{currencyName}</Label>
+>>>>>>> b538daaf97158332cf6bb56674e17159e800e24a
           <Input
             disabled={!isLP || !isActive}
             isLP={isLP}
@@ -117,7 +136,11 @@ export const BurnCard = ({
               border={"none"}
               margin={"0px 20px 0px 0px"}
             >
+<<<<<<< HEAD
               <H4 weigth={"sb"} color={"fifth"}>
+=======
+              <H4 weight={"sb"} color={"fifth"}>
+>>>>>>> b538daaf97158332cf6bb56674e17159e800e24a
                 BURN
               </H4>
             </RoundButton>
@@ -132,7 +155,11 @@ export const BurnCard = ({
               border={"none"}
               margin={"0px 20px 0px 0px"}
             >
+<<<<<<< HEAD
               <H4 weigth={"sb"} color={"fifth"}>
+=======
+              <H4 weight={"sb"} color={"fifth"}>
+>>>>>>> b538daaf97158332cf6bb56674e17159e800e24a
                 UNSTAKE
               </H4>
             </RoundButton>
@@ -209,6 +236,10 @@ const ColContainer = styled.div`
   align-items: center;
 `;
 
+<<<<<<< HEAD
 const Lable = styled(H4)`
+=======
+const Label = styled(H4)`
+>>>>>>> b538daaf97158332cf6bb56674e17159e800e24a
   width: 50px;
 `;

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "config/reducers";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import { NotificationManager } from "react-notifications";
 
-import { H1 } from "components/headding";
+import { H1 } from "components/heading";
 import { MintCard } from "components/card/MintCard";
 import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore, { Mousewheel, Virtual } from "swiper/core";
@@ -40,7 +40,7 @@ const Mint = () => {
   const { hash } = useSelector((state: RootState) => state.transaction);
   const { gasPrice } = useSelector((state: RootState) => state.networkFee);
 
-  const { isConnect, confirm, networkId } = useSelector(
+  const { isConnect, networkId } = useSelector(
     (state: RootState) => state.wallet
   );
   const [slideIndex, setSlideIndex] = useState(0);
@@ -53,7 +53,7 @@ const Mint = () => {
   const [rewardsAmountToAPY, setRewardsAmountToAPY] = useState(0n);
   const [cRatio, setCRatio] = useState(0n);
 
-  const onChageMintAmount = (value, currencyName) => {
+  const onChangeMintAmount = (value, currencyName) => {
     if (/\./g.test(value)) {
       value = value.match(/\d+\.\d{0,17}/g)[0];
     }
@@ -104,9 +104,9 @@ const Mint = () => {
   };
 
   const getMaxAmount = async (currency) => {
-    let stakeAmount = utils.formatEther(balances[currency.name].stakable);
+    let stakeAmount = utils.formatEther(balances[currency.name].stakeable);
     let mintAmount = utils.formatEther(
-      (BigInt(balances[currency.name].stakable) *
+      (BigInt(balances[currency.name].stakeable) *
         exchangeRates[currency.name]) /
         BigInt(Math.pow(10, 18).toString()) /
         (BigInt(Math.pow(10, 18).toString()) / targetCRatio)
@@ -345,12 +345,12 @@ const Mint = () => {
               currencyName={currency.name}
               maxAction={() =>
                 isConnect
-                  ? onChageMintAmount(maxMintAmount, currency.name)
+                  ? onChangeMintAmount(maxMintAmount, currency.name)
                   : connectHelp()
               }
               stakeAmount={stakeAmount}
               mintAmount={mintAmount}
-              onChange={onChageMintAmount}
+              onChange={onChangeMintAmount}
               apy={rewardsAmountToAPY}
               cRatio={cRatio}
               isApprove={isApprove}

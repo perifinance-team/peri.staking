@@ -1,14 +1,14 @@
 import styled from 'styled-components';
 
 interface ParagraphProps {
-    weigth?: string;
+    weight?: string;
     color?: string;
     align?: string;
     margin?: number;
     fontSize?: number;
 }
 
-const weigth = {
+const weight = {
     m: 500,
     sb: 600,
     b: 700,
@@ -17,7 +17,7 @@ const weigth = {
 
 export const Paragraph = styled.p<ParagraphProps>`
     font-size: ${props => props.fontSize ? `${props.fontSize}rem` : '1.8rem' };
-    font-weight: ${props => weigth[props.weigth]};
+    font-weight: ${props => weight[props.weight]};
     color: ${props => props.theme.colors.font[props.color]};
     text-align: center;
     display: table-cell;

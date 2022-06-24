@@ -1,9 +1,9 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "config/reducers";
 import styled from "styled-components";
 import { contracts } from "lib/contract";
-import { H4 } from "components/headding";
+import { H4 } from "components/heading";
 import {
   StyledTHeader,
   StyledTBody,
@@ -67,21 +67,21 @@ const Liquidation = () => {
         <StyledTHeader>
           <Row>
             <AmountCell>
-              <H4 weigth={"b"}>C-ratio</H4>
+              <H4 weight={"b"}>C-ratio</H4>
             </AmountCell>
             <AmountCell>
-              <H4 weigth={"b"}>Debt Amount</H4>
+              <H4 weight={"b"}>Debt Amount</H4>
             </AmountCell>
             <AmountCell>
-              <H4 weigth={"b"} style={{ width: "30rem" }}>
+              <H4 weight={"b"} style={{ width: "30rem" }}>
                 Collateral amount
               </H4>
             </AmountCell>
             <AmountCell>
-              <H4 weigth={"b"}>Status</H4>
+              <H4 weight={"b"}>Status</H4>
             </AmountCell>
             <AmountCell>
-              <H4 weigth={"b"}>Action</H4>
+              <H4 weight={"b"}>Action</H4>
             </AmountCell>
           </Row>
         </StyledTHeader>
@@ -93,10 +93,10 @@ const Liquidation = () => {
                 style={{ minHeight: "9rem", height: "10rem" }}
               >
                 <AmountCell>
-                  <H4 weigth={"m"}>{`${ratioToPer(el.cRatio)}%`}</H4>
+                  <H4 weight={"m"}>{`${ratioToPer(el.cRatio)}%`}</H4>
                 </AmountCell>
                 <AmountCell>
-                  <H4 weigth={"m"}>{`${formatCurrency(
+                  <H4 weight={"m"}>{`${formatCurrency(
                     el.debt ? el.debt : 0n
                   )} pUSD`}</H4>
                 </AmountCell>
@@ -120,7 +120,7 @@ const Liquidation = () => {
                   </CollateralList>
                 </AmountCell>
                 <AmountCell>
-                  <H4 weigth={"m"}>{statusList[el.status]}</H4>
+                  <H4 weight={"m"}>{statusList[el.status]}</H4>
                 </AmountCell>
                 <AmountCell
                   onMouseOver={() =>

@@ -5,7 +5,7 @@ import styled from "styled-components";
 import { NotificationManager } from "react-notifications";
 import { addSeconds, differenceInSeconds } from "date-fns";
 
-import { H1 } from "components/headding";
+import { H1 } from "components/heading";
 import { BurnCard } from "components/card/BurnCard";
 import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore, { Mousewheel, Virtual } from "swiper/core";
@@ -61,7 +61,7 @@ const Burn = () => {
   const [issuanceDelay, setIssuanceDelay] = useState(1);
   const [slideIndex, setSlideIndex] = useState(0);
   const [activeCurrency, setActiveCurrency] = useState(null);
-  const [init, setInit] = useState(false);
+  // const [ init, setInit ] = useState(false);
   const [unStakeAmount, setUnStakeAmount] = useState("0");
   const [burnAmount, setBurnAmount] = useState("0");
   const [maxUnStakeAmount, setMaxUnStakeAmount] = useState("0");
@@ -69,7 +69,7 @@ const Burn = () => {
 
   const [cRatio, setCRatio] = useState(0n);
 
-  const onChageBurnAmount = (value, currencyName) => {
+  const onChangeBurnAmount = (value, currencyName) => {
     if (/\./g.test(value)) {
       value = value.match(/\d+\.\d{0,17}/g)[0];
     }
@@ -95,7 +95,7 @@ const Burn = () => {
 
         setUnStakeAmount(unStakeAmount);
       } else {
-        let PERIQuta = 0n;
+        let PERIQuota = 0n;
         const isTarget: boolean =
           currentCRatio === 0n ||
           currentCRatio <= 25n * BigInt(Math.pow(10, 16).toString());
@@ -105,7 +105,7 @@ const Burn = () => {
               (BigInt(Math.pow(10, 18).toString()) / targetCRatio) *
               BigInt(Math.pow(10, 18).toString())) /
             exchangeRates["PERI"];
-          PERIQuta = balances["PERI"].balance - PERIStaked;
+          PERIQuota = balances["PERI"].balance - PERIStaked;
         }
 
         burnAmount = value;
@@ -128,7 +128,7 @@ const Burn = () => {
           getCRatio(currencyName, burnAmount, unStakeAmount);
         }
         unStakeAmount =
-          BigInt(utils.parseEther(unStakeAmount).toString()) + PERIQuta;
+          BigInt(utils.parseEther(unStakeAmount).toString()) + PERIQuota;
 
         if (unStakeAmount < 0n) {
           unStakeAmount = "0";
@@ -296,8 +296,6 @@ const Burn = () => {
         console.log(e);
       }
     }
-
-    console.log("transaction", transaction);
   };
 
   const getCRatio = (currencyName, burnAmount, unStakeAmount) => {
@@ -462,7 +460,7 @@ const Burn = () => {
               currencyName={currency.name}
               maxAction={() =>
                 isConnect
-                  ? onChageBurnAmount(
+                  ? onChangeBurnAmount(
                       currency.isLP ? maxUnStakeAmount : maxBurnAmount,
                       currency.name
                     )
@@ -471,7 +469,7 @@ const Burn = () => {
               unStakeAmount={unStakeAmount}
               burnAmount={burnAmount}
               cRatio={cRatio}
-              onChange={onChageBurnAmount}
+              onChange={onChangeBurnAmount}
               isLP={currency.isLP}
               burnAction={() => burnAction(currency)}
             ></BurnCard>

@@ -7,7 +7,7 @@ import styled, { css } from "styled-components";
 
 import { RootState } from "config/reducers";
 
-import { H1, H2 } from "components/headding";
+import { H1, H2 } from "components/heading";
 import { Paragraph } from "components/paragraph";
 
 import Mint from "./Mint";
@@ -53,7 +53,7 @@ const Stake = () => {
                       />
                     )}
 
-                    <Paragraph fontSize={1.8} weigth={"m"}>
+                    <Paragraph fontSize={1.8} weight={"m"}>
                       {t(`stake.explanation.${link}`)}
                     </Paragraph>
                   </StyledLink>
@@ -113,7 +113,7 @@ const StyledLink = styled(Link)<{ active: boolean; margin: boolean }>`
   max-width: 340px;
   height: 40%;
   flex-direction: column;
-  margin: ${(props) => (props.margin ? "0px 25px" : "none")};
+  margin: ${(props) => (props.margin ? "0px 25px" : "")};
   color: ${(props) => props.theme.colors.font.primary};
   text-decoration: none;
   border-radius: 20px;

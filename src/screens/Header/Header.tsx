@@ -2,8 +2,9 @@ import React from "react";
 import styled from "styled-components";
 import Network from "./components/Network";
 import Connect from "./components/Connect";
-import Translation from "./components/Translation";
-import Themes from "./components/Themes";
+// import Translation from './components/Translation';
+// import Themes from './components/Themes'
+
 const Header = () => {
   return (
     <Container>

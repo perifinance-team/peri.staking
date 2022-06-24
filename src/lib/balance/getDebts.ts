@@ -2,7 +2,7 @@ import { RPC_URLS } from 'lib/rpcUrl'
 import { utils } from 'ethers'
 import { providers, Contract } from 'ethers'
 import CrossChainABI from '../contract/abi/CrossChainManager.json'
-import PeriFinanceStateABI from '../contract/abi/PeriFinanceState.json'
+// import PeriFinanceStateABI from '../contract/abi/PeriFinanceState.json'
 import PeriFinanceABI from '../contract/abi/PeriFinance.json'
 
 const perifinanceAddress = {

@@ -1,8 +1,8 @@
 import React from "react";
 import styled, { css } from "styled-components";
-import { H3, H4, H5 } from "components/headding";
+import { H3, H4 } from "components/heading";
 import { RoundButton } from "components/button/RoundButton";
-import { Input } from "components/Input";
+import { Input } from "../../components/Input/index";
 import { MaxButton } from "components/button/MaxButton";
 import { Fee } from "components/Fee";
 import { useSelector } from "react-redux";
@@ -21,9 +21,7 @@ export const EarnCard = ({
   stakeAmount = "",
   apy,
 }) => {
-  const { isConnect, networkId } = useSelector(
-    (state: RootState) => state.wallet
-  );
+  const { networkId } = useSelector((state: RootState) => state.wallet);
   const { balances } = useSelector((state: RootState) => state.balances);
   const swapName = {
     1: "UNI",
@@ -46,21 +44,21 @@ export const EarnCard = ({
             alt="earn"
           ></img>
         )}
-        <H3 weigth={"sb"}>{swapName[networkId]}SWAP</H3>
-        <H4 weigth={"b"}>
+        <H3 weight={"sb"}>{swapName[networkId]}SWAP</H3>
+        <H4 weight={"b"}>
           Staked: {formatCurrency(balances[coinName]?.staked, 2)}
         </H4>
       </IconContainer>
       <InputContainer>
         <RowContainer margin={"0px"}>
           {isActive && (
-            <APY align={"left"} weigth={"sb"}>
+            <APY align={"left"} weight={"sb"}>
               EST APY: {formatCurrency(apy, 2)}%
             </APY>
           )}
         </RowContainer>
         <RowContainer>
-          <Lable>{coinName}</Lable>
+          <Label>{coinName}</Label>
           <Input
             disabled={!isActive}
             isLP={true}
@@ -90,7 +88,7 @@ export const EarnCard = ({
               border={"none"}
               margin={"0px 20px 0px 0px"}
             >
-              <H4 weigth={"sb"}>Approve</H4>
+              <H4 weight={"sb"}>Approve</H4>
             </RoundButton>
           ) : (
             <RoundButton
@@ -103,7 +101,7 @@ export const EarnCard = ({
               border={"none"}
               margin={"0px 20px 0px 0px"}
             >
-              <H4 weigth={"sb"}>STAKE</H4>
+              <H4 weight={"sb"}>STAKE</H4>
             </RoundButton>
           )}
           {isActive && <Fee></Fee>}
@@ -177,6 +175,6 @@ const ColContainer = styled.div`
   align-items: center;
 `;
 
-const Lable = styled(H4)`
+const Label = styled(H4)`
   width: 50px;
 `;

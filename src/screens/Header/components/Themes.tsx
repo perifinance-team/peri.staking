@@ -9,18 +9,18 @@ const Connect = () => {
   const themeState = useSelector((state: RootState) => state.theme.theme);
   const dispatch = useDispatch();
 
-  const themeExchage = () => {
-    dispatch(updateThemeStyles(themeState === "dark" ? "lite" : "dark"));
-    dispatch(updateTheme(themeState === "dark" ? "lite" : "dark"));
-    onboard.config({ darkMode: themeState === "dark" ? false : true });
-  };
+    const themeExchange = () => {
+        dispatch(updateThemeStyles(themeState === 'dark' ? "lite" : "dark"));
+        dispatch(updateTheme(themeState === 'dark' ? "lite" : "dark"));
+        onboard.config({ darkMode: themeState === 'dark' ? false : true})
+    }
 
-  return (
-    <ThemesButton onClick={() => themeExchage()}>
-      <img src={`/images/${themeState}/${themeState}.svg`} alt="theme" />
-    </ThemesButton>
-  );
-};
+    return (
+        <ThemesButton onClick={() => themeExchange()}>
+            <img src={`/images/${themeState}/${themeState}.svg`} alt="theme"/>
+        </ThemesButton>
+    );
+}
 
 const ThemesButton = styled.button`
   background: none;

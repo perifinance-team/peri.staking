@@ -1,81 +1,69 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "config/reducers";
-import styled, { css } from "styled-components";
-import { NotificationManager } from "react-notifications";
+import { RootState } from 'config/reducers'
+import styled from 'styled-components';
+import { NotificationManager } from 'react-notifications';
 
 import { contracts } from "lib/contract";
 
-import { H1 } from "components/headding";
-import { RewardCard } from "components/card/RewardCard";
-import { LPRewardCard } from "components/card/LPRewardCard";
+import { H1 } from 'components/heading'
+import { RewardCard } from 'components/card/RewardCard'
+import { LPRewardCard } from 'components/card/LPRewardCard'
 
-import { Swiper, SwiperSlide } from "swiper/react";
-import SwiperCore, { Mousewheel, Virtual } from "swiper/core";
-import { addSeconds, formatDistanceToNow } from "date-fns";
-import { updateTransaction } from "config/reducers/transaction";
-import { setLoading } from "config/reducers/loading";
-import { onboard } from "lib/onboard";
-import { formatCurrency } from "lib";
-import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from "constants";
-import networkFee from "config/reducers/networkFee/networkFee";
+import { Swiper, SwiperSlide } from 'swiper/react';
+import SwiperCore, { Mousewheel, Virtual } from 'swiper/core';
+import { addSeconds, formatDistanceToNow } from 'date-fns';
+import { updateTransaction } from 'config/reducers/transaction'
+import { setLoading } from 'config/reducers/loading'
+import { onboard } from 'lib/onboard'
+import { formatCurrency } from 'lib'
+// import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from 'constants';
+// import networkFee from 'config/reducers/networkFee/networkFee';
 
 SwiperCore.use([Mousewheel, Virtual]);
 
 type ClaimData = {
-  closeIn?: string;
-  duration?: string;
-  periods?: string;
-  rewards?: {
-    exchage: bigint;
-    staking: bigint;
-  };
-  claimable?: boolean;
-  isCloseFeePeriodEnabled?: boolean;
-};
+    closeIn?: string,
+    duration?: string,
+    periods?: string,
+    rewards?: {
+        exchange: bigint,
+        staking: bigint,
+    }
+    claimable?: boolean,
+    isCloseFeePeriodEnabled?: boolean
+}
 
 const Reward = () => {
-  const dispatch = useDispatch();
-  const [slideIndex, setSlideIndex] = useState(0);
-  const balancesIsReady = useSelector(
-    (state: RootState) => state.balances.isReady
-  );
-  const exchangeIsReady = useSelector(
-    (state: RootState) => state.exchangeRates.isReady
-  );
+    const dispatch = useDispatch();
+    const [slideIndex, setSlideIndex] = useState(0);
+    // const balancesIsReady = useSelector((state: RootState) => state.balances.isReady);
+    const exchangeIsReady = useSelector((state: RootState) => state.exchangeRates.isReady);
 
-  const { hash } = useSelector((state: RootState) => state.transaction);
-  const { address, isConnect, networkId } = useSelector(
-    (state: RootState) => state.wallet
-  );
-  const { gasPrice } = useSelector((state: RootState) => state.networkFee);
-  const { currentCRatio } = useSelector((state: RootState) => state.ratio);
-  const { balances } = useSelector((state: RootState) => state.balances);
-  const [claimData, setClaimData] = useState<ClaimData>({
-    closeIn: "",
-    duration: "0",
-    periods: "0",
-    rewards: {
-      exchage: 0n,
-      staking: 0n,
-    },
-    claimable: false,
-    isCloseFeePeriodEnabled: false,
-  });
-
-  const actions = [
-    { name: "CLAIM", component: RewardCard, data: claimData },
-    {
-      name: "LP",
-      component: LPRewardCard,
-      data: {
-        ...claimData,
-        rewardEscrow: balances["LP"]?.rewardEscrow
-          ? balances["LP"].rewardEscrow
-          : 0n,
-      },
-    },
-  ];
+    const { hash } = useSelector((state: RootState) => state.transaction);
+    const { address, isConnect } = useSelector((state: RootState) => state.wallet);
+    const { gasPrice } = useSelector((state: RootState) => state.networkFee);
+    const { currentCRatio } = useSelector((state: RootState) => state.ratio);
+    const { balances } = useSelector((state: RootState) => state.balances);
+    const [ claimData, setClaimData ] = useState<ClaimData>({
+        closeIn: '',
+        duration: '0',
+        periods: '0',
+        rewards: {
+            exchange: 0n,
+            staking: 0n
+        },
+        claimable: false,
+        isCloseFeePeriodEnabled: false
+    });
+    
+    const actions = [
+        {name: 'CLAIM', component: RewardCard, data: claimData },
+        {name: 'LP', component: LPRewardCard, data: {
+            ...claimData,
+            rewardEscrow: balances['LP']?.rewardEscrow ? balances['LP'].rewardEscrow : 0n
+        }}
+    ]
 
   const getFeePeriodCountdown = (recentFeePeriods, feePeriodDuration) => {
     const currentPeriodStart =
@@ -237,19 +225,34 @@ const Reward = () => {
         duration
       );
 
-      setClaimData({
-        closeIn,
-        duration,
-        periods,
-        rewards: {
-          exchage: isConnect ? BigInt(reward[0].toString()) : 0n,
-          staking: isConnect ? BigInt(reward[1].toString()) : 0n,
-        },
-        claimable,
-        isCloseFeePeriodEnabled,
-      });
-    } catch (e) {
-      console.log(e);
+    const getData = async () => {
+        dispatch(setLoading({name: 'rewardData', value: true}));
+        try {
+            const duration = await contracts.FeePool.feePeriodDuration();            
+            const periods = await contracts.FeePool.recentFeePeriods(0);
+            const claimable = address ? await contracts.FeePool.isFeesClaimable(address) : false;
+            const reward = address ? await contracts.FeePool.feesAvailable(address) : [];
+            //reward type  array[0] = exchange | array[1] = staking
+            
+            const { closeIn, isCloseFeePeriodEnabled } = getFeePeriodCountdown(periods, duration);
+            
+            setClaimData({
+                closeIn,
+                duration,
+                periods,
+                rewards: {
+                    exchange: isConnect ? BigInt(reward[0].toString()) : 0n,
+                    staking: isConnect ? BigInt(reward[1].toString()) : 0n,
+                },
+                claimable,
+                isCloseFeePeriodEnabled
+            });
+        } catch(e) {
+            console.log(e);   
+        }
+    
+        
+        dispatch(setLoading({name: 'rewardData', value: false}));
     }
 
     dispatch(setLoading({ name: "rewardData", value: false }));

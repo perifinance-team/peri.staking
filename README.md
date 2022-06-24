@@ -10,7 +10,7 @@ The dApp communicates with the [Peri Finance contracts](https://docs.peri.financ
 - Transfer `PERI` to other accounts
 ## In the future
 - Can claim rewards of `pUSD` (exchange fees) every week
-- Deposit (or withdrawl) `pUSD` into the `Depot` contract, to go in the queue for exchanging with `ETH` at current market price
+- Deposit (or withdrawal) `pUSD` into the `Depot` contract, to go in the queue for exchanging with `ETH` at current market price
 `PERI.Staking` supports the following wallet providers:
 - Metamask
 - Trezor (Coming soon)

@@ -1,15 +1,13 @@
 import React from "react";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import { NavLink, useRouteMatch } from "react-router-dom";
 import { RootState } from "config/reducers";
 import { useSelector } from "react-redux";
-import { useEffect } from "react";
+// import { useEffect } from 'react';
 
 const Logo = () => {
   const { vestable } = useSelector((state: RootState) => state.vestable);
-  const { address, networkId } = useSelector(
-    (state: RootState) => state.wallet
-  );
+  const { networkId } = useSelector((state: RootState) => state.wallet);
 
   let nav = [
     {
@@ -58,13 +56,6 @@ const Logo = () => {
         path: "/liquidation",
       }),
     },
-    {
-      name: "escrow",
-      to: "/escrow",
-      active: useRouteMatch({
-        path: "/escrow",
-      }),
-    },
   ];
 
   return (
@@ -87,6 +78,7 @@ const Logo = () => {
           });
         }
         if (item.name === "vesting" && vestable === false) {
+          return <></>;
         } else {
           return (
             <ParentLinkContainer key={item.name}>
@@ -143,9 +135,9 @@ const ChildrenLink = styled(NavLink)`
   }
 `;
 
-const LogoImg = styled.img`
-  width: 100px;
-  height: 50px;
-`;
+// const LogoImg = styled.img`
+//     width: 100px;
+//     height: 50px;
+// `
 
 export default Logo;

@@ -16,11 +16,11 @@ const Network = () => {
     <>
       {networkName && address && isConnect ? (
         <RoundContainer height={30} padding={"0px 30px"}>
-          <Paragraph fontSize={1.2} weigth={"m"} color={"primary"}>
+          <Paragraph fontSize={1.2} weight={"m"} color={"primary"}>
             {address.slice(0, 6) + "..." + address.slice(-4, address.length)}
           </Paragraph>
           <Dot></Dot>
-          <Paragraph fontSize={1.4} weigth={"b"} color={"primary"}>
+          <Paragraph fontSize={1.4} weight={"b"} color={"primary"}>
             {networkName}
           </Paragraph>
         </RoundContainer>

@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { useSelector } from "react-redux";
 import { RootState } from "config/reducers";
-import { H3, H4 } from "components/headding";
+import { H4 } from "components/heading";
 import { formatCurrency } from "lib";
 import { useEffect, useState } from "react";
 const StakingStatus = () => {
@@ -13,34 +13,34 @@ const StakingStatus = () => {
 
   const [PERIStatus, setPERIStatus] = useState({
     staked: 0n,
-    stakable: 0n,
+    stakeable: 0n,
   });
 
   const [USDCStatus, setUSDCStatus] = useState({
     staked: 0n,
-    stakable: 0n,
+    stakeable: 0n,
   });
 
   const [DAIStatus, setDAIStatus] = useState({
     staked: 0n,
-    stakable: 0n,
+    stakeable: 0n,
   });
 
   useEffect(() => {
     if (balancesIsReady) {
       setPERIStatus({
         staked: balances["PERI"].staked,
-        stakable: balances["PERI"].stakable,
+        stakeable: balances["PERI"].stakeable,
       });
 
       setUSDCStatus({
         staked: balances["USDC"].staked,
-        stakable: balances["USDC"].stakable,
+        stakeable: balances["USDC"].stakeable,
       });
 
       setDAIStatus({
         staked: balances["DAI"].staked,
-        stakable: balances["DAI"].stakable,
+        stakeable: balances["DAI"].stakeable,
       });
       // const USDCBalanceToUSD = balances['USDC'].transferable * exchangeRates['USDC'] / BigInt(Math.pow(10, 18).toString());
       // const DAIBalanceToUSD = balances['DAI'].transferable * exchangeRates['DAI'] / BigInt(Math.pow(10, 18).toString());
@@ -51,7 +51,7 @@ const StakingStatus = () => {
 
       // setStableStatus({
       //     staked: balances['DEBT'].stable * 4n,
-      //     stakable: mintableStable < TotalStableUSD ? mintableStable : TotalStableUSD,
+      //     stakeable: mintableStable < TotalStableUSD ? mintableStable : TotalStableUSD,
       // });
     }
   }, [balancesIsReady, balances]);
@@ -60,12 +60,12 @@ const StakingStatus = () => {
       <Container>
         <Image></Image>
         <Box>
-          <H4 color={"fourth"} weigth={"sb"}>
+          <H4 color={"fourth"} weight={"sb"}>
             Staked
           </H4>
         </Box>
         <Box>
-          <H4 color={"fourth"}>Stakable</H4>
+          <H4 color={"fourth"}>Stakeable</H4>
         </Box>
       </Container>
       <Container>
@@ -76,7 +76,7 @@ const StakingStatus = () => {
           <H4 align={"right"}> {formatCurrency(PERIStatus.staked)}</H4>
         </Box>
         <Box>
-          <H4 align={"right"}>{formatCurrency(PERIStatus.stakable)}</H4>
+          <H4 align={"right"}>{formatCurrency(PERIStatus.stakeable)}</H4>
         </Box>
       </Container>
       <Container>
@@ -87,7 +87,7 @@ const StakingStatus = () => {
           <H4 align={"right"}>{formatCurrency(USDCStatus.staked)}</H4>
         </Box>
         <Box>
-          <H4 align={"right"}>{formatCurrency(USDCStatus.stakable)}</H4>
+          <H4 align={"right"}>{formatCurrency(USDCStatus.stakeable)}</H4>
         </Box>
       </Container>
       <Container>
@@ -98,7 +98,7 @@ const StakingStatus = () => {
           <H4 align={"right"}>{formatCurrency(DAIStatus.staked)}</H4>
         </Box>
         <Box>
-          <H4 align={"right"}>{formatCurrency(DAIStatus.stakable)}</H4>
+          <H4 align={"right"}>{formatCurrency(DAIStatus.stakeable)}</H4>
         </Box>
       </Container>
     </>

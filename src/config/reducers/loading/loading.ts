@@ -5,18 +5,17 @@ export type Loading = {
 };
 
 const initialState: Loading = {
-  loadings: {
-    balance: false,
-    apy: false,
-    burnAble: false,
-    gasEstimate: false,
-    closeCurrentFeePeriod: false,
-    rewardData: false,
-    vestingData: false,
-    amountsToFitClaimable: false,
+	loadings: {
+        balance: false,
+        apy: false,
+        burnAble: false,
+        gasEstimate: false,
+		closeCurrentFeePeriod: false,
+		rewardData: false,
+		vestingData: false,
+		amountsToFitClaimable: false,
     liquidation: false,
-    escrow: false,
-  },
+    },
 };
 
 export const loadingSlice = createSlice({
