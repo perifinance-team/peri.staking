@@ -4,11 +4,11 @@ import { RoundButton } from 'components/button/RoundButton'
 import { Input } from 'components/input'
 import { Fee } from 'components/Fee'
 import { formatCurrency } from 'lib'
-import { useSelector } from "react-redux"
-import { RootState } from 'config/reducers'
+// import { useSelector } from "react-redux"
+// import { RootState } from 'config/reducers'
 
 export const RewardCard = ({isActive, actionName, rewardAction, periodAction, data}) => {
-    const { isConnect } = useSelector((state: RootState) => state.wallet);
+    // const { isConnect } = useSelector((state: RootState) => state.wallet);
 
     return (
         <Card isActive={isActive}>

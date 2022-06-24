@@ -29,6 +29,9 @@ import Loading from './screens/Loading'
 import Main from './screens/Main'
 import './App.css'
 
+import { toggleLiquid, updateTimestamp } from "config/reducers/liquidation";
+import { getTimeStamp } from "lib/liquidation";
+
 // import {getDebts} from 'lib/balance/getDebts'
 
 
@@ -45,6 +48,8 @@ const App = () => {
     const [ intervals, setIntervals ] = useState(null);
     const [onboardInit, setOnboardInit] = useState(false);
 
+    const { Liquidations } = contracts as any;
+
 //     const [userAddress, setUserAddress] = useState('test');
 
     const getSystemData = useCallback(async (isLoading) => {
@@ -58,11 +63,17 @@ const App = () => {
             dispatch(updateNetworkFee({gasPrice}));   
 
             if(address) {
+                const stateLiquid = await Liquidations.isOpenForLiquidation(address);
+                const timestamp = await getTimeStamp(address, Liquidations);
+
+                dispatch(updateTimestamp(timestamp));
+
                 const [balancesData, vestable] = await Promise.all([
                     getBalances(address, balances, ratios.exchangeRates, ratios.ratio.targetCRatio, ratios.ratio.currentCRatio),
                     getVestable(address),
                 ])
                 dispatch(initCurrency(balancesData)); 
+                dispatch(toggleLiquid(stateLiquid));
                 //todo:: code move call
                 dispatch(updateVestable({vestable}));
             }     

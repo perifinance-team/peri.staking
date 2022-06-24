@@ -13,7 +13,8 @@ const initialState: Loading = {
 		closeCurrentFeePeriod: false,
 		rewardData: false,
 		vestingData: false,
-		amountsToFitClaimable: false
+		amountsToFitClaimable: false,
+    liquidation: false,
     },
 };
 

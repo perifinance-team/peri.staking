@@ -8,7 +8,7 @@ import { RootState } from 'config/reducers'
 import { formatCurrency } from 'lib'
 
 export const LPRewardCard = ({isActive, actionName, rewardAction, data}) => {
-    const { isConnect, networkId } = useSelector((state: RootState) => state.wallet);
+    const { networkId } = useSelector((state: RootState) => state.wallet);
     
     const swapName = {
         1: 'UNI',

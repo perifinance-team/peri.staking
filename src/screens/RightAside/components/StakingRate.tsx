@@ -13,12 +13,12 @@ const StakingRate = () => {
     
     useEffect(() => {
         if(balances['DEBT']?.PERI && exchangeIsReady && balancesIsReady) {
-            const PERIDEBT = balances['PERI'].staked * exchangeRates['PERI'];
-            const DAIDEBT = balances['DAI'].staked * exchangeRates['DAI'];
-            const USDCDEBT = balances['USDC'].staked * exchangeRates['USDC'];
-            const total = PERIDEBT + DAIDEBT + USDCDEBT;
+            const periDebt = balances['PERI'].staked * exchangeRates['PERI'];
+            const daiDebt = balances['DAI'].staked * exchangeRates['DAI'];
+            const usdcDebt = balances['USDC'].staked * exchangeRates['USDC'];
+            const total = periDebt + daiDebt + usdcDebt;
 
-            const per = (BigInt(DAIDEBT + USDCDEBT) * 100n / total);
+            const per = total===0n?0:(BigInt(daiDebt + usdcDebt) * 100n / total);
             setPERIStakingPer(Math.ceil(Number(per.toString())));
         }
         

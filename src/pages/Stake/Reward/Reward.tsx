@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from 'config/reducers'
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 import { NotificationManager } from 'react-notifications';
 
 import { contracts } from 'lib/contract'
@@ -41,7 +41,7 @@ const Reward = () => {
     const exchangeIsReady = useSelector((state: RootState) => state.exchangeRates.isReady);
 
     const { hash } = useSelector((state: RootState) => state.transaction);
-    const { address, isConnect, networkId } = useSelector((state: RootState) => state.wallet);
+    const { address, isConnect } = useSelector((state: RootState) => state.wallet);
     const { gasPrice } = useSelector((state: RootState) => state.networkFee);
     const { currentCRatio } = useSelector((state: RootState) => state.ratio);
     const { balances } = useSelector((state: RootState) => state.balances);

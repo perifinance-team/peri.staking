@@ -17,6 +17,7 @@ import transaction from './transaction/transaction'
 import vestable from './vest/vestable'
 import lp from './LP/lp'
 import loading from './loading/loading'
+import liquidation from "./liquidation/Liquidation";
 
 const reducer = combineReducers({
     app,
@@ -30,7 +31,8 @@ const reducer = combineReducers({
     transaction,
     vestable,
     lp,
-    loading
+    loading,
+    liquidation
 });
 
 export type RootState = ReturnType<typeof reducer>;

@@ -3,6 +3,7 @@ import { useSelector } from "react-redux"
 import { RootState } from 'config/reducers'
 import { H3, H4 } from 'components/heading'
 import { formatCurrency } from 'lib'
+import Timer from "components/Timer";
 // import { useEffect, useState } from 'react';
 
 const DebtBalance = () => {
@@ -10,6 +11,7 @@ const DebtBalance = () => {
     
     return (
         <DebtBalanceContainer>
+            <Timer />
             <H3 align={'left'}>DEBT</H3>
             <BalanceContainer>
                 <img alt={"pUSD"} src={`/images/currencies/pUSD.png`}></img>

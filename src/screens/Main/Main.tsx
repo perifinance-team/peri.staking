@@ -14,6 +14,8 @@ import Header from 'screens/Header'
 import Stake from 'pages/Stake'
 import Balance from 'pages/Balance'
 import Vesting from 'pages/Vesting'
+import Liquidation from "pages/Liquidation";
+import LiquidNotification from "components/LiquidNotification";
 
 const Main = () => {
 
@@ -35,6 +37,9 @@ const Main = () => {
                                 <Route path="/vesting">
                                     <Vesting></Vesting>
                                 </Route>
+                                <Route path="/liquidation">
+                                    <Liquidation></Liquidation>
+                                </Route>
                                 <Route exact path="/">
                                     <Redirect to="/stake"/>
                                 </Route>
@@ -45,7 +50,7 @@ const Main = () => {
                     
                 </RightSection>
             </Router>
-
+            <LiquidNotification />
         </MainContainer>
     );
 }

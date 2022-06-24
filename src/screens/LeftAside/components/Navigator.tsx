@@ -6,7 +6,7 @@ import { useSelector } from "react-redux"
 
 const Logo = () => {
     const { vestable } = useSelector((state: RootState) => state.vestable);
-    const { address, networkId } = useSelector((state: RootState) => state.wallet);
+    const { networkId } = useSelector((state: RootState) => state.wallet);
     
     let nav = [
         {
@@ -45,7 +45,14 @@ const Logo = () => {
             active: useRouteMatch({
                 path: "/vesting",
             }),
-        }   
+        },
+        {
+          name: "liquidation",
+          to: "/liquidation",
+          active: useRouteMatch({
+            path: "/liquidation",
+          }),
+        },
     ];    
 
     return (
@@ -121,9 +128,9 @@ const ChildrenLink = styled(NavLink)`
     }   
 `;
 
-const LogoImg = styled.img`
-    width: 100px;
-    height: 50px;
-`
+// const LogoImg = styled.img`
+//     width: 100px;
+//     height: 50px;
+// `
 
 export default Logo;

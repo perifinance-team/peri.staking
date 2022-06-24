@@ -9,7 +9,7 @@ import { RootState } from 'config/reducers'
 import { formatCurrency } from 'lib'
 
 export const EarnCard = ({isActive, coinName, isStable = false, isApprove = false, approveAction = null, stakeAction, onChange, maxAction, stakeAmount = '', apy}) => {
-    const { isConnect, networkId } = useSelector((state: RootState) => state.wallet);
+    const { networkId } = useSelector((state: RootState) => state.wallet);
     const { balances } = useSelector((state: RootState) => state.balances);
     const swapName = {
         1: 'UNI',

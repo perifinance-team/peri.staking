@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from "react-redux"
 import { RootState } from 'config/reducers'
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 import { NotificationManager } from 'react-notifications';
 
 import { H1 } from 'components/heading'
@@ -36,7 +36,7 @@ const Mint = () => {
     const { hash } = useSelector((state: RootState) => state.transaction);
     const { gasPrice } = useSelector((state: RootState) => state.networkFee);
 
-    const { isConnect, confirm, networkId } = useSelector((state: RootState) => state.wallet);
+    const { isConnect, networkId } = useSelector((state: RootState) => state.wallet);
     const [ slideIndex, setSlideIndex ] = useState(0);
     const [ activeCurrency, setActiveCurrency] = useState(null);
     const [ maxStakeAmount, setMaxStakeAmount ] = useState('0');
@@ -61,14 +61,12 @@ const Mint = () => {
         try {
             let mintAmount = value;
             let stakeAmount;
-            
-        
+
             if(BigInt(utils.parseEther(maxMintAmount).toString()) <= BigInt(utils.parseEther(mintAmount).toString())) {
                 mintAmount = maxMintAmount;
                 stakeAmount = maxStakeAmount;
                 
             } else {
-                
                 stakeAmount = BigInt(utils.parseEther(mintAmount).toString()) * BigInt(Math.pow(10, 18).toString()) * (BigInt(Math.pow(10, 18).toString()) / targetCRatio) / exchangeRates[currencyName];
                 stakeAmount = utils.formatEther(stakeAmount.toString());
             }

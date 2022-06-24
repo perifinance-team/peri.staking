@@ -62,15 +62,15 @@ export const getBalances = async (currentWallet, currencies, exchangeRates, targ
     ]) : [0n, 0n, 0n, 0n, 0n];
 
     
-    let USDCDEBT, DAIDEBT, stableDEBT, PERIDEBT, mintableStable, USDCStakeable, DAIStakeable, PERIStaked, PERIStakeable: bigint = 0n;
+    let usdcDebt, daiDebt, stableDEBT, periDebt, mintableStable, USDCStakeable, DAIStakeable, PERIStaked, PERIStakeable: bigint = 0n;
 
     try {
-        USDCDEBT = (BigInt(stakedUSDC) * exchangeRates['USDC'] / BigInt(Math.pow(10, 18).toString()) / (BigInt(Math.pow(10, 18).toString()) / targetCRatio));
-        DAIDEBT = (BigInt(stakedDAI) * exchangeRates['DAI'] / BigInt(Math.pow(10, 18).toString()) / (BigInt(Math.pow(10, 18).toString()) / targetCRatio));
-        stableDEBT = USDCDEBT + DAIDEBT;
-        PERIDEBT = debtBalance - stableDEBT;
+        usdcDebt = (BigInt(stakedUSDC) * exchangeRates['USDC'] / BigInt(Math.pow(10, 18).toString()) / (BigInt(Math.pow(10, 18).toString()) / targetCRatio));
+        daiDebt = (BigInt(stakedDAI) * exchangeRates['DAI'] / BigInt(Math.pow(10, 18).toString()) / (BigInt(Math.pow(10, 18).toString()) / targetCRatio));
+        stableDEBT = usdcDebt + daiDebt;
+        periDebt = debtBalance - stableDEBT;
 
-        mintableStable = ((PERIDEBT / 4n) - (stableDEBT));
+        mintableStable = ((periDebt / 4n) - (stableDEBT));
         mintableStable = mintableStable <= 0n ? 0n : mintableStable;
         USDCStakeable = stakeAble ? mintableStable * (BigInt(Math.pow(10, 18).toString()) / targetCRatio) * BigInt(Math.pow(10, 18).toString()) / exchangeRates['USDC'] : 0n
         DAIStakeable = stakeAble ? mintableStable * (BigInt(Math.pow(10, 18).toString()) / targetCRatio) * BigInt(Math.pow(10, 18).toString()) / exchangeRates['DAI'] : 0n
@@ -83,7 +83,7 @@ export const getBalances = async (currentWallet, currencies, exchangeRates, targ
             DAIStakeable = DAIBalance;
         }
 
-        PERIStaked = PERIDEBT * (BigInt(Math.pow(10, 18).toString()) / targetCRatio) * BigInt(Math.pow(10, 18).toString()) / exchangeRates['PERI'];
+        PERIStaked = periDebt * (BigInt(Math.pow(10, 18).toString()) / targetCRatio) * BigInt(Math.pow(10, 18).toString()) / exchangeRates['PERI'];
         PERIStaked = periBalance < PERIStaked ? periBalance : PERIStaked;
         PERIStakeable = BigInt(periBalance) - PERIStaked;
         PERIStakeable = PERIStakeable <= 0n ? 0n : PERIStakeable;
@@ -97,9 +97,9 @@ export const getBalances = async (currentWallet, currencies, exchangeRates, targ
             ...currencies['DEBT'],
             balance: debtBalance,
             transferable: 0n,
-            USDC: USDCDEBT,
-            DAI: DAIDEBT,
-            PERI: PERIDEBT,
+            USDC: usdcDebt,
+            DAI: daiDebt,
+            PERI: periDebt,
             stable: stableDEBT,
             
         },
