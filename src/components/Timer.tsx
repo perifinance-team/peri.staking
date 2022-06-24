@@ -86,7 +86,6 @@ const TimerContainer = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
-
   span {
     color: ${(props) => props.theme.colors.font["warning"]};
     font-size: 4rem;
