@@ -1,12 +1,13 @@
-import styled from 'styled-components';
-import { useSelector, useDispatch } from "react-redux"
-import { RootState } from 'config/reducers'
-import { updateThemeStyles } from 'config/reducers/theme'
-import { updateTheme } from 'config/reducers/theme'
-import { onboard } from 'lib/onboard'
+import React from "react";
+import styled from "styled-components";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "config/reducers";
+import { updateThemeStyles } from "config/reducers/theme";
+import { updateTheme } from "config/reducers/theme";
+import { onboard } from "lib/onboard";
 const Connect = () => {
-    const themeState = useSelector((state: RootState) => state.theme.theme);
-    const dispatch = useDispatch();
+  const themeState = useSelector((state: RootState) => state.theme.theme);
+  const dispatch = useDispatch();
 
     const themeExchange = () => {
         dispatch(updateThemeStyles(themeState === 'dark' ? "lite" : "dark"));
@@ -22,17 +23,16 @@ const Connect = () => {
 }
 
 const ThemesButton = styled.button`
-    
-    background: none;
-    border: none;
+  background: none;
+  border: none;
+  width: 28px;
+  height: 28px;
+  padding: 0px;
+  margin: 2px 0px 2px 10px;
+  img {
     width: 28px;
     height: 28px;
-    padding: 0px;
-    margin: 2px 0px 2px 10px;
-    img {
-        width: 28px;
-        height: 28px;
-    }
-`
+  }
+`;
 
 export default Connect;
