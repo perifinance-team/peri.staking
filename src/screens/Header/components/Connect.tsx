@@ -12,7 +12,6 @@ const Connect = () => {
     const dispatch = useDispatch();
     const { isConnect } = useSelector((state: RootState) => state.wallet);
     
-    
     const onConnect = async () => {
         try {
             await onboard.walletSelect();
