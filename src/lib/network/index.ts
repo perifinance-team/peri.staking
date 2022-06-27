@@ -1,5 +1,2 @@
-export { SUPPORTED_NETWORKS } from './supportedNetWorks';
-export { SUPPORTED_NETWORKS_CONFIRM } from './supportedNetWorksConfrim'
-
-
-
+export { SUPPORTED_NETWORKS } from "./supportedNetWorks";
+export { SUPPORTED_NETWORKS_CONFIRM } from "./supportedNetworksConfirm";

@@ -1,22 +1,23 @@
 import { combineReducers } from "@reduxjs/toolkit";
 
-import app from './app/app'
+import app from "./app/app";
 
-import wallet from './wallet/wallet'
-import balances from './wallet/balances'
+import wallet from "./wallet/wallet";
+import balances from "./wallet/balances";
 
-import theme from './theme/theme';
-import themeStyles from './theme/themeStyles'
+import theme from "./theme/theme";
+import themeStyles from "./theme/themeStyles";
 
-import exchangeRates from './rates/exchangeRates'
-import ratio from './rates/ratio'
+import exchangeRates from "./rates/exchangeRates";
+import ratio from "./rates/ratio";
 
-import networkFee from './networkFee/networkFee'
+import networkFee from "./networkFee/networkFee";
 
 import transaction from './transaction/transaction' 
 import vestable from './vest/vestable'
 import lp from './LP/lp'
 import loading from './loading/loading'
+import liquidation from "./liquidation/Liquidation";
 
 const reducer = combineReducers({
     app,
@@ -30,7 +31,8 @@ const reducer = combineReducers({
     transaction,
     vestable,
     lp,
-    loading
+    loading,
+    liquidation
 });
 
 export type RootState = ReturnType<typeof reducer>;

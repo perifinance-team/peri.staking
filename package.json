@@ -11,11 +11,12 @@
   "dependencies": {
     "@egjs/react-flicking": "^4.1.2",
     "@metamask/detect-provider": "^1.2.0",
-    "@perifinance/peri-finance": "^0.4.12",
+    "@perifinance/peri-finance": "^0.4.24",
     "@reduxjs/toolkit": "^1.5.0",
     "@types/node": "^14.14.37",
     "@types/react-redux": "^7.1.16",
     "@types/react-router-dom": "^5.1.7",
+    "axios": "^0.27.2",
     "babel": "^6.23.0",
     "babel-plugin-styled-components": "^1.13.2",
     "babel-preset-react-app": "^10.0.0",
@@ -26,6 +27,7 @@
     "i18next-browser-languagedetector": "^6.0.1",
     "i18next-xhr-backend": "^3.2.2",
     "npm": "^7.19.1",
+    "react-countdown": "^2.3.2",
     "react-i18next": "^11.8.8",
     "react-notifications": "^1.7.2",
     "react-outside-click-handler": "^1.3.0",
@@ -54,6 +56,10 @@
     "test-invalidate": "aws cloudfront create-invalidation --profile=test.peri.staking-deploy-s3 --distribution-id E3O6OMR9TOEU8H --paths / /index.html /error.html /service-worker.js /manifest.json /favicon.ico"
   },
   "eslintConfig": {
+    "env": {
+      "browser": true,
+      "node": true
+    },
     "extends": [
       "react-app",
       "react-app/jest"
@@ -80,6 +86,14 @@
     "@types/styled-components": "^5.1.9",
     "rollup": "^2.53.2",
     "rollup-plugin-peer-deps-external": "^2.2.4",
-    "rollup-plugin-postcss": "^4.0.0"
+    "rollup-plugin-postcss": "^4.0.0",
+    "react-error-overlay": "6.0.9"
+  },
+  "resolutions": {
+    "@types/react": "^17.0.3",
+    "react-error-overlay": "6.0.9"
+  },
+  "overrides": {
+    "@types/react": "^17.0.3"
   }
 }
