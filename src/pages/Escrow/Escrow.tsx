@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import styled from "styled-components";
 import { contracts } from "lib/contract";
-import { H4 } from "components/headding";
+import { H4 } from "components/heading";
 import {
   StyledTHeader,
   StyledTBody,
@@ -48,18 +48,18 @@ const Escrow = () => {
         <StyledTHeader>
           <Row>
             <AmountCell>
-              <H4 weigth={"b"}>Index</H4>
+              <H4 weight={"b"}>Index</H4>
             </AmountCell>
             <AmountCell>
-              <H4 weigth={"b"}>IDX</H4>
+              <H4 weight={"b"}>IDX</H4>
             </AmountCell>
             <AmountCell>
-              <H4 weigth={"b"} style={{ width: "35rem" }}>
+              <H4 weight={"b"} style={{ width: "35rem" }}>
                 Collateral amount
               </H4>
             </AmountCell>
             <AmountCell>
-              <H4 weigth={"b"}>Time</H4>
+              <H4 weight={"b"}>Time</H4>
             </AmountCell>
           </Row>
         </StyledTHeader>
@@ -71,10 +71,10 @@ const Escrow = () => {
                 style={{ minHeight: "9rem", height: "10rem" }}
               >
                 <AmountCell>
-                  <H4 weigth={"m"}>{idx + 1}</H4>
+                  <H4 weight={"m"}>{idx + 1}</H4>
                 </AmountCell>
                 <AmountCell>
-                  <H4 weigth={"m"}>{`oxlx${idx + 2}y`}</H4>
+                  <H4 weight={"m"}>{`oxlx${idx + 2}y`}</H4>
                 </AmountCell>
                 <AmountCell style={{ width: "35rem" }}>
                   <CollateralList>
@@ -92,7 +92,7 @@ const Escrow = () => {
                   </CollateralList>
                 </AmountCell>
                 <AmountCell>
-                  <H4 weigth={"m"}>{el.time === 0 ? "-" : el.time}</H4>
+                  <H4 weight={"m"}>{el.time === 0 ? "-" : el.time}</H4>
                 </AmountCell>
               </BorderRow>
             );
