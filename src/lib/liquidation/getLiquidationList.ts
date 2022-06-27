@@ -12,6 +12,8 @@ export const getLiquidationList = async (dispatch, networkId = 1287) => {
 	dispatch(setLoading({ name: "liquidation", value: true }));
 	const { PeriFinance, Liquidations } = contracts as any;
 
+	console.log("networkId", networkId);
+
 	await axios
 		.get(
 			`https://perifinance1.com/api/v1/liquidationList?networkId=${networkId}`,
@@ -20,8 +22,8 @@ export const getLiquidationList = async (dispatch, networkId = 1287) => {
 			}
 		)
 		.then((data) => {
-			liquidationList = [...liquidationList, ...data.data];
-		}) // ! test 배열 합쳐놨음
+			liquidationList = [...data.data];
+		})
 		.catch((e) => console.log("Liquidation API error", e));
 
 	const tempList = [];
@@ -29,8 +31,8 @@ export const getLiquidationList = async (dispatch, networkId = 1287) => {
 	await Promise.all(
 		liquidationList.map(async (address, idx) => {
 			await connectContract(address, PeriFinance, Liquidations, contracts).then(
-				(data: object) => {
-					tempList[idx] = data;
+				(data: object | boolean) => {
+					data && tempList.push(data);
 				}
 			);
 		})
