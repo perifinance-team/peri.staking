@@ -52,6 +52,14 @@ export const connectContract = async (
 	collateral.USDC = await tempUSDC();
 	collateral.DAI = await tempDAI();
 
+	if (
+		formatCurrency(collateral.pUSD) === "0" &&
+		formatCurrency(collateral.USDC) === "0" &&
+		formatCurrency(collateral.DAI) === "0"
+	) {
+		return false;
+	}
+
 	const status = async () => {
 		if (
 			(await Liquidations.isOpenForLiquidation(address)) &&

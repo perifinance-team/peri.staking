@@ -115,9 +115,9 @@ const Liquidation = () => {
 													/>
 													<span>{`${item.name} ${
 														item.name === "Peri"
-															? isNaN(item.value.staked)
+															? isNaN(item.value)
 																? 0
-																: item.value.staked
+																: formatCurrency(item.value)
 															: formatCurrency(item.value)
 													}`}</span>
 												</Image>
