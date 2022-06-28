@@ -205,7 +205,6 @@ const App = () => {
 
 	useEffect(() => {
 		if (!onboardInit) {
-			console.log("onboard runnings", onboardInit);
 			setOnboard();
 		}
 		dispatch(updateThemeStyles(themeState));

@@ -22,13 +22,11 @@ export const getLiquidationList = async (dispatch, networkId = 1287) => {
 			}
 		)
 		.then((data) => {
-			liquidationList = [...liquidationList, ...data.data];
+			liquidationList = [...data.data];
 		})
 		.catch((e) => console.log("Liquidation API error", e));
 
 	const tempList = [];
-
-	console.log(liquidationList)
 
 	await Promise.all(
 		liquidationList.map(async (address, idx) => {
@@ -40,14 +38,7 @@ export const getLiquidationList = async (dispatch, networkId = 1287) => {
 		})
 	);
 
-	// for (let address of liquidationList) {
-	// 	await connectContract(address, PeriFinance, Liquidations, contracts).then(
-	// 		(data: object | boolean) => {
-	// 			data && tempList.push(data);
-	// 		}
-	// 	);
-	// }
-
+	console.log("tempList", tempList);
 	dispatch(updateList(tempList));
 	dispatch(setLoading({ name: "liquidation", value: false }));
 };

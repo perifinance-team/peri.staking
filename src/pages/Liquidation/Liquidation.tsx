@@ -33,21 +33,18 @@ const Liquidation = () => {
 		return ((BigInt(Math.pow(10, 18).toString()) * 100n) / value).toString();
 	};
 
-	const getLiquidationData = useCallback(
-		async (isLoading) => {
-			dispatch(setLoading({ name: "liquidation", value: isLoading }));
-			try {
-				if (address) {
-					await getLiquidationList(dispatch, networkId);
-				}
-			} catch (e) {
-				console.log("getLiquidation error", e);
+	const getLiquidationData = async (isLoading) => {
+		dispatch(setLoading({ name: "liquidation", value: isLoading }));
+		try {
+			if (address) {
+				await getLiquidationList(dispatch, networkId);
 			}
+		} catch (e) {
+			console.log("getLiquidation error", e);
+		}
 
-			dispatch(setLoading({ name: "liquidation", value: false }));
-		},
-		[address, networkId]
-	);
+		dispatch(setLoading({ name: "liquidation", value: false }));
+	};
 
 	useEffect(() => {
 		(async () => {
@@ -59,6 +56,7 @@ const Liquidation = () => {
 		pUSD < debt && NotificationManager.error(`Not enough pUSD`, "ERROR");
 	};
 
+	// ! test
 	const testHandler = (item: any) => {
 		let inner = `address | ${item.address}\ndebt, formatCurrency(debt) | ${
 			item.debt
@@ -130,17 +128,18 @@ const Liquidation = () => {
 								<AmountCell>
 									<H4 weight={"m"}>{statusList[el.status]}</H4>
 								</AmountCell>
-								<AmountCell
-									onMouseOver={() =>
-										onMouseOverHandler(balances["pUSD"].balance, el.debt)
-									}
-								>
+								<AmountCell>
 									{el.status === 0 && (
 										<TakeBtn
 											onClick={() =>
-												getTake(idx, address, list, dispatch, contracts)
+												balances["pUSD"].balance < el.debt
+													? onMouseOverHandler(
+															balances["pUSD"].balance,
+															el.debt
+													  )
+													: getTake(idx, address, list, dispatch, contracts)
 											}
-											disabled={balances["pUSD"].balance < el.debt}
+											toggle={balances["pUSD"].balance < el.debt}
 										>
 											Take
 										</TakeBtn>
@@ -205,10 +204,15 @@ const Image = styled.li`
 	}
 `;
 
-const TakeBtn = styled.button`
+interface ITakeBtn {
+	toggle: boolean;
+}
+
+const TakeBtn = styled.button<ITakeBtn>`
 	outline: none;
 	border: none;
 	background: #505050;
+	filter: ${(props) => props.toggle && "brightness(65%)"};
 	color: white;
 	font-weight: bold;
 	width: 5.5rem;

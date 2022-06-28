@@ -16,33 +16,21 @@ export const connectContract = async (
 		await PeriFinance.debtBalanceOf(address, utils.formatBytes32String("pUSD"))
 	);
 
-	// if (debt === 0n || formatCurrency(debt) === "0") {
-	// 	return false;
-	// }
+	if (debt === 0n || formatCurrency(debt) === "0") {
+		return false;
+	}
 
 	const cRatio = BigInt(
 		(await PeriFinance.collateralisationRatio(address)).toString()
 	);
 
-	const daiKey =
-		"0x4441490000000000000000000000000000000000000000000000000000000000";
-	const usdcKey =
-		"0x5553444300000000000000000000000000000000000000000000000000000000";
+	const daiKey = utils.formatBytes32String("DAI");
+	const usdcKey = utils.formatBytes32String("USDC");
 
-	const collaterial = { pUSD: {}, USDC: 0, DAI: 0 };
+	const collateral = { pUSD: 0, USDC: 0, DAI: 0 };
 
 	const tempPUSD = async () => {
-		const staked =
-			formatCurrency(await PeriFinance.collateral(address)).replace(",", "") -
-			formatCurrency(
-				await PeriFinance.transferablePeriFinance(address)
-			).replace(",", "");
-
-		const stake =
-			BigInt(await PeriFinance.collateral(address)) -
-			BigInt(await PeriFinance.transferablePeriFinance(address));
-
-		return { staked: staked, stake: stake };
+		return await PeriFinance.collateral(address);
 	};
 
 	const tempUSDC = async () => {
@@ -60,9 +48,9 @@ export const connectContract = async (
 		);
 	};
 
-	await tempPUSD().then((data) => (collaterial.pUSD = data));
-	await tempUSDC().then((data) => (collaterial.USDC = data));
-	await tempDAI().then((data) => (collaterial.DAI = data));
+	collateral.pUSD = await tempPUSD();
+	collateral.USDC = await tempUSDC();
+	collateral.DAI = await tempDAI();
 
 	const status = async () => {
 		if (
@@ -78,9 +66,7 @@ export const connectContract = async (
 		}
 	};
 
-	let resultData;
-
-	await status().then((data) => (resultData = data));
+	let resultData = await status();
 
 	return {
 		cRatio: cRatio,
@@ -88,10 +74,10 @@ export const connectContract = async (
 		collateral: [
 			{
 				name: "Peri",
-				value: collaterial.pUSD,
+				value: collateral.pUSD,
 			},
-			{ name: "Dai", value: collaterial.DAI },
-			{ name: "USDC", value: collaterial.USDC },
+			{ name: "Dai", value: collateral.DAI },
+			{ name: "USDC", value: collateral.USDC },
 		],
 		status: resultData,
 		address: address,
