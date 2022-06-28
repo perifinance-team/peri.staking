@@ -1,64 +1,64 @@
+const blue = "#2184F8";
 
-const blue = '#2184F8';
+const navy = "#14085A";
 
-const navy = '#14085A';
+const gray = "#252A3E";
 
-const gray = '#252A3E';
+const black = "#0E101F";
 
-const black = '#0E101F';
+const white = "#FFFFFF";
 
-const white = '#FFFFFF';
+const warning = "#fc3b3b";
 
-const red = '#C45375';
+const red = "#C45375";
 
-const green = '#3ABDCF';
+const green = "#3ABDCF";
 
 export const dark = {
-    background: {
-        body: black,
-        aside: gray,
-        panel: gray,
-        button: {
-            primary: blue,
-            secondary: green,
-            tertiary: gray,
-            fourth: white,
-            
-        },
-        THeader: blue,
-        reFresh: gray,
-        input: {
-            primary: black,
-            secondary: blue,
-        }
+  background: {
+    body: black,
+    aside: gray,
+    panel: gray,
+    button: {
+      primary: blue,
+      secondary: green,
+      tertiary: gray,
+      fourth: white,
     },
-    border: {
-        primary: blue,
-        secondary: green,
-        tertiary: white,
-        barChart: white,
-        tableRow: 'rgba(255, 255, 255, 0.1)',
+    THeader: blue,
+    reFresh: gray,
+    input: {
+      primary: black,
+      secondary: blue,
     },
-    hover: {
-        panel: blue,
-    },
-    link: {
-        active: blue,
-    },
-    font: {
-        primary: white,
-        secondary: navy,
-        tertiary: gray,
-        fourth: blue,
-        fifth: black,
-    },
-    barChart: {
-        primary: blue,
-        secondary: green,
-        warning: red
-    },
-    table: {
-        tHeader: blue
-    }
-    
-}
+  },
+  border: {
+    primary: blue,
+    secondary: green,
+    tertiary: white,
+    barChart: white,
+    tableRow: "rgba(255, 255, 255, 0.1)",
+  },
+  hover: {
+    panel: blue,
+  },
+  link: {
+    active: blue,
+  },
+  font: {
+    primary: white,
+    secondary: navy,
+    tertiary: gray,
+    fourth: blue,
+    fifth: black,
+    warning: warning,
+  },
+  barChart: {
+    primary: blue,
+    secondary: green,
+    warning: red,
+  },
+  table: {
+    tHeader: blue,
+  },
+};

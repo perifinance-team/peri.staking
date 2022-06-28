@@ -1,16 +1,16 @@
+import React from "react";
 // import styled from 'styled-components';
 
 // import { RoundContainer } from 'components/Container'
 
 const Translation = () => {
-    return (
-        <>
-        </>
-        // <TranslationRoundContainer>
-        //     <Globe src="/images/dark/globe.svg"></Globe>
-        // </TranslationRoundContainer>
-    );
-}
+  return (
+    <></>
+    // <TranslationRoundContainer>
+    //     <Globe src="/images/dark/globe.svg"></Globe>
+    // </TranslationRoundContainer>
+  );
+};
 
 // const TranslationRoundContainer = styled(RoundContainer)`
 //     width: 50px;
