@@ -46,17 +46,25 @@ const Liquidation = () => {
 
 			dispatch(setLoading({ name: "liquidation", value: false }));
 		},
-		[address, networkId, setLoading, dispatch, networkId]
+		[address, networkId]
 	);
 
 	useEffect(() => {
 		(async () => {
 			return await getLiquidationData(true);
 		})();
-	}, [getLiquidationData, dispatch]);
+	}, [address, networkId]);
 
 	const onMouseOverHandler = (pUSD, debt) => {
 		pUSD < debt && NotificationManager.error(`Not enough pUSD`, "ERROR");
+	};
+
+	const testHandler = (item: any) => {
+		let inner = `address | ${item.address}\ndebt, formatCurrency(debt) | ${
+			item.debt
+		}, ${formatCurrency(item.debt)}`;
+
+		alert(inner);
 	};
 
 	return (
@@ -93,7 +101,7 @@ const Liquidation = () => {
 								<AmountCell>
 									<H4 weight={"m"}>{`${ratioToPer(el.cRatio)}%`}</H4>
 								</AmountCell>
-								<AmountCell>
+								<AmountCell onClick={() => testHandler(el)}>
 									<H4 weight={"m"}>{`${formatCurrency(
 										el.debt ? el.debt : 0n
 									)} pUSD`}</H4>

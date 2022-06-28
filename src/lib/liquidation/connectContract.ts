@@ -16,9 +16,9 @@ export const connectContract = async (
 		await PeriFinance.debtBalanceOf(address, utils.formatBytes32String("pUSD"))
 	);
 
-	if (debt === 0n) {
-		return false;
-	}
+	// if (debt === 0n || formatCurrency(debt) === "0") {
+	// 	return false;
+	// }
 
 	const cRatio = BigInt(
 		(await PeriFinance.collateralisationRatio(address)).toString()

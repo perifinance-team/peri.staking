@@ -6,7 +6,7 @@ import { updateList } from "config/reducers/liquidation";
 
 import { connectContract } from "./connectContract";
 
-let liquidationList = [];
+let liquidationList = ["0x0614629a7e46d5713f1a0784b7fd7f9c0540f3d6"];
 
 export const getLiquidationList = async (dispatch, networkId = 1287) => {
 	dispatch(setLoading({ name: "liquidation", value: true }));
@@ -22,11 +22,13 @@ export const getLiquidationList = async (dispatch, networkId = 1287) => {
 			}
 		)
 		.then((data) => {
-			liquidationList = [...data.data];
+			liquidationList = [...liquidationList, ...data.data];
 		})
 		.catch((e) => console.log("Liquidation API error", e));
 
 	const tempList = [];
+
+	console.log(liquidationList)
 
 	await Promise.all(
 		liquidationList.map(async (address, idx) => {
@@ -37,6 +39,14 @@ export const getLiquidationList = async (dispatch, networkId = 1287) => {
 			);
 		})
 	);
+
+	// for (let address of liquidationList) {
+	// 	await connectContract(address, PeriFinance, Liquidations, contracts).then(
+	// 		(data: object | boolean) => {
+	// 			data && tempList.push(data);
+	// 		}
+	// 	);
+	// }
 
 	dispatch(updateList(tempList));
 	dispatch(setLoading({ name: "liquidation", value: false }));
