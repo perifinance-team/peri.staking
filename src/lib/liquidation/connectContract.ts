@@ -68,9 +68,7 @@ export const connectContract = async (
 		}
 	};
 
-	let resultData;
-
-	await status().then((data) => (resultData = data));
+	let resultData = await status();
 
 	return {
 		cRatio: cRatio,
