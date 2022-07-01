@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { contracts } from "lib/contract";
 import { H4 } from "components/heading";
@@ -13,34 +13,56 @@ import {
 
 import { getEscrowList } from "lib/escrow";
 import { setLoading } from "config/reducers/loading";
+import { RootState } from "config/reducers";
+
+interface IEntry {
+	amount: string;
+	endTime: string;
+	id: object;
+	toggle: boolean;
+}
 
 const Escrow = () => {
 	const dispatch = useDispatch();
+
+	const { address, networkId } = useSelector(
+		(state: RootState) => state.wallet
+	);
+
+	const { RewardEscrowV2 } = contracts as any;
 	const [escrowList, setEscrowList] = useState([]);
 
-	const { PeriFinance } = contracts as any;
+	const getEscrowListData = async (isLoading: boolean) => {
+		dispatch(setLoading({ name: "escrow", value: isLoading }));
 
-	const getEscrowListData = useCallback(
-		async (isLoading) => {
-			dispatch(setLoading({ name: "escrow", value: isLoading }));
-			try {
-				await getEscrowList(contracts, dispatch, PeriFinance).then((data) =>
-					setEscrowList(data)
-				);
-			} catch (e) {
-				console.log("getEscrow error", e);
-			}
+		try {
+			await getEscrowList(RewardEscrowV2, address).then((data: object[]) => {
+				setEscrowList(data);
+			});
+		} catch (e) {
+			console.log("getEscrow error", e);
+		}
 
-			dispatch(setLoading({ name: "escrow", value: false }));
-		},
-		[dispatch]
-	);
+		dispatch(setLoading({ name: "escrow", value: false }));
+	};
 
 	useEffect(() => {
 		(async () => {
 			return await getEscrowListData(true);
 		})();
-	}, [getEscrowListData, dispatch]);
+
+		// eslint-disable-next-line
+	}, [address, networkId]);
+
+	const getEscrowHandler = async (contracts) => {
+		const idList = [];
+
+		escrowList.forEach((entry: IEntry) => {
+			entry.toggle && idList.push(entry.id);
+		});
+
+		await contracts.signers.RewardEscrowV2.vest(idList);
+	};
 
 	return (
 		<Container>
@@ -51,12 +73,7 @@ const Escrow = () => {
 							<H4 weight={"b"}>Index</H4>
 						</AmountCell>
 						<AmountCell>
-							<H4 weight={"b"}>IDX</H4>
-						</AmountCell>
-						<AmountCell>
-							<H4 weight={"b"} style={{ width: "35rem" }}>
-								Collateral amount
-							</H4>
+							<H4 weight={"b"}>Escrow amount</H4>
 						</AmountCell>
 						<AmountCell>
 							<H4 weight={"b"}>Time</H4>
@@ -64,41 +81,39 @@ const Escrow = () => {
 					</Row>
 				</StyledTHeader>
 				<StyledTBody>
-					{escrowList.map((el, idx) => {
+					{escrowList.map((item, idx: number) => {
 						return (
 							<BorderRow
 								key={`row${idx}`}
-								style={{ minHeight: "9rem", height: "10rem" }}
+								style={{
+									minHeight: "9rem",
+									height: "10rem",
+									background: !item.toggle && "rgba(80, 80, 80, 0.1)",
+								}}
 							>
 								<AmountCell>
-									<H4 weight={"m"}>{idx + 1}</H4>
+									<H4 style={{ color: !item.toggle && "#505050" }} weight={"m"}>
+										{idx + 1}
+									</H4>
 								</AmountCell>
 								<AmountCell>
-									<H4 weight={"m"}>{`oxlx${idx + 2}y`}</H4>
-								</AmountCell>
-								<AmountCell style={{ width: "35rem" }}>
-									<CollateralList>
-										{Object.keys(el.collateral).map((item, index) => {
-											return (
-												<Image key={`escrow${index}`}>
-													<img
-														src={`/images/currencies/${item.toUpperCase()}.png`}
-														alt=""
-													/>
-													<span>{`${item} ${el.collateral[item]}`}</span>
-												</Image>
-											);
-										})}
-									</CollateralList>
+									<Image>
+										<span
+											style={{ color: !item.toggle && "#505050" }}
+										>{`${item.amount}`}</span>
+									</Image>
 								</AmountCell>
 								<AmountCell>
-									<H4 weight={"m"}>{el.time === 0 ? "-" : el.time}</H4>
+									<H4 weight={"m"} style={{ color: !item.toggle && "#505050" }}>
+										{item.endTime === "0" ? "-" : item.endTime}
+									</H4>
 								</AmountCell>
 							</BorderRow>
 						);
 					})}
 				</StyledTBody>
 			</TableContainer>
+			<EscrowBtn onClick={() => getEscrowHandler(contracts)}>ESCROW</EscrowBtn>
 		</Container>
 	);
 };
@@ -107,6 +122,7 @@ const AmountCell = styled(Cell)`
 	max-width: 100%;
 	display: flex;
 	justify-content: center;
+	padding: 0 25px;
 `;
 
 const Container = styled.div`
@@ -130,12 +146,6 @@ const TableContainer = styled.div`
 	border: ${(props) => `2px solid ${props.theme.colors.border.primary}`};
 `;
 
-const CollateralList = styled.ul`
-	display: flex;
-	justify-content: flex-start;
-	width: 35rem;
-`;
-
 const Image = styled.li`
 	display: flex;
 	align-items: center;
@@ -150,6 +160,30 @@ const Image = styled.li`
 	span {
 		color: white;
 		font-size: 1.3rem;
+	}
+`;
+
+const EscrowBtn = styled.button`
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 242px;
+	height: 48px;
+	position: absolute;
+	left: 50%;
+	transform: translate(-50%, 0%);
+	bottom: 40px;
+	background: #ffffff;
+	color: #4182f0;
+	border: 2px solid #4182f0;
+	border-radius: 10px;
+	font-weight: 800;
+	font-size: 18px;
+	font-family: "Montserrat";
+
+	&:hover {
+		background: #4182f0;
+		color: #ffffff;
 	}
 `;
 

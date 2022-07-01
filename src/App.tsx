@@ -45,6 +45,7 @@ const App = () => {
 	const { address, networkId } = useSelector(
 		(state: RootState) => state.wallet
 	);
+
 	const { balances } = useSelector((state: RootState) => state.balances);
 	const transaction = useSelector((state: RootState) => state.transaction);
 
@@ -65,24 +66,20 @@ const App = () => {
 	const getSystemData = useCallback(
 		async (isLoading) => {
 			dispatch(setLoading({ name: "balance", value: isLoading }));
-			try {
-				const [ratios, gasPrice] = await Promise.all([
-					getRatios(address),
-					getNetworkFee(networkId),
-				]);
 
-				dispatch(updateRatio(ratios.ratio));
-				dispatch(updateExchangeRates(ratios.exchangeRates));
+			const [ratios, gasPrice] = await Promise.all([
+				getRatios(address),
+				getNetworkFee(networkId),
+			]);
 
-				dispatch(updateNetworkFee({ gasPrice }));
+			dispatch(updateRatio(ratios.ratio));
+			dispatch(updateExchangeRates(ratios.exchangeRates));
 
-				if (address) {
-					const stateLiquid = await Liquidations.isOpenForLiquidation(address);
-					const timestamp = await getTimeStamp(address, Liquidations);
+			dispatch(updateNetworkFee({ gasPrice }));
 
-					dispatch(updateTimestamp(timestamp));
-
-					const [balancesData, vestable] = await Promise.all([
+			if (address) {
+				const [balancesData, vestable, stateLiquid, timestamp] =
+					await Promise.all([
 						getBalances(
 							address,
 							balances,
@@ -91,16 +88,20 @@ const App = () => {
 							ratios.ratio.currentCRatio
 						),
 						getVestable(address),
+						await Liquidations.isOpenForLiquidation(address),
+						await getTimeStamp(address, Liquidations),
 					]);
-					dispatch(initCurrency(balancesData));
-					dispatch(toggleLiquid(stateLiquid));
-					//todo:: code move call
-					dispatch(updateVestable({ vestable }));
-				}
-			} catch (e) {}
+
+				dispatch(updateTimestamp(timestamp));
+				dispatch(initCurrency(balancesData));
+				dispatch(toggleLiquid(stateLiquid));
+				//todo:: code move call
+				dispatch(updateVestable({ vestable }));
+			}
+
 			dispatch(setLoading({ name: "balance", value: false }));
 		},
-		[address, networkId, setLoading]
+		[address, networkId]
 	);
 
 	const setOnboard = async () => {
