@@ -53,7 +53,6 @@ const Liquidation = () => {
 		(async () => {
 			return await getLiquidationData(true);
 		})();
-
 		// eslint-disable-next-line
 	}, [address, networkId]);
 
