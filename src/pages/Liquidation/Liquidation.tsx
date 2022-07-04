@@ -56,14 +56,14 @@ const Liquidation = () => {
 		pUSD < debt && NotificationManager.error(`Not enough pUSD`, "ERROR");
 	};
 
-	// ! test
-	const testHandler = (item: any) => {
-		let inner = `address | ${item.address}\ndebt, formatCurrency(debt) | ${
-			item.debt
-		}, ${formatCurrency(item.debt)}`;
+	// // ! test
+	// const testHandler = (item: any) => {
+	// 	let inner = `address | ${item.address}\ndebt, formatCurrency(debt) | ${
+	// 		item.debt
+	// 	}, ${formatCurrency(item.debt)}`;
 
-		alert(inner);
-	};
+	// 	alert(inner);
+	// };
 
 	return (
 		<Container>
@@ -99,7 +99,7 @@ const Liquidation = () => {
 								<AmountCell>
 									<H4 weight={"m"}>{`${ratioToPer(el.cRatio)}%`}</H4>
 								</AmountCell>
-								<AmountCell onClick={() => testHandler(el)}>
+								<AmountCell>
 									<H4 weight={"m"}>{`${formatCurrency(
 										el.debt ? el.debt : 0n
 									)} pUSD`}</H4>

@@ -36,7 +36,7 @@ export const getTake = async (
     };
 
     const peri =
-      (BigInt(list[id].collateral[0].value.stake) * BigInt(collateral.Peri)) /
+      (BigInt(list[id].collateral[0].value) * BigInt(collateral.Peri)) /
       10n ** 18n;
     const dai =
       (BigInt(list[id].collateral[1].value) * BigInt(collateral.Dai)) /
