@@ -42,7 +42,7 @@ const Main = () => {
 									<Liquidation></Liquidation>
 								</Route>
 								<Route path="/escrow">
-									{true ? <Redirect to="/stake" /> : <Escrow></Escrow>}
+									<Escrow></Escrow>
 								</Route>
 								<Route exact path="/">
 									<Redirect to="/stake" />

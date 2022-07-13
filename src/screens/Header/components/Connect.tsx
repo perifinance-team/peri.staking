@@ -10,43 +10,45 @@ import { updateVestable } from "config/reducers/vest";
 import { clearCRatio } from "config/reducers/rates";
 
 const Connect = () => {
-  const dispatch = useDispatch();
-  const { isConnect } = useSelector((state: RootState) => state.wallet);
+	const dispatch = useDispatch();
+	const { isConnect } = useSelector((state: RootState) => state.wallet);
 
-  const onConnect = async () => {
-    try {
-      await onboard.walletSelect();
-      await onboard.walletCheck();
-    } catch (e) {}
-  };
+	const onConnect = async () => {
+		try {
+			await onboard.walletSelect();
+			await onboard.walletCheck();
+		} catch (e) {
+			console.log("connect error", e);
+		}
+	};
 
-  const onDisConnect = () => {
-    ////todo:: need bug
-    onboard.walletReset();
-    localStorage.removeItem("selectedWallet");
-    dispatch(clearWallet());
-    dispatch(clearCRatio());
-    dispatch(clearBalances());
-    dispatch(updateVestable({ vestable: false }));
-  };
+	const onDisConnect = () => {
+		////todo:: need bug
+		onboard.walletReset();
+		localStorage.removeItem("selectedWallet");
+		dispatch(clearWallet());
+		dispatch(clearCRatio());
+		dispatch(clearBalances());
+		dispatch(updateVestable({ vestable: false }));
+	};
 
-  return (
-    <RoundButton
-      height={30}
-      padding={"0px 15px"}
-      onClick={() => {
-        isConnect ? onDisConnect() : onConnect();
-      }}
-      color={"tertiary"}
-      margin={"0px"}
-      border={"none"}
-      width={120}
-    >
-      <H4 fontSize={1.4} weight={"b"} color={"primary"}>
-        {isConnect ? "DISCONNECT" : "CONNECT"}
-      </H4>
-    </RoundButton>
-  );
+	return (
+		<RoundButton
+			height={30}
+			padding={"0px 15px"}
+			onClick={() => {
+				isConnect ? onDisConnect() : onConnect();
+			}}
+			color={"tertiary"}
+			margin={"0px"}
+			border={"none"}
+			width={120}
+		>
+			<H4 fontSize={1.4} weight={"b"} color={"primary"}>
+				{isConnect ? "DISCONNECT" : "CONNECT"}
+			</H4>
+		</RoundButton>
+	);
 };
 
 export default Connect;

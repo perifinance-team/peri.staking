@@ -16,7 +16,7 @@ export const connectContract = async (
 		await PeriFinance.debtBalanceOf(address, utils.formatBytes32String("pUSD"))
 	);
 
-	if (debt === 0n) {
+	if (debt === 0n || formatCurrency(debt) === "0") {
 		return false;
 	}
 
@@ -25,9 +25,7 @@ export const connectContract = async (
 	);
 
 	const daiKey = utils.formatBytes32String("DAI");
-		// "0x4441490000000000000000000000000000000000000000000000000000000000";
 	const usdcKey = utils.formatBytes32String("USDC");
-		// "0x5553444300000000000000000000000000000000000000000000000000000000";
 
 	const collateral = { pUSD: 0, USDC: 0, DAI: 0 };
 
@@ -53,6 +51,14 @@ export const connectContract = async (
 	collateral.pUSD = await tempPUSD();
 	collateral.USDC = await tempUSDC();
 	collateral.DAI = await tempDAI();
+
+	if (
+		formatCurrency(collateral.pUSD) === "0" &&
+		formatCurrency(collateral.USDC) === "0" &&
+		formatCurrency(collateral.DAI) === "0"
+	) {
+		return false;
+	}
 
 	const status = async () => {
 		if (
