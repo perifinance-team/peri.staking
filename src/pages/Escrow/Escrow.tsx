@@ -73,9 +73,8 @@ const Escrow = () => {
 			});
 		} catch (e) {
 			console.log("vesting error", e);
+			dispatch(setLoading({ name: "escrow", value: false }));
 		}
-
-		dispatch(setLoading({ name: "escrow", value: false }));
 	};
 
 	return (
@@ -127,7 +126,9 @@ const Escrow = () => {
 					})}
 				</StyledTBody>
 			</TableContainer>
-			<EscrowBtn onClick={() => getEscrowHandler(contracts)}>ESCROW</EscrowBtn>
+			<EscrowBtn onClick={() => getEscrowHandler(contracts)}>
+				To My Wallet
+			</EscrowBtn>
 		</Container>
 	);
 };

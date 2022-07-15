@@ -50,13 +50,6 @@ const Logo = () => {
 			}),
 		},
 		{
-			name: "liquidation",
-			to: "/liquidation",
-			active: useRouteMatch({
-				path: "/liquidation",
-			}),
-		},
-		{
 			name: "escrow",
 			to: "/escrow",
 			active: useRouteMatch({
