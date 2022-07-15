@@ -49,13 +49,13 @@ const Logo = () => {
 				path: "/vesting",
 			}),
 		},
-		{
-			name: "liquidation",
-			to: "/liquidation",
-			active: useRouteMatch({
-				path: "/liquidation",
-			}),
-		},
+		// {
+		// 	name: "liquidation",
+		// 	to: "/liquidation",
+		// 	active: useRouteMatch({
+		// 		path: "/liquidation",
+		// 	}),
+		// },
 		// {
 		// 	name: "escrow",
 		// 	to: "/escrow",
