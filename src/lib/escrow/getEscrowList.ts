@@ -1,6 +1,14 @@
 import { Contract } from "ethers";
 import { formatCurrency } from "lib/format";
 
+const sortArr = (arr) => {
+	const result = [];
+
+	arr.forEach((item) => item.amount !== "0" && result.push(item));
+
+	return result;
+};
+
 export const getEscrowList = async (
 	RewardEscrowV2: Contract,
 	address: string
@@ -41,5 +49,5 @@ export const getEscrowList = async (
 		})
 	);
 
-	return escrowList;
+	return sortArr(escrowList);
 };

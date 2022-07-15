@@ -55,13 +55,27 @@ const Escrow = () => {
 	}, [address, networkId]);
 
 	const getEscrowHandler = async (contracts) => {
+		dispatch(setLoading({ name: "escrow", value: true }));
+
 		const idList = [];
 
 		escrowList.forEach((entry: IEntry) => {
 			entry.toggle && idList.push(entry.id);
 		});
 
-		await contracts.signers.RewardEscrowV2.vest(idList);
+		try {
+			const transaction = await contracts.signers.RewardEscrowV2.vest(idList);
+
+			await contracts.provider.once(transaction.hash, (state) => {
+				if (state.status === 1) {
+					dispatch(setLoading({ name: "escrow", value: false }));
+				}
+			});
+		} catch (e) {
+			console.log("vesting error", e);
+		}
+
+		dispatch(setLoading({ name: "escrow", value: false }));
 	};
 
 	return (
