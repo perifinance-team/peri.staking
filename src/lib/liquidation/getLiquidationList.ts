@@ -6,7 +6,7 @@ import { updateList } from "config/reducers/liquidation";
 
 import { connectContract } from "./connectContract";
 
-let liquidationList = ["0x0614629a7e46d5713f1a0784b7fd7f9c0540f3d6"];
+let liquidationList = [];
 
 const sortList = (list) => {
 	const open = [];
@@ -49,7 +49,6 @@ export const getLiquidationList = async (dispatch, networkId = 1287) => {
 		})
 	);
 
-	// dispatch(updateList(tempList));
 	dispatch(updateList(sortList(tempList)));
 	dispatch(setLoading({ name: "liquidation", value: false }));
 };
