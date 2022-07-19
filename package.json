@@ -11,7 +11,7 @@
   "dependencies": {
     "@egjs/react-flicking": "^4.1.2",
     "@metamask/detect-provider": "^1.2.0",
-    "@perifinance/peri-finance": "^0.5.8",
+    "@perifinance/peri-finance": "^0.5.14",
     "@reduxjs/toolkit": "^1.5.0",
     "@types/react-redux": "^7.1.16",
     "@types/react-router-dom": "^5.1.7",

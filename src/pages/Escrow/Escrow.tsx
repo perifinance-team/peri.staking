@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { contracts } from "lib/contract";
@@ -10,6 +10,7 @@ import {
 	Cell,
 	BorderRow,
 } from "components/Table";
+import { NotificationManager } from "react-notifications";
 
 import { getEscrowList } from "lib/escrow";
 import { setLoading } from "config/reducers/loading";
@@ -69,6 +70,7 @@ const Escrow = () => {
 			await contracts.provider.once(transaction.hash, (state) => {
 				if (state.status === 1) {
 					dispatch(setLoading({ name: "escrow", value: false }));
+					NotificationManager.success(`success`, "SUCCESS");
 				}
 			});
 		} catch (e) {
@@ -77,8 +79,21 @@ const Escrow = () => {
 		}
 	};
 
+	const sumAmount = () => {
+		let result = 0;
+
+		escrowList.forEach((item) => {
+			result += Number(item.amount.replace(",", ""));
+		});
+
+		return result.toFixed(2);
+	};
+
 	return (
 		<Container>
+			<span className="currentAmount">
+				Currently available amount: {sumAmount()}
+			</span>
 			<TableContainer style={{ overflowY: "hidden", maxHeight: "70vh" }}>
 				<StyledTHeader>
 					<Row>
@@ -148,6 +163,13 @@ const Container = styled.div`
 	position: relative;
 	flex-direction: column;
 	justify-content: center;
+
+	.currentAmount {
+		color: white;
+		margin: 0 auto 9px 92px;
+		font-size: 1.1rem;
+		font-weight: bold;
+	}
 `;
 
 const TableContainer = styled.div`
