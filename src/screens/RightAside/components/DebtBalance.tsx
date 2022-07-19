@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useSelector } from "react-redux";
 import { RootState } from "config/reducers";
@@ -17,7 +17,13 @@ const DebtBalance = () => {
 		return ((BigInt(Math.pow(10, 18).toString()) * 100n) / value).toString();
 	};
 
-	const flag = Number(ratioToPer(currentCRatio)) <= 150 && liquidation;
+	const [flag, setFlag] = useState(false);
+
+	useEffect(() => {
+		return () => {
+			setFlag(Number(ratioToPer(currentCRatio)) <= 150 && liquidation);
+		};
+	}, [currentCRatio, liquidation]);
 
 	return (
 		<DebtBalanceContainer>

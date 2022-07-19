@@ -80,10 +80,7 @@ export const connectContract = async (
 		cRatio: cRatio,
 		debt: debt,
 		collateral: [
-			{
-				name: "Peri",
-				value: collateral.pUSD,
-			},
+			{ name: "Peri", value: collateral.pUSD },
 			{ name: "Dai", value: collateral.DAI },
 			{ name: "USDC", value: collateral.USDC },
 		],

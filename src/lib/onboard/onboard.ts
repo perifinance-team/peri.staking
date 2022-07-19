@@ -4,7 +4,6 @@ import { RPC_URLS } from "lib/rpcUrl";
 export let onboard;
 
 export const InitOnboard = (networkId, subscriptions, darkMode) => {
-	console.log('initonboard',networkId, subscriptions, darkMode);
 	onboard = Onboard({
 		dappId: process.env.REACT_APP_RPC_ONBOARD_ID,
 		hideBranding: false,

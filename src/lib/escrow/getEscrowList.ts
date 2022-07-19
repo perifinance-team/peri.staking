@@ -1,72 +1,32 @@
-import { setLoading } from "config/reducers/loading";
+import { Contract } from "ethers";
 import { formatCurrency } from "lib/format";
 
-const daiKey =
-	"0x4441490000000000000000000000000000000000000000000000000000000000";
-const usdcKey =
-	"0x5553444300000000000000000000000000000000000000000000000000000000";
-
-const getCollateral = async (contracts, tempAddress, template, PeriFinance) => {
-	const pUSD =
-		BigInt(await PeriFinance.collateral(tempAddress)) -
-		BigInt(await PeriFinance.transferablePeriFinance(tempAddress));
-
-	template.collateral.Peri = pUSD / 10n ** 18n;
-
-	const usdc = await contracts.ExternalTokenStakeManager.stakedAmountOf(
-		tempAddress,
-		usdcKey,
-		usdcKey
-	);
-
-	template.collateral.USDC = BigInt(usdc) / 10n ** 18n;
-
-	const dai = await contracts.ExternalTokenStakeManager.stakedAmountOf(
-		tempAddress,
-		daiKey,
-		daiKey
-	);
-
-	template.collateral.Dai = BigInt(dai) / 10n ** 18n;
-};
-
-export const getEscrowList = async (contracts, dispatch, PeriFinance) => {
-	dispatch(setLoading({ name: "liquidation", value: true }));
-
+export const getEscrowList = async (RewardEscrowV2: Contract, address: string) => {
 	const escrowList = [];
+	const entry = await RewardEscrowV2.numVestingEntries(address);
+	const entryIDs = await RewardEscrowV2.getAccountVestingEntryIDs(address, 0, entry);
 
-	// todo need to escrow tempAddress list
+	await Promise.all(
+		entryIDs.map(async (entry: object, idx: number) => {
+			await RewardEscrowV2.vestingSchedules(address, entry).then((data: object[]) => {
+				if (formatCurrency(data[1]) === 0) {
+					return;
+				}
 
-	// console.log(contracts.RewardEscrowV2.balanceOf);
+				const endDate = new Date(parseInt(data[0]["_hex"], 16) * 1000);
+				const toggle = new Date().getTime() < parseInt(data[0]["_hex"], 16) * 1000;
 
-	const addressList = [1, 2];
+				escrowList[idx] = {
+					amount: formatCurrency(data[1]),
+					endTime: `${endDate.getDate() + 1} / ${
+						endDate.getMonth() + 1
+					} / ${endDate.getFullYear()}`,
+					id: entry,
+					toggle: !toggle,
+				};
+			});
+		})
+	);
 
-	for (const address of addressList) {
-		console.log(`${address}번 돌았음`);
-
-		let tempAddress = "0x8143BF76Bcb7e6D32E17672fAe25be38c723E286"; // todo 지울거
-
-		// todo error biding
-		const template = {
-			idx: "",
-			collateral: { Peri: 0, Dai: 0, USDC: 0 },
-			time: 0,
-		};
-
-		try {
-			await getCollateral(contracts, tempAddress, template, PeriFinance);
-		} catch (e) {}
-
-		try {
-			// template.time = await PeriFinanceEscrow.TIME_INDEX();
-		} catch (e) {
-			console.log("Get Escrow time error", e);
-		}
-
-		await escrowList.push(template);
-	}
-
-	dispatch(setLoading({ name: "liquidation", value: false }));
-
-	return escrowList;
+	return escrowList.filter((item) => item.amount !== "0");
 };

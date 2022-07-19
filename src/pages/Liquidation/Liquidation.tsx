@@ -33,37 +33,32 @@ const Liquidation = () => {
 		return ((BigInt(Math.pow(10, 18).toString()) * 100n) / value).toString();
 	};
 
-	const getLiquidationData = async (isLoading) => {
-		dispatch(setLoading({ name: "liquidation", value: isLoading }));
-		try {
-			if (address) {
-				await getLiquidationList(dispatch, networkId);
+	const getLiquidationData = useCallback(
+		async (isLoading) => {
+			dispatch(setLoading({ name: "liquidation", value: isLoading }));
+			try {
+				if (address) {
+					await getLiquidationList(dispatch, networkId);
+				}
+			} catch (e) {
+				console.log("getLiquidation error", e);
 			}
-		} catch (e) {
-			console.log("getLiquidation error", e);
-		}
 
-		dispatch(setLoading({ name: "liquidation", value: false }));
-	};
+			dispatch(setLoading({ name: "liquidation", value: false }));
+		},
+		[address, dispatch, networkId]
+	);
 
 	useEffect(() => {
 		(async () => {
 			return await getLiquidationData(true);
 		})();
+		// eslint-disable-next-line
 	}, [address, networkId]);
 
 	const onMouseOverHandler = (pUSD, debt) => {
 		pUSD < debt && NotificationManager.error(`Not enough pUSD`, "ERROR");
 	};
-
-	// // ! test
-	// const testHandler = (item: any) => {
-	// 	let inner = `address | ${item.address}\ndebt, formatCurrency(debt) | ${
-	// 		item.debt
-	// 	}, ${formatCurrency(item.debt)}`;
-
-	// 	alert(inner);
-	// };
 
 	return (
 		<Container>
