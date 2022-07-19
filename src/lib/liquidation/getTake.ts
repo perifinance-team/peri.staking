@@ -35,15 +35,16 @@ export const getTake = async (
 			),
 		};
 
-		const peri =
-			(BigInt(list[id].collateral[0].value) * BigInt(collateral.Peri)) /
-			10n ** 18n;
-		const dai =
-			(BigInt(list[id].collateral[1].value) * BigInt(collateral.Dai)) /
-			10n ** 18n;
-		const usdc =
-			(BigInt(list[id].collateral[2].value) * BigInt(collateral.USDC)) /
-			10n ** 18n;
+    const peri =
+      (BigInt(list[id].collateral[0].value) * BigInt(collateral.Peri)) /
+      10n ** 18n;
+    const dai =
+      (BigInt(list[id].collateral[1].value) * BigInt(collateral.Dai)) /
+      10n ** 18n;
+    const usdc =
+      (BigInt(list[id].collateral[2].value) * BigInt(collateral.USDC)) /
+      10n ** 18n;
+
 
 		const sumCollateral = peri + dai + usdc;
 
