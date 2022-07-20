@@ -3,13 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { contracts } from "lib/contract";
 import { H4 } from "components/heading";
-import {
-	StyledTHeader,
-	StyledTBody,
-	Row,
-	Cell,
-	BorderRow,
-} from "components/Table";
+import { StyledTHeader, StyledTBody, Row, Cell, BorderRow } from "components/Table";
 import { NotificationManager } from "react-notifications";
 
 import { getEscrowList } from "lib/escrow";
@@ -26,9 +20,7 @@ interface IEntry {
 const Escrow = () => {
 	const dispatch = useDispatch();
 
-	const { address, networkId } = useSelector(
-		(state: RootState) => state.wallet
-	);
+	const { address, networkId } = useSelector((state: RootState) => state.wallet);
 
 	const { RewardEscrowV2 } = contracts as any;
 	const [escrowList, setEscrowList] = useState([]);
@@ -77,13 +69,17 @@ const Escrow = () => {
 			console.log("vesting error", e);
 			dispatch(setLoading({ name: "escrow", value: false }));
 		}
+
+		window.location.reload();
 	};
 
 	const sumAmount = () => {
 		let result = 0;
 
 		escrowList.forEach((item) => {
-			result += Number(item.amount.replace(",", ""));
+			if (item.toggle) {
+				result += Number(item.amount.replace(",", ""));
+			}
 		});
 
 		return result.toFixed(2);
@@ -91,9 +87,7 @@ const Escrow = () => {
 
 	return (
 		<Container>
-			<span className="currentAmount">
-				Currently available amount: {sumAmount()}
-			</span>
+			<span className="currentAmount">Currently available amount: {sumAmount()}</span>
 			<TableContainer style={{ overflowY: "hidden", maxHeight: "70vh" }}>
 				<StyledTHeader>
 					<Row>
@@ -126,9 +120,7 @@ const Escrow = () => {
 								</AmountCell>
 								<AmountCell>
 									<Image>
-										<span
-											style={{ color: !item.toggle && "#505050" }}
-										>{`${item.amount}`}</span>
+										<span style={{ color: !item.toggle && "#505050" }}>{`${item.amount}`}</span>
 									</Image>
 								</AmountCell>
 								<AmountCell>
@@ -141,9 +133,7 @@ const Escrow = () => {
 					})}
 				</StyledTBody>
 			</TableContainer>
-			<EscrowBtn onClick={() => getEscrowHandler(contracts)}>
-				To My Wallet
-			</EscrowBtn>
+			<EscrowBtn onClick={() => getEscrowHandler(contracts)}>To My Wallet</EscrowBtn>
 		</Container>
 	);
 };

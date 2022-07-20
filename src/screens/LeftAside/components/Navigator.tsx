@@ -71,14 +71,10 @@ const Logo = () => {
 				let childrenLink;
 				if (item.children?.length > 0) {
 					childrenLink = item.children.map((childrenItem) => {
-						if (networkId === 1285 && childrenItem.name === "earn")
-							return <></>;
+						if (networkId === 1285 && childrenItem.name === "earn") return <></>;
 						else
 							return (
-								<ChildrenLink
-									to={`${item.to}${childrenItem.to}`}
-									key={childrenItem.name}
-								>
+								<ChildrenLink to={`${item.to}${childrenItem.to}`} key={childrenItem.name}>
 									{childrenItem.name.toLocaleUpperCase()}
 								</ChildrenLink>
 							);
@@ -88,10 +84,11 @@ const Logo = () => {
 					return <></>;
 				} else {
 					return (
-						<ParentLinkContainer key={item.name}>
-							<ParentLink to={item.to}>
-								{item.name.toLocaleUpperCase()}
-							</ParentLink>
+						<ParentLinkContainer
+							key={item.name}
+							onClick={() => item.name === "balance" && window.location.reload()}
+						>
+							<ParentLink to={item.to}>{item.name.toLocaleUpperCase()}</ParentLink>
 							{item.active && childrenLink && (
 								<ChildrenLinkContainer>{childrenLink}</ChildrenLinkContainer>
 							)}
