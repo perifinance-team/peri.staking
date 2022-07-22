@@ -4,13 +4,7 @@ import { RootState } from "config/reducers";
 import styled from "styled-components";
 import { contracts } from "lib/contract";
 import { H4 } from "components/heading";
-import {
-	StyledTHeader,
-	StyledTBody,
-	Row,
-	Cell,
-	BorderRow,
-} from "components/Table";
+import { StyledTHeader, StyledTBody, Row, Cell, BorderRow } from "components/Table";
 import { formatCurrency } from "lib";
 import { getLiquidationList } from "lib/liquidation";
 import { setLoading } from "config/reducers/loading";
@@ -21,9 +15,7 @@ const Liquidation = () => {
 	const dispatch = useDispatch();
 
 	const { balances } = useSelector((state: RootState) => state.balances);
-	const { address, networkId } = useSelector(
-		(state: RootState) => state.wallet
-	);
+	const { address, networkId } = useSelector((state: RootState) => state.wallet);
 	const { list } = useSelector((state: RootState) => state.liquidation);
 
 	const statusList = ["Open", "Taken", "Closed"];
@@ -87,27 +79,19 @@ const Liquidation = () => {
 				<StyledTBody>
 					{list.map((el, idx) => {
 						return (
-							<BorderRow
-								key={`row${idx}`}
-								style={{ minHeight: "9rem", height: "10rem" }}
-							>
+							<BorderRow key={`row${idx}`} style={{ minHeight: "9rem", height: "10rem" }}>
 								<AmountCell>
 									<H4 weight={"m"}>{`${ratioToPer(el.cRatio)}%`}</H4>
 								</AmountCell>
 								<AmountCell>
-									<H4 weight={"m"}>{`${formatCurrency(
-										el.debt ? el.debt : 0n
-									)} pUSD`}</H4>
+									<H4 weight={"m"}>{`${formatCurrency(el.debt ? el.debt : 0n)} pUSD`}</H4>
 								</AmountCell>
 								<AmountCell style={{ width: "30rem" }}>
 									<CollateralList>
 										{el.collateral.map((item, idx) => {
 											return (
 												<Image key={`image${idx}`}>
-													<img
-														src={`/images/currencies/${item.name.toUpperCase()}.png`}
-														alt=""
-													/>
+													<img src={`/images/currencies/${item.name.toUpperCase()}.png`} alt="" />
 													<span>{`${item.name} ${
 														item.name === "Peri"
 															? isNaN(item.value)
@@ -128,10 +112,7 @@ const Liquidation = () => {
 										<TakeBtn
 											onClick={() =>
 												balances["pUSD"].balance < el.debt
-													? onMouseOverHandler(
-															balances["pUSD"].balance,
-															el.debt
-													  )
+													? onMouseOverHandler(balances["pUSD"].balance, el.debt)
 													: getTake(idx, address, list, dispatch, contracts)
 											}
 											toggle={balances["pUSD"].balance < el.debt}

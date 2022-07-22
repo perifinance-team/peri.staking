@@ -9,6 +9,7 @@ import { NotificationManager } from "react-notifications";
 import { getEscrowList } from "lib/escrow";
 import { setLoading } from "config/reducers/loading";
 import { RootState } from "config/reducers";
+import { updateTransaction } from "config/reducers/transaction";
 
 interface IEntry {
 	amount: string;
@@ -56,21 +57,34 @@ const Escrow = () => {
 			entry.toggle && idList.push(entry.id);
 		});
 
-		try {
-			const transaction = await contracts.signers.RewardEscrowV2.vest(idList);
+		if (0 < idList.length) {
+			try {
+				const transaction = await contracts.signers.RewardEscrowV2.vest(idList);
 
-			await contracts.provider.once(transaction.hash, (state) => {
-				if (state.status === 1) {
-					dispatch(setLoading({ name: "escrow", value: false }));
-					NotificationManager.success(`success`, "SUCCESS");
-				}
-			});
-		} catch (e) {
-			console.log("vesting error", e);
+				await contracts.provider.once(transaction.hash, async (state) => {
+					if (state.status === 1) {
+						// NotificationManager.success(`success`, "SUCCESS");
+						dispatch(
+							updateTransaction({
+								hash: transaction.hash,
+								message: `Vesting`,
+								type: "To My Wallet",
+							})
+						);
+						dispatch(setLoading({ name: "escrow", value: false }));
+					}
+				});
+			} catch (e) {
+				console.log("vesting error", e);
+				NotificationManager.success(``, "FAIL");
+				dispatch(setLoading({ name: "escrow", value: false }));
+			}
+		} else {
+			NotificationManager.warning(``, "FAIL");
 			dispatch(setLoading({ name: "escrow", value: false }));
 		}
 
-		window.location.reload();
+		await getEscrowListData(true);
 	};
 
 	const sumAmount = () => {

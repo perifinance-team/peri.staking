@@ -84,10 +84,7 @@ const Logo = () => {
 					return <></>;
 				} else {
 					return (
-						<ParentLinkContainer
-							key={item.name}
-							onClick={() => item.name === "balance" && window.location.reload()}
-						>
+						<ParentLinkContainer key={item.name}>
 							<ParentLink to={item.to}>{item.name.toLocaleUpperCase()}</ParentLink>
 							{item.active && childrenLink && (
 								<ChildrenLinkContainer>{childrenLink}</ChildrenLinkContainer>
