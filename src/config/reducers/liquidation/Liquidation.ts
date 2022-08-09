@@ -31,7 +31,7 @@ export const TransactionSlice = createSlice({
 	initialState,
 	reducers: {
 		toggleLiquid(state, actions) {
-			state.liquidation = actions.payload.liquidation;
+			state.liquidation = actions.payload;
 		},
 		toggleNoti(state, action) {
 			state.notification = action.payload;
@@ -41,10 +41,6 @@ export const TransactionSlice = createSlice({
 		},
 		updateList(state, actions) {
 			state.list = actions.payload;
-		},
-		// ! test
-		addList(state, actions) {
-			state.list = [...state.list, actions.payload];
 		},
 		updateThisState(state, actions) {
 			state.thisState = actions.payload;

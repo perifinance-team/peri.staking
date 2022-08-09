@@ -33,23 +33,27 @@ const Liquidation = () => {
 		return ((BigInt(Math.pow(10, 18).toString()) * 100n) / value).toString();
 	};
 
-	const getLiquidationData = async (isLoading) => {
-		dispatch(setLoading({ name: "liquidation", value: isLoading }));
-		try {
-			if (address) {
-				await getLiquidationList(dispatch, networkId);
+	const getLiquidationData = useCallback(
+		async (isLoading) => {
+			dispatch(setLoading({ name: "liquidation", value: isLoading }));
+			try {
+				if (address) {
+					await getLiquidationList(dispatch, networkId);
+				}
+			} catch (e) {
+				console.log("getLiquidation error", e);
 			}
-		} catch (e) {
-			console.log("getLiquidation error", e);
-		}
 
-		dispatch(setLoading({ name: "liquidation", value: false }));
-	};
+			dispatch(setLoading({ name: "liquidation", value: false }));
+		},
+		[address, dispatch, networkId]
+	);
 
 	useEffect(() => {
 		(async () => {
 			return await getLiquidationData(true);
 		})();
+		// eslint-disable-next-line
 	}, [address, networkId]);
 
 	const onMouseOverHandler = (pUSD, debt) => {
@@ -106,9 +110,9 @@ const Liquidation = () => {
 													/>
 													<span>{`${item.name} ${
 														item.name === "Peri"
-															? isNaN(item.value.staked)
+															? isNaN(item.value)
 																? 0
-																: item.value.staked
+																: formatCurrency(item.value)
 															: formatCurrency(item.value)
 													}`}</span>
 												</Image>

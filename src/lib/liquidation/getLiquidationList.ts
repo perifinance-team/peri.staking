@@ -8,6 +8,17 @@ import { connectContract } from "./connectContract";
 
 let liquidationList = [];
 
+const sortList = (list) => {
+	const open = [];
+	const close = [];
+
+	list.forEach((item) =>
+		item.status === 0 ? open.push(item) : close.push(item)
+	);
+
+	return [...open, ...close];
+};
+
 export const getLiquidationList = async (dispatch, networkId = 1287) => {
 	dispatch(setLoading({ name: "liquidation", value: true }));
 	const { PeriFinance, Liquidations } = contracts as any;
@@ -30,12 +41,14 @@ export const getLiquidationList = async (dispatch, networkId = 1287) => {
 		liquidationList.map(async (address, idx) => {
 			await connectContract(address, PeriFinance, Liquidations, contracts).then(
 				(data: object | boolean) => {
-					data && tempList.push(data);
+					if (data) {
+						tempList[idx] = data;
+					}
 				}
 			);
 		})
 	);
 
-	dispatch(updateList(tempList));
+	dispatch(updateList(sortList(tempList)));
 	dispatch(setLoading({ name: "liquidation", value: false }));
 };
