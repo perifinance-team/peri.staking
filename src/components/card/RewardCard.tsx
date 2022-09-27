@@ -2,7 +2,7 @@ import React from "react";
 import styled, { css } from "styled-components";
 import { H3, H4 } from "components/heading";
 import { RoundButton } from "components/button/RoundButton";
-import { Input } from "components/input/index";
+import { Input } from "../../components/input/index";
 import { Fee } from "components/Fee";
 import { formatCurrency } from "lib";
 // import { useSelector } from "react-redux"

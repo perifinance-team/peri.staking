@@ -9,9 +9,10 @@
     "example": "example"
   },
   "dependencies": {
+    "@apollo/client": "^3.6.9",
     "@egjs/react-flicking": "^4.1.2",
     "@metamask/detect-provider": "^1.2.0",
-    "@perifinance/peri-finance": "^0.5.7",
+    "@perifinance/peri-finance": "^0.6.3",
     "@reduxjs/toolkit": "^1.5.0",
     "@types/react-redux": "^7.1.16",
     "@types/react-router-dom": "^5.1.7",
@@ -22,6 +23,7 @@
     "bnc-onboard": "^1.34.2",
     "date-fns": "^2.21.1",
     "ethers": "^5.4.1",
+    "graphql": "^16.6.0",
     "i18next": "^19.9.1",
     "i18next-browser-languagedetector": "^6.0.1",
     "i18next-xhr-backend": "^3.2.2",

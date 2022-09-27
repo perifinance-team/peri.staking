@@ -1,5 +1,7 @@
 import { contracts } from "lib/contract";
 import axios from "axios";
+import { gql } from "@apollo/client";
+import { client } from "./apollo";
 
 import { setLoading } from "config/reducers/loading";
 import { updateList } from "config/reducers/liquidation";
@@ -23,17 +25,30 @@ export const getLiquidationList = async (dispatch, networkId = 1287) => {
 	dispatch(setLoading({ name: "liquidation", value: true }));
 	const { PeriFinance, Liquidations } = contracts as any;
 
-	await axios
-		.get(
-			`https://perifinance1.com/api/v1/liquidationList?networkId=${networkId}`,
-			{
-				headers: { "Content-Type": "application/json", Authorization: "*" },
+	await client.query({
+		query: gql`
+			query {
+				liquidationTargets(network: "${networkId}") {
+					address
+					network
+				}
 			}
-		)
-		.then((data) => {
-			liquidationList = [...data.data];
-		})
-		.catch((e) => console.log("Liquidation API error", e));
+		`
+	})
+	.then((data) => {
+		liquidationList = [...data.data.liquidationTargets];
+	})
+	.catch((e) => console.error("Liquidation API error", e));
+		// .get(
+		// 	`https://perifinance1.com/api/v1/liquidationList?networkId=${networkId}`,
+		// 	{
+		// 		headers: { "Content-Type": "application/json", Authorization: "*" },
+		// 	}
+		// )
+		// .then((data) => {
+		// 	liquidationList = [...data.data];
+		// })
+		// .catch((e) => console.log("Liquidation API error", e));
 
 	const tempList = [];
 

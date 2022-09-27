@@ -15,6 +15,7 @@ const initialState: Loading = {
 		vestingData: false,
 		amountsToFitClaimable: false,
 		liquidation: false,
+		escrow: false,
 	},
 };
 

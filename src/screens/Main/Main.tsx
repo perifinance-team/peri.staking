@@ -39,7 +39,7 @@ const Main = () => {
 									<Vesting></Vesting>
 								</Route>
 								<Route path="/liquidation">
-									{true ? (
+									{false ? (
 										<Redirect to="/stake" />
 									) : (
 										<Liquidation></Liquidation>

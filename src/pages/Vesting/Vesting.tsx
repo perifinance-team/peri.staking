@@ -4,7 +4,7 @@ import { RootState } from "config/reducers";
 import styled from "styled-components";
 import { H1, H4 } from "components/heading";
 import { RoundButton } from "components/button/RoundButton";
-import { Input } from "components/input/index";
+import { Input } from "../../components/input/index";
 import {
 	StyledTHeader,
 	StyledTBody,

@@ -50,6 +50,13 @@ const Logo = () => {
 			}),
 		},
 		{
+			name: "liquidation",
+			to: "/liquidation",
+			active: useRouteMatch({
+				path: "/liquidation",
+			}),
+		},
+		{
 			name: "escrow",
 			to: "/escrow",
 			active: useRouteMatch({
@@ -64,14 +71,10 @@ const Logo = () => {
 				let childrenLink;
 				if (item.children?.length > 0) {
 					childrenLink = item.children.map((childrenItem) => {
-						if (networkId === 1285 && childrenItem.name === "earn")
-							return <></>;
+						if (networkId === 1285 && childrenItem.name === "earn") return <></>;
 						else
 							return (
-								<ChildrenLink
-									to={`${item.to}${childrenItem.to}`}
-									key={childrenItem.name}
-								>
+								<ChildrenLink to={`${item.to}${childrenItem.to}`} key={childrenItem.name}>
 									{childrenItem.name.toLocaleUpperCase()}
 								</ChildrenLink>
 							);
@@ -82,9 +85,7 @@ const Logo = () => {
 				} else {
 					return (
 						<ParentLinkContainer key={item.name}>
-							<ParentLink to={item.to}>
-								{item.name.toLocaleUpperCase()}
-							</ParentLink>
+							<ParentLink to={item.to}>{item.name.toLocaleUpperCase()}</ParentLink>
 							{item.active && childrenLink && (
 								<ChildrenLinkContainer>{childrenLink}</ChildrenLinkContainer>
 							)}
