@@ -12,9 +12,7 @@ const sortList = (list) => {
 	const open = [];
 	const close = [];
 
-	list.forEach((item) =>
-		item.status === 0 ? open.push(item) : close.push(item)
-	);
+	list.forEach((item) => (item.status === 0 ? open.push(item) : close.push(item)));
 
 	return [...open, ...close];
 };
@@ -23,29 +21,25 @@ export const getLiquidationList = async (dispatch, networkId = 1287) => {
 	dispatch(setLoading({ name: "liquidation", value: true }));
 	const { PeriFinance, Liquidations } = contracts as any;
 
-	await axios
-		.get(
-			`https://perifinance1.com/api/v1/liquidationList?networkId=${networkId}`,
-			{
-				headers: { "Content-Type": "application/json", Authorization: "*" },
-			}
-		)
-		.then((data) => {
-			liquidationList = [...data.data];
-		})
-		.catch((e) => console.log("Liquidation API error", e));
+	// ! temp close
+	// await axios
+	// 	.get(`https://perifinance1.com/api/v1/liquidationList?networkId=${networkId}`, {
+	// 		headers: { "Content-Type": "application/json", Authorization: "*" },
+	// 	})
+	// 	.then((data) => {
+	// 		liquidationList = [...data.data];
+	// 	})
+	// 	.catch((e) => console.log("Liquidation API error", e));
 
 	const tempList = [];
 
 	await Promise.all(
 		liquidationList.map(async (address, idx) => {
-			await connectContract(address, PeriFinance, Liquidations, contracts).then(
-				(data: object | boolean) => {
-					if (data) {
-						tempList[idx] = data;
-					}
+			await connectContract(address, PeriFinance, Liquidations, contracts).then((data: object | boolean) => {
+				if (data) {
+					tempList[idx] = data;
 				}
-			);
+			});
 		})
 	);
 

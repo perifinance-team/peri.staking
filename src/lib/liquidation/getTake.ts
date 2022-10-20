@@ -1,40 +1,29 @@
 import { utils } from "ethers";
 import { setLoading } from "config/reducers/loading";
 import { updateTransaction } from "config/reducers/transaction";
+import { formatCurrency } from "lib/format";
 
 export const getTake = async (
+	value: string,
 	id: number,
 	address: string,
 	list: any,
 	dispatch: any,
-	contracts: any
+	contracts: any,
+	balance: any
 ) => {
+	// todo test
+	console.log("OTHER PARAMETERS", value, id, address, list);
+
+	if (!value) return;
+
 	if (address !== list[id].address) {
-		dispatch(setLoading({ name: "liquidation", value: true }));
+		// dispatch(setLoading({ name: "liquidation", value: true })); // ! temp close
 
-		const collateral = {
-			Peri: BigInt(
-				(
-					await contracts.ExchangeRates.rateForCurrency(utils.formatBytes32String("PERI"))
-				).toString()
-			),
-			USDC: BigInt(
-				(
-					await contracts.ExchangeRates.rateForCurrency(utils.formatBytes32String("USDC"))
-				).toString()
-			),
-			Dai: BigInt(
-				(await contracts.ExchangeRates.rateForCurrency(utils.formatBytes32String("DAI"))).toString()
-			),
-		};
+		console.log("TEST", utils.parseEther(value), value, value < balance.pUSD.transferable, value > balance.pUSD.transferable);
+		if (balance.pUSD.transferable < utils.parseEther(value)) return;
 
-		const peri = (BigInt(list[id].collateral[0].value) * BigInt(collateral.Peri)) / 10n ** 18n;
-		const dai = (BigInt(list[id].collateral[1].value) * BigInt(collateral.Dai)) / 10n ** 18n;
-		const usdc = (BigInt(list[id].collateral[2].value) * BigInt(collateral.USDC)) / 10n ** 18n;
-
-		const sumCollateral = peri + dai + usdc;
-
-		getState(peri, id, contracts, list, dispatch);
+		// getState(utils.parseEther(value), id, contracts, list, dispatch); // ! make this
 	}
 };
 

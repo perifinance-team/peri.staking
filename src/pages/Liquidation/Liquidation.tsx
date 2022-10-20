@@ -1,15 +1,18 @@
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "config/reducers";
 import styled from "styled-components";
+import { NotificationManager } from "react-notifications";
+
+import { RootState } from "config/reducers";
+import { setLoading } from "config/reducers/loading";
+
 import { contracts } from "lib/contract";
-import { H4 } from "components/heading";
-import { StyledTHeader, StyledTBody, Row, Cell, BorderRow } from "components/Table";
 import { formatCurrency } from "lib";
 import { getLiquidationList } from "lib/liquidation";
-import { setLoading } from "config/reducers/loading";
-import { NotificationManager } from "react-notifications";
-import { getTake } from "lib/liquidation/getTake";
+
+import { StyledTHeader, StyledTBody, Row, Cell, BorderRow } from "components/Table";
+import { H4 } from "components/heading";
+import TakeModal from "components/TakeModal";
 
 const Liquidation = () => {
 	const dispatch = useDispatch();
@@ -18,9 +21,75 @@ const Liquidation = () => {
 	const { address, networkId } = useSelector((state: RootState) => state.wallet);
 	const { list } = useSelector((state: RootState) => state.liquidation);
 
+	// ! temp liquidation list
+	const [listItems, setListItems] = useState([
+		{
+			idx: "oxlx1y",
+			cRatio: "0",
+			debt: 0,
+			collateral: [
+				{ name: "Peri", value: 0 },
+				{ name: "Dai", value: 0 },
+				{ name: "USDC", value: 0 },
+			],
+			status: 0,
+			toggle: false,
+		},
+		{
+			idx: "oxlx3y",
+			cRatio: "0",
+			debt: 50,
+			collateral: [
+				{ name: "Peri", value: 95 },
+				{ name: "Dai", value: 5 },
+				{ name: "USDC", value: 10 },
+			],
+			status: 0,
+			toggle: false,
+		},
+		{
+			idx: "oxlx3y",
+			cRatio: "120",
+			debt: 50,
+			collateral: [
+				{ name: "Peri", value: 95 },
+				{ name: "Dai", value: 5 },
+				{ name: "USDC", value: 0 },
+			],
+			status: 0,
+			toggle: false,
+		},
+		{
+			idx: "oxlx3y",
+			cRatio: "120",
+			debt: 50,
+			collateral: [
+				{ name: "Peri", value: 95 },
+				{ name: "Dai", value: 5 },
+				{ name: "USDC", value: 0 },
+			],
+			status: 0,
+			toggle: false,
+		},
+		{
+			idx: "oxlx3y",
+			cRatio: "120",
+			debt: 50,
+			collateral: [
+				{ name: "Peri", value: 95 },
+				{ name: "Dai", value: 5 },
+				{ name: "USDC", value: 0 },
+			],
+			status: 0,
+			toggle: false,
+		},
+	]);
+
 	const statusList = ["Open", "Taken", "Closed"];
 
-	const ratioToPer = (value) => {
+	// ! need to restore
+	const ratioToPer = (originValue) => {
+		const value = BigInt(originValue);
 		if (value === 0n) return "0";
 		return ((BigInt(Math.pow(10, 18).toString()) * 100n) / value).toString();
 	};
@@ -40,6 +109,14 @@ const Liquidation = () => {
 		},
 		[address, dispatch, networkId]
 	);
+
+	const toggleModal = (flag: number) => {
+		// todo update dispatch
+		const updateListItems = listItems.map((item, idx) => {
+			return flag === idx ? { ...item, toggle: !item.toggle } : item;
+		});
+		setListItems(updateListItems);
+	};
 
 	useEffect(() => {
 		(async () => {
@@ -77,14 +154,14 @@ const Liquidation = () => {
 					</Row>
 				</StyledTHeader>
 				<StyledTBody>
-					{list.map((el, idx) => {
+					{listItems.map((el, idx) => {
 						return (
 							<BorderRow key={`row${idx}`} style={{ minHeight: "9rem", height: "10rem" }}>
 								<AmountCell>
 									<H4 weight={"m"}>{`${ratioToPer(el.cRatio)}%`}</H4>
 								</AmountCell>
 								<AmountCell>
-									<H4 weight={"m"}>{`${formatCurrency(el.debt ? el.debt : 0n)} pUSD`}</H4>
+									<H4 weight={"m"}>{`${formatCurrency(el.debt)} pUSD`}</H4>
 								</AmountCell>
 								<AmountCell style={{ width: "30rem" }}>
 									<CollateralList>
@@ -107,18 +184,30 @@ const Liquidation = () => {
 								<AmountCell>
 									<H4 weight={"m"}>{statusList[el.status]}</H4>
 								</AmountCell>
-								<AmountCell>
+								<AmountCell style={{ position: "relative" }}>
 									{el.status === 0 && (
 										<TakeBtn
 											onClick={() =>
 												balances["pUSD"].balance < el.debt
 													? onMouseOverHandler(balances["pUSD"].balance, el.debt)
-													: getTake(idx, address, list, dispatch, contracts)
+													: toggleModal(idx)
 											}
 											toggle={balances["pUSD"].balance < el.debt}
 										>
 											Take
 										</TakeBtn>
+									)}
+									{el.toggle && (
+										<TakeModal
+											idx={idx}
+											address={address}
+											list={listItems} // ! temp change list => listItems
+											dispatch={dispatch}
+											contracts={contracts}
+											debts={formatCurrency(el.debt)}
+											collateral={el.collateral}
+											toggleModal={(idx) => toggleModal(idx)}
+										></TakeModal>
 									)}
 								</AmountCell>
 							</BorderRow>
