@@ -23,6 +23,7 @@ const naming = {
 		137: "PeriFinanceToPolygon",
 		1285: "PeriFinance",
 		1287: "PeriFinance",
+		1337: 'PeriFinanceToPolygon',
 		80001: "PeriFinanceToPolygon",
 	},
 	ExternalTokenStakeManager: "ExternalTokenStakeManager",

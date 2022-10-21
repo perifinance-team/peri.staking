@@ -35,6 +35,8 @@ import "./App.css";
 const App = () => {
 	const { address, networkId } = useSelector((state: RootState) => state.wallet);
 
+	console.log("networkId", networkId);
+
 	const { balances } = useSelector((state: RootState) => state.balances);
 	const transaction = useSelector((state: RootState) => state.transaction);
 
@@ -63,13 +65,7 @@ const App = () => {
 
 			if (address) {
 				const [balancesData, vestable, stateLiquid, timestamp] = await Promise.all([
-					getBalances(
-						address,
-						balances,
-						ratios.exchangeRates,
-						ratios.ratio.targetCRatio,
-						ratios.ratio.currentCRatio
-					),
+					getBalances(address, balances, ratios.exchangeRates, ratios.ratio.targetCRatio, ratios.ratio.currentCRatio),
 					getVestable(address),
 					await Liquidations.isOpenForLiquidation(address),
 					await getTimeStamp(address, Liquidations),
@@ -89,6 +85,7 @@ const App = () => {
 
 	const setOnboard = async () => {
 		let networkId = Number(process.env.REACT_APP_DEFAULT_NETWORK_ID);
+
 		contracts.init(networkId);
 		dispatch(updateNetwork({ networkId: networkId }));
 		try {
@@ -115,8 +112,10 @@ const App = () => {
 						}
 					},
 					network: async (network) => {
+						console.log("network", network);
 						if (network) {
 							if (SUPPORTED_NETWORKS[network]) {
+
 								contracts.init(network);
 								onboard.config({ networkId: network });
 								dispatch(updateNetwork({ networkId: network }));

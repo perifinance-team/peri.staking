@@ -31,11 +31,25 @@ export const getLiquidationList = async (dispatch, networkId = 1287) => {
 	// 	})
 	// 	.catch((e) => console.log("Liquidation API error", e));
 
+	const query = `query {
+    liquidationTargets(network: "polygon") {
+      address
+    }
+  }`;
+
+	await fetch("http://localhost:4000", {
+		method: "POST",
+		headers: { "Content-Type": "application/json" },
+		body: JSON.stringify({ query }),
+	})
+		.then((res) => res.json())
+		.then((json) => (liquidationList = [...json.data.liquidationTargets]));
+
 	const tempList = [];
 
 	await Promise.all(
 		liquidationList.map(async (address, idx) => {
-			await connectContract(address, PeriFinance, Liquidations, contracts).then((data: object | boolean) => {
+			await connectContract(address.address, PeriFinance, Liquidations, contracts).then((data: object | boolean) => {
 				if (data) {
 					tempList[idx] = data;
 				}

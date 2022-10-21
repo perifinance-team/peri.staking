@@ -51,13 +51,6 @@ export const TransactionSlice = createSlice({
 	},
 });
 
-export const {
-	toggleLiquid,
-	toggleNoti,
-	getTaken,
-	updateList,
-	updateThisState,
-	updateTimestamp,
-} = TransactionSlice.actions;
+export const { toggleLiquid, toggleNoti, getTaken, updateList, updateThisState, updateTimestamp } = TransactionSlice.actions;
 
 export default TransactionSlice.reducer;

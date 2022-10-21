@@ -11,5 +11,6 @@ export const RPC_URLS: object = {
 	137: `https://rpc-mainnet.maticvigil.com/v1/${process.env.REACT_APP_RPC_MATIC_ID}`,
 	1285: `https://rpc.api.moonriver.moonbeam.network`,
 	1287: `https://rpc.api.moonbase.moonbeam.network`,
+	1337: `http://localhost:8545`,
 	80001: `https://rpc-mumbai.maticvigil.com/v1/${process.env.REACT_APP_RPC_MUMBAI_ID}`,
 };

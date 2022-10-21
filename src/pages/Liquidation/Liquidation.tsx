@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import styled from "styled-components";
-import { NotificationManager } from "react-notifications";
 
 import { RootState } from "config/reducers";
 import { setLoading } from "config/reducers/loading";
@@ -13,6 +12,7 @@ import { getLiquidationList } from "lib/liquidation";
 import { StyledTHeader, StyledTBody, Row, Cell, BorderRow } from "components/Table";
 import { H4 } from "components/heading";
 import TakeModal from "components/TakeModal";
+import { updateList } from "config/reducers/liquidation";
 
 const Liquidation = () => {
 	const dispatch = useDispatch();
@@ -21,69 +21,9 @@ const Liquidation = () => {
 	const { address, networkId } = useSelector((state: RootState) => state.wallet);
 	const { list } = useSelector((state: RootState) => state.liquidation);
 
-	// ! temp liquidation list
-	const [listItems, setListItems] = useState([
-		{
-			idx: "oxlx1y",
-			cRatio: "0",
-			debt: 0,
-			collateral: [
-				{ name: "Peri", value: 0 },
-				{ name: "Dai", value: 0 },
-				{ name: "USDC", value: 0 },
-			],
-			status: 0,
-			toggle: false,
-		},
-		{
-			idx: "oxlx3y",
-			cRatio: "0",
-			debt: 50,
-			collateral: [
-				{ name: "Peri", value: 95 },
-				{ name: "Dai", value: 5 },
-				{ name: "USDC", value: 10 },
-			],
-			status: 0,
-			toggle: false,
-		},
-		{
-			idx: "oxlx3y",
-			cRatio: "120",
-			debt: 50,
-			collateral: [
-				{ name: "Peri", value: 95 },
-				{ name: "Dai", value: 5 },
-				{ name: "USDC", value: 0 },
-			],
-			status: 0,
-			toggle: false,
-		},
-		{
-			idx: "oxlx3y",
-			cRatio: "120",
-			debt: 50,
-			collateral: [
-				{ name: "Peri", value: 95 },
-				{ name: "Dai", value: 5 },
-				{ name: "USDC", value: 0 },
-			],
-			status: 0,
-			toggle: false,
-		},
-		{
-			idx: "oxlx3y",
-			cRatio: "120",
-			debt: 50,
-			collateral: [
-				{ name: "Peri", value: 95 },
-				{ name: "Dai", value: 5 },
-				{ name: "USDC", value: 0 },
-			],
-			status: 0,
-			toggle: false,
-		},
-	]);
+	// const [listItem, setListItem] = useState(list);
+
+	// console.log("list", list, listItem);
 
 	const statusList = ["Open", "Taken", "Closed"];
 
@@ -111,11 +51,15 @@ const Liquidation = () => {
 	);
 
 	const toggleModal = (flag: number) => {
-		// todo update dispatch
-		const updateListItems = listItems.map((item, idx) => {
+		// const updateListItems = listItem.map((item, idx) => {
+		// 	return flag === idx ? { ...item, toggle: !item.toggle } : item;
+		// });
+		// setListItem(updateListItems);
+
+		const updateListItems = list.map((item, idx) => {
 			return flag === idx ? { ...item, toggle: !item.toggle } : item;
 		});
-		setListItems(updateListItems);
+		dispatch(updateList(updateListItems));
 	};
 
 	useEffect(() => {
@@ -124,10 +68,6 @@ const Liquidation = () => {
 		})();
 		// eslint-disable-next-line
 	}, [address, networkId]);
-
-	const onMouseOverHandler = (pUSD, debt) => {
-		pUSD < debt && NotificationManager.error(`Not enough pUSD`, "ERROR");
-	};
 
 	return (
 		<Container>
@@ -154,7 +94,7 @@ const Liquidation = () => {
 					</Row>
 				</StyledTHeader>
 				<StyledTBody>
-					{listItems.map((el, idx) => {
+					{list.map((el, idx) => {
 						return (
 							<BorderRow key={`row${idx}`} style={{ minHeight: "9rem", height: "10rem" }}>
 								<AmountCell>
@@ -186,14 +126,7 @@ const Liquidation = () => {
 								</AmountCell>
 								<AmountCell style={{ position: "relative" }}>
 									{el.status === 0 && (
-										<TakeBtn
-											onClick={() =>
-												balances["pUSD"].balance < el.debt
-													? onMouseOverHandler(balances["pUSD"].balance, el.debt)
-													: toggleModal(idx)
-											}
-											toggle={balances["pUSD"].balance < el.debt}
-										>
+										<TakeBtn onClick={() => toggleModal(idx)} toggle={balances["pUSD"].balance < el.debt}>
 											Take
 										</TakeBtn>
 									)}
@@ -201,10 +134,10 @@ const Liquidation = () => {
 										<TakeModal
 											idx={idx}
 											address={address}
-											list={listItems} // ! temp change list => listItems
+											list={list}
 											dispatch={dispatch}
 											contracts={contracts}
-											debts={formatCurrency(el.debt)}
+											debt={formatCurrency(el.debt)}
 											collateral={el.collateral}
 											toggleModal={(idx) => toggleModal(idx)}
 										></TakeModal>

@@ -1,26 +1,88 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { useSelector } from "react-redux";
+import { NotificationManager } from "react-notifications";
+
 import { RootState } from "config/reducers";
 
 import { getTake } from "lib/liquidation/getTake";
 import { formatCurrency } from "lib/format";
+import { utils } from "ethers";
+import { setLoading } from "config/reducers/loading";
 
-const TakeModal = ({ idx, address, list, dispatch, contracts, debts, collateral, toggleModal }) => {
+const onMouseOverHandler = (pUSD, debt) => {
+	pUSD < debt && NotificationManager.error(`Not enough pUSD`, "ERROR");
+};
+
+const TakeModal = ({ idx, address, list, dispatch, contracts, debt, collateral, toggleModal }) => {
 	const { balances }: any = useSelector((state: RootState) => state.balances);
+	const { gasPrice } = useSelector((state: RootState) => state.networkFee);
+
 	const [value, setValue] = useState("0");
 	const [gas, setGas] = useState("0");
+	const [profit, setProfit] = useState("0");
+	const [sumCollateral, setSumCollateral] = useState("0");
+
 	const maxBalance = balances.pUSD.transferable;
-	let debt = debts === "0" ? "200.0123" : debts; // ! temp test code
-
-	let profit;
-
-	console.log("debt", debt, debt.toString());
 
 	const modalRef = useRef<any>();
 	const closeModalHandler = (e) => {
 		if (list[idx].toggle && !modalRef.current.contains(e.target)) toggleModal(idx);
 	};
+
+	const getProfit = () => {
+		const D = Number(debt);
+		const V = Number(sumCollateral);
+
+		const amountToFixRatioinUSD = V + D;
+		let amountToLiquidate =
+			amountToFixRatioinUSD < Number(value.replaceAll(",", "")) ? amountToFixRatioinUSD : Number(value.replaceAll(",", ""));
+		const totalRedeemedinUSD = amountToLiquidate * 1.1;
+
+		if (totalRedeemedinUSD > V) {
+			amountToLiquidate = V / 0.725;
+		}
+
+		// setProfit((Number(amountToLiquidate) * 1.1).toFixed(4));
+		setProfit((Number(value.replaceAll(",", "")) * 1.1).toFixed(4));
+	};
+
+	const sumCollateralHandler = async () => {
+		const collateral = {
+			Peri: BigInt((await contracts.ExchangeRates.rateForCurrency(utils.formatBytes32String("PERI"))).toString()),
+			USDC: BigInt((await contracts.ExchangeRates.rateForCurrency(utils.formatBytes32String("USDC"))).toString()),
+			Dai: BigInt((await contracts.ExchangeRates.rateForCurrency(utils.formatBytes32String("DAI"))).toString()),
+		};
+
+		const peri = (BigInt(list[idx].collateral[0].value) * BigInt(collateral.Peri)) / 10n ** 18n;
+		const dai = (BigInt(list[idx].collateral[1].value) * BigInt(collateral.Dai)) / 10n ** 18n;
+		const usdc = (BigInt(list[idx].collateral[2].value) * BigInt(collateral.USDC)) / 10n ** 18n;
+
+		setSumCollateral(formatCurrency(peri + dai + usdc));
+	};
+
+	const getGasPrice = async () => {
+		const convertValue = utils.parseEther(value.replaceAll(",", ""));
+		const estimateGas = await contracts.signers.PeriFinance.estimateGas.liquidateDelinquentAccount(
+			list[idx].address,
+			BigInt(convertValue.toString())
+		);
+		setGas(utils.formatEther((BigInt(estimateGas.toString()) * BigInt(gasPrice)).toString()));
+	};
+
+	useEffect(() => {
+		dispatch(setLoading({ name: "gasEstimate", value: true }));
+		sumCollateralHandler();
+		getGasPrice();
+		// getProfit();
+		dispatch(setLoading({ name: "gasEstimate", value: false }));
+	}, []);
+
+	useEffect(() => {
+		dispatch(setLoading({ name: "gasEstimate", value: true }));
+		getProfit();
+		dispatch(setLoading({ name: "gasEstimate", value: false }));
+	}, [value]);
 
 	useEffect(() => {
 		window.addEventListener("click", closeModalHandler);
@@ -35,44 +97,88 @@ const TakeModal = ({ idx, address, list, dispatch, contracts, debts, collateral,
 				<InputBox>
 					<SubIndicator>
 						<span>{`Available: ${formatCurrency(maxBalance)}`}</span>
-						<span>{`Gas: ${gas}`}</span>
+						<span>{`Gas Fee: ${gas}`}</span>
 					</SubIndicator>
 					<img src={`/images/currencies/pUSD.png`} alt="pUSD" />
 					<TakeInput
 						type="number"
 						placeholder="0"
 						min="0"
-						// max={debt.toString()}
-						max={"200"} // ! temp testing value
+						max={formatCurrency(maxBalance).replaceAll(",", "") > debt ? debt : formatCurrency(maxBalance).replaceAll(",", "")}
 						step="0.01"
 						value={value === "0" ? "" : value}
 						autoFocus={true}
 						onChange={(e) => setValue(e.target.value)}
 					/>
-					<MaxBtn onClick={() => setValue(false ? debt.toString() : "200")}>max</MaxBtn>
+					<MaxBtn
+						onClick={() =>
+							setValue(
+								formatCurrency(maxBalance).replaceAll(",", "") > debt ? debt : formatCurrency(maxBalance).replaceAll(",", "")
+							)
+						}
+					>
+						max
+					</MaxBtn>
 				</InputBox>
 
 				<TakeSlider
 					type="range"
 					min="0"
-					// max={debt.toString()}
-					max="200"
+					max={formatCurrency(maxBalance).replaceAll(",", "") > debt ? debt : formatCurrency(maxBalance).replaceAll(",", "")}
 					step="0.01"
 					value={value}
 					onChange={(e) => setValue(e.target.value)}
 				/>
 				<TakePercentage>
 					<span onClick={() => setValue("0")}>0%</span>
-					<span onClick={() => setValue(String(debt * 0.25))}>25%</span>
-					<span onClick={() => setValue(String(debt * 0.5))}>50%</span>
-					<span onClick={() => setValue(String(debt * 0.75))}>75%</span>
-					<span onClick={() => setValue(debt.toString())}>100%</span>
+					<span
+						onClick={() => {
+							setValue(
+								formatCurrency(maxBalance).replaceAll(",", "") > debt
+									? String(debt * 0.25)
+									: String(formatCurrency(maxBalance).replaceAll(",", "") * 0.25)
+							);
+						}}
+					>
+						25%
+					</span>
+					<span
+						onClick={() =>
+							setValue(
+								formatCurrency(maxBalance).replaceAll(",", "") > debt
+									? String(debt * 0.5)
+									: String(formatCurrency(maxBalance).replaceAll(",", "") * 0.5)
+							)
+						}
+					>
+						50%
+					</span>
+					<span
+						onClick={() =>
+							setValue(
+								formatCurrency(maxBalance).replaceAll(",", "") > debt
+									? String(debt * 0.75)
+									: String(formatCurrency(maxBalance).replaceAll(",", "") * 0.75)
+							)
+						}
+					>
+						75%
+					</span>
+					<span
+						onClick={() =>
+							setValue(
+								formatCurrency(maxBalance).replaceAll(",", "") > debt ? debt : formatCurrency(maxBalance).replaceAll(",", "")
+							)
+						}
+					>
+						100%
+					</span>
 				</TakePercentage>
 
 				<ContentSection>
 					<div style={{ display: "flex" }}>
 						<ContentBox>
-							<span className="title">{`Debt ( $ ${debt.toString()} )`}</span>
+							<span className="title">{`Debt ( $ ${debt} )`}</span>
 							<span className="content">
 								<span>
 									<img className="icon" src={`/images/currencies/pUSD.png`} alt="pUSD" />
@@ -83,12 +189,12 @@ const TakeModal = ({ idx, address, list, dispatch, contracts, debts, collateral,
 						<ContentBox>
 							<span className="title">{`Profit`}</span>
 							<span className="content">
-								<span>{`130 USD`}</span>
+								<span>{`${value === "0" ? "0" : profit} USD`}</span>
 							</span>
 						</ContentBox>
 					</div>
 					<ContentBox>
-						<span className="title">{`Collateral ( $ )`}</span>
+						<span className="title">{`Collateral ( $ ${sumCollateral} )`}</span>
 						<span className="content">
 							{collateral.map((item) => {
 								return (
@@ -108,7 +214,15 @@ const TakeModal = ({ idx, address, list, dispatch, contracts, debts, collateral,
 					</ContentBox>
 				</ContentSection>
 
-				<SubmitBtn onClick={() => getTake(value, idx, address, list, dispatch, contracts, balances)}>TAKE</SubmitBtn>
+				<SubmitBtn
+					onClick={() =>
+						maxBalance < debt
+							? onMouseOverHandler(value, debt)
+							: getTake(value, idx, address, list, dispatch, contracts, balances, toggleModal)
+					}
+				>
+					TAKE
+				</SubmitBtn>
 			</Area>
 		</TakeModalItem>
 	);
@@ -128,7 +242,7 @@ const TakeModalItem = styled.div`
 	background: #525252a1;
 `;
 
-const Area = styled.form`
+const Area = styled.div`
 	display: flex;
 	flex-direction: column;
 	justify-content: flex-start;
@@ -242,7 +356,7 @@ const ContentBox = styled.div`
 	display: flex;
 	flex-direction: column;
 	font-size: 1.3rem;
-	margin-right: 5rem;
+	margin-right: 4rem;
 	margin-bottom: 1.5rem;
 
 	img {
