@@ -13,24 +13,22 @@ export const getTake = async (
 	balance: any,
 	toggleModal: any
 ) => {
-	// todo test
-	console.log("OTHER PARAMETERS", value, id, address, list);
-
 	if (!value) return;
 
-	if (address !== list[id].address) {
+	if (address === list[id].address) {
 		dispatch(setLoading({ name: "liquidation", value: true }));
 
 		console.log(
 			"TEST",
-			utils.parseEther(value.replaceAll(",", "")),
+			BigInt(utils.parseEther(value.replaceAll(",", "")).toString()),
 			value,
+			balance.pUSD.transferable,
 			value < balance.pUSD.transferable,
 			value > balance.pUSD.transferable
 		);
-		if (balance.pUSD.transferable < utils.parseEther(value.replaceAll(",", ""))) return;
+		if (balance.pUSD.transferable < BigInt(utils.parseEther(value.replaceAll(",", "")).toString())) return;
 
-		getState(utils.parseEther(value.replaceAll(",", "")), id, contracts, list, dispatch, toggleModal); // ! make this
+		getState(BigInt(utils.parseEther(value.replaceAll(",", "")).toString()), id, contracts, list, dispatch, toggleModal);
 	}
 };
 
@@ -52,7 +50,7 @@ const getState = async (pUSD: any, id: number, contracts: any, list: any, dispat
 			}
 		});
 	} catch (e) {
-		console.log("take err", e);
+		console.error("take err", e);
 		dispatch(setLoading({ name: "liquidation", value: false }));
 		await toggleModal(id);
 	}

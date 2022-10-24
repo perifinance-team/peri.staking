@@ -7,5 +7,5 @@ export const SUPPORTED_NETWORKS = {
 	97: "BSCTEST",
 	80001: "MUMBAI",
 	1287: "moonbase-alphanet",
-	1337: "POLYGON",
+	1337: true ? "MAINNET" : "POLYGON", // test network
 };

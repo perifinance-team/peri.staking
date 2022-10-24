@@ -14,20 +14,48 @@ import { H4 } from "components/heading";
 import TakeModal from "components/TakeModal";
 import { updateList } from "config/reducers/liquidation";
 
+// ! test handler
+
+const testHandler = async (address: string) => {
+	const { PeriFinance } = contracts as any;
+
+	console.log("TEST console", "address", address);
+	// const debt = BigInt(await PeriFinance.debtBalanceOf(address, utils.formatBytes32String("pUSD")));
+	// const daiKey = utils.formatBytes32String("DAI");
+	// const usdcKey = utils.formatBytes32String("USDC");
+
+	const peri = async () => {
+		return await PeriFinance.collateral(address);
+	};
+
+	// await peri().then((el) => console.log("TEST console", "PERI", el.toString()));
+	const strPeri = await peri();
+	console.log("TEST console", "peri", PeriFinance, formatCurrency(strPeri.toString()));
+
+	// const USDC = async () => {
+	// 	return await contracts.ExternalTokenStakeManager.stakedAmountOf(address, usdcKey, usdcKey);
+	// };
+
+	// await USDC().then((el) => console.log("test console", "USDC", el.toString()));
+
+	// const DAI = async () => {
+	// 	return await contracts.ExternalTokenStakeManager.stakedAmountOf(address, daiKey, daiKey);
+	// };
+	// await DAI().then((el) => console.log("test console", "DAI", el.toString()));
+
+	// console.log("test console", "debt", debt);
+};
+
 const Liquidation = () => {
 	const dispatch = useDispatch();
 
 	const { balances } = useSelector((state: RootState) => state.balances);
 	const { address, networkId } = useSelector((state: RootState) => state.wallet);
 	const { list } = useSelector((state: RootState) => state.liquidation);
-
-	// const [listItem, setListItem] = useState(list);
-
-	// console.log("list", list, listItem);
+	const transaction = useSelector((state: RootState) => state.transaction);
 
 	const statusList = ["Open", "Taken", "Closed"];
 
-	// ! need to restore
 	const ratioToPer = (originValue) => {
 		const value = BigInt(originValue);
 		if (value === 0n) return "0";
@@ -51,11 +79,6 @@ const Liquidation = () => {
 	);
 
 	const toggleModal = (flag: number) => {
-		// const updateListItems = listItem.map((item, idx) => {
-		// 	return flag === idx ? { ...item, toggle: !item.toggle } : item;
-		// });
-		// setListItem(updateListItems);
-
 		const updateListItems = list.map((item, idx) => {
 			return flag === idx ? { ...item, toggle: !item.toggle } : item;
 		});
@@ -67,7 +90,7 @@ const Liquidation = () => {
 			return await getLiquidationData(true);
 		})();
 		// eslint-disable-next-line
-	}, [address, networkId]);
+	}, [address, networkId, transaction]);
 
 	return (
 		<Container>
@@ -125,15 +148,24 @@ const Liquidation = () => {
 									<H4 weight={"m"}>{statusList[el.status]}</H4>
 								</AmountCell>
 								<AmountCell style={{ position: "relative" }}>
-									{el.status === 0 && (
-										<TakeBtn onClick={() => toggleModal(idx)} toggle={balances["pUSD"].balance < el.debt}>
-											Take
-										</TakeBtn>
-									)}
+									{/* TEMP CLOSE */}
+									{/* {el.status === 0 && ( */}
+									<TakeBtn onClick={() => toggleModal(idx)} toggle={balances["pUSD"].balance < el.debt}>
+										Take
+									</TakeBtn>
+									{/* )} */}
+
+									{/* TEST BTN */}
+									<div
+										style={{ width: "3px", height: "3px", color: "white", cursor: "pointer" }}
+										onClick={() => testHandler(el.address)}
+									>
+										TEST Btn
+									</div>
 									{el.toggle && (
 										<TakeModal
 											idx={idx}
-											address={address}
+											address={el.address}
 											list={list}
 											dispatch={dispatch}
 											contracts={contracts}

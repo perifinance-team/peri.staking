@@ -30,13 +30,8 @@ import Loading from "./screens/Loading";
 import Main from "./screens/Main";
 import "./App.css";
 
-// import {getDebts} from 'lib/balance/getDebts'
-
 const App = () => {
 	const { address, networkId } = useSelector((state: RootState) => state.wallet);
-
-	console.log("networkId", networkId);
-
 	const { balances } = useSelector((state: RootState) => state.balances);
 	const transaction = useSelector((state: RootState) => state.transaction);
 
@@ -49,8 +44,6 @@ const App = () => {
 	const [onboardInit, setOnboardInit] = useState(false);
 
 	const { Liquidations } = contracts as any;
-
-	//     const [userAddress, setUserAddress] = useState('test');
 
 	const getSystemData = useCallback(
 		async (isLoading) => {
@@ -115,7 +108,6 @@ const App = () => {
 						console.log("network", network);
 						if (network) {
 							if (SUPPORTED_NETWORKS[network]) {
-
 								contracts.init(network);
 								onboard.config({ networkId: network });
 								dispatch(updateNetwork({ networkId: network }));

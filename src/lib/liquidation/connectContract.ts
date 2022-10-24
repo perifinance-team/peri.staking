@@ -35,6 +35,7 @@ export const connectContract = async (address: string, PeriFinance: any, Liquida
 	collateral.USDC = await tempUSDC();
 	collateral.DAI = await tempDAI();
 
+	// ?
 	if (
 		formatCurrency(collateral.pUSD) === "0" &&
 		formatCurrency(collateral.USDC) === "0" &&
@@ -47,7 +48,7 @@ export const connectContract = async (address: string, PeriFinance: any, Liquida
 		if ((await Liquidations.isOpenForLiquidation(address)) && Number(ratioToPer(cRatio)) <= 150) {
 			return 0;
 		} else if (false) {
-			// todo taken
+			// ? taken. Syntax missing from existing business logic
 			return 1;
 		} else {
 			return 2;

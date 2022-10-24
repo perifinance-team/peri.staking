@@ -10,8 +10,6 @@ export const getBalances = async (currentWallet, currencies, exchangeRates, targ
 	const USDCDecimal = contracts.networkId === 56 ? 18 : currencies["USDC"].decimal;
 	const DAIDecimal = currencies["DAI"].decimal;
 
-	console.log("PeriFinance", PeriFinance);
-
 	const [debtBalance, pUSDBalance, USDCBalance, DAIBalance, periBalance, transferablePERI, PERIRewardEscrow] = await Promise.all([
 		(async () => BigInt(await PeriFinance.debtBalanceOf(currentWallet, utils.formatBytes32String("pUSD"))))(),
 		await getBalance(currentWallet, "PynthpUSD", currencies["pUSD"].decimal),

@@ -15,6 +15,7 @@ const onMouseOverHandler = (pUSD, debt) => {
 };
 
 const TakeModal = ({ idx, address, list, dispatch, contracts, debt, collateral, toggleModal }) => {
+	console.log("TAKE MODAL parameter", idx, address, list, debt, collateral);
 	const { balances }: any = useSelector((state: RootState) => state.balances);
 	const { gasPrice } = useSelector((state: RootState) => state.networkFee);
 
@@ -30,7 +31,7 @@ const TakeModal = ({ idx, address, list, dispatch, contracts, debt, collateral, 
 		if (list[idx].toggle && !modalRef.current.contains(e.target)) toggleModal(idx);
 	};
 
-	const getProfit = () => {
+	const getProfit = useCallback(() => {
 		const D = Number(debt);
 		const V = Number(sumCollateral);
 
@@ -43,9 +44,9 @@ const TakeModal = ({ idx, address, list, dispatch, contracts, debt, collateral, 
 			amountToLiquidate = V / 0.725;
 		}
 
-		// setProfit((Number(amountToLiquidate) * 1.1).toFixed(4));
-		setProfit((Number(value.replaceAll(",", "")) * 1.1).toFixed(4));
-	};
+		setProfit((amountToLiquidate * 1.1).toFixed(4));
+		// setProfit((Number(value.replaceAll(",", "")) * 1.1).toFixed(4));
+	}, [debt, sumCollateral, value]);
 
 	const sumCollateralHandler = async () => {
 		const collateral = {
@@ -70,18 +71,23 @@ const TakeModal = ({ idx, address, list, dispatch, contracts, debt, collateral, 
 		setGas(utils.formatEther((BigInt(estimateGas.toString()) * BigInt(gasPrice)).toString()));
 	};
 
+	const getMaxAmount = (per = 1) => {
+		return Number(formatCurrency(maxBalance).replaceAll(",", "")) > Number(debt.replaceAll(",", ""))
+			? String(debt.replaceAll(",", "") * per)
+			: String(formatCurrency(maxBalance).replaceAll(",", "") * per);
+	};
+
 	useEffect(() => {
-		dispatch(setLoading({ name: "gasEstimate", value: true }));
+		dispatch(setLoading({ name: "liquidation", value: true }));
 		sumCollateralHandler();
 		getGasPrice();
-		// getProfit();
-		dispatch(setLoading({ name: "gasEstimate", value: false }));
+		dispatch(setLoading({ name: "liquidation", value: false }));
 	}, []);
 
 	useEffect(() => {
-		dispatch(setLoading({ name: "gasEstimate", value: true }));
+		dispatch(setLoading({ name: "liquidation", value: true }));
 		getProfit();
-		dispatch(setLoading({ name: "gasEstimate", value: false }));
+		dispatch(setLoading({ name: "liquidation", value: false }));
 	}, [value]);
 
 	useEffect(() => {
@@ -104,27 +110,19 @@ const TakeModal = ({ idx, address, list, dispatch, contracts, debt, collateral, 
 						type="number"
 						placeholder="0"
 						min="0"
-						max={formatCurrency(maxBalance).replaceAll(",", "") > debt ? debt : formatCurrency(maxBalance).replaceAll(",", "")}
+						max={getMaxAmount()}
 						step="0.01"
 						value={value === "0" ? "" : value}
 						autoFocus={true}
 						onChange={(e) => setValue(e.target.value)}
 					/>
-					<MaxBtn
-						onClick={() =>
-							setValue(
-								formatCurrency(maxBalance).replaceAll(",", "") > debt ? debt : formatCurrency(maxBalance).replaceAll(",", "")
-							)
-						}
-					>
-						max
-					</MaxBtn>
+					<MaxBtn onClick={() => setValue(getMaxAmount())}>max</MaxBtn>
 				</InputBox>
 
 				<TakeSlider
 					type="range"
 					min="0"
-					max={formatCurrency(maxBalance).replaceAll(",", "") > debt ? debt : formatCurrency(maxBalance).replaceAll(",", "")}
+					max={getMaxAmount()}
 					step="0.01"
 					value={value}
 					onChange={(e) => setValue(e.target.value)}
@@ -133,46 +131,14 @@ const TakeModal = ({ idx, address, list, dispatch, contracts, debt, collateral, 
 					<span onClick={() => setValue("0")}>0%</span>
 					<span
 						onClick={() => {
-							setValue(
-								formatCurrency(maxBalance).replaceAll(",", "") > debt
-									? String(debt * 0.25)
-									: String(formatCurrency(maxBalance).replaceAll(",", "") * 0.25)
-							);
+							setValue(getMaxAmount(0.25));
 						}}
 					>
 						25%
 					</span>
-					<span
-						onClick={() =>
-							setValue(
-								formatCurrency(maxBalance).replaceAll(",", "") > debt
-									? String(debt * 0.5)
-									: String(formatCurrency(maxBalance).replaceAll(",", "") * 0.5)
-							)
-						}
-					>
-						50%
-					</span>
-					<span
-						onClick={() =>
-							setValue(
-								formatCurrency(maxBalance).replaceAll(",", "") > debt
-									? String(debt * 0.75)
-									: String(formatCurrency(maxBalance).replaceAll(",", "") * 0.75)
-							)
-						}
-					>
-						75%
-					</span>
-					<span
-						onClick={() =>
-							setValue(
-								formatCurrency(maxBalance).replaceAll(",", "") > debt ? debt : formatCurrency(maxBalance).replaceAll(",", "")
-							)
-						}
-					>
-						100%
-					</span>
+					<span onClick={() => setValue(getMaxAmount(0.5))}>50%</span>
+					<span onClick={() => setValue(getMaxAmount(0.75))}>75%</span>
+					<span onClick={() => setValue(getMaxAmount())}>100%</span>
 				</TakePercentage>
 
 				<ContentSection>
@@ -187,7 +153,7 @@ const TakeModal = ({ idx, address, list, dispatch, contracts, debt, collateral, 
 							</span>
 						</ContentBox>
 						<ContentBox>
-							<span className="title">{`Profit`}</span>
+							<span className="title">{`Estimate Profit`}</span>
 							<span className="content">
 								<span>{`${value === "0" ? "0" : profit} USD`}</span>
 							</span>

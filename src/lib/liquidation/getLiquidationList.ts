@@ -5,6 +5,7 @@ import { setLoading } from "config/reducers/loading";
 import { updateList } from "config/reducers/liquidation";
 
 import { connectContract } from "./connectContract";
+import { SUPPORTED_NETWORKS } from "lib/network";
 
 let liquidationList = [];
 
@@ -21,23 +22,15 @@ export const getLiquidationList = async (dispatch, networkId = 1287) => {
 	dispatch(setLoading({ name: "liquidation", value: true }));
 	const { PeriFinance, Liquidations } = contracts as any;
 
-	// ! temp close
-	// await axios
-	// 	.get(`https://perifinance1.com/api/v1/liquidationList?networkId=${networkId}`, {
-	// 		headers: { "Content-Type": "application/json", Authorization: "*" },
-	// 	})
-	// 	.then((data) => {
-	// 		liquidationList = [...data.data];
-	// 	})
-	// 	.catch((e) => console.log("Liquidation API error", e));
-
+	// ! update query network arguments
 	const query = `query {
-    liquidationTargets(network: "polygon") {
+    liquidationTargets(network: "${SUPPORTED_NETWORKS[networkId].toLowerCase()}") {
       address
     }
   }`;
 
-	await fetch("http://localhost:4000", {
+	// ! endpoint true === live endpoint, false === test endpoint
+	await fetch(false ? "https://dex-api.peri.finance/api/v1/" : "http://localhost:4000", {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
 		body: JSON.stringify({ query }),
@@ -50,6 +43,7 @@ export const getLiquidationList = async (dispatch, networkId = 1287) => {
 	await Promise.all(
 		liquidationList.map(async (address, idx) => {
 			await connectContract(address.address, PeriFinance, Liquidations, contracts).then((data: object | boolean) => {
+				console.log("data", data);
 				if (data) {
 					tempList[idx] = data;
 				}
