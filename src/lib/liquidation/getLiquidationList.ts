@@ -43,7 +43,6 @@ export const getLiquidationList = async (dispatch, networkId = 1287) => {
 	await Promise.all(
 		liquidationList.map(async (address, idx) => {
 			await connectContract(address.address, PeriFinance, Liquidations, contracts).then((data: object | boolean) => {
-				console.log("data", data);
 				if (data) {
 					tempList[idx] = data;
 				}

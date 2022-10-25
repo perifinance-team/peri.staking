@@ -13,6 +13,8 @@ import { StyledTHeader, StyledTBody, Row, Cell, BorderRow } from "components/Tab
 import { H4 } from "components/heading";
 import TakeModal from "components/TakeModal";
 import { updateList } from "config/reducers/liquidation";
+import { utils } from "ethers";
+import { getBalance } from "lib/balance";
 
 // ! test handler
 
@@ -20,9 +22,13 @@ const testHandler = async (address: string) => {
 	const { PeriFinance } = contracts as any;
 
 	console.log("TEST console", "address", address);
-	// const debt = BigInt(await PeriFinance.debtBalanceOf(address, utils.formatBytes32String("pUSD")));
+	const debt = BigInt(await PeriFinance.debtBalanceOf(address, utils.formatBytes32String("pUSD")));
+	console.log("TEST console", "debt", formatCurrency(debt));
 	// const daiKey = utils.formatBytes32String("DAI");
 	// const usdcKey = utils.formatBytes32String("USDC");
+
+	const liquidatorPUSD = await getBalance("0x1D4687938E579AdD85040eFC2a485389F4C4Eb64", "PynthpUSD", 18);
+	console.log("TEST console", "liquidatorPUSD", formatCurrency(liquidatorPUSD));
 
 	const peri = async () => {
 		return await PeriFinance.collateral(address);
@@ -30,7 +36,7 @@ const testHandler = async (address: string) => {
 
 	// await peri().then((el) => console.log("TEST console", "PERI", el.toString()));
 	const strPeri = await peri();
-	console.log("TEST console", "peri", PeriFinance, formatCurrency(strPeri.toString()));
+	console.log("TEST console", "peri", formatCurrency(strPeri.toString()));
 
 	// const USDC = async () => {
 	// 	return await contracts.ExternalTokenStakeManager.stakedAmountOf(address, usdcKey, usdcKey);
@@ -148,12 +154,11 @@ const Liquidation = () => {
 									<H4 weight={"m"}>{statusList[el.status]}</H4>
 								</AmountCell>
 								<AmountCell style={{ position: "relative" }}>
-									{/* TEMP CLOSE */}
-									{/* {el.status === 0 && ( */}
-									<TakeBtn onClick={() => toggleModal(idx)} toggle={balances["pUSD"].balance < el.debt}>
-										Take
-									</TakeBtn>
-									{/* )} */}
+									{el.status === 0 && (
+										<TakeBtn onClick={() => toggleModal(idx)} toggle={balances["pUSD"].balance < el.debt}>
+											Take
+										</TakeBtn>
+									)}
 
 									{/* TEST BTN */}
 									<div

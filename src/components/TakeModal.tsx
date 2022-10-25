@@ -32,21 +32,21 @@ const TakeModal = ({ idx, address, list, dispatch, contracts, debt, collateral, 
 	};
 
 	const getProfit = useCallback(() => {
-		const D = Number(debt);
-		const V = Number(sumCollateral);
+		// const D = Number(debt);
+		// const V = Number(sumCollateral);
 
-		const amountToFixRatioinUSD = V + D;
-		let amountToLiquidate =
-			amountToFixRatioinUSD < Number(value.replaceAll(",", "")) ? amountToFixRatioinUSD : Number(value.replaceAll(",", ""));
-		const totalRedeemedinUSD = amountToLiquidate * 1.1;
+		// const amountToFixRatioinUSD = V + D;
+		// let amountToLiquidate =
+		// 	amountToFixRatioinUSD < Number(value.replaceAll(",", "")) ? amountToFixRatioinUSD : Number(value.replaceAll(",", ""));
+		// const totalRedeemedinUSD = amountToLiquidate * 1.1;
 
-		if (totalRedeemedinUSD > V) {
-			amountToLiquidate = V / 0.725;
-		}
-
-		setProfit((amountToLiquidate * 1.1).toFixed(4));
-		// setProfit((Number(value.replaceAll(",", "")) * 1.1).toFixed(4));
-	}, [debt, sumCollateral, value]);
+		// if (totalRedeemedinUSD > V) {
+		// 	amountToLiquidate = V / 0.725;
+		// }
+		// console.log(amountToLiquidate * 1.1);
+		// setProfit((amountToLiquidate * 1.1).toFixed(4));
+		setProfit((Number(value.replaceAll(",", "")) * 1.1).toFixed(4));
+	}, [value]);
 
 	const sumCollateralHandler = async () => {
 		const collateral = {
