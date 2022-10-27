@@ -8,21 +8,19 @@ import { RootState } from "config/reducers";
 import { getTake } from "lib/liquidation/getTake";
 import { formatCurrency } from "lib/format";
 import { utils } from "ethers";
-import { setLoading } from "config/reducers/loading";
 
 const onMouseOverHandler = (pUSD, debt) => {
 	pUSD < debt && NotificationManager.error(`Not enough pUSD`, "ERROR");
 };
 
 const TakeModal = ({ idx, address, list, dispatch, contracts, debt, collateral, toggleModal }) => {
-	console.log("TAKE MODAL parameter", idx, address, list, debt, collateral);
 	const { balances }: any = useSelector((state: RootState) => state.balances);
 	const { gasPrice } = useSelector((state: RootState) => state.networkFee);
 
-	const [value, setValue] = useState("0");
-	const [gas, setGas] = useState("0");
-	const [profit, setProfit] = useState("0");
-	const [sumCollateral, setSumCollateral] = useState("0");
+	const [value, setValue] = useState<any>("0");
+	const [gas, setGas] = useState<any>(null);
+	const [profit, setProfit] = useState<any>(null);
+	const [sumCollateral, setSumCollateral] = useState<any>(null);
 
 	const maxBalance = balances.pUSD.transferable;
 
@@ -32,20 +30,7 @@ const TakeModal = ({ idx, address, list, dispatch, contracts, debt, collateral, 
 	};
 
 	const getProfit = useCallback(() => {
-		// const D = Number(debt);
-		// const V = Number(sumCollateral);
-
-		// const amountToFixRatioinUSD = V + D;
-		// let amountToLiquidate =
-		// 	amountToFixRatioinUSD < Number(value.replaceAll(",", "")) ? amountToFixRatioinUSD : Number(value.replaceAll(",", ""));
-		// const totalRedeemedinUSD = amountToLiquidate * 1.1;
-
-		// if (totalRedeemedinUSD > V) {
-		// 	amountToLiquidate = V / 0.725;
-		// }
-		// console.log(amountToLiquidate * 1.1);
-		// setProfit((amountToLiquidate * 1.1).toFixed(4));
-		setProfit((Number(value.replaceAll(",", "")) * 1.1).toFixed(4));
+		setProfit(value ? (Number(value.replaceAll(",", "")) * 1.1).toFixed(4) : "0");
 	}, [value]);
 
 	const sumCollateralHandler = async () => {
@@ -63,31 +48,35 @@ const TakeModal = ({ idx, address, list, dispatch, contracts, debt, collateral, 
 	};
 
 	const getGasPrice = async () => {
-		const convertValue = utils.parseEther(value.replaceAll(",", ""));
-		const estimateGas = await contracts.signers.PeriFinance.estimateGas.liquidateDelinquentAccount(
-			list[idx].address,
-			BigInt(convertValue.toString())
-		);
-		setGas(utils.formatEther((BigInt(estimateGas.toString()) * BigInt(gasPrice)).toString()));
+		try {
+			const convertValue = utils.parseEther(value.replaceAll(",", ""));
+			const estimateGas = await contracts.signers.PeriFinance.estimateGas.liquidateDelinquentAccount(
+				list[idx].address,
+				BigInt(convertValue.toString())
+			);
+			setGas(utils.formatEther((BigInt(estimateGas.toString()) * BigInt(gasPrice)).toString()));
+		} catch (e) {
+			console.error("getGasPrice ERROR:", e);
+		}
 	};
 
 	const getMaxAmount = (per = 1) => {
-		return Number(formatCurrency(maxBalance).replaceAll(",", "")) > Number(debt.replaceAll(",", ""))
-			? String(debt.replaceAll(",", "") * per)
+		return Number(formatCurrency(maxBalance).replaceAll(",", "")) > Number(sumCollateral)
+			? String(Number(sumCollateral) * per)
 			: String(formatCurrency(maxBalance).replaceAll(",", "") * per);
+
+		// return Number(formatCurrency(maxBalance).replaceAll(",", "")) > Number(debt.replaceAll(",", ""))
+		// 	? String(debt.replaceAll(",", "") * per)
+		// 	: String(formatCurrency(maxBalance).replaceAll(",", "") * per);
 	};
 
 	useEffect(() => {
-		dispatch(setLoading({ name: "liquidation", value: true }));
 		sumCollateralHandler();
 		getGasPrice();
-		dispatch(setLoading({ name: "liquidation", value: false }));
 	}, []);
 
 	useEffect(() => {
-		dispatch(setLoading({ name: "liquidation", value: true }));
 		getProfit();
-		dispatch(setLoading({ name: "liquidation", value: false }));
 	}, [value]);
 
 	useEffect(() => {
@@ -103,7 +92,14 @@ const TakeModal = ({ idx, address, list, dispatch, contracts, debt, collateral, 
 				<InputBox>
 					<SubIndicator>
 						<span>{`Available: ${formatCurrency(maxBalance)}`}</span>
-						<span>{`Gas Fee: ${gas}`}</span>
+						{gas ? (
+							<span>{`Gas Fee: ${gas}`}</span>
+						) : (
+							<span style={{ display: "flex" }}>
+								<span>Gas Fee:</span>
+								<SmallLoadingSpinner />
+							</span>
+						)}
 					</SubIndicator>
 					<img src={`/images/currencies/pUSD.png`} alt="pUSD" />
 					<TakeInput
@@ -155,12 +151,25 @@ const TakeModal = ({ idx, address, list, dispatch, contracts, debt, collateral, 
 						<ContentBox>
 							<span className="title">{`Estimate Profit`}</span>
 							<span className="content">
-								<span>{`${value === "0" ? "0" : profit} USD`}</span>
+								{profit ? (
+									<span>{`${value === "0" ? "0" : profit} USD`}</span>
+								) : (
+									<span style={{ display: "flex" }}>
+										<SmallLoadingSpinner /> USD
+									</span>
+								)}
 							</span>
 						</ContentBox>
 					</div>
 					<ContentBox>
-						<span className="title">{`Collateral ( $ ${sumCollateral} )`}</span>
+						{sumCollateral ? (
+							<span className="title">{`Collateral ( $ ${sumCollateral} )`}</span>
+						) : (
+							<span className="title" style={{ display: "flex" }}>
+								Collateral ( $ <SmallLoadingSpinner /> )
+							</span>
+						)}
+
 						<span className="content">
 							{collateral.map((item) => {
 								return (
@@ -180,15 +189,7 @@ const TakeModal = ({ idx, address, list, dispatch, contracts, debt, collateral, 
 					</ContentBox>
 				</ContentSection>
 
-				<SubmitBtn
-					onClick={() =>
-						maxBalance < debt
-							? onMouseOverHandler(value, debt)
-							: getTake(value, idx, address, list, dispatch, contracts, balances, toggleModal)
-					}
-				>
-					TAKE
-				</SubmitBtn>
+				<SubmitBtn onClick={() => getTake(value, idx, address, list, dispatch, contracts, balances, toggleModal)}>TAKE</SubmitBtn>
 			</Area>
 		</TakeModalItem>
 	);
@@ -363,6 +364,24 @@ const SubmitBtn = styled.button`
 		transition: 0.2s ease-in-out;
 		margin-top: 2.5px;
 		box-shadow: none;
+	}
+`;
+
+const SmallLoadingSpinner = styled.div`
+	width: 10px;
+	height: 10px;
+	border: 2px solid #262a3c;
+	border-radius: 50%;
+	border-top-color: #4182f0;
+	border-left-color: #4182f0;
+	border-right-color: #4182f0;
+	margin: 0 10px;
+	animation: spin 0.8s infinite ease-in-out;
+
+	@keyframes spin {
+		to {
+			transform: rotate(1turn);
+		}
 	}
 `;
 

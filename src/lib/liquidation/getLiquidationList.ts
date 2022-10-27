@@ -1,5 +1,4 @@
 import { contracts } from "lib/contract";
-import axios from "axios";
 
 import { setLoading } from "config/reducers/loading";
 import { updateList } from "config/reducers/liquidation";
@@ -22,15 +21,13 @@ export const getLiquidationList = async (dispatch, networkId = 1287) => {
 	dispatch(setLoading({ name: "liquidation", value: true }));
 	const { PeriFinance, Liquidations } = contracts as any;
 
-	// ! update query network arguments
 	const query = `query {
-    liquidationTargets(network: "${SUPPORTED_NETWORKS[networkId].toLowerCase()}") {
+    liquidationTargets(network: "${SUPPORTED_NETWORKS[networkId].toUpperCase()}") {
       address
     }
   }`;
 
-	// ! endpoint true === live endpoint, false === test endpoint
-	await fetch(false ? "https://dex-api.peri.finance/api/v1/" : "http://localhost:4000", {
+	await fetch(true ? "https://dex-api.peri.finance/" : "http://localhost:4000", {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
 		body: JSON.stringify({ query }),

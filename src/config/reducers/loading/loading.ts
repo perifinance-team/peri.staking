@@ -16,6 +16,7 @@ const initialState: Loading = {
 		amountsToFitClaimable: false,
 		liquidation: false,
 		escrow: false,
+		take: false,
 	},
 };
 

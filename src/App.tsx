@@ -105,7 +105,6 @@ const App = () => {
 						}
 					},
 					network: async (network) => {
-						console.log("network", network);
 						if (network) {
 							if (SUPPORTED_NETWORKS[network]) {
 								contracts.init(network);
@@ -154,7 +153,7 @@ const App = () => {
 	useEffect(() => {
 		if (transaction.hash) {
 			const getState = async () => {
-				await contracts.provider.once(transaction.hash, async (transactionState) => {
+				await contracts.provider.once(transaction.hash, async (transactionState: any) => {
 					if (transactionState.status !== 1) {
 						NotificationManager.remove(NotificationManager.listNotify[0]);
 						NotificationManager.warning(`${transaction.type} error`, "ERROR");
@@ -166,11 +165,14 @@ const App = () => {
 					}
 				});
 			};
+
 			getState();
 
 			NotificationManager.info(transaction.message, "In progress", 0);
+			// setTimeout(() => NotificationManager.remove(NotificationManager.listNotify[0]), 3000);
 		}
-		// eslint-disable-next-line
+
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [transaction]);
 
 	useEffect(() => {

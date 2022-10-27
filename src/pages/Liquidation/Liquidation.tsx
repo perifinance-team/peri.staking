@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import styled from "styled-components";
 
@@ -13,44 +13,6 @@ import { StyledTHeader, StyledTBody, Row, Cell, BorderRow } from "components/Tab
 import { H4 } from "components/heading";
 import TakeModal from "components/TakeModal";
 import { updateList } from "config/reducers/liquidation";
-import { utils } from "ethers";
-import { getBalance } from "lib/balance";
-
-// ! test handler
-
-const testHandler = async (address: string) => {
-	const { PeriFinance } = contracts as any;
-
-	console.log("TEST console", "address", address);
-	const debt = BigInt(await PeriFinance.debtBalanceOf(address, utils.formatBytes32String("pUSD")));
-	console.log("TEST console", "debt", formatCurrency(debt));
-	// const daiKey = utils.formatBytes32String("DAI");
-	// const usdcKey = utils.formatBytes32String("USDC");
-
-	const liquidatorPUSD = await getBalance("0x1D4687938E579AdD85040eFC2a485389F4C4Eb64", "PynthpUSD", 18);
-	console.log("TEST console", "liquidatorPUSD", formatCurrency(liquidatorPUSD));
-
-	const peri = async () => {
-		return await PeriFinance.collateral(address);
-	};
-
-	// await peri().then((el) => console.log("TEST console", "PERI", el.toString()));
-	const strPeri = await peri();
-	console.log("TEST console", "peri", formatCurrency(strPeri.toString()));
-
-	// const USDC = async () => {
-	// 	return await contracts.ExternalTokenStakeManager.stakedAmountOf(address, usdcKey, usdcKey);
-	// };
-
-	// await USDC().then((el) => console.log("test console", "USDC", el.toString()));
-
-	// const DAI = async () => {
-	// 	return await contracts.ExternalTokenStakeManager.stakedAmountOf(address, daiKey, daiKey);
-	// };
-	// await DAI().then((el) => console.log("test console", "DAI", el.toString()));
-
-	// console.log("test console", "debt", debt);
-};
 
 const Liquidation = () => {
 	const dispatch = useDispatch();
@@ -95,8 +57,9 @@ const Liquidation = () => {
 		(async () => {
 			return await getLiquidationData(true);
 		})();
-		// eslint-disable-next-line
-	}, [address, networkId, transaction]);
+
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [address, transaction, networkId]);
 
 	return (
 		<Container>
@@ -160,13 +123,6 @@ const Liquidation = () => {
 										</TakeBtn>
 									)}
 
-									{/* TEST BTN */}
-									<div
-										style={{ width: "3px", height: "3px", color: "white", cursor: "pointer" }}
-										onClick={() => testHandler(el.address)}
-									>
-										TEST Btn
-									</div>
 									{el.toggle && (
 										<TakeModal
 											idx={idx}
@@ -247,7 +203,7 @@ const TakeBtn = styled.button<ITakeBtn>`
 	outline: none;
 	border: none;
 	background: #505050;
-	filter: ${(props) => props.toggle && "brightness(65%)"};
+	/* filter: ${(props) => props.toggle && "brightness(65%)"}; */
 	color: white;
 	font-weight: bold;
 	width: 5.5rem;
