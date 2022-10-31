@@ -6,23 +6,14 @@ const ratioToPer = (value) => {
 	return ((BigInt(Math.pow(10, 18).toString()) * 100n) / value).toString();
 };
 
-export const connectContract = async (
-	address: string,
-	PeriFinance: any,
-	Liquidations: any,
-	contracts: any
-) => {
-	const debt = BigInt(
-		await PeriFinance.debtBalanceOf(address, utils.formatBytes32String("pUSD"))
-	);
+export const connectContract = async (address: string, PeriFinance: any, Liquidations: any, contracts: any) => {
+	const debt = BigInt(await PeriFinance.debtBalanceOf(address, utils.formatBytes32String("pUSD")));
 
 	if (debt === 0n || formatCurrency(debt) === "0") {
 		return false;
 	}
 
-	const cRatio = BigInt(
-		(await PeriFinance.collateralisationRatio(address)).toString()
-	);
+	const cRatio = BigInt((await PeriFinance.collateralisationRatio(address)).toString());
 
 	const daiKey = utils.formatBytes32String("DAI");
 	const usdcKey = utils.formatBytes32String("USDC");
@@ -34,18 +25,10 @@ export const connectContract = async (
 	};
 
 	const tempUSDC = async () => {
-		return await contracts.ExternalTokenStakeManager.stakedAmountOf(
-			address,
-			usdcKey,
-			usdcKey
-		);
+		return await contracts.ExternalTokenStakeManager.stakedAmountOf(address, usdcKey, usdcKey);
 	};
 	const tempDAI = async () => {
-		return await contracts.ExternalTokenStakeManager.stakedAmountOf(
-			address,
-			daiKey,
-			daiKey
-		);
+		return await contracts.ExternalTokenStakeManager.stakedAmountOf(address, daiKey, daiKey);
 	};
 
 	collateral.pUSD = await tempPUSD();
@@ -61,13 +44,10 @@ export const connectContract = async (
 	}
 
 	const status = async () => {
-		if (
-			(await Liquidations.isOpenForLiquidation(address)) &&
-			Number(ratioToPer(cRatio)) <= 150
-		) {
+		if ((await Liquidations.isOpenForLiquidation(address)) && Number(ratioToPer(cRatio)) <= 150) {
 			return 0;
 		} else if (false) {
-			// todo taken
+			// ? taken. Syntax missing from existing business logic
 			return 1;
 		} else {
 			return 2;
@@ -86,5 +66,6 @@ export const connectContract = async (
 		],
 		status: resultData,
 		address: address,
+		toggle: false,
 	};
 };

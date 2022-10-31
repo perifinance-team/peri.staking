@@ -30,11 +30,8 @@ import Loading from "./screens/Loading";
 import Main from "./screens/Main";
 import "./App.css";
 
-// import {getDebts} from 'lib/balance/getDebts'
-
 const App = () => {
 	const { address, networkId } = useSelector((state: RootState) => state.wallet);
-
 	const { balances } = useSelector((state: RootState) => state.balances);
 	const transaction = useSelector((state: RootState) => state.transaction);
 
@@ -47,8 +44,6 @@ const App = () => {
 	const [onboardInit, setOnboardInit] = useState(false);
 
 	const { Liquidations } = contracts as any;
-
-	//     const [userAddress, setUserAddress] = useState('test');
 
 	const getSystemData = useCallback(
 		async (isLoading) => {
@@ -63,13 +58,7 @@ const App = () => {
 
 			if (address) {
 				const [balancesData, vestable, stateLiquid, timestamp] = await Promise.all([
-					getBalances(
-						address,
-						balances,
-						ratios.exchangeRates,
-						ratios.ratio.targetCRatio,
-						ratios.ratio.currentCRatio
-					),
+					getBalances(address, balances, ratios.exchangeRates, ratios.ratio.targetCRatio, ratios.ratio.currentCRatio),
 					getVestable(address),
 					await Liquidations.isOpenForLiquidation(address),
 					await getTimeStamp(address, Liquidations),
@@ -89,6 +78,7 @@ const App = () => {
 
 	const setOnboard = async () => {
 		let networkId = Number(process.env.REACT_APP_DEFAULT_NETWORK_ID);
+
 		contracts.init(networkId);
 		dispatch(updateNetwork({ networkId: networkId }));
 		try {
@@ -163,7 +153,7 @@ const App = () => {
 	useEffect(() => {
 		if (transaction.hash) {
 			const getState = async () => {
-				await contracts.provider.once(transaction.hash, async (transactionState) => {
+				await contracts.provider.once(transaction.hash, async (transactionState: any) => {
 					if (transactionState.status !== 1) {
 						NotificationManager.remove(NotificationManager.listNotify[0]);
 						NotificationManager.warning(`${transaction.type} error`, "ERROR");
@@ -175,11 +165,14 @@ const App = () => {
 					}
 				});
 			};
+
 			getState();
 
 			NotificationManager.info(transaction.message, "In progress", 0);
+			// setTimeout(() => NotificationManager.remove(NotificationManager.listNotify[0]), 3000);
 		}
-		// eslint-disable-next-line
+
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [transaction]);
 
 	useEffect(() => {

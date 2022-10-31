@@ -6,5 +6,6 @@ export const SUPPORTED_NETWORKS_CONFIRM = {
 	42: 12,
 	97: 12,
 	80001: 12,
-	1287: 12
+	1287: 12,
+	1338: 12,
 };
