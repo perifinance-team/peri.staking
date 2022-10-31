@@ -35,7 +35,7 @@ const TakeModal = ({ idx, address, list, dispatch, contracts, debt, collateral, 
 	const [viewValue, setViewValue] = useState([]);
 
 	// ! test 3225000000000000000000n 60000000000000000n
-	const maxBalance = true ? balances.pUSD.transferable : 3225000000000000000000n;
+	const maxBalance = false ? balances.pUSD.transferable : 322500000000000000n;
 	const modalRef = useRef<any>();
 	const closeModalHandler = (e) => {
 		if (list[idx].toggle && !modalRef.current?.contains(e.target)) toggleModal(idx);
@@ -132,6 +132,11 @@ const TakeModal = ({ idx, address, list, dispatch, contracts, debt, collateral, 
 		}
 	};
 
+	const onChangeTakeInput = (value) => {
+		const available = Number(formatCurrency(maxBalance).replaceAll(",", ""));
+		available >= Number(value) && setValue(value);
+	};
+
 	useEffect(() => {
 		sumCollateralHandler();
 		getGasPrice();
@@ -173,7 +178,7 @@ const TakeModal = ({ idx, address, list, dispatch, contracts, debt, collateral, 
 						step="0.01"
 						value={value === "0" ? "" : value}
 						autoFocus={true}
-						onChange={(e) => setValue(e.target.value)}
+						onChange={(e) => onChangeTakeInput(e.target.value)}
 					/>
 					<MaxBtn onClick={() => setValue(getMaxAmount())}>max</MaxBtn>
 				</InputBox>
@@ -227,8 +232,6 @@ const TakeModal = ({ idx, address, list, dispatch, contracts, debt, collateral, 
 					<div style={{ display: "flex" }}>
 						<ContentBox>
 							{sumCollateral ? (
-								// available < 실제로 가져가는 양 ? available : 실제로 가져가는 양
-
 								<span className="title">{`Take away ( $ ${
 									Number(formatCurrency(maxBalance).replaceAll(",", "")) < viewValue[0] * 0.08
 										? decimalSplit(formatCurrency(maxBalance).replaceAll(",", ""))
