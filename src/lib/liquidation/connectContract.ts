@@ -35,14 +35,13 @@ export const connectContract = async (address: string, PeriFinance: any, Liquida
 	collateral.USDC = await tempUSDC();
 	collateral.DAI = await tempDAI();
 
-	// ! temp close
-	// if (
-	// 	formatCurrency(collateral.pUSD) === "0" &&
-	// 	formatCurrency(collateral.USDC) === "0" &&
-	// 	formatCurrency(collateral.DAI) === "0"
-	// ) {
-	// 	return false;
-	// }
+	if (
+		formatCurrency(collateral.pUSD) === "0" &&
+		formatCurrency(collateral.USDC) === "0" &&
+		formatCurrency(collateral.DAI) === "0"
+	) {
+		return false;
+	}
 
 	const status = async () => {
 		if ((await Liquidations.isOpenForLiquidation(address)) && Number(ratioToPer(cRatio)) <= 150) {

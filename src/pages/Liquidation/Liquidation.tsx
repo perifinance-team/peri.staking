@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import styled from "styled-components";
 
@@ -53,6 +53,63 @@ const Liquidation = () => {
 		dispatch(updateList(updateListItems));
 	};
 
+	const [sortList, setSortList] = useState({ cRatio: false, debt: false, peri: false, dai: false, usdc: false });
+	const [selected, setSelected] = useState("Peri");
+	const [drop, setDrop] = useState(false);
+
+	const sortListHandler = (direction: boolean, flag: string) => {
+		console.log("direction", direction, flag);
+		// "asc", "desc";
+		if (flag === "Peri" || flag === "USDC" || flag === "DAI") {
+			let flagIdx = 0;
+			switch (flag) {
+				case "Peri":
+					flagIdx = 0;
+					break;
+				case "DAI":
+					flagIdx = 1;
+					break;
+				case "USDC":
+					flagIdx = 2;
+					break;
+				default:
+					break;
+			}
+
+			const updateListItems = direction
+				? list
+						.map((item) => item)
+						.sort(
+							(a, b) =>
+								Number(formatCurrency(b.collateral[flagIdx].value).replaceAll(",", "")) -
+								Number(formatCurrency(a.collateral[flagIdx].value).replaceAll(",", ""))
+						)
+				: list
+						.map((item) => item)
+						.sort(
+							(a, b) =>
+								Number(formatCurrency(a.collateral[flagIdx].value).replaceAll(",", "")) -
+								Number(formatCurrency(b.collateral[flagIdx].value).replaceAll(",", ""))
+						);
+
+			dispatch(updateList(updateListItems));
+		} else {
+			const updateListItems = direction
+				? list
+						.map((item) => item)
+						.sort(
+							(a, b) => Number(formatCurrency(b[flag]).replaceAll(",", "")) - Number(formatCurrency(a[flag]).replaceAll(",", ""))
+						)
+				: list
+						.map((item) => item)
+						.sort(
+							(a, b) => Number(formatCurrency(a[flag]).replaceAll(",", "")) - Number(formatCurrency(b[flag]).replaceAll(",", ""))
+						);
+
+			dispatch(updateList(updateListItems));
+		}
+	};
+
 	useEffect(() => {
 		(async () => {
 			return await getLiquidationData(true);
@@ -66,15 +123,95 @@ const Liquidation = () => {
 			<TableContainer style={{ overflowY: "hidden", maxHeight: "70vh" }}>
 				<StyledTHeader>
 					<Row>
-						<AmountCell>
-							<H4 weight={"b"}>C-ratio</H4>
+						<AmountCell
+							onClick={() => {
+								setSortList({ ...sortList, cRatio: !sortList.cRatio });
+								sortListHandler(sortList.cRatio, "cRatio");
+							}}
+							style={{ cursor: "pointer" }}
+						>
+							<H4 weight={"b"}>C-ratio {sortList.cRatio ? <span>&#9650;</span> : <span>&#9660;</span>}</H4>
+						</AmountCell>
+						<AmountCell
+							onClick={() => {
+								setSortList({ ...sortList, debt: !sortList.debt });
+								sortListHandler(sortList.debt, "debt");
+							}}
+							style={{ display: "flex", cursor: "pointer" }}
+						>
+							<H4 style={{ display: "flex" }} weight={"b"}>
+								Debt Amount {sortList.debt ? <span>&#9650;</span> : <span>&#9660;</span>}
+							</H4>
 						</AmountCell>
 						<AmountCell>
-							<H4 weight={"b"}>Debt Amount</H4>
-						</AmountCell>
-						<AmountCell>
-							<H4 weight={"b"} style={{ width: "30rem" }}>
+							<H4
+								weight={"b"}
+								style={{
+									display: "flex",
+									width: "30rem",
+									justifyContent: "center",
+									alignItems: "center",
+									position: "relative",
+									cursor: "pointer",
+								}}
+								onClick={() => {
+									const obj = {};
+									obj[selected.toLowerCase()] = !sortList[selected.toLowerCase()];
+									setSortList({ ...sortList, ...obj });
+									sortListHandler(
+										sortList[selected.toLowerCase()],
+										selected.toUpperCase() === "PERI" ? "Peri" : selected.toUpperCase()
+									);
+								}}
+							>
 								Collateral amount
+								{sortList[selected.toLowerCase()] ? <span>&#9650;</span> : <span>&#9660;</span>}
+								{!drop ? (
+									<SmallDropBox>
+										<img
+											src={`/images/currencies/${selected.toUpperCase()}.png`}
+											alt="PERI"
+											style={{ width: "17px", marginLeft: "6px" }}
+											onClick={() => setDrop(!drop)}
+										/>
+									</SmallDropBox>
+								) : (
+									<SmallDropBox>
+										<img
+											src={`/images/currencies/PERI.png`}
+											onClick={() => {
+												setSortList({ ...sortList, peri: !sortList.peri });
+												sortListHandler(sortList.peri, "Peri");
+												setSelected("Peri");
+												setDrop(!drop);
+											}}
+											alt="PERI"
+											style={{ width: "17px", marginLeft: "6px" }}
+										/>
+										<img
+											src={`/images/currencies/DAI.png`}
+											onClick={() => {
+												setSortList({ ...sortList, dai: !sortList.dai });
+												sortListHandler(sortList.dai, "DAI");
+												setSelected("DAI");
+												setDrop(!drop);
+											}}
+											alt="DAI"
+											style={{ width: "17px", marginLeft: "6px" }}
+										/>
+										<img
+											src={`/images/currencies/USDC.png`}
+											onClick={() => {
+												setSortList({ ...sortList, usdc: !sortList.usdc });
+												sortListHandler(sortList.usdc, "USDC");
+												setSelected("USDC");
+												setDrop(!drop);
+											}}
+											alt="USDC"
+											style={{ width: "17px", marginLeft: "6px" }}
+										/>
+									</SmallDropBox>
+								)}
 							</H4>
 						</AmountCell>
 						<AmountCell>
@@ -133,6 +270,7 @@ const Liquidation = () => {
 											debt={formatCurrency(el.debt)}
 											collateral={el.collateral}
 											toggleModal={(idx) => toggleModal(idx)}
+											cRatio={`${ratioToPer(el.cRatio)}%`}
 										></TakeModal>
 									)}
 								</AmountCell>
@@ -149,6 +287,10 @@ const AmountCell = styled(Cell)`
 	max-width: 100%;
 	display: flex;
 	justify-content: center;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 `;
 
 const Container = styled.div`
@@ -202,12 +344,36 @@ interface ITakeBtn {
 const TakeBtn = styled.button<ITakeBtn>`
 	outline: none;
 	border: none;
-	background: #505050;
+	border-radius: 14px;
+	background: #4182f0;
 	/* filter: ${(props) => props.toggle && "brightness(65%)"}; */
 	color: white;
 	font-weight: bold;
 	width: 5.5rem;
 	padding: 0.5rem 0;
+`;
+
+const SmallDropBox = styled.div`
+	display: flex;
+	width: fit-content;
+	padding: 5px 6px;
+	background: #252a3e;
+	border-radius: 13px;
+	margin-left: 5px;
+	position: absolute;
+	right: 10px;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+
+	img {
+		margin-right: 3px;
+		-webkit-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		user-select: none;
+	}
 `;
 
 export default Liquidation;
