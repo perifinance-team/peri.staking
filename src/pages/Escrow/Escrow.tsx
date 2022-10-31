@@ -3,18 +3,13 @@ import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { contracts } from "lib/contract";
 import { H4 } from "components/heading";
-import {
-	StyledTHeader,
-	StyledTBody,
-	Row,
-	Cell,
-	BorderRow,
-} from "components/Table";
+import { StyledTHeader, StyledTBody, Row, Cell, BorderRow } from "components/Table";
 import { NotificationManager } from "react-notifications";
 
 import { getEscrowList } from "lib/escrow";
 import { setLoading } from "config/reducers/loading";
 import { RootState } from "config/reducers";
+import { updateTransaction } from "config/reducers/transaction";
 
 interface IEntry {
 	amount: string;
@@ -26,9 +21,7 @@ interface IEntry {
 const Escrow = () => {
 	const dispatch = useDispatch();
 
-	const { address, networkId } = useSelector(
-		(state: RootState) => state.wallet
-	);
+	const { address, networkId } = useSelector((state: RootState) => state.wallet);
 
 	const { RewardEscrowV2 } = contracts as any;
 	const [escrowList, setEscrowList] = useState([]);
@@ -64,26 +57,43 @@ const Escrow = () => {
 			entry.toggle && idList.push(entry.id);
 		});
 
-		try {
-			const transaction = await contracts.signers.RewardEscrowV2.vest(idList);
+		if (0 < idList.length) {
+			try {
+				const transaction = await contracts.signers.RewardEscrowV2.vest(idList);
 
-			await contracts.provider.once(transaction.hash, (state) => {
-				if (state.status === 1) {
-					dispatch(setLoading({ name: "escrow", value: false }));
-					NotificationManager.success(`success`, "SUCCESS");
-				}
-			});
-		} catch (e) {
-			console.log("vesting error", e);
+				await contracts.provider.once(transaction.hash, async (state) => {
+					if (state.status === 1) {
+						// NotificationManager.success(`success`, "SUCCESS");
+						dispatch(
+							updateTransaction({
+								hash: transaction.hash,
+								message: `Vesting`,
+								type: "To My Wallet",
+							})
+						);
+						dispatch(setLoading({ name: "escrow", value: false }));
+					}
+				});
+			} catch (e) {
+				console.log("vesting error", e);
+				NotificationManager.success(``, "FAIL");
+				dispatch(setLoading({ name: "escrow", value: false }));
+			}
+		} else {
+			NotificationManager.warning(``, "FAIL");
 			dispatch(setLoading({ name: "escrow", value: false }));
 		}
+
+		await getEscrowListData(true);
 	};
 
 	const sumAmount = () => {
 		let result = 0;
 
 		escrowList.forEach((item) => {
-			result += Number(item.amount.replace(",", ""));
+			if (item.toggle) {
+				result += Number(item.amount.replace(",", ""));
+			}
 		});
 
 		return result.toFixed(2);
@@ -91,9 +101,7 @@ const Escrow = () => {
 
 	return (
 		<Container>
-			<span className="currentAmount">
-				Currently available amount: {sumAmount()}
-			</span>
+			<span className="currentAmount">Currently available amount: {sumAmount()}</span>
 			<TableContainer style={{ overflowY: "hidden", maxHeight: "70vh" }}>
 				<StyledTHeader>
 					<Row>
@@ -126,9 +134,7 @@ const Escrow = () => {
 								</AmountCell>
 								<AmountCell>
 									<Image>
-										<span
-											style={{ color: !item.toggle && "#505050" }}
-										>{`${item.amount}`}</span>
+										<span style={{ color: !item.toggle && "#505050" }}>{`${item.amount}`}</span>
 									</Image>
 								</AmountCell>
 								<AmountCell>
@@ -141,9 +147,7 @@ const Escrow = () => {
 					})}
 				</StyledTBody>
 			</TableContainer>
-			<EscrowBtn onClick={() => getEscrowHandler(contracts)}>
-				To My Wallet
-			</EscrowBtn>
+			<EscrowBtn onClick={() => getEscrowHandler(contracts)}>To My Wallet</EscrowBtn>
 		</Container>
 	);
 };

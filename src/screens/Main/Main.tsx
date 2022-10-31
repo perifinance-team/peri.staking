@@ -1,12 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 
-import {
-	HashRouter as Router,
-	Switch,
-	Route,
-	Redirect,
-} from "react-router-dom";
+import { HashRouter as Router, Switch, Route, Redirect } from "react-router-dom";
 
 import LeftAside from "screens/LeftAside";
 import RightAside from "screens/RightAside";
@@ -39,11 +34,7 @@ const Main = () => {
 									<Vesting></Vesting>
 								</Route>
 								<Route path="/liquidation">
-									{true ? (
-										<Redirect to="/stake" />
-									) : (
-										<Liquidation></Liquidation>
-									)}
+									<Liquidation></Liquidation>
 								</Route>
 								<Route path="/escrow">
 									<Escrow></Escrow>

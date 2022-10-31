@@ -2,21 +2,14 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 import { ThemeProvider } from "styled-components";
-import {
-	NotificationContainer,
-	NotificationManager,
-} from "react-notifications";
+import { NotificationContainer, NotificationManager } from "react-notifications";
 
 import { RootState } from "config/reducers";
 import { updateThemeStyles } from "config/reducers/theme";
 import { updateRatio } from "config/reducers/rates";
 import { updateExchangeRates } from "config/reducers/rates";
 import { updateVestable } from "config/reducers/vest";
-import {
-	updateAddress,
-	updateNetwork,
-	updateIsConnect,
-} from "config/reducers/wallet";
+import { updateAddress, updateNetwork, updateIsConnect } from "config/reducers/wallet";
 import { updateNetworkFee } from "config/reducers/networkFee";
 import { resetTransaction } from "config/reducers/transaction";
 import { setLoading } from "config/reducers/loading";
@@ -25,33 +18,24 @@ import { SUPPORTED_NETWORKS } from "lib/network";
 
 import { clearWallet, clearBalances } from "config/reducers/wallet";
 import { clearCRatio } from "config/reducers/rates";
-
+import { toggleLiquid, updateTimestamp } from "config/reducers/liquidation";
 import { initCurrency } from "config/reducers/wallet";
 import { InitOnboard, onboard } from "lib/onboard/onboard";
 import { contracts } from "lib/contract";
 import { getVestable } from "lib/vest";
 import { getBalances } from "lib/balance";
 import { getRatios } from "lib/rates";
+import { getTimeStamp } from "lib/liquidation";
 import Loading from "./screens/Loading";
 import Main from "./screens/Main";
 import "./App.css";
 
-import { toggleLiquid, updateTimestamp } from "config/reducers/liquidation";
-import { getTimeStamp } from "lib/liquidation";
-
-// import {getDebts} from 'lib/balance/getDebts'
-
 const App = () => {
-	const { address, networkId } = useSelector(
-		(state: RootState) => state.wallet
-	);
-
+	const { address, networkId } = useSelector((state: RootState) => state.wallet);
 	const { balances } = useSelector((state: RootState) => state.balances);
 	const transaction = useSelector((state: RootState) => state.transaction);
 
-	const themeStyles = useSelector(
-		(state: RootState) => state.themeStyles.styles
-	);
+	const themeStyles = useSelector((state: RootState) => state.themeStyles.styles);
 	const themeState = useSelector((state: RootState) => state.theme.theme);
 
 	const dispatch = useDispatch();
@@ -61,16 +45,11 @@ const App = () => {
 
 	const { Liquidations } = contracts as any;
 
-	//     const [userAddress, setUserAddress] = useState('test');
-
 	const getSystemData = useCallback(
 		async (isLoading) => {
 			dispatch(setLoading({ name: "balance", value: isLoading }));
 
-			const [ratios, gasPrice] = await Promise.all([
-				getRatios(address),
-				getNetworkFee(networkId),
-			]);
+			const [ratios, gasPrice] = await Promise.all([getRatios(address), getNetworkFee(networkId)]);
 
 			dispatch(updateRatio(ratios.ratio));
 			dispatch(updateExchangeRates(ratios.exchangeRates));
@@ -78,19 +57,12 @@ const App = () => {
 			dispatch(updateNetworkFee({ gasPrice }));
 
 			if (address) {
-				const [balancesData, vestable, stateLiquid, timestamp] =
-					await Promise.all([
-						getBalances(
-							address,
-							balances,
-							ratios.exchangeRates,
-							ratios.ratio.targetCRatio,
-							ratios.ratio.currentCRatio
-						),
-						getVestable(address),
-						await Liquidations.isOpenForLiquidation(address),
-						await getTimeStamp(address, Liquidations),
-					]);
+				const [balancesData, vestable, stateLiquid, timestamp] = await Promise.all([
+					getBalances(address, balances, ratios.exchangeRates, ratios.ratio.targetCRatio, ratios.ratio.currentCRatio),
+					getVestable(address),
+					await Liquidations.isOpenForLiquidation(address),
+					await getTimeStamp(address, Liquidations),
+				]);
 
 				dispatch(updateTimestamp(timestamp));
 				dispatch(initCurrency(balancesData));
@@ -106,6 +78,7 @@ const App = () => {
 
 	const setOnboard = async () => {
 		let networkId = Number(process.env.REACT_APP_DEFAULT_NETWORK_ID);
+
 		contracts.init(networkId);
 		dispatch(updateNetwork({ networkId: networkId }));
 		try {
@@ -180,28 +153,26 @@ const App = () => {
 	useEffect(() => {
 		if (transaction.hash) {
 			const getState = async () => {
-				await contracts.provider.once(
-					transaction.hash,
-					async (transactionState) => {
-						if (transactionState.status !== 1) {
-							NotificationManager.remove(NotificationManager.listNotify[0]);
-							NotificationManager.warning(`${transaction.type} error`, "ERROR");
-						} else {
-							await getSystemData(true);
-							NotificationManager.remove(NotificationManager.listNotify[0]);
-							NotificationManager.success(
-								`${transaction.type} success`,
-								"SUCCESS"
-							);
-							dispatch(resetTransaction());
-						}
+				await contracts.provider.once(transaction.hash, async (transactionState: any) => {
+					if (transactionState.status !== 1) {
+						NotificationManager.remove(NotificationManager.listNotify[0]);
+						NotificationManager.warning(`${transaction.type} error`, "ERROR");
+					} else {
+						await getSystemData(true);
+						NotificationManager.remove(NotificationManager.listNotify[0]);
+						NotificationManager.success(`${transaction.type} success`, "SUCCESS");
+						dispatch(resetTransaction());
 					}
-				);
+				});
 			};
+
 			getState();
+
 			NotificationManager.info(transaction.message, "In progress", 0);
+			// setTimeout(() => NotificationManager.remove(NotificationManager.listNotify[0]), 3000);
 		}
-		// eslint-disable-next-line
+
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [transaction]);
 
 	useEffect(() => {
