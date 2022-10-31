@@ -137,10 +137,10 @@ const Liquidation = () => {
 								setSortList({ ...sortList, debt: !sortList.debt });
 								sortListHandler(sortList.debt, "debt");
 							}}
-							style={{ display: "flex", cursor: "pointer" }}
+							style={{ display: "flex", cursor: "pointer", justifyContent: "center" }}
 						>
-							<H4 style={{ display: "flex" }} weight={"b"}>
-								Debt Amount {sortList.debt ? <span>&#9650;</span> : <span>&#9660;</span>}
+							<H4 style={{ display: "flex", justifyContent: "center" }} weight={"b"}>
+								Debt {sortList.debt ? <span>&#9650;</span> : <span>&#9660;</span>}
 							</H4>
 						</AmountCell>
 						<AmountCell>
@@ -164,7 +164,7 @@ const Liquidation = () => {
 									);
 								}}
 							>
-								Collateral amount
+								Collateral
 								{sortList[selected.toLowerCase()] ? <span>&#9650;</span> : <span>&#9660;</span>}
 								{!drop ? (
 									<SmallDropBox>
