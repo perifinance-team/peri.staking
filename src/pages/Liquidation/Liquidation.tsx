@@ -53,12 +53,11 @@ const Liquidation = () => {
 		dispatch(updateList(updateListItems));
 	};
 
-	const [sortList, setSortList] = useState({ cRatio: false, debt: false, peri: false, dai: false, usdc: false });
+	const [sortList, setSortList] = useState<any>({ cRatio: false, debt: false, peri: false, dai: false, usdc: false });
 	const [selected, setSelected] = useState("Peri");
 	const [drop, setDrop] = useState(false);
 
 	const sortListHandler = (direction: boolean, flag: string) => {
-		console.log("direction", direction, flag);
 		// "asc", "desc";
 		if (flag === "Peri" || flag === "USDC" || flag === "DAI") {
 			let flagIdx = 0;
@@ -125,7 +124,13 @@ const Liquidation = () => {
 					<Row>
 						<AmountCell
 							onClick={() => {
-								setSortList({ ...sortList, cRatio: !sortList.cRatio });
+								setSortList({
+									debt: sortList.cRatio,
+									peri: sortList.cRatio,
+									dai: sortList.cRatio,
+									usdc: sortList.cRatio,
+									cRatio: !sortList.cRatio,
+								});
 								sortListHandler(sortList.cRatio, "cRatio");
 							}}
 							style={{ cursor: "pointer" }}
@@ -134,7 +139,13 @@ const Liquidation = () => {
 						</AmountCell>
 						<AmountCell
 							onClick={() => {
-								setSortList({ ...sortList, debt: !sortList.debt });
+								setSortList({
+									cRatio: sortList.debt,
+									peri: sortList.debt,
+									dai: sortList.debt,
+									usdc: sortList.debt,
+									debt: !sortList.debt,
+								});
 								sortListHandler(sortList.debt, "debt");
 							}}
 							style={{ display: "flex", cursor: "pointer", justifyContent: "center" }}
@@ -157,7 +168,7 @@ const Liquidation = () => {
 								onClick={() => {
 									const obj = {};
 									obj[selected.toLowerCase()] = !sortList[selected.toLowerCase()];
-									setSortList({ ...sortList, ...obj });
+									setSortList({ cRatio: sortList[selected.toLowerCase()], debt: sortList[selected.toLowerCase()], ...obj });
 									sortListHandler(
 										sortList[selected.toLowerCase()],
 										selected.toUpperCase() === "PERI" ? "Peri" : selected.toUpperCase()
