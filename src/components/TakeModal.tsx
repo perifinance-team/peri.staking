@@ -7,7 +7,6 @@ import { RootState } from "config/reducers";
 import { getTake } from "lib/liquidation/getTake";
 import { formatCurrency } from "lib/format";
 import { utils } from "ethers";
-import axios from "axios";
 
 const decimalSplit = (value: string | number) => {
 	if (!value) return "0";
@@ -34,8 +33,7 @@ const TakeModal = ({ idx, address, list, dispatch, contracts, debt, collateral, 
 	const [collateralList, setCollateralList] = useState({ peri: "0", dai: "0", usdc: "0" });
 	const [viewValue, setViewValue] = useState([]);
 
-	// ! test 3225000000000000000000n 60000000000000000n
-	const maxBalance = false ? balances.pUSD.transferable : 322500000000000000n;
+	const maxBalance = balances.pUSD.transferable;
 	const modalRef = useRef<any>();
 	const closeModalHandler = (e) => {
 		if (list[idx].toggle && !modalRef.current?.contains(e.target)) toggleModal(idx);
