@@ -50,6 +50,11 @@ export const H4 = styled.h4<Paragraph>`
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
+
+	&:hover {
+		font-weight: 1000;
+		transition: 2s;
+	}
 `;
 
 export const H5 = styled.h5<Paragraph>`

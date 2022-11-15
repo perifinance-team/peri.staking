@@ -5,6 +5,7 @@ import { updateList } from "config/reducers/liquidation";
 
 import { connectContract } from "./connectContract";
 import { SUPPORTED_NETWORKS } from "lib/network";
+import { formatCurrency } from "lib/format";
 
 let liquidationList = [];
 
@@ -13,8 +14,14 @@ const sortList = (list) => {
 	const close = [];
 
 	list.forEach((item) => (item.status === 0 ? open.push(item) : close.push(item)));
+	console.log("open", open);
+	const sortOpen = open
+		.map((item) => item)
+		.sort(
+			(a, b) => Number(formatCurrency(a["cRatio"]).replaceAll(",", "")) - Number(formatCurrency(b["cRatio"]).replaceAll(",", ""))
+		);
 
-	return [...open, ...close];
+	return [...sortOpen, ...close];
 };
 
 export const getLiquidationList = async (dispatch, networkId = 1287) => {

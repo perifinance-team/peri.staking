@@ -53,7 +53,8 @@ const Liquidation = () => {
 		dispatch(updateList(updateListItems));
 	};
 
-	const [sortList, setSortList] = useState<any>({ cRatio: false, debt: false, peri: false, dai: false, usdc: false });
+	const [sortList, setSortList] = useState({ cRatio: true, debt: false, peri: false, dai: false, usdc: false });
+	const [neutral, setNeutral] = useState(1);
 	const [selected, setSelected] = useState("Peri");
 	const [drop, setDrop] = useState(false);
 
@@ -124,34 +125,26 @@ const Liquidation = () => {
 					<Row>
 						<AmountCell
 							onClick={() => {
-								setSortList({
-									debt: sortList.cRatio,
-									peri: sortList.cRatio,
-									dai: sortList.cRatio,
-									usdc: sortList.cRatio,
-									cRatio: !sortList.cRatio,
-								});
+								setSortList({ ...sortList, cRatio: !sortList.cRatio });
 								sortListHandler(sortList.cRatio, "cRatio");
+								setNeutral(1);
 							}}
 							style={{ cursor: "pointer" }}
 						>
-							<H4 weight={"b"}>C-ratio {sortList.cRatio ? <span>&#9650;</span> : <span>&#9660;</span>}</H4>
+							<H4 weight={"b"}>
+								C-ratio {neutral === 1 ? !sortList.cRatio ? <span>&#9650;</span> : <span>&#9660;</span> : " -"}
+							</H4>
 						</AmountCell>
 						<AmountCell
 							onClick={() => {
-								setSortList({
-									cRatio: sortList.debt,
-									peri: sortList.debt,
-									dai: sortList.debt,
-									usdc: sortList.debt,
-									debt: !sortList.debt,
-								});
+								setSortList({ ...sortList, debt: !sortList.debt });
 								sortListHandler(sortList.debt, "debt");
+								setNeutral(2);
 							}}
 							style={{ display: "flex", cursor: "pointer", justifyContent: "center" }}
 						>
 							<H4 style={{ display: "flex", justifyContent: "center" }} weight={"b"}>
-								Debt {sortList.debt ? <span>&#9650;</span> : <span>&#9660;</span>}
+								Debt {neutral === 2 ? sortList.debt ? <span>&#9650;</span> : <span>&#9660;</span> : " -"}
 							</H4>
 						</AmountCell>
 						<AmountCell>
@@ -168,15 +161,16 @@ const Liquidation = () => {
 								onClick={() => {
 									const obj = {};
 									obj[selected.toLowerCase()] = !sortList[selected.toLowerCase()];
-									setSortList({ cRatio: sortList[selected.toLowerCase()], debt: sortList[selected.toLowerCase()], ...obj });
+									setSortList({ ...sortList, ...obj });
 									sortListHandler(
 										sortList[selected.toLowerCase()],
 										selected.toUpperCase() === "PERI" ? "Peri" : selected.toUpperCase()
 									);
+									setNeutral(3);
 								}}
 							>
 								Collateral
-								{sortList[selected.toLowerCase()] ? <span>&#9650;</span> : <span>&#9660;</span>}
+								{neutral === 3 ? sortList[selected.toLowerCase()] ? <span>&#9650;</span> : <span>&#9660;</span> : " -"}
 								{!drop ? (
 									<SmallDropBox>
 										<img
