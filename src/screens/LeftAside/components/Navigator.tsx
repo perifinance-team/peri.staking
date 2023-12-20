@@ -71,8 +71,8 @@ const Logo = () => {
 				let childrenLink;
 				if (item.children?.length > 0) {
 					childrenLink = item.children.map((childrenItem) => {
-						if (networkId === 1285 && childrenItem.name === "earn") return <></>;
-						else
+						if (networkId !== 1285 || childrenItem.name !== "earn") /* return <></>; */
+						/* else */
 							return (
 								<ChildrenLink to={`${item.to}${childrenItem.to}`} key={childrenItem.name}>
 									{childrenItem.name.toLocaleUpperCase()}
@@ -80,18 +80,18 @@ const Logo = () => {
 							);
 					});
 				}
-				if (item.name === "vesting" && vestable === false) {
-					return <></>;
-				} else {
-					return (
+				if (item.name !== "vesting" || vestable !== false) {
+					/* return <></>; */
+				/*}  else { */
+					return ( 
 						<ParentLinkContainer key={item.name}>
-							<ParentLink to={item.to}>{item.name.toLocaleUpperCase()}</ParentLink>
+							<ParentLink to={item.to} key={item.name}>{item.name.toLocaleUpperCase()}</ParentLink>
 							{item.active && childrenLink && (
 								<ChildrenLinkContainer>{childrenLink}</ChildrenLinkContainer>
 							)}
-						</ParentLinkContainer>
+						</ParentLinkContainer>  
 					);
-				}
+				} 
 			})}
 		</Container>
 	);

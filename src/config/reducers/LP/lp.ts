@@ -1,25 +1,23 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 export type AppSliceState = {
-	isLPConnect: boolean;
+    isLPConnect: boolean;
 };
 
 const initialState: AppSliceState = {
-	isLPConnect: false
+    isLPConnect: false,
 };
 
 export const lpSlice = createSlice({
-	name: 'lp',
-	initialState,
-	reducers: {
-		setLPConnect: (state, actions) => {
-			state.isLPConnect = actions.payload;
-		},
-	},
+    name: "lp",
+    initialState,
+    reducers: {
+        setLPConnect: (state, actions) => {
+            return { ...state, isLPConnect: actions.payload };
+        },
+    },
 });
 
-export const {
-	setLPConnect,
-} = lpSlice.actions;
+export const { setLPConnect } = lpSlice.actions;
 
 export default lpSlice.reducer;

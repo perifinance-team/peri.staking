@@ -60,7 +60,7 @@ const StakingStatus = () => {
       <Container>
         <Image></Image>
         <Box>
-          <H4 color={"fourth"} weight={"sb"}>
+          <H4 color={"fourth"} $weight={"sb"}>
             Staked
           </H4>
         </Box>
@@ -73,10 +73,10 @@ const StakingStatus = () => {
           <img src={`/images/currencies/PERI.png`} alt="lp"></img>
         </Image>
         <Box>
-          <H4 align={"right"}> {formatCurrency(PERIStatus.staked)}</H4>
+          <H4 $align={"right"}> {formatCurrency(PERIStatus.staked)}</H4>
         </Box>
         <Box>
-          <H4 align={"right"}>{formatCurrency(PERIStatus.stakeable)}</H4>
+          <H4 $align={"right"}>{formatCurrency(PERIStatus.stakeable)}</H4>
         </Box>
       </Container>
       <Container>
@@ -84,10 +84,10 @@ const StakingStatus = () => {
           <img src={`/images/currencies/USDC.png`} alt="lp"></img>
         </Image>
         <Box>
-          <H4 align={"right"}>{formatCurrency(USDCStatus.staked)}</H4>
+          <H4 $align={"right"}>{formatCurrency(USDCStatus.staked)}</H4>
         </Box>
         <Box>
-          <H4 align={"right"}>{formatCurrency(USDCStatus.stakeable)}</H4>
+          <H4 $align={"right"}>{formatCurrency(USDCStatus.stakeable)}</H4>
         </Box>
       </Container>
       <Container>
@@ -95,10 +95,10 @@ const StakingStatus = () => {
           <img src={`/images/currencies/DAI.png`} alt="lp"></img>
         </Image>
         <Box>
-          <H4 align={"right"}>{formatCurrency(DAIStatus.staked)}</H4>
+          <H4 $align={"right"}>{formatCurrency(DAIStatus.staked)}</H4>
         </Box>
         <Box>
-          <H4 align={"right"}>{formatCurrency(DAIStatus.stakeable)}</H4>
+          <H4 $align={"right"}>{formatCurrency(DAIStatus.stakeable)}</H4>
         </Box>
       </Container>
     </>

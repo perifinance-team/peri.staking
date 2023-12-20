@@ -55,7 +55,7 @@ const Exit = () => {
 		<>
 			{currentCRatio > 0n && (
 				<Container onClick={() => exit()}>
-					<H4 weight={"b"}>UNSTAKE ALL</H4>
+					<H4 $weight={"b"}>UNSTAKE ALL</H4>
 				</Container>
 			)}
 		</>

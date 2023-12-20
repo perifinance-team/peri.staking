@@ -27,6 +27,7 @@ const StakingRate = () => {
         total === 0n ? 0 : (BigInt(daiDebt + usdcDebt) * 100n) / total;
       setPERIStakingPer(Math.ceil(Number(per.toString())));
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [balances, exchangeIsReady, balancesIsReady]); // , exchangeRates
 
   return (
@@ -34,13 +35,13 @@ const StakingRate = () => {
       {balances["DEBT"]?.PERI > 0 && (
         <>
           <Line></Line>
-          <Container per={100 - PERIStakingPer}>
-            <BarChartText align={"left"}>{100 - PERIStakingPer}%</BarChartText>
-            <BarChartText align={"right"}>{PERIStakingPer}%</BarChartText>
+          <Container $per={100 - PERIStakingPer}>
+            <BarChartText $align={"left"}>{100 - PERIStakingPer}%</BarChartText>
+            <BarChartText $align={"right"}>{PERIStakingPer}%</BarChartText>
           </Container>
           <Container>
-            <H4 align={"left"}>Peri</H4>
-            <H4 align={"right"}>Stable</H4>
+            <H4 $align={"left"}>Peri</H4>
+            <H4 $align={"right"}>Stable</H4>
           </Container>
         </>
       )}
@@ -54,24 +55,24 @@ const Line = styled.div`
   border-right: 1px solid #ffffff;
 `;
 
-const Container = styled.div<{ per?: number }>`
+const Container = styled.div<{ $per?: number }>`
   display: flex;
   justify-content: space-between;
   text-decoration: row;
   border-radius: 8px;
   ${(props) =>
-    props.per
+    props.$per
       ? css({ border: `1px solid ${props.theme.colors.border.barChart}` })
       : null};
   margin-bottom: 15px;
   background: ${(props) => {
-    if (props.per) {
+    if (props.$per) {
       const left =
-        props.per >= 80
+        props.$per >= 80
           ? props.theme.colors.barChart.primary
           : props.theme.colors.barChart.warning;
       const right = props.theme.colors.barChart.secondary;
-      return `linear-gradient(to right, ${left}, ${left} ${props.per}%, ${right} ${props.per}%, ${right} 100%)`;
+      return `linear-gradient(to right, ${left}, ${left} ${props.$per}%, ${right} ${props.$per}%, ${right} 100%)`;
     }
   }};
 `;

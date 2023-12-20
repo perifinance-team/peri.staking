@@ -43,7 +43,7 @@ const Reward = () => {
 	);
 
 	const { hash } = useSelector((state: RootState) => state.transaction);
-	const { address, isConnect } = useSelector(
+	const { address, isConnect, networkId } = useSelector(
 		(state: RootState) => state.wallet
 	);
 	const { gasPrice } = useSelector((state: RootState) => state.networkFee);
@@ -61,7 +61,9 @@ const Reward = () => {
 		isCloseFeePeriodEnabled: false,
 	});
 
-	const actions = [
+	const actions = networkId === 1285 ? [
+		{ name: "CLAIM", component: RewardCard, data: claimData },
+	]:[
 		{ name: "CLAIM", component: RewardCard, data: claimData },
 		{
 			name: "LP",

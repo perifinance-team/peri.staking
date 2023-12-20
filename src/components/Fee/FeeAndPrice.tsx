@@ -11,10 +11,10 @@ export const FeeAndPrice = ({ currencyName = "PERI" }) => {
 
   return (
     <FeeContainer>
-      <H5 align={"left"} color={"primary"}>
+      <H5 $align={"left"} color={"primary"}>
         network fees : {(gasPrice / 1000000000n).toString()} GWEI
       </H5>
-      <H5 align={"right"} color={"primary"}>
+      <H5 $align={"right"} color={"primary"}>
         {currencyName} price : $ {formatCurrency(exchangeRates[currencyName])}
       </H5>
     </FeeContainer>

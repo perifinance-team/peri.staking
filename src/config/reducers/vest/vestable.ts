@@ -13,7 +13,7 @@ export const TransactionSlice = createSlice({
 	initialState,
 	reducers: {
 		updateVestable(state,  actions: PayloadAction<VestState>) {
-			state.vestable = actions.payload.vestable
+			return { ...state, vestable: actions.payload.vestable}
 		},
 	},
 });

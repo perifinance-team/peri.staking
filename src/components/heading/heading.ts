@@ -1,11 +1,11 @@
 import styled from "styled-components";
 
 interface Paragraph {
-	weight?: string;
-	color?: string;
-	align?: string;
-	margin?: number;
-	fontSize?: number;
+	$weight?: string;
+	$color?: string;
+	$align?: string;
+	$margin?: number;
+	$fontSize?: number;
 }
 
 const weight = {
@@ -21,7 +21,7 @@ export const H1 = styled.h1<Paragraph>`
 	color: ${(props) => props.theme.colors.font.tertiary};
 	opacity: 0.5;
 	margin: 5px;
-	text-align: ${(props) => (props.align ? props.align : "center")};
+	text-align: ${(props) => (props.$align ? props.$align : "center")};
 `;
 
 export const H2 = styled.h2`
@@ -33,19 +33,19 @@ export const H2 = styled.h2`
 
 export const H3 = styled.h3<Paragraph>`
 	font-size: 1.8rem;
-	font-weight: ${(props) => (props.weight ? weight[props.weight] : 800)};
+	font-weight: ${(props) => (props.$weight ? weight[props.$weight] : 800)};
 	margin: 0px;
-	text-align: ${(props) => (props.align ? props.align : "center")};
-	color: ${(props) => (props.color ? props.theme.colors.font[props.color] : props.theme.colors.font.primary)};
+	text-align: ${(props) => (props.$align ? props.$align : "center")};
+	color: ${(props) => (props.$color ? props.theme.colors.font[props.$color] : props.theme.colors.font.primary)};
 `;
 
 export const H4 = styled.h4<Paragraph>`
 	width: 100%;
 	font-size: 1.4rem;
-	font-weight: ${(props) => (props.weight ? weight[props.weight] : 500)};
+	font-weight: ${(props) => (props.$weight ? weight[props.$weight] : 500)};
 	margin: 0px;
-	text-align: ${(props) => (props.align ? props.align : "center")};
-	color: ${(props) => (props.color ? props.theme.colors.font[props.color] : props.theme.colors.font.primary)};
+	text-align: ${(props) => (props.$align ? props.$align : "center")};
+	color: ${(props) => (props.$color ? props.theme.colors.font[props.$color] : props.theme.colors.font.primary)};
 	-webkit-user-select: none;
 	-moz-user-select: none;
 	-ms-user-select: none;
@@ -60,8 +60,8 @@ export const H4 = styled.h4<Paragraph>`
 export const H5 = styled.h5<Paragraph>`
 	width: 100%;
 	font-size: 1rem;
-	font-weight: ${(props) => (props.weight ? weight[props.weight] : 500)};
-	margin: 0px;
-	text-align: ${(props) => (props.align ? props.align : "center")};
-	color: ${(props) => (props.color ? props.theme.colors.font[props.color] : props.theme.colors.font.primary)};
+	font-weight: ${(props) => (props.$weight ? weight[props.$weight] : 500)};
+	$margin: 0px;
+	text-align: ${(props) => (props.$align ? props.$align : "center")};
+	color: ${(props) => (props.$color ? props.theme.colors.font[props.$color] : props.theme.colors.font.primary)};
 `;

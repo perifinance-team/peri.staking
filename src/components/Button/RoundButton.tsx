@@ -1,50 +1,51 @@
 import React from "react";
 import styled from "styled-components";
 
-export const RoundButton = ({
-  children,
-  height,
-  onClick,
-  padding,
-  color,
-  width,
-  margin = "0px",
-  border,
-  disabled = false,
-}) => {
+type RoundButtonProps = {
+  children: React.ReactNode;
+  height: number;
+  onClick?: () => void;
+  padding?: string;
+  color: string;
+  width?: number;
+  margin?: string;
+  border?: string;
+  disabled?: boolean;
+};
+export const RoundButton = (props:RoundButtonProps) => {
   return (
     <Container
-      height={height}
-      onClick={onClick}
-      padding={padding}
-      color={color}
-      width={width}
-      margin={margin}
-      border={border}
-      disabled={disabled}
+      $height={props.height}
+      onClick={props.onClick}
+      $padding={props.padding}
+      $color={props.color}
+      $width={props.width}
+      $margin={props.margin}
+      $border={props.border}
+      disabled={props.disabled}
     >
-      {children}
+      {props.children}
     </Container>
   );
 };
 
 const Container = styled.button<{
-  height: number;
-  padding: string;
-  color: string;
-  width?: number;
-  margin: string;
-  border?: string;
+  $height: number;
+  $padding: string;
+  $color: string;
+  $width?: number;
+  $margin: string;
+  $border?: string;
 }>`
-  width: ${(props) => (props.width ? `${props.width}px` : "100%")};
+  width: ${(props) => (props.$width ? `${props.$width}px` : "100%")};
   border-radius: 25px;
   border: ${(props) =>
-    props.border !== "none"
-      ? `1px solid ${props.theme.colors.border[props.border]}`
+    props.$border !== "none"
+      ? `1px solid ${props.theme.colors.border[props.$border]}`
       : "none"};
-  height: ${(props) => `${props.height}px`};
-  padding: ${(props) => (props.padding ? props.padding : "0")};
-  margin: ${(props) => (props.margin ? props.margin : "0")};
+  height: ${(props) => `${props.$height}px`};
+  padding: ${(props) => (props.$padding ? props.$padding : "0px")};
+  margin: ${(props) => (props.$margin ? props.$margin : "0px")};
   background-color: ${(props) =>
-    props.theme.colors.background.button[props.color]};
+    props.theme.colors.background.button[props.$color]};
 `;

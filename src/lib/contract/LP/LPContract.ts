@@ -69,10 +69,12 @@ export const LPContract = {
     },
 
     balanceOf: async function (currentAddress) {
-        return await this.balanceContract.balanceOf(currentAddress);
+        const balance = currentAddress ? await this.contract.balanceOf(currentAddress) : undefined;
+        return balance ? balance : 0n;
     },
     earned: async function (currentWallet) {
-        return await this.contract.earned(currentWallet);
+        const earn = currentWallet ? await this.contract.earned(currentWallet) : undefined;
+        return earn ? earn : 0n;
     },
     totalStakeAmount: async function () {
         return await this.contract.totalSupply();

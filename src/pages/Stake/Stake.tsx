@@ -35,8 +35,8 @@ const Stake = () => {
 								return (
 									<StyledLink
 										to={`/${link}`}
-										active={activeTab === link}
-										margin={index === 1}
+										$active={activeTab === link}
+										$margin={index === 1}
 										onMouseOver={() => setActiveTab(link)}
 										key={link}
 									>
@@ -47,7 +47,7 @@ const Stake = () => {
 											<img src={`/images/${themeState}/${link}.svg`} alt="link" />
 										)}
 
-										<Paragraph fontSize={1.8} weight={"m"}>
+										<Paragraph $fontSize={1.8} $weight={"m"}>
 											{t(`stake.explanation.${link}`)}
 										</Paragraph>
 									</StyledLink>
@@ -98,7 +98,7 @@ const LinkContainer = styled.div`
 	padding: 0;
 `;
 
-const StyledLink = styled(Link)<{ active: boolean; margin: boolean }>`
+const StyledLink = styled(Link)<{ $active: boolean; $margin: boolean }>`
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -107,13 +107,13 @@ const StyledLink = styled(Link)<{ active: boolean; margin: boolean }>`
 	max-width: 340px;
 	height: 40%;
 	flex-direction: column;
-	margin: ${(props) => (props.margin ? "0px 25px" : "")};
+	margin: ${(props) => (props.$margin ? "0px 25px" : "")};
 	color: ${(props) => props.theme.colors.font.primary};
 	text-decoration: none;
 	border-radius: 20px;
 	background-color: ${(props) => props.theme.colors.background.panel};
 	${(props) =>
-		props.active
+		props.$active
 			? css({
 					width: "35%",
 					"min-width": "200px",
@@ -133,7 +133,7 @@ const StyledLink = styled(Link)<{ active: boolean; margin: boolean }>`
 		width: 80px;
 		height: 80px;
 		margin: 20px;
-		${(props) => (props.active ? css({ width: "120px", height: "90px" }) : null)}
+		${(props) => (props.$active ? css({ width: "120px", height: "90px" }) : null)}
 	}
 `;
 

@@ -14,7 +14,7 @@ export const NetworkFeeSlice = createSlice({
 	initialState,
 	reducers: {
 		updateNetworkFee(state, actions: PayloadAction<NetworkFeeState>) {
-			state.gasPrice = actions.payload.gasPrice;
+			return { ...state, gasPrice: actions.payload.gasPrice };
 		},
 	},
 });

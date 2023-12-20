@@ -28,11 +28,11 @@ const DebtBalance = () => {
 	return (
 		<DebtBalanceContainer>
 			{flag && <Timer />}
-			<H3 align={"left"}>DEBT</H3>
+			<H3 $align={"left"}>DEBT</H3>
 			<BalanceContainer>
 				<img alt={"pUSD"} src={`/images/currencies/pUSD.png`}></img>
 
-				<H4 align={"right"}>
+				<H4 $align={"right"}>
 					$
 					{formatCurrency(
 						balances["DEBT"]?.balance ? balances["DEBT"]?.balance : 0n

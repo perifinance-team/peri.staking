@@ -28,9 +28,9 @@ const Ratios = () => {
         {Number(ratioToPer(currentCRatio)) <= 150 && (
           <LiquidationBtn onClick={() => onLiquidHandler()}>!</LiquidationBtn>
         )}
-        <H3 weight={"sm"}>C-Ratio</H3>
+        <H3 $weight={"sm"}>C-Ratio</H3>
         <H3
-          weight={"eb"}
+          $weight={"eb"}
           color={
             Number(ratioToPer(currentCRatio)) <= 150 ? "warning" : "fourth"
           }
@@ -39,14 +39,14 @@ const Ratios = () => {
         </H3>
       </Row>
       <Row>
-        <H3 weight={"sm"}>Target</H3>
-        <H3 weight={"eb"} color={"fourth"}>
+        <H3 $weight={"sm"}>Target</H3>
+        <H3 $weight={"eb"} color={"fourth"}>
           {ratioToPer(targetCRatio)}%
         </H3>
       </Row>
       <Row>
-        <H3 weight={"sm"}>Liquidation</H3>
-        <H3 weight={"eb"} color={"fourth"}>
+        <H3 $weight={"sm"}>Liquidation</H3>
+        <H3 $weight={"eb"} color={"fourth"}>
           {ratioToPer(liquidationRatio)}%
         </H3>
       </Row>

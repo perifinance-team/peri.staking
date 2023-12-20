@@ -17,7 +17,7 @@ const persistedReducers = persistReducer(persistConfig, reducers);
 
 export const store = configureStore({
 	reducer: persistedReducers,
-	middleware: getDefaultMiddleware({
+	middleware: (getDefaultMiddleware) => getDefaultMiddleware({
 		serializableCheck: false
 	})
 });

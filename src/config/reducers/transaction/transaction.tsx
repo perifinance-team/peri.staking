@@ -17,14 +17,10 @@ export const TransactionSlice = createSlice({
 	initialState,
 	reducers: {
 		resetTransaction(state) {
-			state.hash = undefined;
-			state.message = undefined;
-			state.type = undefined;
+			return { ...state, hash: undefined, message: undefined, type: undefined}
 		},
 		updateTransaction(state,  actions: PayloadAction<TransactionState>) {
-			state.hash = actions.payload.hash;
-			state.message = actions.payload.message;
-			state.type = actions.payload.type;
+			return { ...state, hash: actions.payload.hash, message: actions.payload.message, type: actions.payload.type}
 		},
 	},
 });

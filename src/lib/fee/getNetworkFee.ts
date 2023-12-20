@@ -2,6 +2,7 @@ import { mainnet } from "./networks/mainnet";
 import { bsc } from "./networks/bsc";
 import { bsctest } from "./networks/bsctest";
 import { polygon } from "./networks/polygon";
+import { moonriver } from "./networks/moonriver";
 
 export const localhost = async () => {
 	return BigInt(10n);
@@ -16,12 +17,16 @@ const api = {
 	56: bsc,
 	97: bsctest,
 	137: polygon,
-	1285: polygon,
-	1287: polygon,
-	1337: mainnet, // or 31337
+	1285: moonriver,
+	1287: moonriver,
+	1337: polygon, // or 1337
 	80001: polygon,
 };
-export const getNetworkFee = async (networkId) => {
-	const gasfee = await api[networkId]();
-	return gasfee * 1000000000n;
+export const getNetworkFee = async (networkId):Promise<bigint> => {
+	const gwei = 1000000000n;
+	const gasfee = api[networkId] ? await (api[networkId])() : 10n * gwei;
+
+	console.log("gasfee", gasfee);
+	
+	return BigInt((gasfee ? gasfee : 10n) * gwei);
 };

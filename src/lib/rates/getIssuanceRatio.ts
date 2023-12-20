@@ -5,5 +5,7 @@ export const getIssuanceRatio = async () => {
         SystemSettings,
 	} = contracts as any;
 
-    return BigInt((await SystemSettings.issuanceRatio()).toString());
+    const issuanceRatio = await SystemSettings?.issuanceRatio();
+
+    return BigInt((SystemSettings? issuanceRatio : 25e17));
 };

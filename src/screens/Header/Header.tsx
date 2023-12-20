@@ -1,14 +1,14 @@
 import React from "react";
 import styled from "styled-components";
 import Network from "./components/Network";
-import Connect from "./components/Connect";
+// import Connect from "./components/Connect";
 // import Translation from './components/Translation';
 // import Themes from './components/Themes'
 
 const Header = () => {
   return (
     <Container>
-      <Connect />
+      {/* <Connect /> */}
       <RightContainer>
         {/* todo:: 연결없을때 숨김처리 */}
         <Network />
@@ -21,7 +21,7 @@ const Header = () => {
 
 const Container = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   padding: 30px 80px 20px 30px;
 `;
 

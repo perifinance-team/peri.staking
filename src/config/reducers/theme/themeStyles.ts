@@ -16,8 +16,7 @@ export const ThemeStylesSlice = createSlice({
 	initialState,
 	reducers: {
 		updateThemeStyles(state, actions: PayloadAction<Theme>) {
-			const themeType = actions.payload;
-			state.styles = theme(themeType)
+			return { ...state, styles: theme(actions.payload)};
 		},
 	},
 });

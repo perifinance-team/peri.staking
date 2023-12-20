@@ -9,18 +9,16 @@ import { updateThemeStyles } from "config/reducers/theme";
 import { updateRatio } from "config/reducers/rates";
 import { updateExchangeRates } from "config/reducers/rates";
 import { updateVestable } from "config/reducers/vest";
-import { updateAddress, updateNetwork, updateIsConnect } from "config/reducers/wallet";
+import { updateAddress, updateNetwork, updateIsConnect, clearWallet, clearBalances} from "config/reducers/wallet";
 import { updateNetworkFee } from "config/reducers/networkFee";
 import { resetTransaction } from "config/reducers/transaction";
 import { setLoading } from "config/reducers/loading";
 import { getNetworkFee } from "lib/fee";
 import { SUPPORTED_NETWORKS } from "lib/network";
-
-import { clearWallet, clearBalances } from "config/reducers/wallet";
 import { clearCRatio } from "config/reducers/rates";
 import { toggleLiquid, updateTimestamp } from "config/reducers/liquidation";
 import { initCurrency } from "config/reducers/wallet";
-import { InitOnboard, onboard } from "lib/onboard/onboard";
+import { web3Onboard } from "lib/onboard/web3Onboard";
 import { contracts } from "lib/contract";
 import { getVestable } from "lib/vest";
 import { getBalances } from "lib/balance";
@@ -77,51 +75,49 @@ const App = () => {
 	);
 
 	const setOnboard = async () => {
+		console.log("setOnboard")
 		let networkId = Number(process.env.REACT_APP_DEFAULT_NETWORK_ID);
 
 		contracts.init(networkId);
 		dispatch(updateNetwork({ networkId: networkId }));
 		try {
-			InitOnboard(
-				networkId,
+			web3Onboard.init(
 				{
 					wallet: async (wallet) => {
-						if (wallet.provider) {
+						if (wallet?.provider !== undefined) {
 							contracts.wallet = wallet;
-							localStorage.setItem("selectedWallet", wallet.name);
+							localStorage.setItem("selectedWallet", wallet.label);
 						}
 					},
 					address: async (newAddress) => {
 						if (newAddress) {
-							if (SUPPORTED_NETWORKS[onboard.getState().network]) {
-								contracts.connect(newAddress);
-								dispatch(clearBalances());
-								dispatch(clearCRatio());
+							// if (SUPPORTED_NETWORKS[web3Onboard.selectedNetwork]) {
+								await contracts.connect(newAddress);
+								// dispatch(clearBalances());
+								// dispatch(clearCRatio());
 								dispatch(updateAddress({ address: newAddress }));
 								dispatch(updateIsConnect(true));
-							} else {
-								onboard.walletReset();
-							}
+							// } else {
+							// 	onboard.walletReset();
+							// }
 						}
 					},
 					network: async (network) => {
 						if (network) {
-							if (SUPPORTED_NETWORKS[network]) {
-								contracts.init(network);
-								onboard.config({ networkId: network });
-								dispatch(updateNetwork({ networkId: network }));
-								contracts.connect(address);
+							dispatch(clearWallet());
+							dispatch(updateIsConnect(false));
+							const newNetworkId = Number(network);
+							if (SUPPORTED_NETWORKS[newNetworkId]) {
+								await contracts.init(newNetworkId);
+								dispatch(updateNetwork({ networkId: newNetworkId }));
 							} else {
 								NotificationManager.warning(
-									`This network is not supported. Please change to bsc or polygon or ethereum network`,
+									`This network${newNetworkId} is not supported. Please change to polygon, bsc, moonriver or ethereum network`,
 									"ERROR"
 								);
-								onboard.walletReset();
-								onboard.config({ networkId: network });
-								dispatch(updateNetwork({ networkId: network }));
-								dispatch(updateIsConnect(false));
+								dispatch(updateNetwork({ networkId: newNetworkId }));
 								localStorage.removeItem("selectedWallet");
-								dispatch(clearWallet());
+								// dispatch(clearWallet());
 								dispatch(clearCRatio());
 								dispatch(clearBalances());
 								dispatch(updateVestable({ vestable: false }));
@@ -130,19 +126,19 @@ const App = () => {
 						}
 					},
 				},
-				themeState === "dark"
+				themeState, 
+				false
 			);
 		} catch (e) {
 			console.log(e);
 			localStorage.clear();
 			// window.location.reload()
 		}
-		const selectedWallet = localStorage.getItem("selectedWallet");
 
-		if (selectedWallet) {
+		const selectedWallet = localStorage.getItem("selectedWallet");
+		if (selectedWallet && selectedWallet !== "undefined") {
 			try {
-				await onboard.walletSelect(selectedWallet);
-				await onboard.walletCheck();
+				await web3Onboard.connect(selectedWallet);
 			} catch (e) {
 				console.log(e);
 			}

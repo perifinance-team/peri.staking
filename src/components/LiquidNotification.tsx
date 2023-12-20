@@ -21,7 +21,7 @@ const LiquidNotification = () => {
   };
 
   return (
-    <LiquidationNoti toggle={notification.toggle} title={notification.title}>
+    <LiquidationNoti $toggle={notification.toggle} $title={notification.title}>
       <div className="icon">!</div>
       <div className="notiContainer">
         <h4>{liquidAlert[notification.title].title}</h4>
@@ -40,15 +40,15 @@ const LiquidNotification = () => {
 };
 
 interface ILiquidationNoti {
-  toggle: boolean;
-  title: any;
+  $toggle: boolean;
+  $title: any;
 }
 
 const LiquidationNoti = styled.div<ILiquidationNoti>`
-  display: ${(props) => (props.toggle ? "flex" : "none")};
+  display: ${(props) => (props.$toggle ? "flex" : "none")};
   align-items: center;
   position: absolute;
-  background: ${(props) => (props.title === 0 ? "#5cb85c" : "#fc3b3b")};
+  background: ${(props) => (props.$title === 0 ? "#5cb85c" : "#fc3b3b")};
   color: white;
   bottom: 30px;
   right: 0;
@@ -60,7 +60,7 @@ const LiquidationNoti = styled.div<ILiquidationNoti>`
     justify-content: center;
     align-items: center;
     background: white;
-    color: ${(props) => (props.title === 0 ? "#5cb85c" : "#fc3b3b")};
+    color: ${(props) => (props.$title === 0 ? "#5cb85c" : "#fc3b3b")};
     font-weight: bold;
     font-size: 1.6rem;
     width: 20px;
