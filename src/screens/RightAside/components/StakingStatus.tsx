@@ -58,14 +58,11 @@ const StakingStatus = () => {
   return (
     <>
       <Container>
-        <Image></Image>
-        <Box>
-          <H4 color={"fourth"} $weight={"sb"}>
-            Staked
-          </H4>
+        <Box $width={"45%"}>
+          <H4 $color={"fourth"} $weight={"sb"}>Staked</H4>
         </Box>
-        <Box>
-          <H4 color={"fourth"}>Stakeable</H4>
+        <Box $width={"45%"}>
+          <H4 $color={"fourth"}>Stakeable</H4>
         </Box>
       </Container>
       <Container>
@@ -106,6 +103,7 @@ const StakingStatus = () => {
 };
 
 const Container = styled.div`
+  width: 100%;
   margin: 10px 0px;
   display: flex;
   justify-content: space-between;
@@ -119,9 +117,10 @@ const Image = styled.div`
   padding: 0px 5px;
 `;
 
-const Box = styled.div`
+const Box = styled.div< {$width?: string} >`
   flex: 5;
   padding: 0px 5px;
+  width: ${(props) => props.$width ? props.$width : "auto"};
 `;
 
 export default StakingStatus;

@@ -65,14 +65,31 @@ const Refresh = () => {
 
 const Container = styled.button`
   border-radius: 50px;
-  width: 45px;
-  height: 45px;
+  width: 35px;
+  height: 35px;
   justify-content: center;
-  background-color: ${(props) => props.theme.colors.background.reFresh};
-  border: none;
+  background-color: ${(props) => props.theme.colors.background.button.fifth};
+  border: ${(props) => `1.5px solid ${props.theme.colors.border.tableRow}`};
+  box-shadow: 0.5px 1.5px 0px ${(props) => props.theme.colors.border.primary};
   img {
-    width: 25px;
-    height: 25px;
+    width: 22px;
+    height: 22px;
+  }
+
+  &:hover {
+    transition: 0.5s;
+    transform: rotate(90deg);
+    box-shadow: 3.5px 0px 5px ${(props) => props.theme.colors.border.primary};
+  }
+
+  &:active {
+    transform: rotate(360deg);
+    box-shadow: none;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
   }
 `;
 

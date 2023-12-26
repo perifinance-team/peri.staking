@@ -147,7 +147,6 @@ const Vesting = () => {
                         }}
                         padding={'0'}
                         color={"primary"}
-                        border={"none"}
                         width={320}
                         margin={"0px 0px 0px 50px"}
                     >

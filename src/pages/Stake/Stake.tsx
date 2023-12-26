@@ -27,8 +27,7 @@ const Stake = () => {
 				<Route exact path="/">
 					<Container>
 						<Title>
-							<H1>{t("stake.intro1")}</H1>
-							<H1>{t("stake.intro2")}</H1>
+							<H1>ISSUE PYNTHS</H1>
 						</Title>
 						<LinkContainer>
 							{["mint", "burn", "reward"].map((link, index) => {
@@ -47,7 +46,7 @@ const Stake = () => {
 											<img src={`/images/${themeState}/${link}.svg`} alt="link" />
 										)}
 
-										<Paragraph $fontSize={1.8} $weight={"m"}>
+										<Paragraph $fontSize={1.125} $weight={"m"}>
 											{t(`stake.explanation.${link}`)}
 										</Paragraph>
 									</StyledLink>
@@ -74,28 +73,65 @@ const Stake = () => {
 };
 
 const Container = styled.div`
-	flex: 1;
-	height: 100%;
-	position: relative;
+	// position: relative;
 	display: flex;
-	justify-content: center;
+	justify-content: flex-start;
+	flex-direction: column;
 	align-items: center;
+
+	${({ theme }) => theme.media.mobile`
+		// flex: none;
+		width: 100%;
+	`}
 `;
 
 const Title = styled.div`
-	position: absolute;
+	// position: absolute;
+	width: 100%;
 	z-index: 0;
-	top: 5%;
+	top: 7%;
+
+	h1 {
+		display: inline-block;
+		width: fit-content;
+		height: fit-content;
+		vertical-align: bottom;
+		margin: 0px;
+		padding: 0px;
+		margin-block-end: 0px;
+		margin-block-start: 0px;
+	}
+
+	${({ theme }) => theme.media.mobile`
+		position: relative;
+		top: 0%;
+
+		h1 {
+			width: 100%;
+		}
+	`}
 `;
 
 const LinkContainer = styled.div`
 	z-index: 1;
 	display: flex;
-	height: 100%;
 	width: 100%;
 	justify-content: center;
-	align-items: center;
+	align-items: flex-start;
 	padding: 0;
+	height: 45vh;
+
+	${({ theme }) => theme.media.mobile`
+		align-items: center;
+		margin-top: 10px;
+		height: 100%;
+	`}
+
+	${({ theme }) => theme.media.tablet`
+		align-items: center;
+		margin-top: 10px;
+		height: 35vh;
+	`}
 `;
 
 const StyledLink = styled(Link)<{ $active: boolean; $margin: boolean }>`
@@ -103,27 +139,38 @@ const StyledLink = styled(Link)<{ $active: boolean; $margin: boolean }>`
 	justify-content: center;
 	align-items: center;
 	width: 20%;
+	height: 90%;
 	min-width: 180px;
 	max-width: 340px;
-	height: 40%;
 	flex-direction: column;
 	margin: ${(props) => (props.$margin ? "0px 25px" : "")};
 	color: ${(props) => props.theme.colors.font.primary};
 	text-decoration: none;
-	border-radius: 20px;
-	background-color: ${(props) => props.theme.colors.background.panel};
+	border-radius: 10px;
+	background-color: ${(props) => props.theme.colors.background.body};
+	border: ${({theme}) => `1px solid ${theme.colors.border.tableRow}`};
+	box-shadow: 0.5px 1.5px 15px ${(props) => props.theme.colors.background.button.primary};
 	${(props) =>
 		props.$active
 			? css({
-					width: "35%",
+					width: "28%",
 					"min-width": "200px",
 					"max-width": "340px",
-					"background-color": props.theme.colors.hover.panel,
-			  })
+					"color": props.theme.colors.background.button.primary,
+			})
 			: null}
 
+	h2 {
+		${(props) =>
+			props.$active
+				? css({
+						"color": props.theme.colors.background.button.primary,
+				})
+				: null}
+	}
+
 	p {
-		height: 70px;
+		height: 80px;
 		max-width: 200px;
 		min-width: 100px;
 		vertical-align: middle;
@@ -135,6 +182,83 @@ const StyledLink = styled(Link)<{ $active: boolean; $margin: boolean }>`
 		margin: 20px;
 		${(props) => (props.$active ? css({ width: "120px", height: "90px" }) : null)}
 	}
+
+	${({theme}) => theme.media.mobile`
+		// height: 80%;
+		margin: 0px 3px;
+
+		p {
+			height: 22x;
+			max-width: 100px;
+			min-width: 90px;
+			font-size: 0.6rem;
+		}
+
+		img {
+			margin: 7px;
+		}
+	`}
+
+	${({$active, theme}) => $active 
+		? theme.media.mobile`
+			width: 33%;
+			min-width: 100px;
+			max-width: 140px;
+
+			img {
+				width: 32px;
+				height: 32px;
+			}
+		` : theme.media.mobile`
+			width: 27%;
+			min-width: 90px;
+			max-width: 116px;
+
+			img {
+				width: 28px;
+				height: 28px;
+			}
+		`
+	}
+
+	${({theme}) => theme.media.tablet`
+		// height: 80%;
+		margin: 0px 6px;
+
+		p {
+			height: 22x;
+			max-width: 120px;
+			min-width: 100px;
+			font-size: 0.65rem;
+		}
+
+		img {
+			margin: 10px;
+		}
+	`}
+
+	${({$active, theme}) => $active 
+		? theme.media.tablet`
+			width: 34%;
+			min-width: 130px;
+			max-width: 170px;
+
+			img {
+				width: 32px;
+				height: 32px;
+			}
+		` : theme.media.tablet`
+			width: 27%;
+			min-width: 90px;
+			max-width: 140px;
+
+			img {
+				width: 28px;
+				height: 28px;
+			}
+		`
+	}
+
 `;
 
 export default Stake;

@@ -12,10 +12,11 @@ import { utils } from "ethers";
 import { updateBalances } from "config/reducers/wallet";
 import { updateTransaction } from "config/reducers/transaction";
 import { contracts } from "lib/contract";
-import { onboard } from "lib/onboard";
+import { web3Onboard } from "lib/onboard";
 import { getExchangeRatesLP } from "lib/rates";
 import { getLpRewards } from "lib/reward";
 import { setLoading } from "config/reducers/loading";
+import { Title, Container, StakeContainer } from "../Mint/Mint";
 
 SwiperCore.use([Mousewheel, Virtual]);
 const Earn = () => {
@@ -93,8 +94,7 @@ const Earn = () => {
   const connectHelp = async () => {
     NotificationManager.error(`Please connect your wallet first`, "ERROR");
     try {
-      await onboard.walletSelect();
-      await onboard.walletCheck();
+      await web3Onboard.connect();
     } catch (e) {}
   };
 
@@ -222,56 +222,46 @@ const Earn = () => {
           <H1>EARN</H1>{" "}
         </Title>
       )}
-      <Swiper
-        spaceBetween={10}
-        direction={"vertical"}
-        slidesPerView={4}
-        centeredSlides={true}
-        mousewheel={true}
-        allowTouchMove={true}
-        breakpoints={{
-          "1023": {
-            allowTouchMove: false,
-          },
-        }}
-        onSlideChange={({ activeIndex }) => setSlideIndex(activeIndex)}
-        virtual
-      >
-        {coins.map((coin, index) => (
-          <SwiperSlide key={coin.name} virtualIndex={index}>
-            <EarnCard
-              isActive={index === slideIndex}
-              coinName={coin.name}
-              onChange={onChangeStakingAmount}
-              apy={rewardsAmountToAPY}
-              stakeAmount={stakeAmount}
-              maxAction={() =>
-                isConnect
-                  ? onChangeStakingAmount(maxStakeAmount, coin.name)
-                  : connectHelp()
-              }
-              isApprove={isApprove}
-              approveAction={() => approveAction(coin.name)}
-              stakeAction={() => stakeAction()}
-            ></EarnCard>
-          </SwiperSlide>
-        ))}
-      </Swiper>
+      <StakeContainer>
+        <Swiper
+          spaceBetween={5}
+          direction={"vertical"}
+          slidesPerView={4}
+          centeredSlides={true}
+          mousewheel={true}
+          allowTouchMove={true}
+          breakpoints={{
+            "1023": {
+              allowTouchMove: false,
+            },
+          }}
+          onSlideChange={({ activeIndex }) => setSlideIndex(activeIndex)}
+          virtual
+        >
+          {coins.map((coin, index) => (
+            <SwiperSlide key={coin.name} virtualIndex={index}>
+              <EarnCard
+                isActive={index === slideIndex}
+                coinName={coin.name}
+                onChange={onChangeStakingAmount}
+                apy={rewardsAmountToAPY}
+                stakeAmount={stakeAmount}
+                maxAction={() =>
+                  isConnect
+                    ? onChangeStakingAmount(maxStakeAmount, coin.name)
+                    : connectHelp()
+                }
+                isApprove={isApprove}
+                approveAction={() => approveAction(coin.name)}
+                stakeAction={() => stakeAction()}
+              ></EarnCard>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      </StakeContainer>
     </Container>
   );
 };
 
-const Container = styled.div`
-  flex: 1;
-  height: 100%;
-  position: relative;
-`;
-
-const Title = styled.div`
-  margin: 0 20%;
-  position: absolute;
-  z-index: 0;
-  top: 10%;
-`;
 
 export default Earn;

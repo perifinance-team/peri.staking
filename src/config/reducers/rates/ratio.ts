@@ -16,6 +16,7 @@ export const RatioSlice = createSlice({
     initialState,
     reducers: {
         updateRatio(state, actions: PayloadAction<RatiosState>) {
+            // console.log("updateRatio called");
             const rateState = actions.payload;
             return {
                 ...state,
@@ -25,6 +26,7 @@ export const RatioSlice = createSlice({
             };
         },
         clearCRatio(state) {
+            // console.log("clearCRatio called");
             state.currentCRatio = 0n;
         },
     },

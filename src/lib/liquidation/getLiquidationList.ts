@@ -3,9 +3,10 @@ import { contracts } from "lib/contract";
 import { setLoading } from "config/reducers/loading";
 import { updateList } from "config/reducers/liquidation";
 
-import { connectContract } from "./connectContract";
 import { SUPPORTED_NETWORKS } from "lib/network";
 import { formatCurrency } from "lib/format";
+
+import { connectContract } from "./connectContract";
 
 let liquidationList = [];
 
@@ -43,17 +44,21 @@ export const getLiquidationList = async (dispatch, networkId = 1287) => {
 		.then((json) => (liquidationList = [...json.data.liquidationTargets]));
 
 	const tempList = [];
+	const len = liquidationList.length / 30;
+	for (let i = 0; i < len; i++) {
+		const partList = liquidationList.slice(i * 30, (i + 1) * 30); 
+		await Promise.all(
+			partList.map(async (address, idx) => {
+				await connectContract(address.address, PeriFinance, Liquidations, contracts).then((data: object | boolean) => {
+					if (data) {
+						tempList.push(data);
+					}
+				});
+			})
+		);
+	}
 
-	await Promise.all(
-		liquidationList.map(async (address, idx) => {
-			await connectContract(address.address, PeriFinance, Liquidations, contracts).then((data: object | boolean) => {
-				if (data) {
-					tempList[idx] = data;
-				}
-			});
-		})
-	);
-
+	// console.log("tempList", tempList);
 	dispatch(updateList(sortList(tempList)));
 	dispatch(setLoading({ name: "liquidation", value: false }));
 };

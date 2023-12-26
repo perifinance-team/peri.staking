@@ -16,7 +16,7 @@ const weight = {
 }
 
 export const Paragraph = styled.p<ParagraphProps>`
-    font-size: ${props => props.$fontSize ? `${props.$fontSize}rem` : '1.8rem' };
+    font-size: ${props => props.$fontSize ? `${props.$fontSize}rem` : '1.125rem' };
     font-weight: ${props => weight[props.$weight]};
     color: ${props => props.theme.colors.font[props.$color]};
     text-align: center;

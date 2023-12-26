@@ -21,4 +21,13 @@ const FeeContainer = styled.div`
   display: flex;
   justify-content: center;
   vertical-align: middle;
+
+  ${({ theme }) => theme.media.mobile`
+    width: 260px;
+    margin: 0px;
+  `}
+
+  h5 {
+    margin: 5px 0px;
+  }
 `;

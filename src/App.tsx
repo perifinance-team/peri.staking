@@ -18,7 +18,7 @@ import { SUPPORTED_NETWORKS } from "lib/network";
 import { clearCRatio } from "config/reducers/rates";
 import { toggleLiquid, updateTimestamp } from "config/reducers/liquidation";
 import { initCurrency } from "config/reducers/wallet";
-import { web3Onboard } from "lib/onboard/web3Onboard";
+import { web3Onboard } from "lib/onboard";
 import { contracts } from "lib/contract";
 import { getVestable } from "lib/vest";
 import { getBalances } from "lib/balance";
@@ -49,6 +49,7 @@ const App = () => {
 
 			const [ratios, gasPrice] = await Promise.all([getRatios(address), getNetworkFee(networkId)]);
 
+			console.log('ratio', ratios.ratio);
 			dispatch(updateRatio(ratios.ratio));
 			dispatch(updateExchangeRates(ratios.exchangeRates));
 

@@ -14,7 +14,8 @@ import { formatCurrency } from "lib";
 import { utils } from "ethers";
 import { updateTransaction } from "config/reducers/transaction";
 import { setLoading } from "config/reducers/loading";
-import { onboard } from "lib/onboard";
+import { web3Onboard } from "lib/onboard";
+import { StakeContainer, Container, Title } from "../Mint/Mint";
 
 SwiperCore.use([Mousewheel, Virtual]);
 
@@ -34,8 +35,8 @@ const secondsToTime = (seconds) => {
 };
 
 const currencies = [
-  { name: "PERI", isStable: false, isLP: false },
   { name: "USDC", isStable: true, isLP: false },
+  { name: "PERI", isStable: false, isLP: false },
   { name: "DAI", isStable: true, isLP: false },
   { name: "LP", isStable: false, isLP: true },
 ];
@@ -186,8 +187,7 @@ const Burn = () => {
   const connectHelp = async () => {
     NotificationManager.error(`Please connect your wallet first`, "ERROR");
     try {
-      await onboard.walletSelect();
-      await onboard.walletCheck();
+      await web3Onboard.connect();
     } catch (e) {}
   };
 
@@ -432,65 +432,93 @@ const Burn = () => {
 
   return (
     <Container>
-      {slideIndex === 0 && (
-        <Title>
-          {" "}
-          <H1>BURN</H1>{" "}
-        </Title>
-      )}
-      <Swiper
-        spaceBetween={10}
-        direction={"vertical"}
-        slidesPerView={4}
-        centeredSlides={true}
-        mousewheel={true}
-        allowTouchMove={true}
-        breakpoints={{
-          "1023": {
-            allowTouchMove: false,
-          },
-        }}
-        onSlideChange={({ activeIndex }) => setSlideIndex(activeIndex)}
-        virtual
-      >
-        {currencies.map((currency, index) => (
-          <SwiperSlide key={currency.name} virtualIndex={index}>
-            <BurnCard
-              isActive={index === slideIndex}
-              currencyName={currency.name}
-              maxAction={() =>
-                isConnect
-                  ? onChangeBurnAmount(
-                      currency.isLP ? maxUnStakeAmount : maxBurnAmount,
-                      currency.name
-                    )
-                  : connectHelp()
-              }
-              unStakeAmount={unStakeAmount}
-              burnAmount={burnAmount}
-              cRatio={cRatio}
-              onChange={onChangeBurnAmount}
-              isLP={currency.isLP}
-              burnAction={() => burnAction(currency)}
-            ></BurnCard>
-          </SwiperSlide>
-        ))}
-      </Swiper>
+      <Title $show={slideIndex === 0}>
+        <H1>BURN</H1>
+      </Title>
+      <StakeContainer>
+        <Swiper
+          spaceBetween={0}
+          direction={"vertical"}
+          slidesPerView={4}
+          centeredSlides={true}
+          mousewheel={true}
+          allowTouchMove={true}
+          breakpoints={{
+            "1023": {
+              allowTouchMove: false,
+            },
+          }}
+          onSlideChange={({ activeIndex }) => setSlideIndex(activeIndex)}
+          virtual
+        >
+          {currencies.map((currency, index) => (
+            <SwiperSlide key={currency.name} virtualIndex={index}>
+              <BurnCard
+                isActive={index === slideIndex}
+                currencyName={currency.name}
+                maxAction={() =>
+                  isConnect
+                    ? onChangeBurnAmount(
+                        currency.isLP ? maxUnStakeAmount : maxBurnAmount,
+                        currency.name
+                      )
+                    : connectHelp()
+                }
+                unStakeAmount={unStakeAmount}
+                burnAmount={burnAmount}
+                cRatio={cRatio}
+                onChange={onChangeBurnAmount}
+                isLP={currency.isLP}
+                burnAction={() => burnAction(currency)}
+              ></BurnCard>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      </StakeContainer>
     </Container>
   );
 };
 
-const Container = styled.div`
-  flex: 1;
-  height: 100%;
-  position: relative;
-`;
+// export const Container = styled.div`
+//   display: flex;
+//   justify-content: center;
+//   flex-direction: column;
+//   height: 80vh;
+//   align-items: flex-start;
+//   position: relative;
+//   overflow: hidden;
 
-const Title = styled.div`
-  margin: 0 20%;
-  position: absolute;
-  z-index: 0;
-  top: 10%;
-`;
+// 	${({ theme }) => theme.media.mobile`
+// 		height: 45vh;
+// 	`}
+// `;
 
+// export const Title = styled.div`
+//   display: flex;
+//   position: absolute;
+//   justify-content: flex-start;
+// 	width: 100%;
+//   z-index: 0;
+//   top: 10%;
+
+//   ${({ theme }) => theme.media.mobile`
+//     top: 0px;
+//     justify-content: center;
+//   `}
+// `;
+
+
+// export const StakeContainer = styled.div`
+// 	display: flex;
+// 	position: absolute;
+// 	justify-content: center;
+// 	width: 100%;
+// 	height: 80vh;
+// 	top: -90px;
+// 	overflow: visible;
+
+// 	${({ theme }) => theme.media.mobile`
+// 		top: -210px;
+// 	`}
+// `;
 export default Burn;

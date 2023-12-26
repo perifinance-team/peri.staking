@@ -10,6 +10,7 @@ const tokenAddress = {
     97: '0xB28a19ec5a6f4269f47a486f467690Bd3376D203',
     137: '0x98f675b60769abc732ee59685bffa19ea3c8e81c',
     80001: '0x1357a050b0895535A173B0aaD97d1A2DEC48398B',   
+    1337: '0x98f675b60769abc732ee59685bffa19ea3c8e81c',
 }
 
 const contractAddress = {
@@ -19,6 +20,7 @@ const contractAddress = {
     97: '0x5e8fd0bADC50628ea179997a7669c15a2D0bF72b',
     137: '0xeFf7642144991B11DedD4c0a7e353386952fe9A5',
     80001: '0x3F01190Aa0827f4E9fF96096CC386CC1b2DA8982',
+    1337: '0xeFf7642144991B11DedD4c0a7e353386952fe9A5',
 }
 
 export const LPContract = {

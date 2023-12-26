@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { useSelector } from "react-redux";
 
 import { RootState } from "config/reducers";
-
+import { SmallLoadingSpinner } from "./heading";
 import { getTake } from "lib/liquidation/getTake";
 import { formatCurrency } from "lib/format";
 import { utils } from "ethers";
@@ -34,9 +34,13 @@ const TakeModal = ({ idx, address, list, dispatch, contracts, debt, collateral, 
 	const [viewValue, setViewValue] = useState([]);
 
 	const maxBalance = balances.pUSD.transferable;
-	const modalRef = useRef<any>();
+	const modalRef = useRef<HTMLDivElement>(null);
 	const closeModalHandler = (e) => {
-		if (list[idx].toggle && !modalRef.current?.contains(e.target)) toggleModal(idx);
+		console.log("e.target", e.target);
+		if (e.target.id === "close_caller" && list[idx].toggle && !modalRef.current?.contains(e.target)) {
+			console.log("closeModalHandler");
+			toggleModal(idx);
+		}
 	};
 
 	const getProfit = () => {
@@ -154,7 +158,7 @@ const TakeModal = ({ idx, address, list, dispatch, contracts, debt, collateral, 
 	return (
 		<TakeModalItem>
 			<Area ref={modalRef}>
-				<CloseBtn src={`/images/icon/close.svg`} onClick={() => toggleModal(idx)} />
+				<CloseBtn id="close_caller" src={`/images/icon/close.svg`} onClick={() => toggleModal(idx)} />
 				<InputBox>
 					<SubIndicator>
 						<span>{`Available: ${formatCurrency(maxBalance)}`}</span>
@@ -204,9 +208,15 @@ const TakeModal = ({ idx, address, list, dispatch, contracts, debt, collateral, 
 				</TakePercentage>
 
 				<ContentSection>
-					<div style={{ display: "flex" }}>
+					<ContentBoxContainer>
 						<ContentBox>
-							<span className="title">{`Pay off ( $ ${Number(value).toFixed(2)} )`}</span>
+							<span className="title">{`C-Ratio`}</span>
+							<span className="content">
+								<span style={{ display: "flex" }}>{cRatio}</span>
+							</span>
+						</ContentBox>
+						<ContentBox>
+							<span className="title">{`Pay off`/*  ( $ ${Number(value).toFixed(2)} )` */}</span>
 							<span className="content">
 								<span>
 									<img className="icon" src={`/images/currencies/pUSD.png`} alt="pUSD" />
@@ -214,27 +224,27 @@ const TakeModal = ({ idx, address, list, dispatch, contracts, debt, collateral, 
 								</span>
 							</span>
 						</ContentBox>
+					</ContentBoxContainer>
+					<ContentBoxContainer>
 						<ContentBox>
 							<span className="title">{`Estimate Profit`}</span>
 							<span className="content">
 								{profit ? (
-									<span>{`${value === "0" ? "0" : profit} USD`}</span>
+									<span>{`$${value === "0" ? "0" : profit}`}</span>
 								) : (
 									<span style={{ display: "flex" }}>
-										<SmallLoadingSpinner /> USD
+										$<SmallLoadingSpinner />
 									</span>
 								)}
 							</span>
 						</ContentBox>
-					</div>
-					<div style={{ display: "flex" }}>
 						<ContentBox>
 							{sumCollateral ? (
-								<span className="title">{`Take away ( $ ${
+								<span className="title">{`Take away`/*  ( $ ${
 									Number(formatCurrency(maxBalance).replaceAll(",", "")) < viewValue[0] * 0.08
 										? decimalSplit(formatCurrency(maxBalance).replaceAll(",", ""))
 										: decimalSplit(viewValue[0] * 0.08)
-								} )`}</span>
+								} )` */}</span>
 							) : (
 								<span className="title" style={{ display: "flex" }}>
 									Take away ( $ <SmallLoadingSpinner /> )
@@ -244,7 +254,7 @@ const TakeModal = ({ idx, address, list, dispatch, contracts, debt, collateral, 
 							<span className="content">
 								{collateral.map((item, idx) => {
 									return (
-										<span key={`collateral_${item.name}`}>
+										viewValue[idx] > 0 && <span key={`collateral_${item.name}`}>
 											<img
 												className="icon"
 												src={`/images/currencies/${item.name.toUpperCase()}.png`}
@@ -256,16 +266,11 @@ const TakeModal = ({ idx, address, list, dispatch, contracts, debt, collateral, 
 								})}
 							</span>
 						</ContentBox>
-						<ContentBox>
-							<span className="title">{`C-Ratio`}</span>
-							<span className="content">
-								<span style={{ display: "flex" }}>{cRatio}</span>
-							</span>
-						</ContentBox>
-					</div>
+						
+					</ContentBoxContainer>
 				</ContentSection>
 
-				<SubmitBtn onClick={() => getTake(value, idx, address, list, dispatch, contracts, balances, toggleModal)}>TAKE</SubmitBtn>
+				<SubmitBtn id="close_caller" onClick={() => getTake(value, idx, address, list, dispatch, contracts, balances, toggleModal)}>Take</SubmitBtn>
 			</Area>
 		</TakeModalItem>
 	);
@@ -275,14 +280,14 @@ const TakeModalItem = styled.div`
 	display: flex;
 	width: 100vw;
 	height: 100vh;
-	flex-direction: column;
+	// flex-direction: column;
 	justify-content: center;
 	align-items: center;
 	position: fixed;
 	top: 0;
 	right: 0;
 	z-index: 2;
-	background: #525252a1;
+	background: transparent;
 `;
 
 const CloseBtn = styled.img`
@@ -298,28 +303,30 @@ const Area = styled.div`
 	flex-direction: column;
 	justify-content: flex-start;
 	align-items: center;
-	width: 50rem;
-	height: 55rem;
+	min-width: 400;
+	min-height: 420;
+	padding: 10px 10px 30px 10px;
 	border-radius: 20px;
-	padding: 7px;
-	background: #262a3c;
+	background: ${({theme}) => theme.colors.background.body};
+	border: ${({theme}) => `1px solid ${theme.colors.border.primary}`};
+  	box-shadow: ${({theme}) => `0px 0px 10px ${theme.colors.border.primary}`};
 	color: #fefffe;
 	font-weight: bold;
 	position: relative;
 `;
 
 const TakeSlider = styled.input`
-	width: 35rem;
+	width: 16.4rem;
 	height: fit-content;
+	// padding-left: 1px;
 `;
 
 const TakePercentage = styled.div`
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	width: 31rem;
-	font-size: 1.1rem;
-	margin-bottom: 3rem;
+	width: 16rem;
+	font-size: 0.6875rem;
 
 	span {
 		cursor: pointer;
@@ -334,14 +341,14 @@ const InputBox = styled.div`
 	display: flex;
 	align-items: center;
 	justify-content: space-around;
-	width: 25rem;
-	height: 5rem;
-	padding: 3px 8px;
+	width: 16rem;
+	height: 1.5rem;
+	padding: 3px 0 3px 3px;
 	border-radius: 35px;
 	background: #0e101e;
 	position: relative;
-	margin-top: 10rem;
-	margin-bottom: 3rem;
+	margin-top: 50px;
+	margin-bottom: 5px;
 
 	img {
 		width: 20px;
@@ -351,20 +358,25 @@ const InputBox = styled.div`
 const SubIndicator = styled.div`
 	display: flex;
 	justify-content: space-between;
-	width: 80%;
+	width: 100%;
 	position: absolute;
 	top: -18px;
+
+	span {
+		font-size: 0.6rem;
+		margin: 0 10px;
+	}
 `;
 
 const TakeInput = styled.input`
-	width: 11rem;
+	width: 12rem;
 	height: fit-content;
 	background: #525252;
 	outline: none;
 	border: none;
 	color: #fefffe;
 	text-align: right;
-	font-size: 3em;
+	font-size: 0.9em;
 	font-weight: bold;
 	background: #0e101e;
 
@@ -375,41 +387,42 @@ const TakeInput = styled.input`
 	}
 `;
 
-const MaxBtn = styled.button`
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	width: 3.5rem;
-	height: 2rem;
-	background: #2184f8;
-	box-shadow: 0px 3.5px 0px 0px #1158a9d2;
-	border: none;
-	border-radius: 6px;
-	outline: none;
-	color: #fefffe;
-	font-size: 1.2rem;
-
-	&:hover {
-		transition: 0.2s ease-in-out;
-		margin-top: 2.5px;
-		box-shadow: none;
-	}
-`;
-
 const ContentSection = styled.div`
 	display: flex;
 	flex-direction: column;
 	justify-content: flex-start;
 	align-items: flex-start;
-	width: 30rem;
+	width: fit-content;
+
+	// ${({ theme }) => theme.media.mobile`
+	// 	justify-content: center;
+	// 	flex-direction: row;
+	// 	align-items: center;
+	// `}
+`;
+
+const ContentBoxContainer = styled.div`
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+
+	${({ theme }) => theme.media.mobile`
+		// justify-content: center;
+		flex-direction: column;
+		align-items: flex-end;
+		margin: 10px 0px;
+
+	`}
 `;
 
 const ContentBox = styled.div`
 	display: flex;
 	flex-direction: column;
-	font-size: 1.3rem;
-	margin-right: 2rem;
-	margin-bottom: 1.5rem;
+	font-size: 0.8125rem;
+	margin: 20px 5px 0 5px;
+	// margin-bottom: 1.5rem;
 
 	img {
 		width: 14px;
@@ -418,58 +431,100 @@ const ContentBox = styled.div`
 
 	.title {
 		font-weight: bold;
-		margin-bottom: 7px;
+		vertical-align: middle;
 		width: fit-content;
 		min-width: 190px;
+		text-align: center;
+		margin-top: 10px;
+		margin-bottom: 5px;
 	}
 
 	.content {
 		display: flex;
+		justify-content: center;
 		flex-direction: column;
 
 		span {
 			display: flex;
 			align-items: center;
-			margin-bottom: 0.7rem;
+			justify-content: center;
 		}
 	}
+
+	${({ theme }) => theme.media.mobile`
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+		margin: 10px 5px 0 5px;
+		width: 100%;
+
+		.title {
+			display: inline-block;
+			vertical-align: middle;
+			text-align: right;
+			min-width: 80px;
+			max-width: 110px;
+			width: 50%;
+			margin: 0;
+		}
+		.content {
+			flex-direction: row;
+			justify-content: flex-end;
+			width: 50%;
+			min-width: 140px;
+
+			span {
+				margin-bottom: 0;
+			}
+		}
+	`}
 `;
 
 const SubmitBtn = styled.button`
-	width: 20rem;
-	height: 6.5rem;
-	border: none;
-	border-radius: 6px;
-	padding: none;
-	margin: none;
-	background: #2184f8;
-	box-shadow: 0px 3.5px 0px 0px #1158a9d2;
-	color: #fefffe;
-	font-size: 3rem;
+	width: 16rem;
+	height: 35px;
+	font-weight: bold;
+	border-radius: 25px;
+	margin-top: 30px;
+	color: white;
+	font-size: 0.9rem;
+	background: ${({theme}) => theme.colors.background.body};
+	border: ${({theme}) => `1.5px solid ${theme.colors.border.tableRow}`};
+	box-shadow: ${({theme}) => `0.5px 1.5px 0px ${theme.colors.border.primary}`};
 
 	&:hover {
 		transition: 0.2s ease-in-out;
-		margin-top: 2.5px;
+		transform: translateY(-1px);
+		box-shadow: ${({theme}) => `0.5px 3px 0px ${theme.colors.border.primary}`};
+	}
+
+	&:active {
+		transform: translateY(1px);
 		box-shadow: none;
 	}
+
+	&:disabled {
+		cursor: not-allowed;
+		opacity: 0.7;
+	}
+
+	${({ theme }) => theme.media.mobile`
+		padding: 0.5rem 0;
+		font-size: 0.7rem; 
+	`}
 `;
 
-const SmallLoadingSpinner = styled.div`
-	width: 10px;
-	height: 10px;
-	border: 2px solid #262a3c;
-	border-radius: 50%;
-	border-top-color: #4182f0;
-	border-left-color: #4182f0;
-	border-right-color: #4182f0;
-	margin: 0 10px;
-	animation: spin 0.8s infinite ease-in-out;
+const MaxBtn = styled(SubmitBtn)`
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 2rem;
+	height: 1.7rem;
+	border-radius: 6px;
+	margin-right: -4px;
+	font-size: 0.75rem;
+	margin-top: 0;
 
-	@keyframes spin {
-		to {
-			transform: rotate(1turn);
-		}
-	}
 `;
 
 export default TakeModal;

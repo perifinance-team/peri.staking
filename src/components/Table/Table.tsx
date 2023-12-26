@@ -11,6 +11,11 @@ export const Row = styled.div`
 export const BorderRow = styled(Row)`
   border-bottom: ${(props) =>
     `1px solid ${props.theme.colors.border.tableRow}`};
+
+  cursor: pointer;
+  &:hover {
+    background-color: ${(props) => props.theme.colors.background.panel};
+  }
 `;
 
 export const HoverRow = styled(Row)`
@@ -24,6 +29,7 @@ export const Cell = styled.div`
   display: inline-table;
   width: 100%;
   vertical-align: middle;
+  overflow-x: auto;
 `;
 
 export const HeaderCellRight = styled(Cell)`
@@ -48,13 +54,23 @@ export const StyledTHeader = styled(Row)`
   height: 50px;
   display: flex;
   flex-direction: row;
-  background-color: ${(props) => props.theme.colors.background.THeader};
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  background-color: ${(props) => props.theme.colors.background.body};
+  border-bottom: ${(props) =>
+    `2px solid ${props.theme.colors.background.THeader}`};
+  overflow: visible;
+
+  ${({ theme }) => theme.media.mobile`
+    height: 40px;
+  `}
 `;
 
 export const StyledTBody = styled.div<{ height?: number }>`
   width: 100%;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
   height: ${(props) => (props["height"] ? `${props["height"]}vh` : `100%`)};
-  overflow-y: scroll;
 `;

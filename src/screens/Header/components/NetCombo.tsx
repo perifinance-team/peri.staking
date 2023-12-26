@@ -26,20 +26,17 @@ const NetCombo = ({ isShow, setIsShow }) => {
   const netRef = useRef<HTMLDivElement>(null);
   const closeModalHandler = useCallback(
     (e) => {
-        if (
-          isShow &&
-            e.target.id !== "net_caller" &&
-            !netRef.current?.contains(e.target)
-        ) {
-          setIsShow(false);
-        }
-    }, [isShow]
+      if (isShow && e.target.id !== "net_caller" && !netRef.current?.contains(e.target)) {
+        setIsShow(false);
+      }
+    },
+    [isShow]
   );
 
   useEffect(() => {
     window.addEventListener("click", closeModalHandler);
     return () => {
-        window.removeEventListener("click", closeModalHandler);
+      window.removeEventListener("click", closeModalHandler);
     };
   }, [closeModalHandler]);
 
@@ -52,47 +49,46 @@ const NetCombo = ({ isShow, setIsShow }) => {
   return (
     <>
       {/* {networkName && address && isConnect ? ( */}
-        <DisplayContainer
-          id="net_caller" 
-          $height={"100%"}
-          $padding={"0px 10px"}
-          $position={"relative"}
-          $minWidth={15}
-          $isShow={isShow}
-          onClick={() => setIsShow(!isShow)}
-        >
-          <NetworkImg
-            id="net_caller" 
-            src={`/images/network/${SUPPORTED_NETWORKS[networkId] ? networkId : "unsupported"}.svg`}
-          ></NetworkImg>
-          <NetworkImg
-            id="net_caller" 
-            src={`/images/icon/${isShow ? "up-arrow" : "down-arrow"}.svg`}
-          ></NetworkImg>
-          <NetworkListContainer $isShow={isShow} ref={netRef}>
-            <ul>
-              {Object.keys(networks).map((key) => (
-                <NetworkList
-                  key={key}
-                  onClick={() => showList(key)}
-                >
-                  <LabelContainer
-                    $height={"30"}
-                    $padding={"0px 5px"}
-                    onClick={() => showList(key)}
-                  >
-                    <NetworkImg
-                      src={`/images/network/${SUPPORTED_NETWORKS[key] ? key : "Unsupported"}.svg`}
-                    ></NetworkImg>
-                    <Paragraph $fontSize={1.4} $weight={"m"} $color={"primary"}>
-                      {networkInfo[key].chainName}
-                    </Paragraph>
-                  </LabelContainer>
-                </NetworkList>
-              ))}
-            </ul>
-          </NetworkListContainer>
-        </DisplayContainer>
+      <DisplayContainer
+        id="net_caller"
+        $height={"100%"}
+        $padding={"0px 10px"}
+        $minWidth={15}
+        $isShow={isShow}
+        onClick={() => setIsShow(!isShow)}
+      >
+        <NetworkImg
+          id="net_caller"
+          src={`/images/network/${SUPPORTED_NETWORKS[networkId] ? networkId : "unsupported"}.svg`}
+        ></NetworkImg>
+        <ListBtnImg
+          id="net_caller"
+          src={`/images/icon/${isShow ? "up-arrow" : "down-arrow"}.svg`}
+        ></ListBtnImg>
+        <NetworkListContainer $isShow={isShow} ref={netRef}>
+          <ul>
+            {Object.keys(networks).map(
+              (key) =>
+                key !== "1337" && (
+                  <NetworkList key={key} onClick={() => showList(key)}>
+                    <LabelContainer
+                      $height={"30"}
+                      $padding={"0px 5px"}
+                      onClick={() => showList(key)}
+                    >
+                      <NetworkImg
+                        src={`/images/network/${SUPPORTED_NETWORKS[key] ? key : "Unsupported"}.svg`}
+                      ></NetworkImg>
+                      <Paragraph $fontSize={0.875} $weight={"m"} $color={"primary"}>
+                        {networkInfo[key].chainName}
+                      </Paragraph>
+                    </LabelContainer>
+                  </NetworkList>
+                )
+            )}
+          </ul>
+        </NetworkListContainer>
+      </DisplayContainer>
       {/* ) : (
         <> </>
        )} */}
@@ -109,72 +105,141 @@ export const DisplayContainer = styled(BaseContainer)<{
 }>`
   display: flex;
   cursor: pointer;
+  overflow: visible;
+  position: relative;
   border-radius: ${(props) => (props.$isShow ? "16px 16px 0px 0px" : "25px")};
+
+  // ${(props) => (props.$isShow ? `box-shadow:0px 0px 10px ${props.theme.colors.background.button.primary}}` : null)};
+  ${(props) => (props.$isShow ? `border: 1px solid ${props.theme.colors.border.tableRow}` : null)};
+  ${(props) => (props.$isShow ? `z-index: 999` : null)};
+
   &:active {
-    border-top-right-radius: 16px;
-    border-top-left-radius: 16px;
-    border-bottom-right-radius: 0px;
-    border-bottom-left-radius: 0px;
+    transition: 0.2s ease-in-out;
+    transform: translateY(5%);
+    border: 1px solid ${(props) => props.theme.colors.border.tableRow};
   }
+
   &:hover {
-    box-shadow: 0 0 1px ${(props) => props.theme.colors.border.primary};\
+    transition: 0.2s ease-in-out;
+		transform: translateY(-1px);
+		box-shadow: ${({theme}) => `0.5px 3px 0px ${theme.colors.border.primary}`};
   }
+
+  ${({ theme }) => theme.media.mobile`
+    height: 26px;
+  `}
 `;
 
 const NetworkListContainer = styled.div<{ $isShow: boolean }>`
   position: absolute;
   place-self: flex-end;
-  top: 30px;
+  top: 35px;
   right: 0px;
-  width: 100%;
-  height: 100%;
-  z-index: 999;
-  border-radius: 20px;
+  width: fit-content;
+  height: fit-content;
+  border-radius: 16px 0 16px 16px;
+  overflow: hidden;
+  z-index: 988;
   display: ${(props) => (props.$isShow ? "flex" : "none")};
+  
+  
+  
   ul {
     list-style: none;
     padding: 0px;
     margin: 0px;
-    z-index: 998;
+    z-index: 989;
+    top: -1px;
+    position: relative;
+    border: 0.5px solid ${(props) => props.theme.colors.border.tableRow};
+    // ${(props) => (props.$isShow ? `box-shadow:0px 0px 2px ${props.theme.colors.background.button.primary}}` : null)};
   }
+
+  ${({ theme }) => theme.media.mobile`
+    top: 26px;
+
+    ul {
+      left: -1px;
+      width: 110px;
+    }
+  `}
 `;
 
 const NetworkList = styled.li`
   display: flex;
   font-size: 14px;
   cursor: pointer;
-  padding: 5px 3px;
   justify-content: flex-start;
-  z-index: 997;
+  z-index: 990;
+  padding: 8px 6px;
+  min-width: 110px;
   color: ${(props) => props.theme.colors.font.primary};
   cursor: pointer;
-  background-color: ${(props) => props.theme.colors.background.panel};
+  background-color: ${(props) => props.theme.colors.background.body};
   &:hover {
-    background-color: ${(props) => props.theme.colors.background.body};
+    box-shadow: ${(props) => `0.5px 1.5px 0px ${props.theme.colors.background.button.primary}`};
+    border: 1px solid ${(props) => props.theme.colors.border.tableRow};
+    transform: translateY(-5%);
   }
+
+  ${({ theme }) => theme.media.mobile`
+    min-width: 85x;
+    padding: 6px 6px;
+    width: fit-content;
+    font-size: 11px;
+  `}
 `;
 
 const LabelContainer = styled(BaseContainer)<{ $height: string | number; $padding: string }>`
   background-color: inherit;
+
+  ${({ theme }) => theme.media.mobile`
+    p {
+      font-size: 11px;
+      width: fit-content;
+    }
+  `}
 `;
 
 export const NetworkImg = styled.img`
   display: flex;
-  width: 15px;
-  height: 15px;
-  margin: 0px 3px 0px 3px;
+  width: 17px;
+  height: 17px;
+  margin: 0 6px 0 0;
   justify-content: center;
   // border-radius: 50px;
+
+  ${({ theme }) => theme.media.mobile`
+    width: 15px;
+    height: 15px;
+  `}
+`;
+
+const ListBtnImg = styled(NetworkImg)`
+  &:hover {
+    transition: 0.2s ease-in-out;
+    transform: translateY(10%);
+  }
+
+  &:active {
+    // transition: 0.1s ease-in-out;
+    transform: scaleY(-1);
+  }
+
+  ${({ theme }) => theme.media.mobile`
+    width: 15px;
+    height: 15px;
+  `}
 `;
 
 const SafeParagraph = styled(Paragraph)`
   ${({ theme }) => theme.media.desktop`
-  display: table-cell;
-`}
+    display: table-cell;
+  `}
 
   ${({ theme }) => theme.media.mobile`
-  display: none;
-`}
+    display: none;
+  `}
 `;
 
 export default NetCombo;

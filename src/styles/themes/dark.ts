@@ -1,4 +1,4 @@
-const blue = "#2184F8";
+const blue = "#1D4ED8";//"#2184F8";
 
 const navy = "#14085A";
 
@@ -14,6 +14,8 @@ const red = "#C45375";
 
 const green = "#3ABDCF";
 
+const silver =	"#C0C0C0";
+
 export const dark = {
   background: {
     body: black,
@@ -24,6 +26,7 @@ export const dark = {
       secondary: green,
       tertiary: gray,
       fourth: white,
+      fifth: black,
     },
     THeader: blue,
     reFresh: gray,
@@ -37,6 +40,7 @@ export const dark = {
     secondary: green,
     tertiary: white,
     barChart: white,
+    third: black,
     tableRow: "rgba(255, 255, 255, 0.1)",
   },
   hover: {
@@ -51,6 +55,7 @@ export const dark = {
     tertiary: gray,
     fourth: blue,
     fifth: black,
+    sixth: silver,
     warning: warning,
   },
   barChart: {

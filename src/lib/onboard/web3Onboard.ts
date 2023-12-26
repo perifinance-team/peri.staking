@@ -19,12 +19,14 @@ import { BuiltInThemes, WalletState } from "@web3-onboard/core/dist/types";
 import { Chain } from "@web3-onboard/common/dist/types";
 import ledgerModule from "@web3-onboard/ledger";
 import metamaskSDK from "@web3-onboard/metamask";
+
 import { NotificationManager } from "react-notifications";
 
 import { SUPPORTED_NETWORKS } from "lib/network";
 
 import { networkInfo } from "configure/networkInfo";
-import { UNPOPULARNET } from "lib/network/supportedNetWorks";
+
+import { MAINNET, TESTNET, UNPOPULARNET } from "lib/network/supportedNetWorks";
 
 type Web3Onboard = {
     onboard: OnboardAPI;
@@ -32,7 +34,7 @@ type Web3Onboard = {
     selectedAddress: string;
     selectedNetwork: string;
     init: (subscriptions: any, colorMode: string, autoConnect: boolean) => void;
-    connect: (walletLabel: any) => Promise<void>;
+    connect: (walletLabel?: any) => Promise<void>;
     disconnect: () => void;
     address: (address: any) => void;
     network: (networkId: any) => void;
@@ -163,15 +165,19 @@ export const web3Onboard: Web3Onboard = {
             ...(portis ? [portis] : []),
         ];
 
-        var supportedNetworks = SUPPORTED_NETWORKS; //process.env.REACT_APP_ENV === 'production' ? MAINNET : TESTNET;
+        var supportedNetworks = process.env.REACT_APP_ENV === 'production' ? MAINNET : TESTNET;
         const chains: Chain[] = [];
         Object.keys(supportedNetworks).forEach((networkId) => {
-            chains.push({
-                id: networkInfo[networkId].chainId,
-                label: networkInfo[networkId].chainName,
-                rpcUrl: networkInfo[networkId].rpcUrls,
-            });
+            if (networkId !== '1337') {
+                chains.push({
+                    id: networkInfo[networkId].chainId,
+                    label: networkInfo[networkId].chainName,
+                    rpcUrl: networkInfo[networkId].rpcUrls,
+                });
+            }
         });
+
+        console.log("chains", chains);  
 
         const appMetadata = {
             name: "PERI Finance DEX",

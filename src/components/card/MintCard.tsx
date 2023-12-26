@@ -26,25 +26,25 @@ export const MintCard = ({
     const { balances } = useSelector((state: RootState) => state.balances);
 
     return (
-        <Card $isActive={isActive}>
+        <Card $isActive={isActive} $border={"secondary"}>
             <IconContainer>
-                {isActive && <img src={`/images/icon/${currencyName}.svg`} alt="mint"></img>}
+                {true && <img src={`/images/icon/${currencyName}.svg`} alt="mint"></img>}
                 <H3 $weight={"sb"}>{currencyName}</H3>
                 <H4 $weight={"b"}>Staked: {formatCurrency(balances[currencyName]?.staked, 2)}</H4>
             </IconContainer>
             <InputContainer>
-                <RowContainer $margin={"0px"}>
-                    {isActive && (
+                <APYContainer>
+                    {true && (
                         <H4 $align={"right"} $weight={"sb"}>
-                            EST APY: {formatCurrency(apy, 2)}%
+                            APY: {formatCurrency(apy, 2)}%
                         </H4>
                     )}
-                    {isActive && (
-                        <Ratio $align={"right"} $weight={"sb"}>
-                            EST C-RATIO: {cRatio.toString()}%
-                        </Ratio>
+                    {true && (
+                        <SecondLabel $align={"right"} $weight={"sb"}>
+                            C-RATIO: {cRatio.toString()}%
+                        </SecondLabel>
                     )}
-                </RowContainer>
+                </APYContainer>
                 <RowContainer>
                     <Label>{"pUSD"}</Label>
                     <Input
@@ -53,13 +53,14 @@ export const MintCard = ({
                         value={isActive ? mintAmount : "0"}
                         onChange={(e) => onChange(e.target.value, currencyName)}
                         color={"primary"}
+                        width="80%"
                     />
                     <MaxButton color={"secondary"} disabled={!isActive} fontColor={"primary"} onClick={() => maxAction()} />
                 </RowContainer>
 
                 <RowContainer>
                     <Label>{currencyName}</Label>
-                    <Input disabled={true} currencyName={currencyName} value={isActive ? stakeAmount : "0"} color={"primary"} />
+                    <Input disabled={true} currencyName={currencyName} value={isActive ? stakeAmount : "0"} color={"primary"} width="90%"/>
                 </RowContainer>
                 <ColContainer>
                     {isApprove ? (
@@ -69,7 +70,6 @@ export const MintCard = ({
                             onClick={() => (isConnect ? approveAction() : false)}
                             color={"secondary"}
                             width={320}
-                            border={"none"}
                             margin={"0px 20px 0px 0px"}
                         >
                             <H4 $weight={"sb"}>Approve</H4>
@@ -81,7 +81,6 @@ export const MintCard = ({
                             onClick={() => mintAction()}
                             color={"secondary"}
                             width={320}
-                            border={"none"}
                             margin={"0px 20px 0px 0px"}
                         >
                             <H4 $weight={"sb"}>MINT</H4>
@@ -95,40 +94,51 @@ export const MintCard = ({
     );
 };
 
-const Ratio = styled(H4)`
+export const SecondLabel = styled(H4)`
     margin-right: 80px;
+
+    ${({ theme }) => theme.media.mobile`
+        margin-right: 30px;
+    `}
 `;
 
-const IsActive = css`
-    margin: 20px 0px;
-    min-width: 700px;
-    max-width: 850px;
-    width: 100%;
+const IsActive = css<{ $border:string }>`
+    // margin: 20px 0px;
     z-index: 2;
-    box-shadow: ${(props) => `0px 0px 25px ${props.theme.colors.border.secondary}`};
-    border: ${(props) => `2px solid ${props.theme.colors.border.secondary}`};
+    box-shadow: ${(props) => `0px 0px 15px ${props.theme.colors.border[props.$border]}`};
+    border: ${(props) => `2px solid ${props.theme.colors.border[props.$border]}`};
 `;
 
-const Card = styled.div<{ $isActive: any }>`
+export const Card = styled.div<{ $isActive: any, $border:string }>`
     display: flex;
     flex-direction: row;
     height: 100%;
-    width: 100%;
+    width: 90%;
+    psotion: relative;
+    top: 0;
     max-width: 600px;
-    min-width: 400px;
     z-index: 1;
     border-radius: 20px;
     background: padding-box;
-    background-color: ${(props) => props.theme.colors.background.panel};
+    background-color: ${(props) => props.theme.colors.background.body};
+    border: ${(props) => `2px solid ${props.theme.colors.border.tableRow}`};
     ${(props) => (props.$isActive ? IsActive : null)}
+
+    ${({ theme }) => theme.media.mobile`
+        flex-direction: column;
+        align-items: stretch;
+        height: fit-content;
+        max-width: 450px;
+    `}
 `;
 
-const IconContainer = styled.div`
-    flex: 1;
+export const IconContainer = styled.div`
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    width: 30%;
+
     img {
         width: 70px;
         height: 70px;
@@ -136,31 +146,119 @@ const IconContainer = styled.div`
     h3 {
         margin: 15px;
     }
+
+    ${({ theme }) => theme.media.mobile`
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        margin-top: 20px;
+        height: 30px;
+        width: 100%;
+        img {
+            width: 30px;
+            height: 30px;
+        }
+        h3 {
+            width: fit-content;
+            margin: 0px 10px;
+        }
+        h4 {
+            width: fit-content;
+        }
+    `}
 `;
 
-const InputContainer = styled.div`
+export const InputContainer = styled.div`
     display: flex;
     flex-direction: column;
-    flex: 2;
     justify-content: center;
+    margin-top: 20px;
+    width: 70%;
+
+    ${({ theme }) => theme.media.mobile`
+        width: 100%;
+    `}
 `;
 
-const RowContainer = styled.div<{ $margin?: string }>`
-    width: 460px;
+export const APYContainer = styled.div`
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    ${({ theme }) => theme.media.mobile`
+        justify-content: flex-end;
+        h4 {
+            font-size: 9px;
+        }
+        // width: 100%;
+
+    `}
+`;
+
+export const RowContainer = styled.div<{ $margin?: string }>`
+    width: 90%;
     display: flex;
     margin: ${(props) => (props.$margin ? `${props.$margin}px` : "10px")};
     flex-direction: row;
     align-items: center;
+
+    button {
+        width: 49px;
+    }
+
+    ${({ theme }) => theme.media.mobile`
+        justify-content: center;
+        width: 95%;
+        margin-top: 10px;
+        margin-left: 10px;
+        margin-right: 0px;
+
+        h4 {
+            width: 10%;
+            margin: 0px 0px 0px 0px;
+        }
+
+    `}
 `;
 
-const ColContainer = styled.div`
-    width: 460px;
+
+export const ColContainer = styled.div`
+    width: 92%;
     display: flex;
-    margin: 10px;
+    margin-left: 10px;
     flex-direction: column;
     align-items: center;
+
+    button {
+        margin: 0 20px 0 0;
+        width: 85%;
+    }
+
+    ${({ theme }) => theme.media.mobile`
+        justify-content: center;
+        width: 100%;
+        margin-top: 20px;
+
+        button {
+            margin: 0;
+            width: 75%;
+        }
+    `}
+
+    ${({ theme }) => theme.media.tablet`
+        justify-content: center;
+        width: 95%;
+        margin: 10px 0px 0px 0px;
+
+        button {
+            margin: 0 0 0 15px;
+            width: 90%;
+        }
+    `}
+
 `;
 
-const Label = styled(H4)`
+export const Label = styled(H4)`
     width: 50px;
 `;

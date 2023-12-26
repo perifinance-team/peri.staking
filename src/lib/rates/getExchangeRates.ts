@@ -11,6 +11,8 @@ export const getExchangeRates = async () => {
 			DAI: BigInt(0),
 		};
 	}
+
+	// console.log("ExchangeRates", ExchangeRates);
 	const PERI = BigInt((await ExchangeRates.rateForCurrency(utils.formatBytes32String("PERI"))).toString());
 	const USDC = BigInt((await ExchangeRates.rateForCurrency(utils.formatBytes32String("USDC"))).toString());
 	const DAI = BigInt((await ExchangeRates.rateForCurrency(utils.formatBytes32String("DAI"))).toString());

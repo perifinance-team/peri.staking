@@ -55,22 +55,59 @@ const Main = () => {
 const MainContainer = styled.div`
 	display: flex;
 	height: 100vh;
+	width: 100vw;
+	position: static;
 	flex-direction: row;
+	background-color: ${(props) => props.theme.colors.background.body};
+
+	${({ theme }) => theme.media.mobile`
+		flex-direction: column;
+	`}
 `;
 const RightSection = styled.div`
-	flex: 3;
+	// flex: 3;
 	display: flex;
+	width: 100%;
+	height: 100%;
 	flex-direction: column;
-	background-color: ${(props) => props.theme.colors.background.body};
+	overflow-y: auto;
+
+	${({ theme }) => theme.media.mobile`
+		align-items: center;
+	`}
 `;
 const ContentSection = styled.div`
-	flex: 15;
+	flex: last;
 	display: flex;
 	flex-direction: row;
+	height: 100%;
+	width: 100%;
+
+	${({ theme }) => theme.media.mobile`
+		flex: none;
+		flex-direction: column;
+	`}
+
+	${({ theme }) => theme.media.tablet`
+		flex-direction: column;
+	`}
 `;
 
 const Content = styled.div`
 	flex: 3;
+	width: auto;
+	height: 100%;
+	min-width: 262px;
+	position: relative;
+	overflow: hidden;
+
+	${({ theme }) => theme.media.mobile`
+		min-height: 50vh;
+	`}
+
+	${({ theme }) => theme.media.tablet`
+		min-height: 68vh;
+	`}
 `;
 
 export default Main;

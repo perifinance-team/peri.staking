@@ -62,7 +62,7 @@ const LiquidationNoti = styled.div<ILiquidationNoti>`
     background: white;
     color: ${(props) => (props.$title === 0 ? "#5cb85c" : "#fc3b3b")};
     font-weight: bold;
-    font-size: 1.6rem;
+    font-size: 1rem;
     width: 20px;
     height: 20px;
     min-width: 20px;
@@ -80,13 +80,13 @@ const LiquidationNoti = styled.div<ILiquidationNoti>`
     padding-bottom: 1rem;
 
     h4 {
-      font-size: 1.4rem;
+      font-size: 0.875rem;
       margin: 2rem 0 1rem 0;
     }
 
     span {
       white-space: pre-wrap;
-      font-size: 1.2rem;
+      font-size: 0.75rem;
     }
   }
 

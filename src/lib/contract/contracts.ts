@@ -23,7 +23,7 @@ const naming = {
 		137: "PeriFinanceToPolygon",
 		1285: "PeriFinance",
 		1287: "PeriFinance",
-		1337: true ? "PeriFinanceToEthereum" : "PeriFinanceToPolygon",
+		1337: true ? "PeriFinanceToPolygon" : "PeriFinanceToEthereum",
 		80001: "PeriFinanceToPolygon",
 	},
 	ExternalTokenStakeManager: "ExternalTokenStakeManager",
@@ -44,7 +44,7 @@ const stable = {
 	},
 	137: {
 		USDC: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
-		DAI: "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063",
+		DAI: "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063",
 	},
 	97: {
 		USDC: "0x8EDc640693b518c8d531A8516A5C0Ae98b641a03",
@@ -61,6 +61,10 @@ const stable = {
 	80001: {
 		USDC: "0xcE954FC4c52A9E6e25306912A36eC59293da41E3",
 		DAI: "0xAcC78d249781EDb5feB50027971EF4D60f144325",
+	},
+	1337: {
+		USDC: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
+		DAI: "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063",
 	},
 };
 
@@ -141,6 +145,7 @@ export const contracts: Contracts = {
 				}
 			}
 		});
+
 		if (stable[this.networkId]) {
 			this["USDC"] = new ethers.Contract(stable[this.networkId].USDC, ERC20.abi, this.provider);
 			this["DAI"] = new ethers.Contract(stable[this.networkId].DAI, ERC20.abi, this.provider);

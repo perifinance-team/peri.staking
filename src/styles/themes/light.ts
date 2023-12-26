@@ -25,6 +25,7 @@ export const light = {
       secondary: green,
       tertiary: gray,
       fourth: white,
+      fifth: black,
     },
     THeader: blue,
     reFresh: blue,
@@ -37,6 +38,7 @@ export const light = {
     primary: blue,
     secondary: green,
     tertiary: white,
+    third: black,
     barChart: blue,
     tableRow: "rgba(255, 255, 255, 0.1)",
   },
@@ -52,6 +54,7 @@ export const light = {
     tertiary: gray,
     fourth: blue,
     fifth: black,
+    sixth: whiteBlue,
     warning: warning,
   },
   barChart: {

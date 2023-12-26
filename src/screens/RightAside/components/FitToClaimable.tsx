@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "config/reducers";
-import { H3 } from "components/heading";
+import { H4 } from "components/heading";
 import { contracts } from "lib/contract";
 import { updateTransaction } from "config/reducers/transaction";
 import { setLoading } from "config/reducers/loading";
@@ -83,23 +83,37 @@ const FitToClaimable = () => {
     }
   };
   return (
-    <>
-      {currentCRatio > 250000000000000000n && (
-        <FitToClaimableButton onClick={() => fitToClaimable()}>
-          <H3>FIT TO CLAIMABLE</H3>
-        </FitToClaimableButton>
-      )}
-    </>
+    <FitToClaimableButton disabled={currentCRatio <= 250000000000000000n}onClick={() => fitToClaimable()}>
+      <H4 $weight="m">Fit To Claimable</H4>
+    </FitToClaimableButton>
   );
 };
 const FitToClaimableButton = styled.button`
-  border-radius: 10px;
-  border: ${(props) => `2px solid ${props.theme.colors.border.tertiary}`};
-  color: ${(props) => props.theme.colors.font.primary};
-  padding: 1.5rem;
+  width: 100%;
+  border-radius: 25px;
+  padding: 0.7rem;
   margin-top: 15px;
-  margin-bottom: 20px;
-  background-color: transparent;
+  margin-bottom: 15px;
+  color: ${(props) => props.theme.colors.font.primary};
+  background-color: ${(props) => props.theme.colors.background.button.fifth};
+  border: ${(props) => `1px solid ${props.theme.colors.border.tableRow}`};
+	box-shadow: 0.5px 1.5px 0px ${(props) => props.theme.colors.border.primary};
+
+  &:hover {
+		transition: 0.2s ease-in-out;
+		transform: translateY(-1px);
+		box-shadow: ${({theme}) => `0.5px 3px 0px ${theme.colors.border.primary}`};
+	}
+
+	&:active {
+		transform: translateY(1px);
+		box-shadow: none;
+	}
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
 `;
 
 export default FitToClaimable;

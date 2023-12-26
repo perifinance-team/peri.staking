@@ -1,110 +1,124 @@
 body {
-	margin: 0;
-	font-family: "Montserrat", sans-serif;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  font-family: "Montserrat", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 .notification-info {
-	background-color: #2184F8 !important;
+  background-color: #2184f8 !important;
 }
 
 .notification-success {
-	background-color: #4D984F !important;
+  background-color: #4d984f !important;
 }
 
 .notification-warning {
-	background-color: #E24545 !important;
-}
-  
-.notification-message .title{
-	font-weight: 700 !important;
-	font-size: 1.8rem !important;
+  background-color: #e24545 !important;
 }
 
-.notification-message .message{
-	font-weight: 500;
-	font-size: 1.4rem;
+.notification-message .title {
+  font-weight: 700 !important;
+  font-size: 1.125rem !important;
+}
+
+.notification-message .message {
+  font-weight: 500;
+  font-size: 0.875rem;
 }
 
 .notification {
-	box-sizing: border-box;
-	padding: 25px 25px 25px 60px;
-	border-radius: 2px;
-	box-shadow: 0 0 12px #999;
-	cursor: pointer;
-	line-height: 1.8em;
-	position: relative;
-	opacity: 1;
-	margin-top: 15px;
+  box-sizing: border-box;
+  padding: 25px 25px 25px 60px;
+  border-radius: 2px;
+  box-shadow: 0 0 12px #999;
+  cursor: pointer;
+  line-height: 1.8em;
+  position: relative;
+  opacity: 1;
+  margin-top: 15px;
 }
 
 .swiper-container {
-    padding: 0 70px;
-    overflow: hidden;
-    height: 100%;
+  margin: 0 20px;
+  overflow: hidden;
+  height: 100%;
+  position: relative;
+  max-width: 700px;
+  /* top: -70px !important;
+  margin-top: -70px !important; */
 }
 .swiper-wrapper {
-    width: 100%;
-    height: 300px;
+  position: absolute !important;
+  width: 100%;
+  margin: 0 auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
 }
 .swiper-slide.swiper-slide-next {
-	height: 300px !important;
+  height: 300px !important;
+}
+
+.swiper-slide.swiper-slide-prev {
+  height: 300px;
 }
 
 .swiper-slide {
-    text-align: center;
-    width: 100%;
-	height: 300px;
-    /* Center slide text vertically */
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-    -webkit-box-pack: center;
-    -ms-flex-pack: center;
-    -webkit-justify-content: center;
-    justify-content: center;
-    -webkit-box-align: center;
-    -ms-flex-align: center;
-    -webkit-align-items: center;
-    align-items: center;
-    opacity: 0.18;
+  text-align: center;
+  width: 95%;
+  height: 300px;
+  /* margin-top: -70px !important; */
+  /* Center slide text vertically */
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  -webkit-align-items: center;
+  align-items: center;
+  opacity: 0.3;
 }
 
-.swiper-slide.swiper-slide-active{
-    width: 100%;
-    height: 300px !important;
-    margin-bottom: -5px !important;
-    margin-top: -20px !important;
-    opacity: 1;
+.swiper-slide.swiper-slide-active {
+  width: 100%;
+  height: 300px !important;
+  /* margin-top: -70px !important; */
+  /* margin-bottom: -30px !important; */
+  opacity: 1;
 }
 
-
 @font-face {
-	font-family: 'Montserrat';
-	font-style: normal;
-	font-weight: 500;
-	src: url(./fonts/Montserrat-Medium.ttf) format('truetype');
+  font-family: "Montserrat";
+  font-style: normal;
+  font-weight: 500;
+  src: url(./fonts/Montserrat-Medium.ttf) format("truetype");
 }
 @font-face {
-	font-family: 'Montserrat';
-	font-style: normal;
-	font-weight: 600;
-	src: url(./fonts/Montserrat-SemiBold.ttf) format('truetype');
+  font-family: "Montserrat";
+  font-style: normal;
+  font-weight: 600;
+  src: url(./fonts/Montserrat-SemiBold.ttf) format("truetype");
 }
 @font-face {
-	font-family: 'Montserrat';
-	font-style: normal;
-	font-weight: 700;
-	src: url(./fonts/Montserrat-Bold.ttf) format('truetype');
+  font-family: "Montserrat";
+  font-style: normal;
+  font-weight: 700;
+  src: url(./fonts/Montserrat-Bold.ttf) format("truetype");
 }
 @font-face {
-	font-family: 'Montserrat';
-	font-style: normal;
-	font-weight: 800;
-	src: url(./fonts/Montserrat-ExtraBold.ttf) format('truetype');
+  font-family: "Montserrat";
+  font-style: normal;
+  font-weight: 800;
+  src: url(./fonts/Montserrat-ExtraBold.ttf) format("truetype");
 }
 
 ::-webkit-scrollbar {
-	display: none;
+  width: 0;  /* Remove scrollbar space */
+  height: 0;
+  background: transparent;  /* Optional: just make scrollbar invisible */
 }

@@ -2,7 +2,7 @@ import React from "react";
 import styled, { css } from "styled-components";
 import { useSelector } from "react-redux";
 import { RootState } from "config/reducers";
-import { H4 } from "components/heading";
+import { H4, H5 } from "components/heading";
 import { useEffect, useState } from "react";
 
 const StakingRate = () => {
@@ -33,21 +33,27 @@ const StakingRate = () => {
   return (
     <>
       {balances["DEBT"]?.PERI > 0 && (
-        <>
+        <StakingRateContainer>
           <Line></Line>
           <Container $per={100 - PERIStakingPer}>
             <BarChartText $align={"left"}>{100 - PERIStakingPer}%</BarChartText>
             <BarChartText $align={"right"}>{PERIStakingPer}%</BarChartText>
           </Container>
-          <Container>
-            <H4 $align={"left"}>Peri</H4>
-            <H4 $align={"right"}>Stable</H4>
-          </Container>
-        </>
+          <ChartContainer>
+            <ChartLabel $align={"left"}>$Peri</ChartLabel>
+            <ChartLabel $align={"right"}>$Stables</ChartLabel>
+          </ChartContainer>
+        </StakingRateContainer>
       )}
     </>
   );
 };
+
+const StakingRateContainer = styled.div`
+  width: 100%;
+  margin-top: 20px;
+`;
+
 const Line = styled.div`
   width: 80%;
   height: 8px;
@@ -64,7 +70,6 @@ const Container = styled.div<{ $per?: number }>`
     props.$per
       ? css({ border: `1px solid ${props.theme.colors.border.barChart}` })
       : null};
-  margin-bottom: 15px;
   background: ${(props) => {
     if (props.$per) {
       const left =
@@ -77,8 +82,19 @@ const Container = styled.div<{ $per?: number }>`
   }};
 `;
 
+const ChartContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  text-decoration: row;
+`;
+
 const BarChartText = styled(H4)`
   padding: 0px 5px;
+`;
+
+const ChartLabel = styled(H5)`
+  margin-bottom: 0;
+  margin-top: 3px;
 `;
 
 export default StakingRate;

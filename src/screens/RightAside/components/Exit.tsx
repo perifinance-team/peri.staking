@@ -52,23 +52,35 @@ const Exit = () => {
 		}
 	};
 	return (
-		<>
-			{currentCRatio > 0n && (
-				<Container onClick={() => exit()}>
-					<H4 $weight={"b"}>UNSTAKE ALL</H4>
-				</Container>
-			)}
-		</>
+		<Container disabled={currentCRatio <= 0n}onClick={() => exit()}>
+			<H4 $weight={"m"}>Burn All</H4>
+		</Container>
 	);
 };
 
 const Container = styled.button`
-	border: none;
 	padding: 0px 10px;
 	height: 30px;
-	background-color: ${(props) => props.theme.colors.background.reFresh};
-	background: #4182f0;
+	background-color: ${(props) => props.theme.colors.background.button.fifth};
+	border: ${(props) => `1px solid ${props.theme.colors.border.tableRow}`};
+	box-shadow: 0.5px 1.5px 0px ${(props) => props.theme.colors.border.primary};
 	border-radius: 14px;
+
+	&:hover {
+		transition: 0.2s ease-in-out;
+		transform: translateY(-1px);
+		box-shadow: ${({theme}) => `0.5px 3px 0px ${theme.colors.border.primary}`};
+	}
+
+	&:active {
+		transform: translateY(1px);
+		box-shadow: none;
+	}
+
+	&:disabled {
+		cursor: not-allowed;
+		opacity: 0.7;
+	}
 `;
 
 export default Exit;

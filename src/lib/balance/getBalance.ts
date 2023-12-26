@@ -8,7 +8,7 @@ export const getBalance = async (address: string, coinName: string, decimal) => 
             return BigInt((await contracts[coinName].balanceOf(address)).toString()) * BigInt(Math.pow(10, 18 - decimal).toString());
         }
     } catch(e) {
-
+        console.log(e);
     }
     return 0n
 };

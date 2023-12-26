@@ -5,7 +5,7 @@ import { RootState } from "config/reducers";
 import { useSelector } from "react-redux";
 // import { useEffect } from 'react';
 
-const Logo = () => {
+const Navigator = () => {
 	const { vestable } = useSelector((state: RootState) => state.vestable);
 	const { networkId } = useSelector((state: RootState) => state.wallet);
 
@@ -41,6 +41,20 @@ const Logo = () => {
 			active: useRouteMatch({
 				path: "/balance",
 			}),
+			children: [
+				{
+					name: "vesting",
+					to: "/vesting",
+				},
+				{
+					name: "liquidation",
+					to: "/liquidation",
+				},
+				{
+					name: "escrow",
+					to: "/escrow",
+				}
+			],
 		},
 		{
 			name: "vesting",
@@ -49,20 +63,20 @@ const Logo = () => {
 				path: "/vesting",
 			}),
 		},
-		{
-			name: "liquidation",
-			to: "/liquidation",
-			active: useRouteMatch({
-				path: "/liquidation",
-			}),
-		},
-		{
-			name: "escrow",
-			to: "/escrow",
-			active: useRouteMatch({
-				path: "/escrow",
-			}),
-		},
+		// {
+		// 	name: "liquidation",
+		// 	to: "/liquidation",
+		// 	active: useRouteMatch({
+		// 		path: "/liquidation",
+		// 	}),
+		// },
+		// {
+		// 	name: "escrow",
+		// 	to: "/escrow",
+		// 	active: useRouteMatch({
+		// 		path: "/escrow",
+		// 	}),
+		// },
 	];
 
 	return (
@@ -71,7 +85,7 @@ const Logo = () => {
 				let childrenLink;
 				if (item.children?.length > 0) {
 					childrenLink = item.children.map((childrenItem) => {
-						if (networkId !== 1285 || childrenItem.name !== "earn") /* return <></>; */
+						if ((networkId !== 1285 || childrenItem.name !== "earn") && (childrenItem.name !== "vesting" || vestable !== false)) /* return <></>; */
 						/* else */
 							return (
 								<ChildrenLink to={`${item.to}${childrenItem.to}`} key={childrenItem.name}>
@@ -86,9 +100,9 @@ const Logo = () => {
 					return ( 
 						<ParentLinkContainer key={item.name}>
 							<ParentLink to={item.to} key={item.name}>{item.name.toLocaleUpperCase()}</ParentLink>
-							{item.active && childrenLink && (
-								<ChildrenLinkContainer>{childrenLink}</ChildrenLinkContainer>
-							)}
+							{/* {item.active && childrenLink && ( */}
+								<ChildrenLinkContainer $active={item.active && childrenLink}>{childrenLink}</ChildrenLinkContainer>
+							{/* )} */}
 						</ParentLinkContainer>  
 					);
 				} 
@@ -98,42 +112,62 @@ const Logo = () => {
 };
 
 const Container = styled.div`
-	margin-top: 15vh;
+	margin-top: 9vh;
 	display: flex;
 	flex-direction: column;
+
+	${({ theme }) => theme.media.mobile`
+		margin-top: 0;
+	`}
 `;
 const ParentLinkContainer = styled.div`
-	margin-bottom: 25px;
+	margin-bottom: 10px;
 `;
 
 const ParentLink = styled(NavLink)`
 	text-decoration: none;
 	width: fit-content;
-	font-size: 1.8rem;
+	font-size: 1.125rem;
 	font-weight: 800;
 	color: ${(props) => props.theme.colors.font.primary};
 
 	&.active {
-		border-bottom: ${(props) => `5px solid ${props.theme.colors.link.active}`};
+		// border-bottom: ${(props) => `5px solid ${props.theme.colors.link.active}`};
+		color: ${(props) => props.theme.colors.link.active};
 	}
+
+	${({ theme }) => theme.media.mobile`
+		font-size: 0.9rem;
+	`}
 `;
 
-const ChildrenLinkContainer = styled.div`
-	display: flex;
+const ChildrenLinkContainer = styled.div<{ $active?: boolean }>`
+	display: ${(props) => (props.$active ? "flex" : "none")};
 	flex-direction: column;
-	margin-left: 20px;
-	margin-top: 20px;
+	margin-left: 25px;
+	margin-top: 15px;
+
+	${({ theme }) => theme.media.mobile`
+		margin-left: 10px;
+		display: flex;
+	`}
 `;
 
 const ChildrenLink = styled(NavLink)`
+	
 	text-decoration: none;
-	font-size: 1.4rem;
+	font-size: 0.913rem;
 	font-weight: 800;
-	margin-bottom: 10px;
+	margin-bottom: 15px;
 	color: ${(props) => props.theme.colors.font.primary};
 	&.active {
 		color: ${(props) => props.theme.colors.link.active};
 	}
+
+	${({ theme }) => theme.media.mobile`
+		font-size: 0.7rem;
+		margin-bottom: 15px;
+	`}
 `;
 
 // const LogoImg = styled.img`
@@ -141,4 +175,4 @@ const ChildrenLink = styled(NavLink)`
 //     height: 50px;
 // `
 
-export default Logo;
+export default Navigator;

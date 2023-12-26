@@ -6,6 +6,7 @@ import { contracts } from "lib/contract";
 import styled from "styled-components";
 import Countdown from "react-countdown";
 import { setLoading } from "config/reducers/loading";
+import { H4 } from "./heading";
 
 const Timer = () => {
   const dispatch = useDispatch();
@@ -75,7 +76,7 @@ const Timer = () => {
       </Countdown>
 
       <EscapeBtn onClick={() => onEscapeHandler()} disabled={!toggleBtn}>
-        Escape
+        <H4 $weight={"b"}>Escape</H4>
       </EscapeBtn>
     </TimerContainer>
   );
@@ -83,29 +84,30 @@ const Timer = () => {
 
 const TimerContainer = styled.div`
   display: flex;
-  justify-content: space-between;
+  width: 33%;
+  justify-content: center;
   align-items: center;
-  margin-bottom: 1rem;
+  ${({ theme }) => theme.media.mobile`
+    width: 100%;
+    order: 3;
+  `}
+
   span {
     color: ${(props) => props.theme.colors.font["warning"]};
-    font-size: 4rem;
+    font-size: 1rem;
     font-weight: bold;
   }
+
 `;
 
 const EscapeBtn = styled.button`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: white;
-  background: #2284e0;
-  border: none;
-  outline: none;
-  font-size: 2rem;
-  font-weight: bold;
-  letter-spacing: 1px;
-  width: 10rem;
-  padding: 0.4rem 0.2rem;
+  border-radius: 25px;
+  border: ${(props) => `1px solid ${props.theme.colors.border.tableRow}`};
+  box-shadow: 0px 0px 10px ${(props) => props.theme.colors.border.primary};
+  color: ${(props) => props.theme.colors.font.primary};
+  background-color: ${(props) => props.theme.colors.background.button.fifth};
+  padding: 5px 10px;
+  margin-left: 15px;
 `;
 
 export default Timer;

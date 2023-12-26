@@ -7,6 +7,8 @@ import { Fee } from "components/fee";
 import { useSelector } from "react-redux";
 import { RootState } from "config/reducers";
 import { formatCurrency } from "lib";
+import { SecondLabel, Card, IconContainer, InputContainer, APYContainer, RowContainer, ColContainer, Label} from "./MintCard";
+
 
 export const LPRewardCard = ({ isActive, actionName, rewardAction, data }) => {
     const { networkId } = useSelector((state: RootState) => state.wallet);
@@ -23,24 +25,24 @@ export const LPRewardCard = ({ isActive, actionName, rewardAction, data }) => {
         80001: "QUICK",
     };
     return (
-        <Card $isActive={isActive}>
+        <Card $isActive={isActive} $border={"primary"}>
             <IconContainer>
                 {isActive && <img src={`/images/icon/${actionName}_${swapName[networkId]}.png`} alt="LP"></img>}
                 <H3 $weight={"sb"}>{swapName[networkId]}SWAP</H3>
             </IconContainer>
             <InputContainer>
-                <RowContainer $margin={"0px"}>
+                <APYContainer>
                     {isActive && (
                         <H4 $align={"right"} $weight={"sb"}>
                             TIME LEFT: {data.closeIn}
                         </H4>
                     )}
                     {isActive && (
-                        <ClaimAble $align={"right"} $weight={"sb"}>
+                        <SecondLabel $align={"right"} $weight={"sb"}>
                             STATUS: {"OPEN"}
-                        </ClaimAble>
+                        </SecondLabel>
                     )}
-                </RowContainer>
+                </APYContainer>
                 <RowContainer>
                     <Label>{"PERI"}</Label>
                     <Input
@@ -58,8 +60,7 @@ export const LPRewardCard = ({ isActive, actionName, rewardAction, data }) => {
                         disabled={!isActive}
                         height={30}
                         onClick={() => rewardAction()}
-                        color={"tertiary"}
-                        border={"tertiary"}
+                        color={"primary"}
                         width={320}
                         margin={"0px 20px 0px 0px"}
                     >
@@ -74,71 +75,71 @@ export const LPRewardCard = ({ isActive, actionName, rewardAction, data }) => {
     );
 };
 
-const ClaimAble = styled(H4)`
-    margin-right: 80px;
-`;
+// const ClaimAble = styled(H4)`
+//     margin-right: 80px;
+// `;
 
-const IsActive = css`
-    min-width: 700px;
-    max-width: 850px;
-    width: 100%;
-    z-index: 2;
-    box-shadow: ${(props) => `0px 0px 25px ${props.theme.colors.border.primary}`};
-    border: ${(props) => `2px solid ${props.theme.colors.border.primary}`};
-`;
+// const IsActive = css`
+//     min-width: 700px;
+//     max-width: 850px;
+//     width: 100%;
+//     z-index: 2;
+//     box-shadow: ${(props) => `0px 0px 25px ${props.theme.colors.border.primary}`};
+//     border: ${(props) => `2px solid ${props.theme.colors.border.primary}`};
+// `;
 
-const Card = styled.div<{ $isActive: any }>`
-    display: flex;
-    flex-direction: row;
-    height: 100%;
-    width: 100%;
-    max-width: 600px;
-    min-width: 400px;
-    z-index: 1;
-    border-radius: 20px;
-    background: padding-box;
-    background-color: ${(props) => props.theme.colors.background.panel};
-    ${(props) => (props.$isActive ? IsActive : null)}
-`;
+// const Card = styled.div<{ $isActive: any }>`
+//     display: flex;
+//     flex-direction: row;
+//     height: 100%;
+//     width: 100%;
+//     max-width: 600px;
+//     min-width: 400px;
+//     z-index: 1;
+//     border-radius: 20px;
+//     background: padding-box;
+//     background-color: ${(props) => props.theme.colors.background.panel};
+//     ${(props) => (props.$isActive ? IsActive : null)}
+// `;
 
-const IconContainer = styled.div`
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    img {
-        width: 70px;
-        height: 70px;
-    }
-    h3 {
-        margin: 15px;
-    }
-`;
+// const IconContainer = styled.div`
+//     flex: 1;
+//     display: flex;
+//     flex-direction: column;
+//     justify-content: center;
+//     align-items: center;
+//     img {
+//         width: 70px;
+//         height: 70px;
+//     }
+//     h3 {
+//         margin: 15px;
+//     }
+// `;
 
-const InputContainer = styled.div`
-    display: flex;
-    flex-direction: column;
-    flex: 2;
-    justify-content: center;
-`;
+// const InputContainer = styled.div`
+//     display: flex;
+//     flex-direction: column;
+//     flex: 2;
+//     justify-content: center;
+// `;
 
-const RowContainer = styled.div<{ $margin?: string }>`
-    width: 460px;
-    display: flex;
-    margin: ${(props) => (props.$margin ? `${props.$margin}px` : "10px")};
-    flex-direction: row;
-    align-items: center;
-`;
+// const RowContainer = styled.div<{ $margin?: string }>`
+//     width: 460px;
+//     display: flex;
+//     margin: ${(props) => (props.$margin ? `${props.$margin}px` : "10px")};
+//     flex-direction: row;
+//     align-items: center;
+// `;
 
-const ColContainer = styled.div`
-    width: 460px;
-    display: flex;
-    margin: 10px;
-    flex-direction: column;
-    align-items: center;
-`;
+// const ColContainer = styled.div`
+//     width: 460px;
+//     display: flex;
+//     margin: 10px;
+//     flex-direction: column;
+//     align-items: center;
+// `;
 
-const Label = styled(H4)`
-    width: 50px;
-`;
+// const Label = styled(H4)`
+//     width: 50px;
+// `;

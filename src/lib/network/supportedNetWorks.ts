@@ -7,14 +7,15 @@ export const SUPPORTED_NETWORKS = {
 	97: "BSCTEST",
 	80001: "MUMBAI",
 	1287: "moonbase-alphanet",
-	1337: true ? "MAINNET" : "POLYGON", // ! test network
+	1337: true ? "POLYGON" : "MAINNET", // ! test network
 };
 
 export const MAINNET = {
 	1: 'MAINNET',
 	56: 'BSC',
 	1285: 'MOONRIVER',
-	137: 'POLYGON'
+	137: 'POLYGON',
+	1337: true ? "POLYGON" : "MAINNET", // ! test network
 };
 
 export const TESTNET = {

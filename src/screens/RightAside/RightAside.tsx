@@ -1,51 +1,90 @@
 import React from "react";
 import styled from "styled-components";
-
-import DebtBalance from "./components/DebtBalance";
-import Ratios from "./components/Ratios";
-import StakingRate from "./components/StakingRate";
 import StakingStatus from "./components/StakingStatus";
 import FitToClaimable from "./components/FitToClaimable";
 import Refresh from "./components/Refresh";
 import Exit from "./components/Exit";
+import StakingRate from "./components/StakingRate";
 
 const RightAside = () => {
   return (
     <Aside>
       <Container>
-        <DebtBalance></DebtBalance>
-        <Ratios></Ratios>
-        <StakingRate></StakingRate>
-        <FitToClaimable></FitToClaimable>
-        <StakingStatus></StakingStatus>
-        <FlexRow>
-          <Refresh></Refresh>
-          <Exit></Exit>
-        </FlexRow>
+        <MainContainer>
+          <FlexRow>
+            <Refresh></Refresh>
+            <Exit></Exit>
+          </FlexRow>
+          <FitToClaimable></FitToClaimable>
+          {/* <DebtBalance></DebtBalance>
+          <Ratios></Ratios> */}
+          <StakingRate></StakingRate>
+          <StakingStatus></StakingStatus>
+        </MainContainer>
       </Container>
     </Aside>
   );
 };
 
-const Aside = styled.aside``;
+const Aside = styled.aside`
+  width: 22vw;
+  ${({ theme }) => theme.media.tablet`
+    width: 100%;
+    height: 40%;
+  `}
+
+  ${({ theme }) => theme.media.mobile`
+    width: 100%;
+    height: 40%;
+  `}
+`;
+
+const Container = styled.div`
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+
+  // ${({ theme }) => theme.media.mobile`
+  //   position: relative;
+  // `}
+`;
 
 const FlexRow = styled.div`
-  margin-top: 20px;
+  width: 100%;
+  margin-top: 10px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
 `;
 
-const Container = styled.div`
+const MainContainer = styled.div`
   display: flex;
-  margin-top: 10vh;
+  padding-top: 30px;
   flex-direction: column;
-  min-width: 240px;
-  padding: 0 60px 0 0;
-  @media only screen and (max-height: 900px) {
+  align-items: flex-start;
+  width: 85%;
+  min-width: 200px;
+  // margin: 0 30px;
+  // margin: 0 60px 0 0;
+  
+  // padding: 0 60px 0 0;
+
+  ${({ theme }) => theme.media.mobile`
+    padding-top: 10px;
     margin-top: 0;
-  }
+    margin: 0 5%;
+    width: 95%;
+    min-width: 240px;
+  `}
+
+  ${({ theme }) => theme.media.tablet`
+    margin-top: 0;
+    margin: 0 5%;
+    width: 95%;
+
+  `}
+
 `;
 
 export default RightAside;

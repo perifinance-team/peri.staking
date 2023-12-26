@@ -8,6 +8,7 @@ import { FeeAndPrice } from "components/fee";
 import { useSelector } from "react-redux";
 import { RootState } from "config/reducers";
 import { formatCurrency } from "lib";
+import { Card, IconContainer, InputContainer, APYContainer, RowContainer, ColContainer, Label } from "../card/MintCard"
 
 export const BurnCard = ({
     isActive,
@@ -34,7 +35,7 @@ export const BurnCard = ({
         80001: "QUICK",
     };
     return (
-        <Card $isActive={isActive}>
+        <Card $isActive={isActive} $border={"tertiary"}>
             <IconContainer>
                 {isActive && (
                     <img
@@ -47,13 +48,13 @@ export const BurnCard = ({
             </IconContainer>
             <InputContainer>
                 {!isLP && (
-                    <RowContainer $margin={"0px"}>
+                    <APYContainer>
                         {isActive && (
                             <Ratio $align={"right"} $weight={"sb"}>
                                 EST C-RATIO: {cRatio.toString()}%
                             </Ratio>
                         )}
-                    </RowContainer>
+                    </APYContainer>
                 )}
                 {!isLP && (
                     <RowContainer>
@@ -90,10 +91,9 @@ export const BurnCard = ({
                             padding={'0'}
                             color={"fourth"}
                             width={320}
-                            border={"none"}
                             margin={"0px 20px 0px 0px"}
                         >
-                            <H4 $weight={"sb"} color={"fifth"}>
+                            <H4 $weight={"sb"} $color={"fifth"}>
                                 BURN
                             </H4>
                         </RoundButton>
@@ -104,10 +104,9 @@ export const BurnCard = ({
                             onClick={() => burnAction()}
                             color={"fourth"}
                             width={320}
-                            border={"none"}
                             margin={"0px 20px 0px 0px"}
                         >
-                            <H4 $weight={"sb"} color={"fifth"}>
+                            <H4 $weight={"sb"} $color={"fifth"}>
                                 UNSTAKE
                             </H4>
                         </RoundButton>
@@ -120,69 +119,137 @@ export const BurnCard = ({
 };
 const Ratio = styled(H4)`
     margin-right: 80px;
+
+    ${({ theme }) => theme.media.mobile`
+        margin-right: 30px;
+    `}
 `;
 
-const IsActive = css`
-    min-width: 700px;
-    max-width: 850px;
-    width: 100%;
-    z-index: 2;
-    box-shadow: ${(props) => `0px 0px 25px ${props.theme.colors.border.tertiary}`};
-    border: ${(props) => `2px solid ${props.theme.colors.border.tertiary}`};
-`;
+// const IsActive = css`
+//     min-width: 700px;
+//     max-width: 850px;
+//     width: 100%;
+//     z-index: 2;
+//     box-shadow: ${(props) => `0px 0px 15px ${props.theme.colors.border.tertiary}`};
+//     border: ${(props) => `2px solid ${props.theme.colors.border.tertiary}`};
+// `;
 
-const Card = styled.div<{ $isActive: any }>`
-    display: flex;
-    flex-direction: row;
-    height: 100%;
-    width: 100%;
-    max-width: 600px;
-    min-width: 400px;
-    z-index: 1;
-    border-radius: 20px;
-    background: padding-box;
-    background-color: ${(props) => props.theme.colors.background.panel};
-    ${(props) => (props.$isActive ? IsActive : null)}
-`;
+// const Card = styled.div<{ $isActive: any }>`
+//     display: flex;
+//     flex-direction: row;
+//     height: 100%;
+//     width: 100%;
+//     max-width: 600px;
+//     min-width: 400px;
+//     z-index: 1;
+//     border-radius: 20px;
+//     background: padding-box;
+//     background-color: ${(props) => props.theme.colors.background.body};
+//     ${(props) => (props.$isActive ? IsActive : null)}
 
-const IconContainer = styled.div`
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    img {
-        width: 70px;
-        height: 70px;
-    }
-    h3 {
-        margin: 15px;
-    }
-`;
+//     ${({ theme }) => theme.media.mobile`
+//         flex-direction: column;
+//         min-width: 350px;
+//         max-width: 380px;
+//         margin: 10px 0px;
+//         height: 78%;
+//     `}
+// `;
 
-const InputContainer = styled.div`
-    display: flex;
-    flex-direction: column;
-    flex: 2;
-    justify-content: center;
-`;
+// const IconContainer = styled.div`
+//     flex: 1;
+//     display: flex;
+//     flex-direction: column;
+//     justify-content: center;
+//     align-items: center;
 
-const RowContainer = styled.div<{ $margin?: string }>`
-    width: 460px;
-    display: flex;
-    margin: ${(props) => (props.$margin ? `${props.$margin}px` : "10px")};
-    flex-direction: row;
-    align-items: center;
-`;
+//     img {
+//         width: 70px;
+//         height: 70px;
+//     }
+//     h3 {
+//         margin: 15px;
+//     }
 
-const ColContainer = styled.div`
-    width: 460px;
-    display: flex;
-    margin: 10px;
-    flex-direction: column;
-    align-items: center;
-`;
+//     ${({ theme }) => theme.media.mobile`
+//         flex: none;
+//         flex-direction: row;
+//         justify-content: center;
+//         align-items: center;
+//         margin: 20px 0px 0px 70px;
+//         height: 30px;
+//         img {
+//             width: 30px;
+//             height: 30px;
+//         }
+//         h3 {
+//             margin: 0px 10px;
+//         }
+//     `}
+// `;
 
-const Label = styled(H4)`
-    width: 50px;
-`;
+// const InputContainer = styled.div`
+//     display: flex;
+//     flex-direction: column;
+//     justify-content: center;
+//     margin-top: 20px;
+// `;
+
+// const APYContainer = styled.div`
+//     width: 460px;
+//     display: flex;
+//     flex-direction: row;
+//     align-items: center;
+
+//     ${({ theme }) => theme.media.mobile`
+//         justify-content: flex-end;
+//         width: 350px;
+
+//     `}
+// `;
+
+// const RowContainer = styled.div<{ $margin?: string }>`
+//     width: 460px;
+//     display: flex;
+//     margin: ${(props) => (props.$margin ? `${props.$margin}px` : "10px")};
+//     flex-direction: row;
+//     align-items: center;
+
+//     ${({ theme }) => theme.media.mobile`
+//         width: 330px;
+//         margin: 10px 10px 0px 10px;
+//         h4 {
+//             width: 10%;
+//             margin: 0px 0px 0px 0px;
+//         }
+
+//     `}
+// `;
+
+// const ColContainer = styled.div`
+//     width: 460px;
+//     display: flex;
+//     margin: 10px;
+//     flex-direction: column;
+//     align-items: center;
+
+//     button {
+//         margin: 0 20px 0 0;
+//         width: 320px;
+//     }
+
+//     ${({ theme }) => theme.media.mobile`
+//         justify-content: center;
+//         width: 330px;
+//         margin: 10px 10px 0px 0px;
+
+//         button {
+//             margin: 0 0 0 15px;
+//             width: 310px;
+//         }
+//     `}
+// `;
+
+// const Label = styled(H4)`
+//     width: 50px;
+// `;

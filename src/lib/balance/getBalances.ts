@@ -3,7 +3,7 @@ import { utils } from "ethers";
 import { getBalance } from "./getBalance";
 import { formatDecimal } from "lib";
 export const getBalances = async (currentWallet, currencies, exchangeRates, targetCRatio, currentCRatio) => {
-	const stakeAble: boolean = currentCRatio === 0n || currentCRatio <= 25n * BigInt(Math.pow(10, 16).toString()); //0.25;
+	const stakeAble: boolean = currentCRatio <= 25n * BigInt(Math.pow(10, 16).toString()); //0.25;
 
 	const { PeriFinance, ExternalTokenStakeManager, RewardEscrowV2 } = contracts as any;
 
@@ -19,6 +19,9 @@ export const getBalances = async (currentWallet, currencies, exchangeRates, targ
 		(async () => BigInt(await PeriFinance.transferablePeriFinance(currentWallet)))(),
 		(async () => BigInt(await RewardEscrowV2.balanceOf(currentWallet)))(),
 	]);
+
+	console.log("USDCBalance", USDCBalance.toString());
+	console.log("DAIBalance", DAIBalance.toString());
 
 	let USDCAllowance,
 		DAIAllowance,
@@ -76,6 +79,9 @@ export const getBalances = async (currentWallet, currencies, exchangeRates, targ
 			  ])
 			: [0n, 0n, 0n, 0n, 0n];
 
+	console.log("stakedUSDC", stakedUSDC.toString());
+	console.log("stakedDAI", stakedDAI.toString());
+
 	let usdcDebt,
 		daiDebt,
 		stableDEBT,
@@ -100,14 +106,23 @@ export const getBalances = async (currentWallet, currencies, exchangeRates, targ
 
 		mintableStable = periDebt / 4n - stableDEBT;
 		mintableStable = mintableStable <= 0n ? 0n : mintableStable;
-		USDCStakeable = stakeAble
+
+		console.log("mintableStable", mintableStable.toString());
+		USDCStakeable = currentCRatio !== 0n 
+			? stakeAble
 			? (mintableStable * (BigInt(Math.pow(10, 18).toString()) / targetCRatio) * BigInt(Math.pow(10, 18).toString())) /
 			  exchangeRates["USDC"]
-			: 0n;
-		DAIStakeable = stakeAble
+			: 0n
+			: USDCBalance;
+		DAIStakeable = currentCRatio !== 0n 
+			? stakeAble
 			? (mintableStable * (BigInt(Math.pow(10, 18).toString()) / targetCRatio) * BigInt(Math.pow(10, 18).toString())) /
 			  exchangeRates["DAI"]
-			: 0n;
+			: 0n
+			: DAIBalance;
+
+		console.log("USDCStakeable", USDCStakeable.toString());
+		console.log("DAIStakeable", DAIStakeable.toString());
 
 		if (USDCStakeable > USDCBalance) {
 			USDCStakeable = USDCBalance;

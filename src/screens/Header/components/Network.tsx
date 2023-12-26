@@ -3,11 +3,10 @@ import styled from "styled-components";
 
 import { useSelector } from "react-redux";
 import { RootState } from "config/reducers";
-
-import { BaseContainer } from "components/container";
 import { Paragraph } from "components/paragraph";
 import NetCombo from "./NetCombo";
 import Connect from "./Connect";
+import { RoundButton } from "components/button";
 
 const Network = () => {
   const { networkName, address, isConnect } = useSelector(
@@ -19,23 +18,19 @@ const Network = () => {
   return (
     <Container>
       <NetCombo isShow={isShow} setIsShow={setIsShow} />
-      <DisplayContainer
-        $height={"100%"}
-        $padding={"0px 5px"}
-        $position={"relative"}
-        $minWidth={30}
+      <RoundButton
+        height={"100%"}
+        padding={"0px 5px"}
+        minWidth={33}
+        shadow={"primary"}
       >
         {networkName && address && isConnect && (
-          <Paragraph $fontSize={1.2} $weight={"m"} $color={"primary"} $margin={"3px 0"}>
+          <Paragraph $fontSize={0.75} $weight={"m"} $color={"primary"} $margin={"0"}>
             {address.slice(0, 6) + "..." + address.slice(-4, address.length)}
           </Paragraph>
-        )/* :(
-          <Paragraph $fontSize={1.2} $weight={"m"} $color={"primary"}>
-            Connect
-          </Paragraph>
-        ) */}
+        )}
         <Connect />
-      </DisplayContainer>
+      </RoundButton>
     </Container>
   );
 };
@@ -44,13 +39,19 @@ const Container = styled.div`
   display: flex;
   justify-content: space-between;
   min-width: 160px;
-  height: 100%;
+  height: 35px;
   border-radius: 25px;
-  box-shadow: 0px 0px 25px ${(props) => props.theme.colors.border.primary};
-  background-color: ${(props) => props.theme.colors.background.panel};
-  border: ${(props) => `1px solid ${props.theme.colors.border.primary}`};
-`;
+  overflow: visible;
+  // background-color: ${(props) => props.theme.colors.background.button.fifth};
+  // border: ${(props) => `1px solid ${props.theme.colors.border.tableRow}`};
+  // box-shadow: 0.5px 2px 0px ${(props) => props.theme.colors.border.primary};
 
+  ${({ theme }) => theme.media.mobile`
+    height: 26px;
+    min-width: 140px;
+  `}
+`;
+/* 
 export const DisplayContainer = styled(BaseContainer)<{
   $height: string | number;
   $padding?: string;
@@ -62,8 +63,8 @@ export const DisplayContainer = styled(BaseContainer)<{
   cursor: pointer;
   border-radius: ${(props) => (props.$isShow ? "16px 16px 0px 0px" : "25px")};
   &:hover {
-    box-shadow: 0 0 1px ${(props) => props.theme.colors.border.primary};\
+    box-shadow: 0 0 2px ${(props) => props.theme.colors.border.primary};
   }
 `;
-
+ */
 export default Network;

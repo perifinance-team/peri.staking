@@ -9,10 +9,11 @@ export const Input = ({
   value = "0",
   color,
   isLP = false,
+  width = '100%',
 }) => {
   return (
     <>
-      <Container $color={color} $disabled={disabled} $height={height}>
+      <Container $color={color} $disabled={disabled} $height={height} $width={width}>
         <AssetContainer $height={height} $isLP={isLP}>
           <img
             src={`/images/currencies/${currencyName}.png`}
@@ -37,15 +38,17 @@ const Container = styled.div<{
   $color: string;
   $disabled: boolean;
   $height: number;
+  $width: string;
 }>`
   display: flex;
   flex-direction: row;
   height: ${(props) => `${props.$height}px`};
-  width: 320px;
+  width: ${(props) => props.$width};
   flex-direction: row;
   justify-content: space-between;
   border-radius: 25px;
   margin: 0px 10px;
+  border: 1px solid ${(props) => props.theme.colors.border.tableRow};
   opacity: ${(props) => (props.$disabled ? 0.5 : 1)};
   background-color: ${(props) =>
     props.theme.colors.background.input[props.$color]};
@@ -78,10 +81,16 @@ const AmountInput = styled.input<{ $height: number }>`
   background: transparent;
   text-align: right;
   color: ${(props) => props.theme.colors.font.primary};
+
   :focus {
     outline: none;
   }
+
   :disabled {
     opacity: 0.5;
   }
+
+  ${({ theme }) => theme.media.mobile`
+    font-size: 12px;
+  `}
 `;
