@@ -31,12 +31,12 @@ export const RoundButton = (props:RoundButtonProps) => {
   );
 };
 
-const BaseButton = styled.button<{
+export const BaseButton = styled.button<{
   $height: number | string;
-  $padding: string;
+  $padding?: string;
   $color?: string;
   $width?: number | string;
-  $margin: string;
+  $margin?: string;
   $shadow?: string;
   $minWidth?: number | string;
 }>`

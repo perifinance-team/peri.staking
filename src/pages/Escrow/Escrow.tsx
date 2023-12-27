@@ -13,6 +13,8 @@ import {
   Image,
   AmountCell,
   TakeBtn,
+  TableBody,
+  TableHeader
 } from "pages/Liquidation/Liquidation";
 
 import { getEscrowList } from "lib/escrow";
@@ -119,9 +121,9 @@ const Escrow = () => {
             <ShortCell>
               <H4 $weight={"b"}>Index</H4>
             </ShortCell>
-            <AmountCell>
+            <MiddleCell>
               <H4 $weight={"b"}>Escrow amount</H4>
-            </AmountCell>
+            </MiddleCell>
             <MiddleCell>
               <H4 $weight={"b"}>Time</H4>
             </MiddleCell>
@@ -136,12 +138,12 @@ const Escrow = () => {
                     {idx + 1}
                   </H4>
                 </ShortCell>
-                <AmountCell>
+                <MiddleCell>
                   <EscrowImage $toggle={item.toggle}>
                     <img src={`/images/currencies/PERI.png`} alt="" />
                     <span>{`${item.amount}`}</span>
                   </EscrowImage>
-                </AmountCell>
+                </MiddleCell>
                 <MiddleCell $toggle={item.toggle}>
                   <H4 $weight={"m"}>{item.endTime === "0" ? "-" : item.endTime}</H4>
                 </MiddleCell>
@@ -177,19 +179,20 @@ const Escrow = () => {
 
 const AvailableAmount = styled(H4)`
   display: flex;
-  width: 90%;
+  width: 80%;
   justify-content: flex-end;
 
   ${({ theme }) => theme.media.mobile`
-        width: 99%;
-    `}
+    width: 89%;
+  `}
 `;
 
 const MiddleCell = styled(AmountCell)<{ $toggle?: boolean }>`
   min-width: 180px;
-  max-width: 220px;
+  width: 38%;
 
   h4 {
+    text-align: center;
     color: ${(props) =>
       props.$toggle === undefined || props.$toggle === true
         ? props.theme.colors.font.primary
@@ -197,12 +200,13 @@ const MiddleCell = styled(AmountCell)<{ $toggle?: boolean }>`
   }
 
   ${({ theme }) => theme.media.mobile`
-        min-width: 80px;
-        max-width: 120px;
-    `}
+    min-width: 80px;
+  `}
 `;
 
 const EscrowImage = styled(Image)<{ $toggle: boolean }>`
+  display: flex;
+  justify-content: flex-end;
   img {
     opacity: ${(props) => (props.$toggle === undefined || props.$toggle === true ? "1" : "0.5")};
   }
@@ -217,10 +221,12 @@ const EscrowImage = styled(Image)<{ $toggle: boolean }>`
 
 const EscrowBodyRow = styled(BorderRow)`
   min-height: 50px;
+  width: 100%;
 
   ${({ theme }) => theme.media.mobile`
         min-height: 40px;
-    `}
+  `}
+
 `;
 
 // const Title = styled.div`
@@ -273,8 +279,8 @@ const EscrowBodyRow = styled(BorderRow)`
 
 const EscrowBtn = styled(TakeBtn)`
   margin-top: 40px;
-  margin-left: 70px;
-  width: 86%;
+  // margin-left: 70px;
+  width: 80%;
 
   ${({ theme }) => theme.media.mobile`
       margin: 20px auto 0px auto;

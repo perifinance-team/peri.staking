@@ -152,7 +152,7 @@ const Liquidation = () => {
           <H1>LIQUIDATION</H1>
       </Title>
       <TableContainer style={{ overflowY: "hidden", maxHeight: "70vh" }}>
-        <StyledTHeader>
+        <TableHeader>
           <ShortCell
             onClick={() => {
               setSortList({ ...sortList, cRatio: !sortList.cRatio });
@@ -162,7 +162,7 @@ const Liquidation = () => {
             style={{ cursor: "pointer" }}
           >
             <H4 $weight={"b"}>
-              C-ratio{" "}
+              Cratio{" "}
               {neutral === 1 ? (
                 !sortList.cRatio ? (
                   <span>&#9650;</span>
@@ -210,7 +210,7 @@ const Liquidation = () => {
                 setNeutral(3);
               }}
             >
-              Collateral
+              Col
               {neutral === 3 ? (
                 sortList[selected.toLowerCase()] ? (
                   <span>&#9650;</span>
@@ -274,8 +274,8 @@ const Liquidation = () => {
           <ShortCell>
             <H4 $weight={"b"}>Action</H4>
           </ShortCell>
-        </StyledTHeader>
-        <StyledTBody>
+        </TableHeader>
+        <TableBody>
           {list.map((el, idx) => {
             return (
               <BodyRow key={`row${idx}`}>
@@ -326,7 +326,7 @@ const Liquidation = () => {
               </BodyRow>
             );
           })}
-        </StyledTBody>
+        </TableBody>
       </TableContainer>
     </Container>
   );
@@ -373,49 +373,56 @@ export const AmountCell = styled(Cell)`
 
 export const ShortCell = styled(AmountCell)`
   min-width: 60px;
-  max-width: 120px;
+  width: 16%;
+  h4 {
+    text-align: center;
+  }
 
   ${({ theme }) => theme.media.mobile`
-    min-width: 50px;
-    max-width: 80px;
+    min-width: 48px;
   `}
 `;
 
 const ActionCell = styled(Cell)`
   position: relative;
   min-width: 60px;
-  max-width: 120px;
+  width: 16%;
 
   ${({ theme }) => theme.media.mobile`
     min-width: 50px;
-    max-width: 80px;
+    margin: 0;
   `}
 `;
 
 const LongCell = styled(AmountCell)`
   min-width: 150px;
+  width: 22%;
 
   ${({ theme }) => theme.media.mobile`
-    min-width: 90px;
+    min-width: 70px;
   `}
 `;
 
 export const Container = styled.div`
   display: flex;
-  height: 80vh;
+  height: 100%;
   width: 100%;
   flex-direction: column;
   justify-content: flex-start;
+  align-items: center;
 
   ${({ theme }) => theme.media.mobile`
-		height: 45vh;
+		// height: 45vh;
 	`}
 `;
 
 export const TableContainer = styled.div`
   z-index: 1;
+  display: flex;
+  flex-direction: column;
   border-radius: 10px;
   height: 60%;
+  width: 80%;
   margin: 0 70px;
   background-color: ${(props) => props.theme.colors.background.body};
   box-shadow: ${(props) => `0px 0px 25px ${props.theme.colors.border.primary}`};
@@ -423,19 +430,32 @@ export const TableContainer = styled.div`
 
   ${({ theme }) => theme.media.mobile`
     margin: 0;
-    width: 99%;
+    width: 90%;
     height: 85%;
     overflow-y: hidden;
     overflow-x: auto;
     padding: 0;
     border-radius: 5px;
 `}
+
+  ${({ theme }) => theme.media.tablet`
+    width: 85%;
+    height: 85%;
+  `}
+`;
+
+export const TableBody = styled(StyledTBody)`
+  width: 100%;
+`;
+
+export const TableHeader = styled(StyledTHeader)`
+  width: 100%;
 `;
 
 const CollateralList = styled.ul`
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  align-items: center;
   padding: 0;
   margin: 0;
 
@@ -444,6 +464,7 @@ const CollateralList = styled.ul`
 export const Image = styled.li`
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   width: 90px;
   height: 24px;
   margin: 2px 10px;
@@ -482,10 +503,10 @@ export const TakeBtn = styled.button/* <ITakeBtn> */ `
   border-radius: 25px;
   color: white;
   font-weight: bold;
-  // font-size: 0.7rem;
+  height: fit-content;
   width: 5rem;
   padding: 0.5rem 0;
-  margin: 0 1rem;
+  margin: 0.2rem 1rem;
   background: ${({theme}) => theme.colors.background.body};
 	border: ${({theme}) => `1px solid ${theme.colors.border.tableRow}`};
 	box-shadow: ${({theme}) => `0px 1.5px 0px ${theme.colors.border.primary}`};
@@ -510,7 +531,7 @@ export const TakeBtn = styled.button/* <ITakeBtn> */ `
     width: 3rem;
     padding: 0.5rem 0;
     font-size: 0.7rem; 
-    margin: 0;
+    margin: 0.3rem 0;
   `}
 `;
 

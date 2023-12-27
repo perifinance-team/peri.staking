@@ -26,10 +26,20 @@ export const HoverRow = styled(Row)`
 `;
 
 export const Cell = styled.div`
-  display: inline-table;
-  width: 100%;
+  display: flex !important;
   vertical-align: middle;
+  justify-content: center;
+  // position: relative;
   overflow-x: auto;
+  margin: 0px 10px;
+
+  h4 {
+    width: 100%;
+    text-align: right;
+  }
+  ${({ theme }) => theme.media.mobile`
+      margin: 0px 5px;
+  `}
 `;
 
 export const HeaderCellRight = styled(Cell)`
@@ -59,9 +69,10 @@ export const StyledTHeader = styled(Row)`
   background-color: ${(props) => props.theme.colors.background.body};
   border-bottom: ${(props) =>
     `2px solid ${props.theme.colors.background.THeader}`};
-  overflow: visible;
+  overflow: hidden;
 
   ${({ theme }) => theme.media.mobile`
+    // width: fit-content;
     height: 40px;
   `}
 `;
@@ -73,4 +84,8 @@ export const StyledTBody = styled.div<{ height?: number }>`
   overflow-y: auto;
   overflow-x: hidden;
   height: ${(props) => (props["height"] ? `${props["height"]}vh` : `100%`)};
+
+  ${({ theme }) => theme.media.mobile`
+    // width: fit-content;
+  `}
 `;

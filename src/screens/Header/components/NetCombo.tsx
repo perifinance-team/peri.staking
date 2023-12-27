@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, useRef } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 import { useSelector } from "react-redux";
 import { RootState } from "config/reducers";
@@ -20,7 +20,7 @@ const NetCombo = ({ isShow, setIsShow }) => {
   const showList = async (key) => {
     if (!isConnect) return;
     changeNetwork(key);
-    setIsShow(false);
+    setIsShow(!isShow);
   };
 
   const netRef = useRef<HTMLDivElement>(null);
@@ -65,6 +65,7 @@ const NetCombo = ({ isShow, setIsShow }) => {
           id="net_caller"
           src={`/images/icon/${isShow ? "up-arrow" : "down-arrow"}.svg`}
         ></ListBtnImg>
+        <BlockContainer $isShow={isShow}/>
         <NetworkListContainer $isShow={isShow} ref={netRef}>
           <ul>
             {Object.keys(networks).map(
@@ -96,8 +97,8 @@ const NetCombo = ({ isShow, setIsShow }) => {
   );
 };
 
-export const DisplayContainer = styled(BaseContainer)<{
-  $height: string | number;
+export const DisplayContainer = styled.button<{
+  $height: string;
   $padding?: string;
   $position?: string;
   $minWidth?: number;
@@ -107,11 +108,19 @@ export const DisplayContainer = styled(BaseContainer)<{
   cursor: pointer;
   overflow: visible;
   position: relative;
+  align-items: center;
+  justify-content: center;
+  height: ${(props) => `${props.$height}`};
   border-radius: ${(props) => (props.$isShow ? "16px 16px 0px 0px" : "25px")};
-
-  // ${(props) => (props.$isShow ? `box-shadow:0px 0px 10px ${props.theme.colors.background.button.primary}}` : null)};
-  ${(props) => (props.$isShow ? `border: 1px solid ${props.theme.colors.border.tableRow}` : null)};
-  ${(props) => (props.$isShow ? `z-index: 999` : null)};
+  background-color: ${(props) => props.theme.colors.background.body};
+  border: 1px solid ${(props) => (props.$isShow 
+    ? `${props.theme.colors.border.tableRow}` 
+    : `${props.theme.colors.border.third}` )};
+  ${(props) => (props.$isShow ? `z-index: 99` : null)};
+  box-shadow: ${(props) => (props.$isShow 
+    ? `0px 0px 10px ${props.theme.colors.border.primary}` 
+    : `0px 0px 0px ${props.theme.colors.border.primary}`
+  )};
 
   &:active {
     transition: 0.2s ease-in-out;
@@ -120,49 +129,69 @@ export const DisplayContainer = styled(BaseContainer)<{
   }
 
   &:hover {
-    transition: 0.2s ease-in-out;
-		transform: translateY(-1px);
-		box-shadow: ${({theme}) => `0.5px 3px 0px ${theme.colors.border.primary}`};
+    // transition: 0.2s ease-in-out;
+    // transform: translateY(-1px);
+    border: 1px solid ${(props) => props.$isShow 
+      ? `${props.theme.colors.border.tableRow};`
+      : `${props.theme.colors.border.third};`
+    }
+
+    box-shadow: ${(props) => props.$isShow 
+      ? `0px 0px 10px ${props.theme.colors.border.primary};`
+      : `0px 0px 0px ${props.theme.colors.border.primary};`
+    }
   }
 
-  ${({ theme }) => theme.media.mobile`
-    height: 26px;
-  `}
+  @media only screen and (max-width: ${(props) => props.theme.sizes.tablet}px) {
+    height: 32px;
+
 `;
 
 const NetworkListContainer = styled.div<{ $isShow: boolean }>`
   position: absolute;
   place-self: flex-end;
-  top: 35px;
-  right: 0px;
+  top: 30px;
+  right: -1px;
   width: fit-content;
   height: fit-content;
   border-radius: 16px 0 16px 16px;
   overflow: hidden;
   z-index: 988;
   display: ${(props) => (props.$isShow ? "flex" : "none")};
-  
-  
-  
+  border: 0.5px solid ${(props) => props.theme.colors.border.tableRow};
+  background-color: ${(props) => props.theme.colors.background.body};
+  box-shadow: ${(props) => `0px 0px 10px ${props.theme.colors.border.primary}`};
+
   ul {
     list-style: none;
     padding: 0px;
     margin: 0px;
     z-index: 989;
-    top: -1px;
     position: relative;
-    border: 0.5px solid ${(props) => props.theme.colors.border.tableRow};
-    // ${(props) => (props.$isShow ? `box-shadow:0px 0px 2px ${props.theme.colors.background.button.primary}}` : null)};
+    
   }
 
   ${({ theme }) => theme.media.mobile`
-    top: 26px;
+    top: 30px;
 
     ul {
-      left: -1px;
       width: 110px;
     }
   `}
+`;
+
+const BlockContainer = styled.div<{ $isShow: boolean }>`
+  display: ${(props) => (props.$isShow ? "static" : "none")};
+  position: absolute;
+  top: 25px;
+  width: 100%;
+  height: 10px;
+  background-color: ${(props) => props.theme.colors.background.body};
+  z-index: 1000;
+
+  // ${({ theme }) => theme.media.mobile`
+  //   top: 21px;
+  // `}
 `;
 
 const NetworkList = styled.li`
@@ -175,7 +204,7 @@ const NetworkList = styled.li`
   min-width: 110px;
   color: ${(props) => props.theme.colors.font.primary};
   cursor: pointer;
-  background-color: ${(props) => props.theme.colors.background.body};
+  
   &:hover {
     box-shadow: ${(props) => `0.5px 1.5px 0px ${props.theme.colors.background.button.primary}`};
     border: 1px solid ${(props) => props.theme.colors.border.tableRow};
@@ -184,7 +213,7 @@ const NetworkList = styled.li`
 
   ${({ theme }) => theme.media.mobile`
     min-width: 85x;
-    padding: 6px 6px;
+    padding: 8px 6px;
     width: fit-content;
     font-size: 11px;
   `}

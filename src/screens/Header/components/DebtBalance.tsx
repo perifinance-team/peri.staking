@@ -105,8 +105,9 @@ const BalanceContainer = styled.div`
   margin: 0px 10px;
 
   ${({ theme }) => theme.media.mobile`
-    width: 40%;
+    width: 58%;
     order: last;
+    margin: 0;
   `}
 
   ${({ theme }) => theme.media.tablet`
@@ -123,7 +124,7 @@ const BalanceLabel = styled(BaseContainer)`
 
   ${({ theme }) => theme.media.mobile`
     flex: none;
-    width: 60%;
+    width: 50%;
     justify-content: center;
   `}
 
@@ -185,15 +186,17 @@ const CRatioContainer = styled.div`
   flex-direction: row;
   justify-content: center;
 
+  ${({ theme }) => theme.media.mobile`
+    width: 38%;
+    order: first;
+    margin: 0;
+  `}
+
+
   ${({ theme }) => theme.media.tablet`
     flex-wrap: wrap;
   `}
 
-  ${({ theme }) => theme.media.mobile`
-    width: 40%;
-    order: first;
-    margin: 0;
-  `}
 `;
 
 const RatioLabel = styled(H4)`

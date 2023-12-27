@@ -27,31 +27,33 @@ const Header = () => {
   return (
     <Container>
       {/* <Connect /> */}
-      <Logo mobile={'tablet'}/>
-      <RatioContainer>
-        <LineContainer/>
-        <MainContainer>
-          <Ratios/> 
-          <DebtBalance/>
-        </MainContainer>
-        <LineContainer/>
-      </RatioContainer>
-      <RightContainer>
-        <Logo mobile={'mobile'}/>
-        <WalletMenuContainer>
-          <Network />
-          <MobileMenuContainer>
-            <MobileMenuImage
-              id={"mobile-menu"}
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              src={"/images/icon/drawer.svg"}
-            />
-            <MobileMenu $open={isMobileMenuOpen}>
-              <Navigator/>
-            </MobileMenu>
-          </MobileMenuContainer>
-        </WalletMenuContainer>
-      </RightContainer>
+      <MainContainer>
+        <Logo mobile={'tablet'}/>
+        <RatioContainer>
+          <LineContainer/>
+          <StatContainer>
+            <Ratios/> 
+            <DebtBalance/>
+          </StatContainer>
+          <LineContainer/>
+        </RatioContainer>
+        <RightContainer>
+          <Logo mobile={'mobile'}/>
+          <WalletMenuContainer>
+            <Network />
+            <MobileMenuContainer>
+              <MobileMenuImage
+                id={"mobile-menu"}
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                src={"/images/icon/drawer.svg"}
+              />
+              <MobileMenu $open={isMobileMenuOpen}>
+                <Navigator/>
+              </MobileMenu>
+            </MobileMenuContainer>
+          </WalletMenuContainer>
+        </RightContainer>
+      </MainContainer>
       {/* Todo: Themes need to be implemented when needed */}
       {/* <Themes/> */}
       {/* <Translation/> */}
@@ -61,17 +63,27 @@ const Header = () => {
 
 const Container = styled.div`
   display: flex;
+  justify-content: center;
+  padding: 25px 0px;
+  width: 100%;
+
+  ${({ theme }) => theme.media.mobile`
+    padding: 0px;
+  `}
+`;
+
+const MainContainer = styled.div`
+  display: flex;
   justify-content: space-between;
-  padding: 25px 60px 25px 30px;
   frex-wrap: nowrap;
-  width: 93%;
+  width: 92%;
   min-width: 262px;
 
   ${({ theme }) => theme.media.mobile`
     flex-direction: column;
     align-items: center;
     padding: 10px 10px 0px 10px;
-    width: 90%;
+    width: 100%;
   `}
 
   ${({ theme }) => theme.media.tablet`
@@ -96,7 +108,7 @@ const RatioContainer = styled.div`
 
 `;
 
-const MainContainer = styled.div`
+const StatContainer = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -132,7 +144,7 @@ const RightContainer = styled.div`
   width: 25%;
 
   ${({ theme }) => theme.media.mobile`
-    width: 100%;
+    width: 95%;
     order: first;
     justify-content: space-between;
     margin: 5px 5px;
@@ -148,7 +160,6 @@ const WalletMenuContainer = styled.div`
 
   ${({ theme }) => theme.media.mobile`
     order: first;
-    justify-content: flex-end;
     margin: 5px 10px;
   `}
 
@@ -159,7 +170,7 @@ const MobileMenuContainer = styled.div`
   order: last;
   position: relative;
   justify-content: flex-start;
-  top: 5px;
+  top: 3px;
 
   ${({ theme }) => theme.media.mobile`
     display: block;
@@ -179,8 +190,8 @@ const MobileMenu = styled.div<{$open:boolean}>`
   position: absolute;
   display: ${({ $open }) => ($open ? "flex" : "none")};
   justify-content: center;
-  left: -90px;
-  width: 120px;
+  right: 0px;
+  width: 160px;
   border-radius: 10px;
   padding: 10px 0px;
   z-index: 100;
@@ -189,6 +200,10 @@ const MobileMenu = styled.div<{$open:boolean}>`
   background: ${(props) => props.theme.colors.background.body};
   box-shadow: ${(props) => `0px 0px 10px ${props.theme.colors.border.primary}`};
   border-top: 1px solid ${(props) => props.theme.colors.border.tableRow};
+
+  ${({ theme }) => theme.media.mobile`
+    width: 140px;
+  `}
 
 `;
 

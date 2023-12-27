@@ -6,7 +6,7 @@ import { RootState } from "config/reducers";
 import { Paragraph } from "components/paragraph";
 import NetCombo from "./NetCombo";
 import Connect from "./Connect";
-import { RoundButton } from "components/button";
+import { BaseButton } from "components/button";
 
 const Network = () => {
   const { networkName, address, isConnect } = useSelector(
@@ -18,11 +18,11 @@ const Network = () => {
   return (
     <Container>
       <NetCombo isShow={isShow} setIsShow={setIsShow} />
-      <RoundButton
-        height={"100%"}
-        padding={"0px 5px"}
-        minWidth={33}
-        shadow={"primary"}
+      <ConnectButton
+        $height={"100%"}
+        $padding={"0px 5px"}
+        $minWidth={33}
+        $shadow={"primary"}
       >
         {networkName && address && isConnect && (
           <Paragraph $fontSize={0.75} $weight={"m"} $color={"primary"} $margin={"0"}>
@@ -30,7 +30,7 @@ const Network = () => {
           </Paragraph>
         )}
         <Connect />
-      </RoundButton>
+      </ConnectButton>
     </Container>
   );
 };
@@ -47,10 +47,18 @@ const Container = styled.div`
   // box-shadow: 0.5px 2px 0px ${(props) => props.theme.colors.border.primary};
 
   ${({ theme }) => theme.media.mobile`
-    height: 26px;
+    height: 32px;
     min-width: 140px;
   `}
 `;
+
+const ConnectButton = styled(BaseButton)`
+  ${({ theme }) => theme.media.mobile`
+    box-shadow: none;
+    border: none;
+  `}
+`;
+
 /* 
 export const DisplayContainer = styled(BaseContainer)<{
   $height: string | number;

@@ -119,6 +119,10 @@ const Container = styled.div`
 	${({ theme }) => theme.media.mobile`
 		margin-top: 0;
 	`}
+
+	${({ theme }) => theme.media.tablet`
+		margin-top: 0;
+	`}
 `;
 const ParentLinkContainer = styled.div`
 	margin-bottom: 10px;
@@ -148,6 +152,11 @@ const ChildrenLinkContainer = styled.div<{ $active?: boolean }>`
 	margin-top: 15px;
 
 	${({ theme }) => theme.media.mobile`
+		margin-left: 10px;
+		display: flex;
+	`}
+
+	${({ theme }) => theme.media.tablet`
 		margin-left: 10px;
 		display: flex;
 	`}

@@ -67,13 +67,19 @@ const MainContainer = styled.div`
 const RightSection = styled.div`
 	// flex: 3;
 	display: flex;
-	width: 100%;
+	width: 87%;
 	height: 100%;
 	flex-direction: column;
 	overflow-y: auto;
 
 	${({ theme }) => theme.media.mobile`
 		align-items: center;
+		width: 100%;
+	`}
+
+	${({ theme }) => theme.media.tablet`
+		align-items: center;
+		width: 100%;
 	`}
 `;
 const ContentSection = styled.div`
@@ -95,7 +101,7 @@ const ContentSection = styled.div`
 
 const Content = styled.div`
 	flex: 3;
-	width: auto;
+	width: 100%;
 	height: 100%;
 	min-width: 262px;
 	position: relative;

@@ -24,13 +24,13 @@ const Ratios = () => {
 
   return (
     <Container>
-      <Row $width="48%">
+      <Row $width="38%">
         <H4 $weight={"sm"} $color={"sixth"}>Target</H4>
         <RatioLabel $color={"fourth"}>
           {ratioToPer(targetCRatio)}%
         </RatioLabel>
       </Row>
-      <Row $width="48%">
+      <Row $width="58%">
         <H4 $weight={"sm"} $color={"sixth"}>Liquidation</H4>
         <RatioLabel $color={"fourth"}>
           {ratioToPer(liquidationRatio)}%

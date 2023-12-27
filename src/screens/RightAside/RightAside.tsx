@@ -5,10 +5,13 @@ import FitToClaimable from "./components/FitToClaimable";
 import Refresh from "./components/Refresh";
 import Exit from "./components/Exit";
 import StakingRate from "./components/StakingRate";
+import { useLocation } from "react-router-dom";
 
 const RightAside = () => {
+  const location = useLocation();
+
   return (
-    <Aside>
+    <Aside $isHide={location.pathname.includes("/balance")}>
       <Container>
         <MainContainer>
           <FlexRow>
@@ -26,7 +29,7 @@ const RightAside = () => {
   );
 };
 
-const Aside = styled.aside`
+const Aside = styled.aside<{ $isHide?: boolean }>`
   width: 22vw;
   ${({ theme }) => theme.media.tablet`
     width: 100%;
@@ -37,6 +40,10 @@ const Aside = styled.aside`
     width: 100%;
     height: 40%;
   `}
+
+/*   ${({ theme, $isHide }) => ($isHide ? theme.media.tablet`display: none;` : null)}
+
+  ${({ theme, $isHide }) => ($isHide ? theme.media.mobile`display: none;` : null)} */
 `;
 
 const Container = styled.div`
@@ -67,7 +74,7 @@ const MainContainer = styled.div`
   min-width: 200px;
   // margin: 0 30px;
   // margin: 0 60px 0 0;
-  
+
   // padding: 0 60px 0 0;
 
   ${({ theme }) => theme.media.mobile`
@@ -84,7 +91,6 @@ const MainContainer = styled.div`
     width: 95%;
 
   `}
-
 `;
 
 export default RightAside;

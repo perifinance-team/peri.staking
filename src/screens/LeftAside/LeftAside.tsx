@@ -18,9 +18,9 @@ const Aside = styled.aside`
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  max-width: 240px;
+  // max-width: 240px;
   min-width: 150px;
-  width: 18vw;
+  width: 13%;
   flex-shink: 1;
   background-color: ${(props) => props.theme.colors.background.body};
   align-items: center;
