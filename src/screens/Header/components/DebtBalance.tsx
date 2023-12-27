@@ -13,7 +13,7 @@ const DebtBalance = () => {
   const { balances } = useSelector((state: RootState) => state.balances);
   const { liquidation } = useSelector((state: RootState) => state.liquidation);
   const { isConnect } = useSelector((state: RootState) => state.wallet);
-  const { targetCRatio, currentCRatio, liquidationRatio } = useSelector(
+  const { currentCRatio } = useSelector(
     (state: RootState) => state.ratio
   );
 
@@ -105,7 +105,7 @@ const BalanceContainer = styled.div`
   margin: 0px 10px;
 
   ${({ theme }) => theme.media.mobile`
-    width: 58%;
+    width: 62%;
     order: last;
     margin: 0;
   `}
@@ -179,7 +179,7 @@ const DebtAmountH4 = styled(H4)`
 `;
 
 const CRatioContainer = styled.div`
-  width: 33%;
+  width: 30%;
   flex: 1 1 auto;
   margin: 0px 10px 0px 10px;
   display: flex;
@@ -206,7 +206,7 @@ const RatioLabel = styled(H4)`
   margin-left: 16px;
 
   ${({ theme }) => theme.media.mobile`
-    margin: 0px 20px;
+    margin: 0px 10px;
     width: 50%;
     justify-content: center;
   `}
