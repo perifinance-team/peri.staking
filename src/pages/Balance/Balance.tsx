@@ -212,9 +212,9 @@ const TableContainer = styled.div`
       margin: 0;
       width: 90%;
       height: fit-content;
-      min-height: 45%;
+      min-height: 85%;
       overflow-y: hidden;
-      overflow-x: auto;
+      overflow-x: scroll;
       padding: 0;
       border-radius: 5px;
   `}

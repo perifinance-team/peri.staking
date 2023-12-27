@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, useRef } from "react";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 
 import { useSelector } from "react-redux";
 import { RootState } from "config/reducers";
@@ -11,7 +11,7 @@ import { MAINNET, TESTNET } from "lib/network/supportedNetWorks";
 import { networkInfo } from "configure/networkInfo";
 
 const NetCombo = ({ isShow, setIsShow }) => {
-  const { networkName, address, isConnect, networkId } = useSelector(
+  const { isConnect, networkId } = useSelector(
     (state: RootState) => state.wallet
   );
 
@@ -52,7 +52,6 @@ const NetCombo = ({ isShow, setIsShow }) => {
       <DisplayContainer
         id="net_caller"
         $height={"100%"}
-        $padding={"0px 10px"}
         $minWidth={15}
         $isShow={isShow}
         onClick={() => setIsShow(!isShow)}
@@ -99,7 +98,6 @@ const NetCombo = ({ isShow, setIsShow }) => {
 
 export const DisplayContainer = styled.button<{
   $height: string;
-  $padding?: string;
   $position?: string;
   $minWidth?: number;
   $isShow?: boolean;
@@ -110,6 +108,7 @@ export const DisplayContainer = styled.button<{
   position: relative;
   align-items: center;
   justify-content: center;
+  padding: 0 3px 0 5px;
   height: ${(props) => `${props.$height}`};
   border-radius: ${(props) => (props.$isShow ? "16px 16px 0px 0px" : "25px")};
   background-color: ${(props) => props.theme.colors.background.body};
@@ -142,8 +141,9 @@ export const DisplayContainer = styled.button<{
     }
   }
 
-  @media only screen and (max-width: ${(props) => props.theme.sizes.tablet}px) {
+  ${({ theme }) => theme.media.tablet`
     height: 32px;
+  `}
 
 `;
 
@@ -154,7 +154,7 @@ const NetworkListContainer = styled.div<{ $isShow: boolean }>`
   right: -1px;
   width: fit-content;
   height: fit-content;
-  border-radius: 16px 0 16px 16px;
+  border-radius: 10px 0 10px 10px;
   overflow: hidden;
   z-index: 988;
   display: ${(props) => (props.$isShow ? "flex" : "none")};
@@ -183,9 +183,10 @@ const NetworkListContainer = styled.div<{ $isShow: boolean }>`
 const BlockContainer = styled.div<{ $isShow: boolean }>`
   display: ${(props) => (props.$isShow ? "static" : "none")};
   position: absolute;
-  top: 25px;
+  top: 15px;
+  right: 0px;
   width: 100%;
-  height: 10px;
+  height: 20px;
   background-color: ${(props) => props.theme.colors.background.body};
   z-index: 1000;
 
@@ -236,7 +237,7 @@ export const NetworkImg = styled.img`
   height: 17px;
   margin: 0 6px 0 0;
   justify-content: center;
-  // border-radius: 50px;
+  z-index: 1001;
 
   ${({ theme }) => theme.media.mobile`
     width: 15px;
@@ -245,6 +246,7 @@ export const NetworkImg = styled.img`
 `;
 
 const ListBtnImg = styled(NetworkImg)`
+  z-index: 1001;
   &:hover {
     transition: 0.2s ease-in-out;
     transform: translateY(10%);

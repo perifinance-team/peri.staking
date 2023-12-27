@@ -116,7 +116,7 @@ const Escrow = () => {
         <H1>ESCROWED REWARD</H1>
       </Title>
       <TableContainer style={{ overflowY: "hidden", maxHeight: "70vh" }}>
-        <StyledTHeader>
+        <EscrowHeader>
           <Row>
             <ShortCell>
               <H4 $weight={"b"}>Index</H4>
@@ -128,8 +128,8 @@ const Escrow = () => {
               <H4 $weight={"b"}>Time</H4>
             </MiddleCell>
           </Row>
-        </StyledTHeader>
-        <StyledTBody>
+        </EscrowHeader>
+        <EscrowBody>
           {escrowList.map((item, idx: number) => {
             return (
               <EscrowBodyRow key={`row${idx}`}>
@@ -150,7 +150,7 @@ const Escrow = () => {
               </EscrowBodyRow>
             );
           })}
-        </StyledTBody>
+        </EscrowBody>
       </TableContainer>
       <AvailableAmount>total withdrawable amount: {sumAmount()}</AvailableAmount>
       <EscrowBtn onClick={() => getEscrowHandler(contracts)}>To My Wallet</EscrowBtn>
@@ -276,6 +276,14 @@ const EscrowBodyRow = styled(BorderRow)`
 //         font-size: 0.8125rem;
 //     }
 // `;
+
+const EscrowHeader = styled(StyledTHeader)`
+  width: 100%;
+`;
+
+const EscrowBody = styled(StyledTBody)`
+  width: 100%;
+`;
 
 const EscrowBtn = styled(TakeBtn)`
   margin-top: 40px;

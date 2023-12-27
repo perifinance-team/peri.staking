@@ -432,6 +432,7 @@ export const TableContainer = styled.div`
     margin: 0;
     width: 90%;
     height: 85%;
+    min-height: 100px;
     overflow-y: hidden;
     overflow-x: auto;
     padding: 0;

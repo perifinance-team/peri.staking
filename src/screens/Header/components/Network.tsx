@@ -54,6 +54,7 @@ const Container = styled.div`
 
 const ConnectButton = styled(BaseButton)`
   ${({ theme }) => theme.media.mobile`
+    padding: 0;
     box-shadow: none;
     border: none;
   `}

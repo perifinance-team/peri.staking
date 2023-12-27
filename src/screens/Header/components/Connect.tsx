@@ -72,24 +72,24 @@ const ConnectContainer = styled(BaseContainer)<{$connecting: boolean}>`
   img {
     transform: rotate(0deg);
     ${({ $connecting }) => $connecting && `
-    animation: glow 2s infinite ease-in-out;
-    @keyframes spin {
-      to {
-        transform: rotate(1turn);
+      animation: glow 2s infinite ease-in-out;
+      @keyframes spin {
+        to {
+          transform: rotate(1turn);
+        }
       }
-    }
 
-    @keyframes glow {
-      0%   {width: 18px; height: 18px;}
-      25%  {width: 16px; height: 17px;}
-      50%  {width: 18px; height: 18px;}
-      75%  {width: 16px; height: 17px;}
-      100% {width: 18px; height: 18px;}
-      to {
-        transform: rotate(1turn);
+      @keyframes glow {
+        0%   {width: 18px; height: 18px;}
+        25%  {width: 16px; height: 17px;}
+        50%  {width: 18px; height: 18px;}
+        75%  {width: 16px; height: 17px;}
+        100% {width: 18px; height: 18px;}
+        to {
+          transform: rotate(1turn);
+        }
       }
-    }
-  `}
+    `}
   }
 
   &:hover {

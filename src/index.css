@@ -67,7 +67,54 @@ body {
   min-height: 130px;
 
   padding: 20px;
-  top: 0px;
+}
+
+.notification {
+  box-sizing: border-box;
+  padding: 10px 25px 10px 80px;
+  box-shadow: 0 0;
+  /* border-radius: 12px !important; */
+  /* border-start-start-radius: 24px !important; */
+  /* border-end-start-radius: 24px !important; */
+  cursor: pointer;
+  line-height: 1.8em;
+  position: relative;
+  opacity: 1;
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  /* margin-top: 15px; */
+}
+.notification:before {
+  position: absolute;
+  top: 50%;
+  left: 26px;
+  margin-top: -14px;
+  display: block;
+  font-family: "Notification";
+  width: 28px;
+  height: 28px;
+  font-size: 28px;
+  text-align: center;
+  line-height: 28px;
+}
+.notification-container-empty {
+  width: 0px;
+  height: 0px;
+  padding: 0px;
+}
+
+@media (min-width: 1024px) {
+  .notification-container {
+      padding: 0 0 0 0;
+      top: 80px;
+      min-width: 0px;
+      max-width: 335px;
+  }
+
+  .notification {
+      border-radius: 10px 0px 0px 10px;
+  }
 }
 
 .swiper-container {

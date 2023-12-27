@@ -72,7 +72,7 @@ export const StyledTHeader = styled(Row)`
   overflow: hidden;
 
   ${({ theme }) => theme.media.mobile`
-    // width: fit-content;
+    width: fit-content;
     height: 40px;
   `}
 `;
@@ -86,6 +86,6 @@ export const StyledTBody = styled.div<{ height?: number }>`
   height: ${(props) => (props["height"] ? `${props["height"]}vh` : `100%`)};
 
   ${({ theme }) => theme.media.mobile`
-    // width: fit-content;
+    width: fit-content;
   `}
 `;
