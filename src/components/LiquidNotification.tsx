@@ -55,6 +55,12 @@ const LiquidationNoti = styled.div<ILiquidationNoti>`
   width: 55rem;
   height: 10rem;
 
+  ${(props) => props.theme.media.mobile`
+    width: 100%;
+    height: 10rem;
+    font-size: 0.75rem;
+  `}
+
   .icon {
     display: flex;
     justify-content: center;

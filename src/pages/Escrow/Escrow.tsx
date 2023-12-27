@@ -283,7 +283,6 @@ const EscrowBtn = styled(TakeBtn)`
   width: 80%;
 
   ${({ theme }) => theme.media.mobile`
-      margin: 20px auto 0px auto;
       width: 90%;
   `}
 `;
