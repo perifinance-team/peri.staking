@@ -156,7 +156,7 @@ const NetworkListContainer = styled.div<{ $isShow: boolean }>`
   height: fit-content;
   border-radius: 10px 0 10px 10px;
   overflow: hidden;
-  z-index: 988;
+  z-index: 88;
   display: ${(props) => (props.$isShow ? "flex" : "none")};
   border: 0.5px solid ${(props) => props.theme.colors.border.tableRow};
   background-color: ${(props) => props.theme.colors.background.body};
@@ -166,7 +166,7 @@ const NetworkListContainer = styled.div<{ $isShow: boolean }>`
     list-style: none;
     padding: 0px;
     margin: 0px;
-    z-index: 989;
+    z-index: 89;
     position: relative;
     
   }
@@ -188,7 +188,7 @@ const BlockContainer = styled.div<{ $isShow: boolean }>`
   width: 100%;
   height: 20px;
   background-color: ${(props) => props.theme.colors.background.body};
-  z-index: 1000;
+  z-index: 91;
 
   // ${({ theme }) => theme.media.mobile`
   //   top: 21px;
@@ -200,7 +200,7 @@ const NetworkList = styled.li`
   font-size: 14px;
   cursor: pointer;
   justify-content: flex-start;
-  z-index: 990;
+  z-index: 90;
   padding: 8px 6px;
   min-width: 110px;
   color: ${(props) => props.theme.colors.font.primary};
@@ -237,7 +237,7 @@ export const NetworkImg = styled.img`
   height: 17px;
   margin: 0 6px 0 0;
   justify-content: center;
-  z-index: 1001;
+  z-index: 92;
 
   ${({ theme }) => theme.media.mobile`
     width: 15px;
@@ -246,7 +246,7 @@ export const NetworkImg = styled.img`
 `;
 
 const ListBtnImg = styled(NetworkImg)`
-  z-index: 1001;
+  z-index: 92;
   &:hover {
     transition: 0.2s ease-in-out;
     transform: translateY(10%);

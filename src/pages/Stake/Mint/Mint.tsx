@@ -11,7 +11,7 @@ import SwiperCore, { Mousewheel, Virtual } from "swiper/core";
 import { utils } from "ethers";
 import { contracts } from "lib/contract";
 import { formatCurrency } from "lib";
-import { updateBalances } from "config/reducers/wallet";
+import { updateBalance } from "config/reducers/wallet";
 import { updateTransaction } from "config/reducers/transaction";
 import { setLoading } from "config/reducers/loading";
 import { web3Onboard } from "lib/onboard";
@@ -140,7 +140,7 @@ const Mint = () => {
         if (transactionState.status === 1) {
           NotificationManager.remove(NotificationManager.listNotify[0]);
           NotificationManager.success(`Approve success`, "SUCCESS");
-          dispatch(updateBalances({ currencyName, value: "allowance", amount }));
+          dispatch(updateBalance({ currencyName, value: "allowance", amount }));
           setIsApprove(false);
         }
       });

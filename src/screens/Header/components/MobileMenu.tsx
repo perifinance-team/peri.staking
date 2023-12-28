@@ -72,12 +72,12 @@ const BlockContainer = styled.div<{ $open: boolean }>`
   width: 100%;
   height: 20px;
   background-color: ${(props) => props.theme.colors.background.body};
-  z-index: 1000;
+  z-index: 90;
 `;
 
 const MobileMenuImage = styled.img<{ $open: boolean }>`
   position: relative;
-  z-index: 1001;
+  z-index: 91;
 
   width: ${({ $open }) => ($open ? "15px" : "20px")};
   height: ${({ $open }) => ($open ? "15px" : "20px")};
@@ -96,7 +96,7 @@ const MobileMenuList = styled.div<{ $open: boolean }>`
   width: 160px;
   border-radius: 10px 0 10px 10px;
   padding: 10px 0px;
-  z-index: 999;
+  z-index: 89;
   opacity: 1;
 
   background: ${(props) => props.theme.colors.background.body};

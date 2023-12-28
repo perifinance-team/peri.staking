@@ -4,6 +4,7 @@ export type LiquidState = {
     liquidation?: boolean;
     thisState: any;
     list: any;
+    listReady: boolean;
     notification: any;
     timestamp: number;
 };
@@ -11,6 +12,7 @@ export type LiquidState = {
 const initialState: LiquidState = {
     liquidation: true,
     list: [],
+    listReady: false,
     thisState: {
         idx: "oxlx1y",
         cRatio: "0",
@@ -42,7 +44,10 @@ export const TransactionSlice = createSlice({
             return { ...state, list: list };
         },
         updateList(state, actions) {
-            return { ...state, list: actions.payload };
+            return { ...state, listReady: true, list: actions.payload };
+        },
+        setListReady(state, actions) {
+            return { ...state, listReady: actions.payload };
         },
         updateThisState(state, actions) {
             return { ...state, thisState: actions.payload };
@@ -53,6 +58,6 @@ export const TransactionSlice = createSlice({
     },
 });
 
-export const { toggleLiquid, toggleNoti, getTaken, updateList, updateThisState, updateTimestamp } = TransactionSlice.actions;
+export const { toggleLiquid, toggleNoti, getTaken, updateList, updateThisState, updateTimestamp, setListReady } = TransactionSlice.actions;
 
 export default TransactionSlice.reducer;

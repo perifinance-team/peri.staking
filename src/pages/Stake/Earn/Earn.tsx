@@ -9,7 +9,7 @@ import { EarnCard } from "components/card/EarnCard";
 import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore, { Mousewheel, Virtual } from "swiper/core";
 import { utils } from "ethers";
-import { updateBalances } from "config/reducers/wallet";
+import { updateBalance } from "config/reducers/wallet";
 import { updateTransaction } from "config/reducers/transaction";
 import { contracts } from "lib/contract";
 import { web3Onboard } from "lib/onboard";
@@ -81,7 +81,7 @@ const Earn = () => {
             NotificationManager.remove(NotificationManager.listNotify[0]);
             NotificationManager.success(`Approve success`, "SUCCESS");
             dispatch(
-              updateBalances({ currencyName, value: "allowance", amount })
+              updateBalance({ currencyName, value: "allowance", amount })
             );
             setIsApprove(false);
           }

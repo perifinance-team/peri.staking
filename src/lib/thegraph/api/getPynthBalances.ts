@@ -4,8 +4,9 @@
 import pynths from "configure/coins/pynths";
 import { contracts } from "lib/contract";
 import { getLastRates } from "./getLastRates";
+import { PynthBalance } from "../../../config/reducers/wallet/balances";
 
-export type PynthBalance = { currencyName: string; amount: bigint; usdBalance: bigint };
+// export type PynthBalance = { currencyName: string; amount: bigint; usdBalance: bigint };
 export const getPynthBalance = async  (
   address: string,
   coinName: string,

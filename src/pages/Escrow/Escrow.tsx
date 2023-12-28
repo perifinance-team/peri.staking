@@ -14,13 +14,14 @@ import {
   AmountCell,
   TakeBtn,
   TableBody,
-  TableHeader
+  ContainerLoadingSpinner,
 } from "pages/Liquidation/Liquidation";
 
 import { getEscrowList } from "lib/escrow";
-import { setLoading } from "config/reducers/loading";
+// import { setLoading } from "config/reducers/loading";
 import { RootState } from "config/reducers";
 import { updateTransaction } from "config/reducers/transaction";
+import { setReady, updateEscrowList } from "config/reducers/escrow";
 
 interface IEntry {
   amount: string;
@@ -33,35 +34,32 @@ const Escrow = () => {
   const dispatch = useDispatch();
 
   const { address, networkId } = useSelector((state: RootState) => state.wallet);
+  const { isReady, escrowList } = useSelector((state: RootState) => state.escrow);
 
   const { RewardEscrowV2 } = contracts as any;
-  const [escrowList, setEscrowList] = useState([]);
 
-  const getEscrowListData = async (isLoading: boolean) => {
-    dispatch(setLoading({ name: "escrow", value: isLoading }));
-
+  const getEscrowListData = async () => {
+    dispatch(setReady(false));
     try {
       await getEscrowList(RewardEscrowV2, address).then((data: object[]) => {
-        setEscrowList(data);
+        console.log("escrow list", data);
+        dispatch(updateEscrowList(data));
       });
     } catch (e) {
       console.log("getEscrow error", e);
+      dispatch(setReady(true));
     }
-
-    dispatch(setLoading({ name: "escrow", value: false }));
   };
 
   useEffect(() => {
     (async () => {
-      return await getEscrowListData(true);
+      return await getEscrowListData();
     })();
 
     // eslint-disable-next-line
   }, [address, networkId]);
 
   const getEscrowHandler = async (contracts) => {
-    dispatch(setLoading({ name: "escrow", value: true }));
-
     const idList = [];
 
     escrowList.forEach((entry: IEntry) => {
@@ -74,7 +72,6 @@ const Escrow = () => {
 
         await contracts.provider.once(transaction.hash, async (state) => {
           if (state.status === 1) {
-            // NotificationManager.success(`success`, "SUCCESS");
             dispatch(
               updateTransaction({
                 hash: transaction.hash,
@@ -82,20 +79,17 @@ const Escrow = () => {
                 type: "To My Wallet",
               })
             );
-            dispatch(setLoading({ name: "escrow", value: false }));
           }
         });
       } catch (e) {
         console.log("vesting error", e);
-        NotificationManager.success(``, "FAIL");
-        dispatch(setLoading({ name: "escrow", value: false }));
+        NotificationManager.warning(``, "FAIL");
       }
     } else {
       NotificationManager.warning(``, "FAIL");
-      dispatch(setLoading({ name: "escrow", value: false }));
     }
 
-    await getEscrowListData(true);
+    await getEscrowListData();
   };
 
   const sumAmount = () => {
@@ -129,8 +123,9 @@ const Escrow = () => {
             </MiddleCell>
           </Row>
         </EscrowHeader>
-        <EscrowBody>
-          {escrowList.map((item, idx: number) => {
+        <TableBody $center={!isReady}>
+          {!isReady ? <ContainerLoadingSpinner /> :
+          escrowList.map((item, idx: number) => {
             return (
               <EscrowBodyRow key={`row${idx}`}>
                 <ShortCell>
@@ -150,7 +145,7 @@ const Escrow = () => {
               </EscrowBodyRow>
             );
           })}
-        </EscrowBody>
+        </TableBody>
       </TableContainer>
       <AvailableAmount>total withdrawable amount: {sumAmount()}</AvailableAmount>
       <EscrowBtn onClick={() => getEscrowHandler(contracts)}>To My Wallet</EscrowBtn>
@@ -226,7 +221,6 @@ const EscrowBodyRow = styled(BorderRow)`
   ${({ theme }) => theme.media.mobile`
         min-height: 40px;
   `}
-
 `;
 
 // const Title = styled.div`

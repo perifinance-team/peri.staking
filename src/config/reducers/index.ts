@@ -18,6 +18,7 @@ import vestable from './vest/vestable'
 import lp from './LP/lp'
 import loading from './loading/loading'
 import liquidation from "./liquidation/Liquidation";
+import escrow from "./escrow/Escrow";
 
 const reducer = combineReducers({
     app,
@@ -32,7 +33,8 @@ const reducer = combineReducers({
     vestable,
     lp,
     loading,
-    liquidation
+    liquidation,
+    escrow
 });
 
 export type RootState = ReturnType<typeof reducer>;

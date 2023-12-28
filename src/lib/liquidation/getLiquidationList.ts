@@ -1,12 +1,13 @@
 import { contracts } from "lib/contract";
 
 import { setLoading } from "config/reducers/loading";
-import { updateList } from "config/reducers/liquidation";
+import { setListReady, updateList } from "config/reducers/liquidation";
 
 import { SUPPORTED_NETWORKS } from "lib/network";
 import { formatCurrency } from "lib/format";
 
 import { connectContract } from "./connectContract";
+import { te } from "date-fns/locale";
 
 let liquidationList = [];
 
@@ -26,7 +27,9 @@ const sortList = (list) => {
 };
 
 export const getLiquidationList = async (dispatch, networkId = 1287) => {
-	dispatch(setLoading({ name: "liquidation", value: true }));
+	// dispatch(setLoading({ name: "liquidation", value: true }));
+
+	dispatch(setListReady(false));
 	const { PeriFinance, Liquidations } = contracts as any;
 
 	const query = `query {
@@ -59,6 +62,9 @@ export const getLiquidationList = async (dispatch, networkId = 1287) => {
 	}
 
 	// console.log("tempList", tempList);
-	dispatch(updateList(sortList(tempList)));
-	dispatch(setLoading({ name: "liquidation", value: false }));
+	if (len) dispatch(updateList(sortList(tempList)));
+	else dispatch(updateList([]));
+	
+	return tempList;
+	// dispatch(setLoading({ name: "liquidation", value: false }));
 };

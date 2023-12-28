@@ -29,6 +29,7 @@ export const LPContract = {
         if(networkId) {
             this.networkId = networkId;
         }
+        // if (!contractAddress[this.networkId]) return;
         this.contract = new ethers.Contract(contractAddress[this.networkId], contracts.sources.StakingRewards.abi, provider);
         this.balanceContract = new ethers.Contract(tokenAddress[this.networkId], ERC20.abi, provider);
     },

@@ -3,7 +3,6 @@ import { useSelector, useDispatch } from "react-redux";
 import styled from "styled-components";
 
 import { RootState } from "config/reducers";
-import { setLoading } from "config/reducers/loading";
 
 import { contracts } from "lib/contract";
 import { formatCurrency } from "lib";
@@ -12,15 +11,15 @@ import { getLiquidationList } from "lib/liquidation";
 import { StyledTHeader, StyledTBody, Row, Cell, BorderRow } from "components/table";
 import { H1, H4 } from "components/heading";
 import TakeModal from "components/TakeModal";
-import { updateList } from "config/reducers/liquidation";
+import { setListReady, updateList } from "config/reducers/liquidation";
 
 const Liquidation = () => {
   const dispatch = useDispatch();
-
-  const { balances } = useSelector((state: RootState) => state.balances);
+  // const { balances } = useSelector((state: RootState) => state.balances);
   const { address, networkId } = useSelector((state: RootState) => state.wallet);
-  const { list } = useSelector((state: RootState) => state.liquidation);
+  const { listReady, list } = useSelector((state: RootState) => state.liquidation);
   const transaction = useSelector((state: RootState) => state.transaction);
+  // const [ list, setList] = useState([]);
   const [sortList, setSortList] = useState({
     cRatio: true,
     debt: false,
@@ -42,16 +41,18 @@ const Liquidation = () => {
 
   const getLiquidationData = useCallback(
     async (isLoading) => {
-      dispatch(setLoading({ name: "liquidation", value: isLoading }));
+      // dispatch(setLoading({ name: "liquidation", value: isLoading }));
+      dispatch(setListReady(false));
       try {
         if (address) {
           await getLiquidationList(dispatch, networkId);
         }
       } catch (e) {
         console.log("getLiquidation error", e);
+        dispatch(setListReady(true));
       }
 
-      dispatch(setLoading({ name: "liquidation", value: false }));
+      // dispatch(setLoading({ name: "liquidation", value: false }));
     },
     [address, dispatch, networkId]
   );
@@ -124,7 +125,7 @@ const Liquidation = () => {
 
   useEffect(() => {
     (async () => {
-      return await getLiquidationData(true);
+      return await getLiquidationData(false);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [address, transaction, networkId]);
@@ -149,7 +150,7 @@ const Liquidation = () => {
   return (
     <Container>
       <Title>
-          <H1>LIQUIDATION</H1>
+        <H1>LIQUIDATION</H1>
       </Title>
       <TableContainer style={{ overflowY: "hidden", maxHeight: "70vh" }}>
         <TableHeader>
@@ -189,7 +190,7 @@ const Liquidation = () => {
             </H4>
           </LongCell>
           <LongCell>
-            <H4
+            <DropH4
               $weight={"b"}
               style={{
                 display: "flex",
@@ -233,7 +234,7 @@ const Liquidation = () => {
                   />
                 </ImgDropBox>
               ) : (
-                <ImgDropBox>
+                <ImgDropList>
                   <img
                     src={`/images/currencies/PERI.png`}
                     onClick={() => {
@@ -264,9 +265,9 @@ const Liquidation = () => {
                     }}
                     alt="USDC"
                   />
-                </ImgDropBox>
+                </ImgDropList>
               )}
-            </H4>
+            </DropH4>
           </LongCell>
           <ShortCell>
             <H4 $weight={"b"}>Status</H4>
@@ -275,70 +276,97 @@ const Liquidation = () => {
             <H4 $weight={"b"}>Action</H4>
           </ShortCell>
         </TableHeader>
-        <TableBody>
-          {list.map((el, idx) => {
-            return (
-              <BodyRow key={`row${idx}`}>
-                <ShortCell>
-                  <H4 $weight={"m"}>{`${ratioToPer(el.cRatio)}%`}</H4>
-                </ShortCell>
-                <LongCell>
-                  <H4 $weight={"m"}>{`$${formatCurrency(el.debt)}`}</H4>
-                </LongCell>
-                <LongCell /* style={{ width: "100px" }} */>
-                  <CollateralList>
-                    {el.collateral.map((item, idx) => {
-                      return (
-                        item.value > 0 && <Image key={`image${idx}`}>
-                          <img src={`/images/currencies/${item.name.toUpperCase()}.png`} alt="" />
-                          <span>{`${
-                            item.name === "Peri"
-                              ? isNaN(item.value)
-                                ? 0
-                                : formatCurrency(item.value)
-                              : formatCurrency(item.value)
-                          }`}</span>
-                        </Image>
-                      );
-                    })}
-                  </CollateralList>
-                </LongCell>
-                <ShortCell>
-                  <H4 $weight={"m"}>{statusList[el.status]}</H4>
-                </ShortCell>
-                <ActionCell style={{ position: "relative" }}>
-                  {el.status === 0 && <TakeBtn onClick={() => toggleModal(idx)}>Take</TakeBtn>}
+        <TableBody $center={!listReady}>
+          {!listReady ? (
+            <ContainerLoadingSpinner />
+          ) : (
+            list.map((el, idx) => {
+              return (
+                <BodyRow key={`row${idx}`}>
+                  <ShortCell>
+                    <H4 $weight={"m"}>{`${ratioToPer(el.cRatio)}%`}</H4>
+                  </ShortCell>
+                  <LongCell>
+                    <H4 $weight={"m"}>{`$${formatCurrency(el.debt)}`}</H4>
+                  </LongCell>
+                  <LongCell /* style={{ width: "100px" }} */>
+                    <CollateralList>
+                      {el.collateral.map((item, idx) => {
+                        return (
+                          item.value > 0 && (
+                            <Image key={`image${idx}`}>
+                              <img
+                                src={`/images/currencies/${item.name.toUpperCase()}.png`}
+                                alt=""
+                              />
+                              <span>{`${
+                                item.name === "Peri"
+                                  ? isNaN(item.value)
+                                    ? 0
+                                    : formatCurrency(item.value)
+                                  : formatCurrency(item.value)
+                              }`}</span>
+                            </Image>
+                          )
+                        );
+                      })}
+                    </CollateralList>
+                  </LongCell>
+                  <ShortCell>
+                    <H4 $weight={"m"}>{statusList[el.status]}</H4>
+                  </ShortCell>
+                  <ActionCell style={{ position: "relative" }}>
+                    {el.status === 0 && <TakeBtn onClick={() => toggleModal(idx)}>Take</TakeBtn>}
 
-                  {el.toggle && (
-                    <TakeModal
-                      idx={idx}
-                      address={el.address}
-                      list={list}
-                      dispatch={dispatch}
-                      contracts={contracts}
-                      debt={formatCurrency(el.debt)}
-                      collateral={el.collateral}
-                      toggleModal={toggleModal}
-                      cRatio={`${ratioToPer(el.cRatio)}%`}
-                    ></TakeModal>
-                  )}
-                </ActionCell>
-              </BodyRow>
-            );
-          })}
+                    {el.toggle && (
+                      <TakeModal
+                        idx={idx}
+                        address={el.address}
+                        list={list}
+                        dispatch={dispatch}
+                        contracts={contracts}
+                        debt={formatCurrency(el.debt)}
+                        collateral={el.collateral}
+                        toggleModal={toggleModal}
+                        cRatio={`${ratioToPer(el.cRatio)}%`}
+                      ></TakeModal>
+                    )}
+                  </ActionCell>
+                </BodyRow>
+              );
+            })
+          )}
         </TableBody>
       </TableContainer>
     </Container>
   );
 };
 
+export const ContainerLoadingSpinner = styled.div`
+  width: 40px;
+  height: 40px;
+  border: 2px solid #262a3c;
+  border-radius: 50%;
+  border-top-color: #4182f0;
+  border-left-color: #4182f0;
+  border-right-color: #4182f0;
+  margin: 30px;
+  animation: spin 0.8s infinite ease-in-out;
+
+  @keyframes spin {
+    to {
+      transform: rotate(1turn);
+    }
+  }
+`;
+
 export const Title = styled.div`
   z-index: 0;
   justify-content: flex-start;
 
   h1 {
-      width: fit-content;
-      // margin-left: 70px;
+    width: fit-content;
+    // margin-left: 70px;
   }
 
   ${({ theme }) => theme.media.mobile`
@@ -350,12 +378,11 @@ export const Title = styled.div`
       margin-left: 0px;
     }
   `}
-    
 `;
 
 const BodyRow = styled(BorderRow)`
   min-height: 80px;
-  
+
   ${({ theme }) => theme.media.mobile`
     min-height: 60px;
   `}
@@ -397,6 +424,7 @@ const ActionCell = styled(Cell)`
 const LongCell = styled(AmountCell)`
   min-width: 150px;
   width: 22%;
+  overflow: visible;
 
   ${({ theme }) => theme.media.mobile`
     min-width: 70px;
@@ -420,6 +448,7 @@ export const TableContainer = styled.div`
   z-index: 1;
   display: flex;
   flex-direction: column;
+  align-items: center;
   border-radius: 10px;
   height: 60%;
   width: 80%;
@@ -445,11 +474,14 @@ export const TableContainer = styled.div`
   `}
 `;
 
-export const TableBody = styled(StyledTBody)`
+export const TableBody = styled(StyledTBody)<{ $center?: boolean }>`
+  justify-content: ${(props) => (props.$center ? "center" : "flex-start")};
+  align-items: center;
   width: 100%;
 `;
 
 export const TableHeader = styled(StyledTHeader)`
+  overflow: visible;
   width: 100%;
 `;
 
@@ -459,7 +491,6 @@ const CollateralList = styled.ul`
   align-items: center;
   padding: 0;
   margin: 0;
-
 `;
 
 export const Image = styled.li`
@@ -508,20 +539,20 @@ export const TakeBtn = styled.button/* <ITakeBtn> */ `
   width: 5rem;
   padding: 0.5rem 0;
   margin: 0.2rem 1rem;
-  background: ${({theme}) => theme.colors.background.body};
-	border: ${({theme}) => `1px solid ${theme.colors.border.tableRow}`};
-	box-shadow: ${({theme}) => `0px 1.5px 0px ${theme.colors.border.primary}`};
+  background: ${({ theme }) => theme.colors.background.body};
+  border: ${({ theme }) => `1px solid ${theme.colors.border.tableRow}`};
+  box-shadow: ${({ theme }) => `0px 1.5px 0px ${theme.colors.border.primary}`};
 
-	&:hover {
-		transition: 0.2s ease-in-out;
-		transform: translateY(-1px);
-		box-shadow: ${({theme}) => `0.5px 3px 0px ${theme.colors.border.primary}`};
-	}
+  &:hover {
+    transition: 0.2s ease-in-out;
+    transform: translateY(-1px);
+    box-shadow: ${({ theme }) => `0.5px 3px 0px ${theme.colors.border.primary}`};
+  }
 
-	&:active {
-		transform: translateY(1px);
-		box-shadow: none;
-	}
+  &:active {
+    transform: translateY(1px);
+    box-shadow: none;
+  }
 
   &:disabled {
     cursor: not-allowed;
@@ -539,6 +570,30 @@ export const TakeBtn = styled.button/* <ITakeBtn> */ `
 const ImgDropBox = styled.div`
   display: flex;
   left: 0px;
+  position: relative;
+  width: fit-content;
+  height: fit-content;
+  background: transparent;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+
+  img {
+    margin: 3px 3px;
+    width: 17px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+`;
+
+const ImgDropList = styled.div`
+  display: flex;
+  left: 0px;
+  top: 23px;
+  z-index: 99;
   flex-direction: column;
   position: relative;
   width: fit-content;
@@ -557,6 +612,10 @@ const ImgDropBox = styled.div`
     -ms-user-select: none;
     user-select: none;
   }
+`;
+
+const DropH4 = styled(H4)`
+  overflow: visible;
 `;
 
 export default Liquidation;

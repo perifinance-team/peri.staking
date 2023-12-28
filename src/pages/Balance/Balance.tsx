@@ -4,19 +4,17 @@ import { RootState } from "config/reducers";
 import styled from "styled-components";
 import { H1, H4 } from "components/heading";
 import { StyledTHeader, StyledTBody, Row, Cell, BorderRow } from "components/table";
-import { createCompareFn, formatCurrency } from "lib";
+import { formatCurrency } from "lib";
 import { HashRouter as Router, Route, Switch } from "react-router-dom";
 
 import Escrow from "pages/Escrow";
 import Liquidation from "pages/Liquidation";
 import Vesting from "pages/Vesting";
-import { PynthBalance, getPynthBalances } from "lib/thegraph/api/getPynthBalances";
-import { networkInfo } from "configure/networkInfo";
+import PynthsBalance from "./PynthsBalance";
 
 const Balance = () => {
-  const { balances } = useSelector((state: RootState) => state.balances);
-  const { networkId, address } = useSelector((state: RootState) => state.wallet);
-  const [pynthBalances, setPynthBalances] = useState([]);
+  const { networkId } = useSelector((state: RootState) => state.wallet);
+  const { balances, isReady } = useSelector((state: RootState) => state.balances);
   const swapName = {
     1: "UNI",
     3: "UNI",
@@ -29,27 +27,6 @@ const Balance = () => {
     80001: "QUICK",
   };
 
-  const fetchPynthBalances = async () => {
-    console.log(networkId, address); 
-    if (networkInfo[networkId] === undefined || !address) return;
-
-    const balances = await getPynthBalances({ networkId: networkId.toString(), address });
-    
-    console.log(balances);
-    if (balances === undefined) return;
-    if (Array.isArray(balances)) {
-      balances.sort(createCompareFn("usdBalance", "desc"));
-      setPynthBalances(balances);
-    } else {
-      setPynthBalances([balances]);
-    }
-  }
-
-  useEffect(() => {
-    fetchPynthBalances();
-  }, [networkId, address]);
-
-
   return (
     <Router basename="/balance">
       <Switch>
@@ -59,133 +36,89 @@ const Balance = () => {
               <H1>TOTAL BALANCE</H1>
             </Title>
             <TableContainer>
-              <PynthTableContainer>
-              <StyledTHeader>
-                <Row>
-                  <TokenCell>
-                    <H4 $weight={"b"} $align={"center"}>
-                      Asset
-                    </H4>
-                  </TokenCell>
-                  <AmountCell>
-                    <H4 $weight={"b"}>Staked</H4>
-                  </AmountCell>
-                  <AmountCell>
-                    <H4 $weight={"b"}>Stakeable</H4>
-                  </AmountCell>
-                  <AmountCell>
-                    <H4 $weight={"b"}>Transferable</H4>
-                  </AmountCell>
-                  <AmountCell>
-                    <H4 $weight={"b"}>Escrow</H4>
-                  </AmountCell>
-                  <AmountCell>
-                    <H4 $weight={"b"}>Total</H4>
-                  </AmountCell>
-                </Row>
-              </StyledTHeader>
-              <StyledTBody>
-                {Object.keys(balances).map((currencyName) => {
-                  if ((networkId === 1287 || networkId === 1285) && currencyName === "LP")
-                    return <></>;
-                  else
-                    return (
-                      <BorderRow key={currencyName}>
-                        <TokenCell>
-                          <Asset $isLP={currencyName === "LP"}>
-                            <img
-                              src={`/images/currencies/${
-                                currencyName === "LP"
-                                  ? `${currencyName}_${swapName[networkId]}.png`
-                                  : `${currencyName}.png`
-                              }`}
-                              alt="lp"
-                            ></img>
-                            <H4 $weight={"m"} $align={"left"}>
-                              {currencyName}
-                            </H4>
-                          </Asset>
-                        </TokenCell>
-                        <AmountCell>
-                          <H4 $weight={"m"} $align={"right"}>
-                            {formatCurrency(balances[currencyName].staked)}
-                          </H4>
-                        </AmountCell>
-                        <AmountCell>
-                          <H4 $weight={"m"} $align={"right"}>
-                            {formatCurrency(balances[currencyName].stakeable)}
-                          </H4>
-                        </AmountCell>
-                        <AmountCell>
-                          <H4 $weight={"m"} $align={"right"}>
-                            {formatCurrency(balances[currencyName].transferable)}
-                          </H4>
-                        </AmountCell>
-                        <AmountCell>
-                          <H4 $weight={"m"} $align={"right"}>
-                            {formatCurrency(balances[currencyName].rewardEscrow)}
-                          </H4>
-                        </AmountCell>
-                        <AmountCell>
-                          <H4 $weight={"m"} $align={"right"}>
-                            {formatCurrency(balances[currencyName].balance)}
-                          </H4>
-                        </AmountCell>
-                      </BorderRow>
-                    );
-                })}
-              </StyledTBody>
-              </PynthTableContainer>
-              {pynthBalances.length > 0 
-                ? <PynthTableContainer>
-                    <PynthHederRow/>
-                      <StyledTHeader>
-                        <Row>
-                          <TokenCell>
-                            <H4 $weight={"b"} $align={"center"}>
-                              Pynth
-                            </H4>
-                          </TokenCell>
-                          <PynthAmtCell>
-                            <H4 $weight={"b"}>Amount</H4>
-                          </PynthAmtCell>
-                          <PynthAmtCell>
-                            <H4 $weight={"b"}>Value(USD)</H4>
-                          </PynthAmtCell>
-                        </Row>
-                      </StyledTHeader>
-                      <PynthTableBody>
-                        {pynthBalances.map((pynth) => {
-                          return (
-                            (pynth.usdBalance > 0) && <BorderRow key={pynth.currencyName}>
-                              <TokenCell>
-                                <Asset>
-                                  <img src={`/images/currencies/${pynth.currencyName}.svg`} alt={`${pynth.currencyName}`}></img>
-                                  <H4 $weight={"m"} $align={"left"}>
-                                    {pynth.currencyName}
-                                  </H4>
-                                </Asset>
-                              </TokenCell>
-                              <PynthAmtCell>
-                                <H4 $weight={"m"} $align={"right"}>
-                                  {formatCurrency(pynth.amount)}
+              {!isReady 
+              ? <BalanceContainer $isLoading={!isReady}>
+                  <TableLoadingSpinner />
+                </BalanceContainer> 
+              : <BalanceContainer  key="balanceTable">
+                  <TableHeader>
+                    <Row>
+                      <TokenCell>
+                        <H4 $weight={"b"} $align={"center"}>
+                          Asset
+                        </H4>
+                      </TokenCell>
+                      <AmountCell>
+                        <H4 $weight={"b"}>Staked</H4>
+                      </AmountCell>
+                      <AmountCell>
+                        <H4 $weight={"b"}>Stakeable</H4>
+                      </AmountCell>
+                      <AmountCell>
+                        <H4 $weight={"b"}>Transferable</H4>
+                      </AmountCell>
+                      <AmountCell>
+                        <H4 $weight={"b"}>Escrow</H4>
+                      </AmountCell>
+                      <AmountCell>
+                        <H4 $weight={"b"}>Total</H4>
+                      </AmountCell>
+                    </Row>
+                  </TableHeader>
+                  <TableBody>
+                    {Object.keys(balances).map((currencyName) => {
+                      if ((networkId === 1287 || networkId === 1285) && currencyName === "LP")
+                        return <></>;
+                      else
+                        return (
+                          <BorderRow key={currencyName}>
+                            <TokenCell>
+                              <Asset $isLP={currencyName === "LP"}>
+                                <img
+                                  src={`/images/currencies/${
+                                    currencyName === "LP"
+                                      ? `${currencyName}_${swapName[networkId]}.png`
+                                      : `${currencyName}.png`
+                                  }`}
+                                  alt="lp"
+                                ></img>
+                                <H4 $weight={"m"} $align={"left"}>
+                                  {currencyName}
                                 </H4>
-                              </PynthAmtCell>
-                              <PynthAmtCell>
-                                <H4 $weight={"m"} $align={"right"}>
-                                  {formatCurrency(pynth.usdBalance)}
-                                </H4>
-                              </PynthAmtCell>
-                            </BorderRow>
-                          );
-                        })}
-                      </PynthTableBody>
-                    </PynthTableContainer>
-                : <PynthContainer>
-                    <PynthLoadingSpinner />
-                  </PynthContainer>
+                              </Asset>
+                            </TokenCell>
+                            <AmountCell>
+                              <H4 $weight={"m"} $align={"right"}>
+                                {formatCurrency(balances[currencyName].staked)}
+                              </H4>
+                            </AmountCell>
+                            <AmountCell>
+                              <H4 $weight={"m"} $align={"right"}>
+                                {formatCurrency(balances[currencyName].stakeable)}
+                              </H4>
+                            </AmountCell>
+                            <AmountCell>
+                              <H4 $weight={"m"} $align={"right"}>
+                                {formatCurrency(balances[currencyName].transferable)}
+                              </H4>
+                            </AmountCell>
+                            <AmountCell>
+                              <H4 $weight={"m"} $align={"right"}>
+                                {formatCurrency(balances[currencyName].rewardEscrow)}
+                              </H4>
+                            </AmountCell>
+                            <AmountCell>
+                              <H4 $weight={"m"} $align={"right"}>
+                                {formatCurrency(balances[currencyName].balance)}
+                              </H4>
+                            </AmountCell>
+                          </BorderRow>
+                        );
+                    })}
+                  </TableBody>
+                </BalanceContainer>
               }
-              
+              <PynthsBalance />
             </TableContainer>
           </Container>
         </Route>
@@ -203,8 +136,7 @@ const Balance = () => {
   );
 };
 
-
-export const PynthLoadingSpinner = styled.div`
+export const TableLoadingSpinner = styled.div`
 	width: 40px;
 	height: 40px;
 	border: 2px solid #262a3c;
@@ -221,67 +153,33 @@ export const PynthLoadingSpinner = styled.div`
 		}
 	}
 
-  ${({ theme }) => theme.media.mobile`
+  @media only screen and (max-width: 510px) {
     width: 15px;
     height: 15px;
     margin: 5px;
-  `}
+  }
 `;
 
-const PynthHederRow = styled(Row)`
-  width: 100%;
-  height: 20px;
-`;
-
-const PynthAmtCell = styled(Cell)`
-  width: 45% !important;
-
-  ${({ theme }) => theme.media.mobile`
-    min-width: 130px;
-  `}
-`;
-
-const PynthTableBody = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  overflow-x: hidden;
-  overflow-y: visible;
-  width: 100%;
-  height: 100%;
-
-  ${({ theme }) => theme.media.mobile`
-    width: fit-content;
-  `}
-
-`;
-
-const PynthContainer = styled.div`
-  z-index: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-`;
-
-const PynthTableContainer = styled.div`
+export const BalanceContainer = styled.div<{ $isLoading?: boolean }>`
   z-index: 1;
   display: flex;
   flex-direction: column;
-  height: fit-content;
+  // align-items: center;
+  height: ${(props) => (props.$isLoading ? "50%" : "fit-content")};
+  align-items: ${(props) => (props.$isLoading ? "center" : "flex-start")};
+  justify-content: ${(props) => (props.$isLoading ? "center" : "flex-start")};
   width: 100%;
 `;
 
-const AmountCell = styled(Cell)`
+export const AmountCell = styled(Cell)`
   width: 17.5% !important;
 
-  ${({ theme }) => theme.media.mobile`
+  @media only screen and (max-width: 510px) {
     min-width: 72px;
-  `}
+  }
 `;
 
-const TokenCell = styled(Cell)`
+export const TokenCell = styled(Cell)`
   flex-direction: row;
   width: 12.5% !important;
   justify-content: center !important;
@@ -291,7 +189,7 @@ const TokenCell = styled(Cell)`
   `}
 `;
 
-const Asset = styled.div<{ $isLP?: boolean }>`
+export const Asset = styled.div<{ $isLP?: boolean }>`
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -312,6 +210,26 @@ const Asset = styled.div<{ $isLP?: boolean }>`
       text-align: center;
     }
   `}
+`;
+
+const TableHeader = styled(StyledTHeader)`
+  ${({ theme }) => theme.media.mobile`
+    width: 100%;
+  `}
+
+  @media only screen and (max-width: 510px) {
+    width: fit-content;
+  }
+`;
+
+const TableBody = styled(StyledTBody)`
+  ${({ theme }) => theme.media.mobile`
+    width: 100%;
+  `}
+
+  @media only screen and (max-width: 510px) {
+    width: fit-content;
+  }
 `;
 
 const Container = styled.div`
@@ -359,7 +277,7 @@ const TableContainer = styled.div`
       margin: 0;
       width: 90%;
       height: fit-content;
-      min-height: 85%;
+      min-height: 87%;
       overflow-y: scroll;
       overflow-x: scroll;
       padding: 0;
