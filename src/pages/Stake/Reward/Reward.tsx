@@ -240,13 +240,10 @@ const Reward = () => {
 
   return (
     <Container>
-      {slideIndex === 0 && (
-        <Title>
-          {" "}
-          <H1>REWARD</H1>{" "}
-        </Title>
-      )}
-      <StakeContainer>
+      <Title $show={slideIndex === 0}>
+        <H1>REWARD</H1>
+      </Title>
+      <RewardContainer>
         <Swiper
           spaceBetween={10}
           direction={"vertical"}
@@ -274,9 +271,24 @@ const Reward = () => {
             </SwiperSlide>
           ))}
         </Swiper>
-      </StakeContainer>
+      </RewardContainer>
     </Container>
   );
 };
 
+const RewardContainer = styled(StakeContainer)`
+  .swiper-wrapper {
+    top: -14% !important;
+  }
+
+  .swiper-slide.swiper-slide-next  {
+    margin-top: 1.5% !important;
+  }
+
+  ${({ theme }) => theme.media.mobile`
+    .swiper-wrapper {
+      top: -3.5% !important;
+    }
+  `}
+`;
 export default Reward;

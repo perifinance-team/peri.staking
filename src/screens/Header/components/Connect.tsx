@@ -19,11 +19,13 @@ const Connect = () => {
   const onConnect = async () => {
     try {
       setConnecting(true);
-      const selectedWallet = localStorage.getItem("selectedWallet");
-      if (selectedWallet === "undefined") {
-        localStorage.removeItem("selectedWallet");
-      }
-      await web3Onboard.connect(selectedWallet);
+      // let selectedWallet = localStorage.getItem("selectedWallet");
+      // console.log("selectedWallet", selectedWallet);
+      // if (selectedWallet === "undefined" || selectedWallet === null) {
+      //   localStorage.removeItem("selectedWallet");
+      //   selectedWallet = undefined;
+      // }
+      await web3Onboard.connect();
     } catch (e) {
       console.log("connect error", e);
     }
@@ -45,6 +47,7 @@ const Connect = () => {
       $height={30}
       $padding={"0px 5px"}
       $connecting={connecting}
+      $shadow={false}
       onClick={() => {
         isConnect ? onDisConnect() : onConnect();
       }}
@@ -56,9 +59,9 @@ const Connect = () => {
       )}
       <ConnectImg $height={18} $width={18}
         src={`/images/icon/${isConnect ? "power_on" : "power_off"}.png`}
-        onClick={() => {
+        /* onClick={() => {
           isConnect ? onDisConnect() : onConnect();
-        }}
+        }} */
       ></ConnectImg>
     </ConnectContainer>
   );

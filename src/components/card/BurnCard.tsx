@@ -49,11 +49,9 @@ export const BurnCard = ({
             <InputContainer>
                 {!isLP && (
                     <APYContainer>
-                        {isActive && (
-                            <Ratio $align={"right"} $weight={"sb"}>
-                                EST C-RATIO: {cRatio.toString()}%
-                            </Ratio>
-                        )}
+                        <Ratio $align={"right"} $weight={"sb"}>
+                            EST C-RATIO: {cRatio.toString()}%
+                        </Ratio>
                     </APYContainer>
                 )}
                 {!isLP && (
@@ -92,6 +90,7 @@ export const BurnCard = ({
                             color={"fourth"}
                             width={320}
                             margin={"0px 20px 0px 0px"}
+                            shadow={isActive}
                         >
                             <H4 $weight={"sb"} $color={"fifth"}>
                                 BURN
@@ -105,6 +104,7 @@ export const BurnCard = ({
                             color={"fourth"}
                             width={320}
                             margin={"0px 20px 0px 0px"}
+                            shadow={isActive}
                         >
                             <H4 $weight={"sb"} $color={"fifth"}>
                                 UNSTAKE
@@ -118,11 +118,9 @@ export const BurnCard = ({
     );
 };
 const Ratio = styled(H4)`
-    margin-right: 80px;
+    width: 100% !important;
+    text-align: center !important;
 
-    ${({ theme }) => theme.media.mobile`
-        margin-right: 30px;
-    `}
 `;
 
 // const IsActive = css`

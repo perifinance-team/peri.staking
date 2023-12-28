@@ -435,7 +435,7 @@ const Burn = () => {
       <Title $show={slideIndex === 0}>
         <H1>BURN</H1>
       </Title>
-      <StakeContainer>
+      <BurnContainer>
         <Swiper
           spaceBetween={0}
           direction={"vertical"}
@@ -474,51 +474,31 @@ const Burn = () => {
             </SwiperSlide>
           ))}
         </Swiper>
-      </StakeContainer>
+      </BurnContainer>
     </Container>
   );
 };
 
-// export const Container = styled.div`
-//   display: flex;
-//   justify-content: center;
-//   flex-direction: column;
-//   height: 80vh;
-//   align-items: flex-start;
-//   position: relative;
-//   overflow: hidden;
+const BurnContainer = styled(StakeContainer)`
+  .swiper-wrapper {
+    top: -13.5% !important;
+  }
 
-// 	${({ theme }) => theme.media.mobile`
-// 		height: 45vh;
-// 	`}
-// `;
+  .swiper-slide.swiper-slide-next  {
+    margin-top: 3% !important;
+  }
 
-// export const Title = styled.div`
-//   display: flex;
-//   position: absolute;
-//   justify-content: flex-start;
-// 	width: 100%;
-//   z-index: 0;
-//   top: 10%;
+  ${({ theme }) => theme.media.mobile`
+    .swiper-wrapper {
+      top: -2.5% !important;
+    }
 
-//   ${({ theme }) => theme.media.mobile`
-//     top: 0px;
-//     justify-content: center;
-//   `}
-// `;
+    .swiper-slide.swiper-slide-next  {
+      margin-top: 5% !important;
+    }
 
+  `}
 
-// export const StakeContainer = styled.div`
-// 	display: flex;
-// 	position: absolute;
-// 	justify-content: center;
-// 	width: 100%;
-// 	height: 80vh;
-// 	top: -90px;
-// 	overflow: visible;
+`;
 
-// 	${({ theme }) => theme.media.mobile`
-// 		top: -210px;
-// 	`}
-// `;
 export default Burn;

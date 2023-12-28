@@ -7,7 +7,7 @@ import { Fee } from "components/fee";
 import { useSelector } from "react-redux";
 import { RootState } from "config/reducers";
 import { formatCurrency } from "lib";
-import { SecondLabel, Card, IconContainer, InputContainer, APYContainer, RowContainer, ColContainer, Label} from "./MintCard";
+import { Card, IconContainer, InputContainer, APYContainer, RowContainer, ColContainer, Label} from "./MintCard";
 
 
 export const LPRewardCard = ({ isActive, actionName, rewardAction, data }) => {
@@ -38,9 +38,9 @@ export const LPRewardCard = ({ isActive, actionName, rewardAction, data }) => {
                         </H4>
                     )}
                     {isActive && (
-                        <SecondLabel $align={"right"} $weight={"sb"}>
+                        <H4 $align={"right"} $weight={"sb"}>
                             STATUS: {"OPEN"}
-                        </SecondLabel>
+                        </H4>
                     )}
                 </APYContainer>
                 <RowContainer>

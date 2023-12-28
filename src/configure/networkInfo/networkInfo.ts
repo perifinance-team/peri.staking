@@ -35,7 +35,7 @@ export const networkInfo = {
 	137: {
 		chainId: "0x89",
 		chainName: "Polygon",
-		rrpcUrls: RPC_URLS[137],
+		rpcUrls: RPC_URLS[137],
 		blockExplorerUrls: "https://polygonscan.com/",
 	},
 	1287: {

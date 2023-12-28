@@ -386,14 +386,13 @@ export const StakeContainer = styled.div`
   justify-content: center;
   align-items: flex-end;
   width: 100%;
-  height: 100%;
+  height: 100% !important;
 
   .swiper-container {
-    width: 100%;
+    width: 100% !important;
   }
 
   .swiper-wrapper {
-    height: 100%;
     top: -10% !important;
   }
 
@@ -403,7 +402,6 @@ export const StakeContainer = styled.div`
       top: -10% !important;
       margin: 0 5px;
       overflow: visible;
-      // top: -100px !important;
     }
 
     .swiper-wrapper {
@@ -412,7 +410,7 @@ export const StakeContainer = styled.div`
     }
 
     .swiper-slide.swiper-slide-next  {
-      margin-top: -13% !important;
+      margin-top: -0% !important;
     }
 
 	`}

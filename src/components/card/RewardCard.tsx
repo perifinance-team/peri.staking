@@ -5,7 +5,7 @@ import { RoundButton } from "components/button/RoundButton";
 import { Input } from "../../components/Input/index";
 import { Fee } from "components/fee";
 import { formatCurrency } from "lib";
-import { SecondLabel, Card, IconContainer, InputContainer, APYContainer, RowContainer, ColContainer, Label} from "./MintCard";
+import { Card, IconContainer, InputContainer, APYContainer, RowContainer, ColContainer, Label} from "./MintCard";
 // import { useSelector } from "react-redux"
 // import { RootState } from 'config/reducers'
 
@@ -20,16 +20,12 @@ export const RewardCard = ({ isActive, actionName, rewardAction, periodAction, d
             </IconContainer>
             <InputContainer>
                 <APYContainer>
-                    {isActive && (
-                        <H4 $align={"right"} $weight={"sb"}>
-                            TIME LEFT: {data.closeIn}
-                        </H4>
-                    )}
-                    {isActive && (
-                        <SecondLabel $align={"right"} $weight={"sb"}>
-                            STATUS: {data.claimable ? "OPEN" : "CLOSE"}
-                        </SecondLabel>
-                    )}
+                    <H4 $align={"right"} $weight={"sb"}>
+                        TIME LEFT: {data.closeIn}
+                    </H4>
+                    <H4 $align={"right"} $weight={"sb"}>
+                        STATUS: {data.claimable ? "OPEN" : "CLOSE"}
+                    </H4>
                 </APYContainer>
                 <RowContainer>
                     <Label>{"PERI"}</Label>
@@ -58,6 +54,7 @@ export const RewardCard = ({ isActive, actionName, rewardAction, periodAction, d
                             color={"primary"}
                             width={320}
                             margin={"0px 20px 10px 0px"}
+                            shadow={isActive}
                         >
                             <H4 $weight={"b"} color={"primary"}>
                                 CLOSE CURRENT PERIOD
@@ -71,6 +68,7 @@ export const RewardCard = ({ isActive, actionName, rewardAction, periodAction, d
                         color={"primary"}
                         width={320}
                         margin={"0px 20px 0px 0px"}
+                        shadow={isActive}
                     >
                         <H4 $weight={"b"} color={"primary"}>
                             CLAIM

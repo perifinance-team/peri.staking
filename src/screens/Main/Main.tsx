@@ -112,7 +112,7 @@ const Content = styled.div`
 	`}
 
 	${({ theme }) => theme.media.tablet`
-		min-height: 68vh;
+		min-height: 52vh;
 	`}
 `;
 

@@ -9,9 +9,9 @@ export const RPC_URLS: object = {
 	56: "https://bsc-dataseed1.binance.org",
 	97: "https://data-seed-prebsc-1-s1.binance.org:8545/",
 	137: `https://rpc-mainnet.maticvigil.com/v1/${process.env.REACT_APP_RPC_MATIC_ID}`,
-	// 1285: `https://rpc.api.moonriver.moonbeam.network`,
 	1285: `https://moonriver.public.blastapi.io`,
 	1287: `https://rpc.api.moonbase.moonbeam.network`,
-	1337: `http://localhost:8545`,
 	80001: `https://rpc-mumbai.maticvigil.com/v1/${process.env.REACT_APP_RPC_MUMBAI_ID}`,
+	1337: `http://localhost:8545`,
 };
+	// 1285: `https://rpc.api.moonriver.moonbeam.network`,

@@ -9,7 +9,7 @@ type RoundButtonProps = {
   color?: string;
   width?: number | string;
   margin?: string;
-  shadow?: string;
+  shadow?: boolean;
   minWidth?: number | string;
   disabled?: boolean;
 };
@@ -37,7 +37,7 @@ export const BaseButton = styled.button<{
   $color?: string;
   $width?: number | string;
   $margin?: string;
-  $shadow?: string;
+  $shadow?: boolean;
   $minWidth?: number | string;
 }>`
   display: flex;
@@ -69,7 +69,7 @@ export const BaseButton = styled.button<{
   border: ${({theme}) => `1px solid ${theme.colors.border.tableRow}`};
   box-shadow: 0.5px 1.5px 0px ${(props) => 
     props.$shadow ? 
-    props.theme.colors.background.button[props.$shadow]
+    props.theme.colors.background.button[props.$color]
     : "none"
   };
   background-color: ${(props) => props.theme.colors.background.button.fifth};

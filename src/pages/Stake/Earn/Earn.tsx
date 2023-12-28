@@ -216,12 +216,9 @@ const Earn = () => {
 
   return (
     <Container>
-      {slideIndex === 0 && (
-        <Title>
-          {" "}
-          <H1>EARN</H1>{" "}
-        </Title>
-      )}
+      <Title $show={slideIndex === 0}>
+        <H1>EARN</H1>
+      </Title>
       <StakeContainer>
         <Swiper
           spaceBetween={5}

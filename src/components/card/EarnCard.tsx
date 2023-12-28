@@ -45,11 +45,9 @@ export const EarnCard = ({
             </IconContainer>
             <InputContainer>
                 <APYContainer>
-                    {isActive && (
-                        <APY $align={"left"} $weight={"sb"}>
-                            EST APY: {formatCurrency(apy, 2)}%
-                        </APY>
-                    )}
+                    <APY $align={"left"} $weight={"sb"}>
+                        EST APY: {formatCurrency(apy, 2)}%
+                    </APY>
                 </APYContainer>
                 <RowContainer>
                     <Label>{coinName}</Label>
@@ -74,6 +72,7 @@ export const EarnCard = ({
                             color={"secondary"}
                             width={320}
                             margin={"20px 20px 0px 0px"}
+                            shadow={isActive}
                         >
                             <H4 $weight={"sb"}>Approve</H4>
                         </RoundButton>
@@ -85,6 +84,7 @@ export const EarnCard = ({
                             color={"secondary"}
                             width={320}
                             margin={"20px 20px 0px 0px"}
+                            shadow={isActive}
                         >
                             <H4 $weight={"sb"}>STAKE</H4>
                         </RoundButton>

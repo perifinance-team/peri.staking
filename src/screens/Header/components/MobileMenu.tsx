@@ -55,11 +55,6 @@ const MobileMenuContainer = styled.button<{ $open: boolean }>`
     : `0px 0px 0px ${props.theme.colors.border.primary}`
   )};
 
-  &:active {
-    transition: 0.2s ease-in-out;
-    transform: translateY(5%);
-  }
-
   ${({ theme }) => theme.media.mobile`
     display: block;
   `}
@@ -86,6 +81,11 @@ const MobileMenuImage = styled.img<{ $open: boolean }>`
 
   width: ${({ $open }) => ($open ? "15px" : "20px")};
   height: ${({ $open }) => ($open ? "15px" : "20px")};
+
+  &:active {
+    transition: 0.2s ease-in-out;
+    transform: translateY(5%);
+  }
 `;
 
 const MobileMenuList = styled.div<{ $open: boolean }>`

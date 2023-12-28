@@ -34,16 +34,12 @@ export const MintCard = ({
             </IconContainer>
             <InputContainer>
                 <APYContainer>
-                    {true && (
-                        <H4 $align={"right"} $weight={"sb"}>
-                            APY: {formatCurrency(apy, 2)}%
-                        </H4>
-                    )}
-                    {true && (
-                        <SecondLabel $align={"right"} $weight={"sb"}>
-                            C-RATIO: {cRatio.toString()}%
-                        </SecondLabel>
-                    )}
+                    <H4 $align={"right"} $weight={"sb"}>
+                        APY: {formatCurrency(apy, 2)}%
+                    </H4>
+                    <H4 $align={"right"} $weight={"sb"}>
+                        C-RATIO: {cRatio.toString()}%
+                    </H4>
                 </APYContainer>
                 <RowContainer>
                     <Label>{"pUSD"}</Label>
@@ -71,6 +67,7 @@ export const MintCard = ({
                             color={"secondary"}
                             width={320}
                             margin={"0px 20px 0px 0px"}
+                            shadow={isActive}
                         >
                             <H4 $weight={"sb"}>Approve</H4>
                         </RoundButton>
@@ -82,25 +79,17 @@ export const MintCard = ({
                             color={"secondary"}
                             width={320}
                             margin={"0px 20px 0px 0px"}
+                            shadow={isActive}
                         >
                             <H4 $weight={"sb"}>MINT</H4>
                         </RoundButton>
                     )}
-
                     {isActive && <FeeAndPrice currencyName={currencyName}></FeeAndPrice>}
                 </ColContainer>
             </InputContainer>
         </Card>
     );
 };
-
-export const SecondLabel = styled(H4)`
-    margin-right: 80px;
-
-    ${({ theme }) => theme.media.mobile`
-        margin-right: 30px;
-    `}
-`;
 
 const IsActive = css<{ $border:string }>`
     // margin: 20px 0px;
@@ -112,7 +101,7 @@ const IsActive = css<{ $border:string }>`
 export const Card = styled.div<{ $isActive: any, $border:string }>`
     display: flex;
     flex-direction: row;
-    height: 100%;
+    height: 100% !important;
     width: 90%;
     psotion: relative;
     top: 0;
@@ -126,7 +115,7 @@ export const Card = styled.div<{ $isActive: any, $border:string }>`
 
     ${({ theme }) => theme.media.mobile`
         flex-direction: column;
-        align-items: stretch;
+        align-items: center;
         height: fit-content;
         max-width: 450px;
     `}
@@ -171,9 +160,11 @@ export const IconContainer = styled.div`
 export const InputContainer = styled.div`
     display: flex;
     flex-direction: column;
+    align-items: center;
     justify-content: center;
     margin-top: 20px;
     width: 70%;
+    height: 100%;
 
     ${({ theme }) => theme.media.mobile`
         width: 100%;
@@ -181,13 +172,17 @@ export const InputContainer = styled.div`
 `;
 
 export const APYContainer = styled.div`
-    width: 100%;
+    width: 70%;
     display: flex;
     flex-direction: row;
     align-items: center;
+    justify-content: space-between;
+    h4 {
+        width: fit-content;
+    }
 
     ${({ theme }) => theme.media.mobile`
-        justify-content: flex-end;
+        // justify-content: flex-end;
         h4 {
             font-size: 9px;
         }
@@ -210,9 +205,7 @@ export const RowContainer = styled.div<{ $margin?: string }>`
     ${({ theme }) => theme.media.mobile`
         justify-content: center;
         width: 95%;
-        margin-top: 10px;
-        margin-left: 10px;
-        margin-right: 0px;
+        margin: 10px 0 0 0px;
 
         h4 {
             width: 10%;
@@ -226,7 +219,7 @@ export const RowContainer = styled.div<{ $margin?: string }>`
 export const ColContainer = styled.div`
     width: 92%;
     display: flex;
-    margin-left: 10px;
+    margin: 20px 0;
     flex-direction: column;
     align-items: center;
 
@@ -238,7 +231,7 @@ export const ColContainer = styled.div`
     ${({ theme }) => theme.media.mobile`
         justify-content: center;
         width: 100%;
-        margin-top: 20px;
+        margin: 10px 0 15px 0;
 
         button {
             margin: 0;

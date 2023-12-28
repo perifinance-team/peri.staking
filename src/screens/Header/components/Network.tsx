@@ -22,7 +22,6 @@ const Network = () => {
         $height={"100%"}
         $padding={"0px 5px"}
         $minWidth={33}
-        $shadow={"primary"}
       >
         {networkName && address && isConnect && (
           <Paragraph $fontSize={0.75} $weight={"m"} $color={"primary"} $margin={"0"}>
@@ -53,10 +52,10 @@ const Container = styled.div`
 `;
 
 const ConnectButton = styled(BaseButton)`
+  box-shadow: none;
+  border: none;
   ${({ theme }) => theme.media.mobile`
     padding: 0;
-    box-shadow: none;
-    border: none;
   `}
 `;
 
