@@ -10,6 +10,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "config/reducers";
 
 export const MintCard = ({
+    hide = false,
     isActive,
     currencyName,
     cRatio = 0n,
@@ -32,7 +33,7 @@ export const MintCard = ({
                 <H3 $weight={"sb"}>{currencyName}</H3>
                 <H4 $weight={"b"}>Staked: {formatCurrency(balances[currencyName]?.staked, 2)}</H4>
             </IconContainer>
-            <InputContainer>
+            <InputContainer $hide={hide}>
                 <APYContainer>
                     <H4 $align={"right"} $weight={"sb"}>
                         APY: {formatCurrency(apy, 2)}%
@@ -116,6 +117,7 @@ export const Card = styled.div<{ $isActive: any, $border:string }>`
     ${({ theme }) => theme.media.mobile`
         flex-direction: column;
         align-items: center;
+        justify-content: flex-end;
         height: fit-content;
         max-width: 450px;
     `}
@@ -140,7 +142,7 @@ export const IconContainer = styled.div`
         flex-direction: row;
         justify-content: center;
         align-items: center;
-        margin-top: 20px;
+        margin: 20px 0 10px 0;
         height: 30px;
         width: 100%;
         img {
@@ -157,18 +159,22 @@ export const IconContainer = styled.div`
     `}
 `;
 
-export const InputContainer = styled.div`
+export const InputContainer = styled.div<{ $hide?: boolean }>`
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    margin-top: 20px;
+    margin-top: 10px;
     width: 70%;
     height: 100%;
 
-    ${({ theme }) => theme.media.mobile`
+    ${({ theme, $hide }) => $hide ? theme.media.mobile`
+        display: none;
+        width: 100%;
+    ` : theme.media.mobile`
         width: 100%;
     `}
+
 `;
 
 export const APYContainer = styled.div`

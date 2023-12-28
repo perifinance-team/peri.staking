@@ -11,6 +11,7 @@ import { formatCurrency } from "lib";
 import { Card, IconContainer, InputContainer, APYContainer, RowContainer, ColContainer, Label } from "../card/MintCard"
 
 export const BurnCard = ({
+    hide = false,
     isActive,
     currencyName,
     burnAmount,
@@ -37,16 +38,14 @@ export const BurnCard = ({
     return (
         <Card $isActive={isActive} $border={"tertiary"}>
             <IconContainer>
-                {isActive && (
-                    <img
-                        src={`/images/icon/${isLP ? `${currencyName}_${swapName[networkId]}.png` : `${currencyName}.svg`}`}
-                        alt="burn"
-                    ></img>
-                )}
+                <img
+                    src={`/images/icon/${isLP ? `${currencyName}_${swapName[networkId]}.png` : `${currencyName}.svg`}`}
+                    alt="burn"
+                />
                 <H3 $weight={"sb"}>{isLP ? `${swapName[networkId]}SWAP` : currencyName}</H3>
                 <H4 $weight={"b"}>Staked: {formatCurrency(balances[currencyName]?.staked, 2)}</H4>
             </IconContainer>
-            <InputContainer>
+            <InputContainer $hide={hide}>
                 {!isLP && (
                     <APYContainer>
                         <Ratio $align={"right"} $weight={"sb"}>

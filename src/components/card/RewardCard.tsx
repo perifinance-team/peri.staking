@@ -5,80 +5,95 @@ import { RoundButton } from "components/button/RoundButton";
 import { Input } from "../../components/Input/index";
 import { Fee } from "components/fee";
 import { formatCurrency } from "lib";
-import { Card, IconContainer, InputContainer, APYContainer, RowContainer, ColContainer, Label} from "./MintCard";
+import {
+  Card,
+  IconContainer,
+  InputContainer,
+  APYContainer,
+  RowContainer,
+  ColContainer,
+  Label,
+} from "./MintCard";
 // import { useSelector } from "react-redux"
 // import { RootState } from 'config/reducers'
 
-export const RewardCard = ({ isActive, actionName, rewardAction, periodAction, data }) => {
-    // const { isConnect } = useSelector((state: RootState) => state.wallet);
+export const RewardCard = ({
+  hide = false,
+  isActive,
+  actionName,
+  rewardAction,
+  periodAction,
+  data,
+}) => {
+  // const { isConnect } = useSelector((state: RootState) => state.wallet);
 
-    return (
-        <Card $isActive={isActive} $border={"primary"}>
-            <IconContainer>
-                {isActive && <img src={`/images/icon/${actionName}.svg`} alt="reward"></img>}
-                <H3 $weight={"sb"}>{actionName}</H3>
-            </IconContainer>
-            <InputContainer>
-                <APYContainer>
-                    <H4 $align={"right"} $weight={"sb"}>
-                        TIME LEFT: {data.closeIn}
-                    </H4>
-                    <H4 $align={"right"} $weight={"sb"}>
-                        STATUS: {data.claimable ? "OPEN" : "CLOSE"}
-                    </H4>
-                </APYContainer>
-                <RowContainer>
-                    <Label>{"PERI"}</Label>
-                    <Input
-                        currencyName={"PERI"}
-                        value={formatCurrency(data.rewards.staking, 8)}
-                        color={"primary"}
-                        disabled={true}
-                    />
-                </RowContainer>
-                <RowContainer>
-                    <Label>{"pUSD"}</Label>
-                    <Input
-                        currencyName={"pUSD"}
-                        value={formatCurrency(data.rewards.Exchange, 8)}
-                        color={"primary"}
-                        disabled={true}
-                    />
-                </RowContainer>
+  return (
+    <Card $isActive={isActive} $border={"primary"}>
+      <IconContainer>
+        <img src={`/images/icon/${actionName}.svg`} alt="reward"/>
+        <H3 $weight={"sb"}>{actionName}</H3>
+      </IconContainer>
+      <InputContainer $hide={hide}>
+        <APYContainer>
+          <H4 $align={"right"} $weight={"sb"}>
+            TIME LEFT: {data.closeIn}
+          </H4>
+          <H4 $align={"right"} $weight={"sb"}>
+            STATUS: {data.claimable ? "OPEN" : "CLOSE"}
+          </H4>
+        </APYContainer>
+        <RowContainer>
+          <Label>{"PERI"}</Label>
+          <Input
+            currencyName={"PERI"}
+            value={formatCurrency(data.rewards.staking, 8)}
+            color={"primary"}
+            disabled={true}
+          />
+        </RowContainer>
+        <RowContainer>
+          <Label>{"pUSD"}</Label>
+          <Input
+            currencyName={"pUSD"}
+            value={formatCurrency(data.rewards.Exchange, 8)}
+            color={"primary"}
+            disabled={true}
+          />
+        </RowContainer>
 
-                <ColContainer>
-                    {data?.isCloseFeePeriodEnabled && (
-                        <RoundButton
-                            height={30}
-                            onClick={() => periodAction()}
-                            color={"primary"}
-                            width={320}
-                            margin={"0px 20px 10px 0px"}
-                            shadow={isActive}
-                        >
-                            <H4 $weight={"b"} color={"primary"}>
-                                CLOSE CURRENT PERIOD
-                            </H4>
-                        </RoundButton>
-                    )}
-                    <RoundButton
-                        height={30}
-                        onClick={() => rewardAction()}
-                        padding={'0'}
-                        color={"primary"}
-                        width={320}
-                        margin={"0px 20px 0px 0px"}
-                        shadow={isActive}
-                    >
-                        <H4 $weight={"b"} color={"primary"}>
-                            CLAIM
-                        </H4>
-                    </RoundButton>
-                    {isActive && <Fee></Fee>}
-                </ColContainer>
-            </InputContainer>
-        </Card>
-    );
+        <ColContainer>
+          {data?.isCloseFeePeriodEnabled && (
+            <RoundButton
+              height={30}
+              onClick={() => periodAction()}
+              color={"primary"}
+              width={320}
+              margin={"0px 20px 10px 0px"}
+              shadow={isActive}
+            >
+              <H4 $weight={"b"} color={"primary"}>
+                CLOSE CURRENT PERIOD
+              </H4>
+            </RoundButton>
+          )}
+          <RoundButton
+            height={30}
+            onClick={() => rewardAction()}
+            padding={"0"}
+            color={"primary"}
+            width={320}
+            margin={"0px 20px 0px 0px"}
+            shadow={isActive}
+          >
+            <H4 $weight={"b"} color={"primary"}>
+              CLAIM
+            </H4>
+          </RoundButton>
+          {isActive && <Fee></Fee>}
+        </ColContainer>
+      </InputContainer>
+    </Card>
+  );
 };
 // const ClaimAble = styled(H4)`
 //     margin-right: 80px;

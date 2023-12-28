@@ -1,19 +1,22 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "config/reducers";
 import styled from "styled-components";
 import { H1, H4 } from "components/heading";
 import { StyledTHeader, StyledTBody, Row, Cell, BorderRow } from "components/table";
-import { formatCurrency } from "lib";
+import { createCompareFn, formatCurrency } from "lib";
 import { HashRouter as Router, Route, Switch } from "react-router-dom";
 
 import Escrow from "pages/Escrow";
 import Liquidation from "pages/Liquidation";
 import Vesting from "pages/Vesting";
+import { PynthBalance, getPynthBalances } from "lib/thegraph/api/getPynthBalances";
+import { networkInfo } from "configure/networkInfo";
 
 const Balance = () => {
   const { balances } = useSelector((state: RootState) => state.balances);
-  const { networkId } = useSelector((state: RootState) => state.wallet);
+  const { networkId, address } = useSelector((state: RootState) => state.wallet);
+  const [pynthBalances, setPynthBalances] = useState([]);
   const swapName = {
     1: "UNI",
     3: "UNI",
@@ -26,6 +29,27 @@ const Balance = () => {
     80001: "QUICK",
   };
 
+  const fetchPynthBalances = async () => {
+    console.log(networkId, address); 
+    if (networkInfo[networkId] === undefined || !address) return;
+
+    const balances = await getPynthBalances({ networkId: networkId.toString(), address });
+    
+    console.log(balances);
+    if (balances === undefined) return;
+    if (Array.isArray(balances)) {
+      balances.sort(createCompareFn("usdBalance", "desc"));
+      setPynthBalances(balances);
+    } else {
+      setPynthBalances([balances]);
+    }
+  }
+
+  useEffect(() => {
+    fetchPynthBalances();
+  }, [networkId, address]);
+
+
   return (
     <Router basename="/balance">
       <Switch>
@@ -35,6 +59,7 @@ const Balance = () => {
               <H1>TOTAL BALANCE</H1>
             </Title>
             <TableContainer>
+              <PynthTableContainer>
               <StyledTHeader>
                 <Row>
                   <TokenCell>
@@ -110,6 +135,57 @@ const Balance = () => {
                     );
                 })}
               </StyledTBody>
+              </PynthTableContainer>
+              {pynthBalances.length > 0 
+                ? <PynthTableContainer>
+                    <PynthHederRow/>
+                      <StyledTHeader>
+                        <Row>
+                          <TokenCell>
+                            <H4 $weight={"b"} $align={"center"}>
+                              Pynth
+                            </H4>
+                          </TokenCell>
+                          <PynthAmtCell>
+                            <H4 $weight={"b"}>Amount</H4>
+                          </PynthAmtCell>
+                          <PynthAmtCell>
+                            <H4 $weight={"b"}>Value(USD)</H4>
+                          </PynthAmtCell>
+                        </Row>
+                      </StyledTHeader>
+                      <PynthTableBody>
+                        {pynthBalances.map((pynth) => {
+                          return (
+                            (pynth.usdBalance > 0) && <BorderRow key={pynth.currencyName}>
+                              <TokenCell>
+                                <Asset>
+                                  <img src={`/images/currencies/${pynth.currencyName}.svg`} alt={`${pynth.currencyName}`}></img>
+                                  <H4 $weight={"m"} $align={"left"}>
+                                    {pynth.currencyName}
+                                  </H4>
+                                </Asset>
+                              </TokenCell>
+                              <PynthAmtCell>
+                                <H4 $weight={"m"} $align={"right"}>
+                                  {formatCurrency(pynth.amount)}
+                                </H4>
+                              </PynthAmtCell>
+                              <PynthAmtCell>
+                                <H4 $weight={"m"} $align={"right"}>
+                                  {formatCurrency(pynth.usdBalance)}
+                                </H4>
+                              </PynthAmtCell>
+                            </BorderRow>
+                          );
+                        })}
+                      </PynthTableBody>
+                    </PynthTableContainer>
+                : <PynthContainer>
+                    <PynthLoadingSpinner />
+                  </PynthContainer>
+              }
+              
             </TableContainer>
           </Container>
         </Route>
@@ -126,6 +202,76 @@ const Balance = () => {
     </Router>
   );
 };
+
+
+export const PynthLoadingSpinner = styled.div`
+	width: 40px;
+	height: 40px;
+	border: 2px solid #262a3c;
+	border-radius: 50%;
+	border-top-color: #4182f0;
+	border-left-color: #4182f0;
+	border-right-color: #4182f0;
+	margin: 30px;
+	animation: spin 0.8s infinite ease-in-out;
+
+	@keyframes spin {
+		to {
+			transform: rotate(1turn);
+		}
+	}
+
+  ${({ theme }) => theme.media.mobile`
+    width: 15px;
+    height: 15px;
+    margin: 5px;
+  `}
+`;
+
+const PynthHederRow = styled(Row)`
+  width: 100%;
+  height: 20px;
+`;
+
+const PynthAmtCell = styled(Cell)`
+  width: 45% !important;
+
+  ${({ theme }) => theme.media.mobile`
+    min-width: 130px;
+  `}
+`;
+
+const PynthTableBody = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow-x: hidden;
+  overflow-y: visible;
+  width: 100%;
+  height: 100%;
+
+  ${({ theme }) => theme.media.mobile`
+    width: fit-content;
+  `}
+
+`;
+
+const PynthContainer = styled.div`
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+`;
+
+const PynthTableContainer = styled.div`
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  height: fit-content;
+  width: 100%;
+`;
 
 const AmountCell = styled(Cell)`
   width: 17.5% !important;
@@ -202,6 +348,7 @@ const TableContainer = styled.div`
   height: 60%;
   width: 80%;
   max-height: 85%;
+  overflow-y: auto;
   // top: -40px;
   // padding: 50px 40px;
   background-color: ${(props) => props.theme.colors.background.body};
@@ -213,7 +360,7 @@ const TableContainer = styled.div`
       width: 90%;
       height: fit-content;
       min-height: 85%;
-      overflow-y: hidden;
+      overflow-y: scroll;
       overflow-x: scroll;
       padding: 0;
       border-radius: 5px;

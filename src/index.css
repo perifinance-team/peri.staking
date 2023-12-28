@@ -138,10 +138,6 @@ body {
   height: 300px !important;
 }
 
-.swiper-slide.swiper-slide-prev {
-  height: 300px;
-}
-
 .swiper-slide {
   text-align: center;
   width: 95%;

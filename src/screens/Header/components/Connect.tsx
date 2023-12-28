@@ -8,8 +8,8 @@ import { BaseImg } from "components/image";
 import { clearCRatio } from "config/reducers/rates";
 import { Paragraph } from "components/paragraph";
 import { BaseContainer } from "components/container";
-import { useEffect, useState } from "react";
-import { set } from "date-fns";
+import { useState } from "react";
+// import { set } from "date-fns";
 
 const Connect = () => {
   const dispatch = useDispatch();

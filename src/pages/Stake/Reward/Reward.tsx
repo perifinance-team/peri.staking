@@ -262,6 +262,7 @@ const Reward = () => {
           {actions.map((action, index) => (
             <SwiperSlide key={action.name} virtualIndex={index}>
               <action.component
+                hide={index < slideIndex}
                 isActive={index === slideIndex}
                 actionName={action.name}
                 periodAction={() => (isConnect ? onCloseFeePeriod(action.name) : connectHelp())}

@@ -454,6 +454,7 @@ const Burn = () => {
           {currencies.map((currency, index) => (
             <SwiperSlide key={currency.name} virtualIndex={index}>
               <BurnCard
+                hide={index < slideIndex}
                 isActive={index === slideIndex}
                 currencyName={currency.name}
                 maxAction={() =>

@@ -27,21 +27,17 @@ export const LPRewardCard = ({ isActive, actionName, rewardAction, data }) => {
     return (
         <Card $isActive={isActive} $border={"primary"}>
             <IconContainer>
-                {isActive && <img src={`/images/icon/${actionName}_${swapName[networkId]}.png`} alt="LP"></img>}
+                <img src={`/images/icon/${actionName}_${swapName[networkId]}.png`} alt="LP"/>
                 <H3 $weight={"sb"}>{swapName[networkId]}SWAP</H3>
             </IconContainer>
             <InputContainer>
                 <APYContainer>
-                    {isActive && (
-                        <H4 $align={"right"} $weight={"sb"}>
-                            TIME LEFT: {data.closeIn}
-                        </H4>
-                    )}
-                    {isActive && (
-                        <H4 $align={"right"} $weight={"sb"}>
-                            STATUS: {"OPEN"}
-                        </H4>
-                    )}
+                    <H4 $align={"right"} $weight={"sb"}>
+                        TIME LEFT: {data.closeIn}
+                    </H4>
+                    <H4 $align={"right"} $weight={"sb"}>
+                        STATUS: {"OPEN"}
+                    </H4>
                 </APYContainer>
                 <RowContainer>
                     <Label>{"PERI"}</Label>

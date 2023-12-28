@@ -317,6 +317,7 @@ const Mint = () => {
           {currencies.map((currency, index) => (
             <SwiperSlide key={currency.name} virtualIndex={index}>
               <MintCard
+                hide={index < slideIndex}
                 isActive={index === slideIndex}
                 currencyName={currency.name}
                 maxAction={() =>
@@ -348,10 +349,6 @@ export const Container = styled.div`
   height: 100%;
   width: 100%;
   align-items: flex-start;
-
-  // ${({ theme }) => theme.media.mobile`
-  //   min-height: 40vh;
-  // `}
 `;
 
 export const Title = styled.div<{ $show?: boolean }>`
@@ -410,7 +407,7 @@ export const StakeContainer = styled.div`
     }
 
     .swiper-slide.swiper-slide-next  {
-      margin-top: -0% !important;
+      margin-top: 0% !important;
     }
 
 	`}
@@ -422,12 +419,10 @@ export const StakeContainer = styled.div`
       margin: 0 5px;
       overflow: visible;
       margin: 0 auto;
-      // width: 96% !important;
     }
 
     .swiper-wrapper {
       height: fit-content !important;
-      
     }
 
 	`}

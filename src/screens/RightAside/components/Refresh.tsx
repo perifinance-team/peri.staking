@@ -22,7 +22,7 @@ const Refresh = () => {
   );
   const { balances } = useSelector((state: RootState) => state.balances);
   const themeState = useSelector((state: RootState) => state.theme.theme);
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
 
   const getSystemData = async () => {
     dispatch(setLoading({ name: "balance", value: true }));
@@ -57,7 +57,7 @@ const Refresh = () => {
   };
 
   return (
-    <Container disabled={isLoading} onClick={() => getSystemData()}>
+    <Container /* disabled={isLoading} */ onClick={() => getSystemData()}>
       <img src={`/images/${themeState}/refresh.svg`} alt="refresh"></img>
     </Container>
   );
@@ -83,7 +83,7 @@ const Container = styled.button`
   }
 
   &:active {
-    transform: rotate(360deg);
+    transform: rotate(180deg);
     box-shadow: none;
   }
 
