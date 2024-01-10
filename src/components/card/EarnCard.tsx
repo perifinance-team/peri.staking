@@ -22,8 +22,8 @@ export const EarnCard = ({
     stakeAmount = "",
     apy,
 }) => {
-    const { networkId } = useSelector((state: RootState) => state.wallet);
-    const { balances } = useSelector((state: RootState) => state.balances);
+    const { networkId, isConnect } = useSelector((state: RootState) => state.wallet);
+    const { balances, isReady } = useSelector((state: RootState) => state.balances);
     const swapName = {
         1: "UNI",
         3: "UNI",
@@ -61,25 +61,25 @@ export const EarnCard = ({
                         }}
                         color={"primary"}
                     />
-                    <MaxButton disabled={!isActive} color={"secondary"} fontColor={"primary"} onClick={() => maxAction()} />
+                    <MaxButton disabled={!isActive || (isConnect && !isReady)} color={"secondary"} fontColor={"primary"} onClick={() => maxAction()} />
                 </RowContainer>
                 <ColContainer>
                     {isApprove ? (
                         <RoundButton
                             height={30}
-                            disabled={!isActive}
                             onClick={() => approveAction()}
                             color={"secondary"}
                             width={320}
                             margin={"20px 20px 0px 0px"}
                             shadow={isActive}
+                            disabled={!isActive || isConnect}
                         >
                             <H4 $weight={"sb"}>Approve</H4>
                         </RoundButton>
                     ) : (
                         <RoundButton
                             height={30}
-                            disabled={!isActive}
+                            disabled={!isActive || (isConnect && !isReady)}
                             onClick={() => stakeAction()}
                             color={"secondary"}
                             width={320}

@@ -107,13 +107,6 @@ const Content = styled.div`
 	position: relative;
 	overflow: hidden;
 
-	${({ theme }) => theme.media.mobile`
-		min-height: 50vh;
-	`}
-
-	${({ theme }) => theme.media.tablet`
-		min-height: 52vh;
-	`}
 `;
 
 export default Main;

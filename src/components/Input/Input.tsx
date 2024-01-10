@@ -1,3 +1,4 @@
+import { SmallLoadingSpinner } from "components/heading";
 import React from "react";
 import styled from "styled-components";
 
@@ -6,7 +7,7 @@ export const Input = ({
   disabled = false,
   currencyName,
   onChange = undefined,
-  value = "0",
+  value = "",
   color,
   isLP = false,
   width = '100%',
@@ -21,13 +22,16 @@ export const Input = ({
           ></img>
         </AssetContainer>
         <InputContainer>
-          <AmountInput
-            type="text"
-            $height={height}
-            disabled={disabled}
-            onChange={onChange}
-            value={value}
-          ></AmountInput>
+          {disabled || value !== "" ?
+            <AmountInput
+              type="text"
+              $height={height}
+              disabled={disabled}
+              onChange={onChange}
+              value={value}
+            ></AmountInput>
+            : <SmallLoadingSpinner />
+          }
         </InputContainer>
       </Container>
     </>
@@ -65,6 +69,8 @@ const AssetContainer = styled.div<{ $height: number; $isLP?: boolean }>`
 
 const InputContainer = styled.div`
   display: flex;
+  justify-content: flex-end;
+  align-items: center;
   vertical-align: middle;
   flex: 3;
   margin: 0px 10px;

@@ -15,8 +15,10 @@ import { updateBalance } from "config/reducers/wallet";
 import { updateTransaction } from "config/reducers/transaction";
 import { setLoading } from "config/reducers/loading";
 import { web3Onboard } from "lib/onboard";
+
 import { getTotalDebtCache } from "lib/balance";
 import { getLpRewards } from "lib/reward";
+import { getTotalAPY } from "lib/contract/api/api";
 
 SwiperCore.use([Mousewheel, Virtual]);
 
@@ -149,7 +151,7 @@ const Mint = () => {
   };
 
   const connectHelp = async () => {
-    NotificationManager.error(`Please connect your wallet first`, "ERROR");
+    NotificationManager.warn(`Please connect your wallet first`, "ERROR");
     try {
       await web3Onboard.connect();
     } catch (e) {}
@@ -194,23 +196,25 @@ const Mint = () => {
   };
 
   const getAPY = async () => {
-    dispatch(setLoading({ name: "apy", value: true }));
+    // dispatch(setLoading({ name: "apy", value: true }));
     try {
-      const totalMintpUSD = await getTotalDebtCache();
+      /* const totalMintpUSD = await getTotalDebtCache();
       const totalLpMint = await getLpRewards();
 
       let reward = 76924n * BigInt(Math.pow(10, 18).toString());
 
       reward =
         ((reward - totalLpMint["total"]) * exchangeRates["PERI"] * 52n * 100n) /
-        (totalMintpUSD.total * 4n);
+        (totalMintpUSD.total * 4n); */
+
+      const reward = utils.parseEther(await getTotalAPY()).toBigInt();
 
       setRewardsAmountToAPY(reward);
     } catch (e) {
       console.log(e);
       setRewardsAmountToAPY(0n);
     }
-    dispatch(setLoading({ name: "apy", value: false }));
+    // dispatch(setLoading({ name: "apy", value: false }));
   };
 
   const getCRatio = (currencyName, mintAmount, stakeAmount) => {
@@ -345,10 +349,9 @@ export const Container = styled.div`
   position: relative;
   top: -70px !important;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: center;
   height: 100%;
   width: 100%;
-  align-items: flex-start;
 `;
 
 export const Title = styled.div<{ $show?: boolean }>`
@@ -358,7 +361,7 @@ export const Title = styled.div<{ $show?: boolean }>`
   justify-content: center;
   width: 100%;
   z-index: 0;
-  top: 60px;
+  top: 70px;
 
   ${({ theme }) => theme.media.mobile`
     justify-content: center;
@@ -396,7 +399,7 @@ export const StakeContainer = styled.div`
   ${({ theme }) => theme.media.mobile`
     height: 100%;
     .swiper-container {
-      top: -10% !important;
+      top: -5% !important;
       margin: 0 5px;
       overflow: visible;
     }

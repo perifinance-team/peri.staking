@@ -24,14 +24,16 @@ export const MintCard = ({
     apy,
 }) => {
     const { isConnect } = useSelector((state: RootState) => state.wallet);
-    const { balances } = useSelector((state: RootState) => state.balances);
+    const { balances, isReady } = useSelector((state: RootState) => state.balances);
 
     return (
         <Card $isActive={isActive} $border={"secondary"}>
             <IconContainer>
-                {true && <img src={`/images/icon/${currencyName}.svg`} alt="mint"></img>}
-                <H3 $weight={"sb"}>{currencyName}</H3>
-                <H4 $weight={"b"}>Staked: {formatCurrency(balances[currencyName]?.staked, 2)}</H4>
+                {/* <CardTitle> */}
+                    {true && <img src={`/images/icon/${currencyName}.svg`} alt="mint"></img>}
+                    <H3 $weight={"sb"}>{currencyName}</H3>
+                {/* </CardTitle> */}
+                <H4 $weight={"m"}>[Staked: {formatCurrency(balances[currencyName]?.staked, 2)}]</H4>
             </IconContainer>
             <InputContainer $hide={hide}>
                 <APYContainer>
@@ -45,14 +47,14 @@ export const MintCard = ({
                 <RowContainer>
                     <Label>{"pUSD"}</Label>
                     <Input
-                        disabled={!isActive}
+                        disabled={!isActive || !isReady}
                         currencyName={"pUSD"}
                         value={isActive ? mintAmount : "0"}
                         onChange={(e) => onChange(e.target.value, currencyName)}
                         color={"primary"}
                         width="80%"
                     />
-                    <MaxButton color={"secondary"} disabled={!isActive} fontColor={"primary"} onClick={() => maxAction()} />
+                    <MaxButton color={"secondary"} disabled={!isActive || !isReady} fontColor={"primary"} onClick={() => maxAction()} />
                 </RowContainer>
 
                 <RowContainer>
@@ -75,7 +77,7 @@ export const MintCard = ({
                     ) : (
                         <RoundButton
                             height={30}
-                            disabled={!isActive}
+                            disabled={!isActive || !isReady}
                             onClick={() => mintAction()}
                             color={"secondary"}
                             width={320}
@@ -142,8 +144,8 @@ export const IconContainer = styled.div`
         flex-direction: row;
         justify-content: center;
         align-items: center;
-        margin: 20px 0 10px 0;
-        height: 30px;
+        margin: 25px 0 5px 0;
+        height: fit-content;
         width: 100%;
         img {
             width: 30px;
@@ -151,10 +153,42 @@ export const IconContainer = styled.div`
         }
         h3 {
             width: fit-content;
-            margin: 0px 10px;
+            margin: 0px 5px;
         }
         h4 {
             width: fit-content;
+        }
+    `}
+`;
+
+export const CardTitle = styled.div`
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 10px;
+
+    img {
+        width: 70px;
+        height: 70px;
+    }
+    h3 {
+        margin: 15px;
+    }
+
+    ${({ theme }) => theme.media.mobile`
+        justify-content: center;
+        height: 30px;
+        width: 100%;
+        margin-bottom: 5px;
+        img {
+            width: 30px;
+            height: 30px;
+        }
+        h3 {
+            width: fit-content;
+            margin: 0px 5px;
         }
     `}
 `;
@@ -185,6 +219,7 @@ export const APYContainer = styled.div`
     justify-content: space-between;
     h4 {
         width: fit-content;
+        font-size: 12px;
     }
 
     ${({ theme }) => theme.media.mobile`

@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import styled from "styled-components";
 
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "config/reducers";
 
 import { BaseContainer } from "components/container";
@@ -9,16 +9,22 @@ import { Paragraph } from "components/paragraph";
 import { SUPPORTED_NETWORKS, changeNetwork } from "lib/network";
 import { MAINNET, TESTNET } from "lib/network/supportedNetWorks";
 import { networkInfo } from "configure/networkInfo";
+import { updateNetwork } from "config/reducers/wallet";
 
 const NetCombo = ({ isShow, setIsShow }) => {
+  const dispatch = useDispatch();
   const { isConnect, networkId } = useSelector(
     (state: RootState) => state.wallet
   );
-
+  
   const [networks, setNetworks] = useState({});
 
   const showList = async (key) => {
-    if (!isConnect) return;
+    if (!isConnect) {
+      dispatch(updateNetwork({ networkId: Number(key) }));
+      return;
+    }
+
     changeNetwork(key);
     setIsShow(!isShow);
   };
@@ -74,7 +80,7 @@ const NetCombo = ({ isShow, setIsShow }) => {
                     <LabelContainer
                       $height={"30"}
                       $padding={"0px 5px"}
-                      onClick={() => showList(key)}
+                      /* onClick={() => showList(key)} */
                     >
                       <NetworkImg
                         src={`/images/network/${SUPPORTED_NETWORKS[key] ? key : "Unsupported"}.svg`}

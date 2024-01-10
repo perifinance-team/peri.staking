@@ -14,6 +14,7 @@ import { useState } from "react";
 const Connect = () => {
   const dispatch = useDispatch();
   const { isConnect } = useSelector((state: RootState) => state.wallet);
+  const { isReady } = useSelector((state: RootState) => state.balances);
   const [ connecting, setConnecting ] = useState(false);
 
   const onConnect = async () => {
@@ -44,13 +45,12 @@ const Connect = () => {
 
   return (
     <ConnectContainer
-      $height={30}
-      $padding={"0px 5px"}
       $connecting={connecting}
-      $shadow={false}
+      disabled={isConnect && !isReady}
       onClick={() => {
         isConnect ? onDisConnect() : onConnect();
       }}
+      
     >
       {!isConnect && (
         <ConnectLabel $fontSize={0.75} $weight={"m"} $color={"primary"} $margin={"0 3px"}>
@@ -67,7 +67,15 @@ const Connect = () => {
   );
 };
 
-const ConnectContainer = styled(BaseContainer)<{$connecting: boolean}>`
+const ConnectContainer = styled.button<{$connecting: boolean}>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: nowrap;
+  cursor: pointer;
+  background-color: transparent;
+  border: none;
+
   ${({ theme }) => theme.media.mobile`
       height: 26px;
   `} 

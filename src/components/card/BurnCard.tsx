@@ -23,7 +23,7 @@ export const BurnCard = ({
     onChange,
 }) => {
     const { isConnect, networkId } = useSelector((state: RootState) => state.wallet);
-    const { balances } = useSelector((state: RootState) => state.balances);
+    const { balances, isReady } = useSelector((state: RootState) => state.balances);
     const swapName = {
         1: "UNI",
         3: "UNI",
@@ -57,13 +57,13 @@ export const BurnCard = ({
                     <RowContainer>
                         <Label>{"pUSD"}</Label>
                         <Input
-                            disabled={!isActive}
+                            disabled={!isActive || !isReady}
                             currencyName={"pUSD"}
                             value={isConnect ? burnAmount : ""}
                             onChange={(e) => onChange(e.target.value, currencyName)}
                             color={"primary"}
                         />
-                        <MaxButton disabled={!isActive} color={"fourth"} fontColor={"fifth"} onClick={() => maxAction()} />
+                        <MaxButton disabled={!isActive || !isReady} color={"fourth"} fontColor={"fifth"} onClick={() => maxAction()} />
                     </RowContainer>
                 )}
 
@@ -77,13 +77,13 @@ export const BurnCard = ({
                         onChange={(e) => onChange(e.target.value, currencyName)}
                         color={"primary"}
                     />
-                    {isLP && <MaxButton color={"fourth"} fontColor={"fifth"} onClick={() => maxAction()} disabled={!isActive} />}
+                    {isLP && <MaxButton color={"fourth"} fontColor={"fifth"} onClick={() => maxAction()} disabled={!isActive || !isReady} />}
                 </RowContainer>
                 <ColContainer>
                     {!isLP ? (
                         <RoundButton
                             height={30}
-                            disabled={!isActive}
+                            disabled={!isActive || !isReady}
                             onClick={() => burnAction()}
                             padding={'0'}
                             color={"fourth"}
@@ -98,7 +98,7 @@ export const BurnCard = ({
                     ) : (
                         <RoundButton
                             height={30}
-                            disabled={!isActive}
+                            disabled={!isActive || !isReady}
                             onClick={() => burnAction()}
                             color={"fourth"}
                             width={320}

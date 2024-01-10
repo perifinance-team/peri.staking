@@ -44,15 +44,15 @@ const initialState: BalanceState = {
 };
 
 export const ExchangeRatesSlice = createSlice({
-  name: "exchangeRates",
+  name: "balances",
   initialState,
   reducers: {
     setBalances(state, actions) {
       const balances = { ...actions.payload };
       return { ...state, isReady: true, balances: balances };
     },
-    setIsNotReady(state) {
-      return { ...state, isReady: false };
+    setIsReady(state, actions) {
+      return { ...state, isReady: actions.payload };
     },
     updateBalance(state, actions) {
       const balances = { ...state.balances };
@@ -87,7 +87,7 @@ export const ExchangeRatesSlice = createSlice({
 
 export const {
   setBalances,
-  setIsNotReady,
+  setIsReady,
   updateBalance,
   clearBalances,
   updatePynths,

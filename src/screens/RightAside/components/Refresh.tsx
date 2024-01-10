@@ -8,8 +8,8 @@ import { getBalances } from "lib/balance";
 import { getRatios } from "lib/rates";
 import { getNetworkFee } from "lib/fee";
 import { NotificationManager } from "react-notifications"
-import { clearPynths, setBalances, setIsNotReady, updatePynths } from "config/reducers/wallet";
-import { updateRatio } from "config/reducers/rates";
+import { clearBalances, clearPynths, setBalances, setIsReady, updatePynths } from "config/reducers/wallet";
+import { clearCRatio, updateRatio } from "config/reducers/rates";
 import { updateExchangeRates } from "config/reducers/rates";
 import { updateVestable } from "config/reducers/vest";
 import { updateNetworkFee } from "config/reducers/networkFee";
@@ -21,13 +21,14 @@ import { setReady, updateEscrowList } from "config/reducers/escrow";
 import { getPynthBalances } from "lib/thegraph/api";
 import { createCompareFn } from "lib";
 import { networkInfo } from "configure/networkInfo";
+import { set } from "date-fns";
 
 const Refresh = () => {
   const dispatch = useDispatch();
   const { address, networkId } = useSelector((state: RootState) => state.wallet);
-  const { balances } = useSelector((state: RootState) => state.balances);
+  const { balances, isReady } = useSelector((state: RootState) => state.balances);
   const themeState = useSelector((state: RootState) => state.theme.theme);
-  // const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const location = useLocation();
   const { RewardEscrowV2 } = contracts as any;
 
@@ -76,15 +77,15 @@ const Refresh = () => {
       fetchPynthBalances();
     }
 
-    dispatch(setIsNotReady());
+    setIsLoading(true);
+    dispatch(clearCRatio());
+    dispatch(clearBalances());
     try {
       const [ratios, gasPrice] = await Promise.all([getRatios(address), getNetworkFee(networkId)]);
-
       dispatch(updateRatio(ratios.ratio));
       dispatch(updateExchangeRates(ratios.exchangeRates));
-
       dispatch(updateNetworkFee({ gasPrice }));
-
+      dispatch(updateVestable({ vestable: false }));
       if (address) {
         const [balancesData, vestable] = await Promise.all([
           getBalances(
@@ -104,16 +105,17 @@ const Refresh = () => {
     } catch (e) {
       NotificationManager.warning(`Something went wrong while refershing.`);
     }
+    setIsLoading(false);
   };
 
   return (
-    <Container /* disabled={isLoading} */ onClick={() => getSystemData()}>
+    <Container $isLoading={address && (isLoading || !isReady)} onClick={() => getSystemData()}>
       <img src={`/images/${themeState}/refresh.svg`} alt="refresh"></img>
     </Container>
   );
 };
 
-const Container = styled.button`
+const Container = styled.button<{ $isLoading?: boolean }>`
   border-radius: 50px;
   width: 35px;
   height: 35px;
@@ -121,14 +123,24 @@ const Container = styled.button`
   background-color: ${(props) => props.theme.colors.background.button.fifth};
   border: ${(props) => `1.5px solid ${props.theme.colors.border.tableRow}`};
   box-shadow: 0.5px 1.5px 0px ${(props) => props.theme.colors.border.primary};
+
+  ${({ $isLoading }) => $isLoading && `
+    animation: spin 1s infinite ease-in-out;
+    @keyframes spin {
+      to {
+        transform: rotate(1turn);
+      }
+    }
+  `}
+
   img {
     width: 22px;
     height: 22px;
   }
 
   &:hover {
-    transition: 0.5s;
-    transform: rotate(90deg);
+    transition: 1.5s;
+    transform: rotate(360deg);
     box-shadow: 3.5px 0px 5px ${(props) => props.theme.colors.border.primary};
   }
 

@@ -33,13 +33,21 @@ const Aside = styled.aside<{ $isHide?: boolean }>`
   width: 22vw;
   ${({ theme }) => theme.media.tablet`
     width: 100%;
-    height: 40%;
+    height: 35%;
   `}
 
   ${({ theme }) => theme.media.mobile`
     width: 100%;
     height: 40%;
   `}
+
+  @media all and (min-height: 1024px) {
+		height: 30%;
+	}
+
+  @media all and (max-width: 768px) and (max-height: 680px) {
+		height: 37%;
+	}
 
 /*   ${({ theme, $isHide }) => ($isHide ? theme.media.tablet`display: none;` : null)}
 

@@ -16,7 +16,7 @@ import { setListReady, updateList } from "config/reducers/liquidation";
 const Liquidation = () => {
   const dispatch = useDispatch();
   // const { balances } = useSelector((state: RootState) => state.balances);
-  const { address, networkId } = useSelector((state: RootState) => state.wallet);
+  const { address, networkId, isConnect } = useSelector((state: RootState) => state.wallet);
   const { listReady, list } = useSelector((state: RootState) => state.liquidation);
   const transaction = useSelector((state: RootState) => state.transaction);
   // const [ list, setList] = useState([]);
@@ -276,8 +276,8 @@ const Liquidation = () => {
             <H4 $weight={"b"}>Action</H4>
           </ShortCell>
         </TableHeader>
-        <TableBody $center={!listReady}>
-          {!listReady ? (
+        <TableBody $center={isConnect && !listReady}>
+          {isConnect ? !listReady ? (
             <ContainerLoadingSpinner />
           ) : (
             list.map((el, idx) => {
@@ -335,7 +335,7 @@ const Liquidation = () => {
                 </BodyRow>
               );
             })
-          )}
+          ) : null}
         </TableBody>
       </TableContainer>
     </Container>

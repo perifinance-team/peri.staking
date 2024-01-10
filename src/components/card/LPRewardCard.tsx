@@ -12,6 +12,7 @@ import { Card, IconContainer, InputContainer, APYContainer, RowContainer, ColCon
 
 export const LPRewardCard = ({ isActive, actionName, rewardAction, data }) => {
     const { networkId } = useSelector((state: RootState) => state.wallet);
+    const { isReady } = useSelector((state: RootState) => state.balances);
 
     const swapName = {
         1: "UNI",
@@ -33,10 +34,10 @@ export const LPRewardCard = ({ isActive, actionName, rewardAction, data }) => {
             <InputContainer>
                 <APYContainer>
                     <H4 $align={"right"} $weight={"sb"}>
-                        TIME LEFT: {data.closeIn}
+                        {/* TIME LEFT: {data.closeIn} */}
                     </H4>
                     <H4 $align={"right"} $weight={"sb"}>
-                        STATUS: {"OPEN"}
+                        Status: {data.rewardEscrow ? "Claimable" : "No Reward"}
                     </H4>
                 </APYContainer>
                 <RowContainer>
@@ -53,12 +54,13 @@ export const LPRewardCard = ({ isActive, actionName, rewardAction, data }) => {
                         <H4 $weight={'b'} color={'primary'}>CLOSE CURRENT PERIOD</H4>
                     </RoundButton> */}
                     <RoundButton
-                        disabled={!isActive}
+                        disabled={!isActive || !isReady}
                         height={30}
                         onClick={() => rewardAction()}
                         color={"primary"}
                         width={320}
                         margin={"0px 20px 0px 0px"}
+                        shadow={true}
                     >
                         <H4 $weight={"b"} color={"primary"}>
                             CLAIM

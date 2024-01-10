@@ -82,6 +82,8 @@ const Container = styled.div`
 	${({ theme }) => theme.media.mobile`
 		// flex: none;
 		width: 100%;
+		height: 100%;
+		justify-content: center;
 	`}
 `;
 
@@ -90,21 +92,21 @@ const Title = styled.div`
 	width: 100%;
 	z-index: 0;
 	top: 7%;
+	display: flex;
+	justify-content: center;
 
 	h1 {
 		display: inline-block;
 		width: fit-content;
 		height: fit-content;
 		vertical-align: bottom;
-		margin: 0px;
+		text-align: center;
 		padding: 0px;
-		margin-block-end: 0px;
-		margin-block-start: 0px;
 	}
 
 	${({ theme }) => theme.media.mobile`
-		position: relative;
-		top: 0%;
+		position: absolute;
+		top: 3%;
 
 		h1 {
 			width: 100%;
@@ -124,7 +126,7 @@ const LinkContainer = styled.div`
 	${({ theme }) => theme.media.mobile`
 		align-items: center;
 		margin-top: 10px;
-		height: 100%;
+		height: 55%;
 	`}
 
 	${({ theme }) => theme.media.tablet`

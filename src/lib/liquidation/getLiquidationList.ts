@@ -1,13 +1,11 @@
 import { contracts } from "lib/contract";
 
-import { setLoading } from "config/reducers/loading";
 import { setListReady, updateList } from "config/reducers/liquidation";
 
 import { SUPPORTED_NETWORKS } from "lib/network";
 import { formatCurrency } from "lib/format";
 
 import { connectContract } from "./connectContract";
-import { te } from "date-fns/locale";
 
 let liquidationList = [];
 
@@ -38,7 +36,7 @@ export const getLiquidationList = async (dispatch, networkId = 1287) => {
     }
   }`;
 
-	await fetch(true ? "https://dex-api.peri.finance/" : "http://localhost:4000", {
+	await fetch(process.env.REACT_APP_THEGRAPH_URL, {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
 		body: JSON.stringify({ query }),

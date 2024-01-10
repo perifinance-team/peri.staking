@@ -58,20 +58,8 @@ const Reward = () => {
     isCloseFeePeriodEnabled: false,
   });
 
-  const actions =
-    networkId === 1285
-      ? [{ name: "CLAIM", component: RewardCard, data: claimData }]
-      : [
-          { name: "CLAIM", component: RewardCard, data: claimData },
-          {
-            name: "LP",
-            component: LPRewardCard,
-            data: {
-              ...claimData,
-              rewardEscrow: balances["LP"]?.rewardEscrow ? balances["LP"].rewardEscrow : 0n,
-            },
-          },
-        ];
+  const [actions, setActions] = useState([]);
+    
 
   const getFeePeriodCountdown = (recentFeePeriods, feePeriodDuration) => {
     const currentPeriodStart =
@@ -176,7 +164,7 @@ const Reward = () => {
         dispatch(
           updateTransaction({
             hash: transaction.hash,
-            message: `Claimed rewards ${formatCurrency(claimData.rewards.staking)}`,
+            message: `Claiming rewards ${formatCurrency(claimData.rewards.staking)}`,
             type: "CLAIM",
           })
         );
@@ -233,10 +221,32 @@ const Reward = () => {
   };
 
   useEffect(() => {
-    if (exchangeIsReady) {
+    if (address && exchangeIsReady) {
       getData();
+    } else {
+      setClaimData({...claimData, rewards: {exchange: 0n, staking: 0n}});
     }
   }, [hash, isConnect, address, networkId, exchangeIsReady]);
+
+
+  useEffect(() => {
+    const actions = networkId === 1285
+    ? [{ name: "CLAIM", component: RewardCard, data: claimData }]
+    : [
+        { name: "CLAIM", component: RewardCard, data: claimData },
+        {
+          name: "LP",
+          component: LPRewardCard,
+          data: {
+            ...claimData,
+            rewardEscrow: balances["LP"]?.rewardEscrow ? balances["LP"].rewardEscrow : 0n,
+          },
+        },
+      ];
+    setActions(actions);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [networkId, claimData, balances]);
 
   return (
     <Container>

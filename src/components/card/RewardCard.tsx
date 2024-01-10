@@ -14,8 +14,8 @@ import {
   ColContainer,
   Label,
 } from "./MintCard";
-// import { useSelector } from "react-redux"
-// import { RootState } from 'config/reducers'
+import { useSelector } from "react-redux";
+import { RootState } from "config/reducers";
 
 export const RewardCard = ({
   hide = false,
@@ -25,23 +25,23 @@ export const RewardCard = ({
   periodAction,
   data,
 }) => {
-  // const { isConnect } = useSelector((state: RootState) => state.wallet);
+  const { isConnect } = useSelector((state: RootState) => state.wallet);
 
   return (
     <Card $isActive={isActive} $border={"primary"}>
       <IconContainer>
-        <img src={`/images/icon/${actionName}.svg`} alt="reward"/>
-        <H3 $weight={"sb"}>{actionName}</H3>
+        <img src={`/images/icon/${actionName}.svg`} alt="reward" />
+        <H3 $weight={"sb"}>{"PERI Staking"}</H3>
       </IconContainer>
       <InputContainer $hide={hide}>
-        <APYContainer>
+        <RewardAPYContainer>
           <H4 $align={"right"} $weight={"sb"}>
-            TIME LEFT: {data.closeIn}
+            Due: {data.closeIn}
           </H4>
-          <H4 $align={"right"} $weight={"sb"}>
-            STATUS: {data.claimable ? "OPEN" : "CLOSE"}
+          <H4 $color={!data.rewards.staking || data.claimable ? "primary" : "warning"} $align={"right"} $weight={"sb"}>
+            Status: {data.rewards.staking ? data.claimable ? "Claimable" : "Unclaimable" : "No Reward"}
           </H4>
-        </APYContainer>
+        </RewardAPYContainer>
         <RowContainer>
           <Label>{"PERI"}</Label>
           <Input
@@ -70,6 +70,7 @@ export const RewardCard = ({
               width={320}
               margin={"0px 20px 10px 0px"}
               shadow={isActive}
+              disabled={!isConnect}
             >
               <H4 $weight={"b"} color={"primary"}>
                 CLOSE CURRENT PERIOD
@@ -84,6 +85,7 @@ export const RewardCard = ({
             width={320}
             margin={"0px 20px 0px 0px"}
             shadow={isActive}
+            disabled={!isConnect}
           >
             <H4 $weight={"b"} color={"primary"}>
               CLAIM
@@ -95,13 +97,20 @@ export const RewardCard = ({
     </Card>
   );
 };
-// const ClaimAble = styled(H4)`
-//     margin-right: 80px;
 
-//     ${({ theme }) => theme.media.mobile`
-//         margin-right: 30px;
-//     `}
-// `;
+const RewardAPYContainer = styled(APYContainer)`
+  width: 80%;
+
+  ${({ theme }) => theme.media.mobile`
+    width: 75%;
+    margin-left: 35px;
+  `}
+
+  @media (max-width: 320px) {
+    width: 85%;
+    margin-left: 0px;
+  }
+`;
 
 // const IsActive = css`
 //     min-width: 700px;

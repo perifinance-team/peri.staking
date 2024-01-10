@@ -15,7 +15,7 @@ import {
   updateIsConnect,
   clearWallet,
   clearBalances,
-  setIsNotReady,
+  setIsReady,
 } from "config/reducers/wallet";
 import { updateNetworkFee } from "config/reducers/networkFee";
 import { resetTransaction } from "config/reducers/transaction";
@@ -37,32 +37,33 @@ import "./App.css";
 
 const App = () => {
   const { address, networkId } = useSelector((state: RootState) => state.wallet);
-  const { balances } = useSelector((state: RootState) => state.balances);
+  const { balances, isReady } = useSelector((state: RootState) => state.balances);
   const transaction = useSelector((state: RootState) => state.transaction);
-
   const themeStyles = useSelector((state: RootState) => state.themeStyles.styles);
   const themeState = useSelector((state: RootState) => state.theme.theme);
 
   const dispatch = useDispatch();
   const intervalTime = 1000 * 60 * 3;
   const [intervals, setIntervals] = useState(null);
+  const [timer, setTimer] = useState(0);
   const [onboardInit, setOnboardInit] = useState(false);
 
   const { Liquidations } = contracts as any;
 
   const getSystemData = useCallback(
-    async (isLoading) => {
-      // dispatch(setLoading({ name: "balance", value: isLoading }));
-      dispatch(setIsNotReady());
-      const [ratios, gasPrice] = await Promise.all([getRatios(address), getNetworkFee(networkId)]);
+    async (refresh) => {
+    // dispatch(setLoading({ name: "balance", value: isLoading }));
+    const [ratios, gasPrice] = await Promise.all([getRatios(address), getNetworkFee(networkId)]);
 
-      console.log("ratio", ratios.ratio);
-      dispatch(updateRatio(ratios.ratio));
-      dispatch(updateExchangeRates(ratios.exchangeRates));
+    // console.log("ratio", ratios.ratio);
+    dispatch(updateRatio(ratios.ratio));
+    dispatch(updateExchangeRates(ratios.exchangeRates));
 
-      dispatch(updateNetworkFee({ gasPrice }));
+    dispatch(updateNetworkFee({ gasPrice }));
 
-      if (address) {
+    
+    if (address) {
+      try {
         const [balancesData, vestable, stateLiquid, timestamp] = await Promise.all([
           getBalances(
             address,
@@ -75,20 +76,26 @@ const App = () => {
           await Liquidations.isOpenForLiquidation(address),
           await getTimeStamp(address, Liquidations),
         ]);
+
+        dispatch(setIsReady(false));
         //todo:: code move call
         dispatch(updateVestable({ vestable }));
         dispatch(updateTimestamp(timestamp));
         dispatch(toggleLiquid(stateLiquid));
         dispatch(setBalances(balancesData));
+      } catch (err) {
+        console.log(err);
+        refresh ? dispatch(setIsReady(true)): setIsReady(false);
       }
-
-      // dispatch(setLoading({ name: "balance", value: false }));
-    },
+    }
+    
+    // dispatch(setLoading({ name: "balance", value: false }));
+  },
     [address, networkId]
   );
 
   const setOnboard = async () => {
-    console.log("setOnboard");
+    // console.log("setOnboard");
     let networkId = Number(process.env.REACT_APP_DEFAULT_NETWORK_ID);
 
     contracts.init(networkId);
@@ -100,14 +107,27 @@ const App = () => {
             if (wallet?.provider !== undefined) {
               contracts.wallet = wallet;
               localStorage.setItem("selectedWallet", wallet.label);
+              // console.log("wallet connected", wallet);
+              return;
             }
+
+            localStorage.removeItem("selectedWallet");
+            dispatch(clearWallet());
+            dispatch(clearCRatio());
+            dispatch(clearBalances());
+            dispatch(updateVestable({ vestable: false }));
+            clearInterval(intervals);
+            setOnboardInit(false);
+            console.log("balance cleared!!!");
+            
           },
           address: async (newAddress) => {
             if (newAddress) {
               // if (SUPPORTED_NETWORKS[web3Onboard.selectedNetwork]) {
+              dispatch(clearCRatio());
+              dispatch(clearBalances());
+              
               await contracts.connect(newAddress);
-              // dispatch(clearBalances());
-              // dispatch(clearCRatio());
               dispatch(updateAddress({ address: newAddress }));
               dispatch(updateIsConnect(true));
               // } else {
@@ -117,8 +137,7 @@ const App = () => {
           },
           network: async (network) => {
             if (network) {
-              dispatch(clearWallet());
-              dispatch(updateIsConnect(false));
+              
               const newNetworkId = Number(network);
               if (SUPPORTED_NETWORKS[newNetworkId]) {
                 await contracts.init(newNetworkId);
@@ -140,7 +159,7 @@ const App = () => {
           },
         },
         themeState,
-        false
+        true
       );
     } catch (e) {
       console.log(e);
@@ -167,7 +186,7 @@ const App = () => {
             NotificationManager.remove(NotificationManager.listNotify[0]);
             NotificationManager.warning(`${transaction.type} error`, "ERROR");
           } else {
-            await getSystemData(true);
+            await getSystemData(false);
             NotificationManager.remove(NotificationManager.listNotify[0]);
             NotificationManager.success(`${transaction.type} success`, "SUCCESS");
             dispatch(resetTransaction());
@@ -194,15 +213,31 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    if (onboardInit && networkId !== 0) {
-      getSystemData(true);
-      if (intervals) {
-        clearInterval(intervals);
-      }
-      setIntervals(setInterval(() => getSystemData(false), intervalTime));
+    if (timer) {
+      clearTimeout(timer);
     }
+
+    if (intervals) {
+      clearInterval(intervals);
+    }
+
+    if (!address || (!onboardInit && networkId === 0)) return;
+
+    setTimer(setTimeout(() => getSystemData(false), 0));
+
+    setIntervals(setInterval(() => getSystemData, intervalTime, true));
+
+    return () => clearInterval(intervals);
     // eslint-disable-next-line
   }, [networkId, address, onboardInit]);
+
+
+  useEffect(() => {
+    if (!address && !isReady) {
+      dispatch(clearBalances());
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isReady]);
 
   // <input type="text" value={userAddress} onChange={(e) => {setUserAddress(e.target.value)}} />
   // <button onClick={() => getDebts(userAddress)}>getDebts</button>

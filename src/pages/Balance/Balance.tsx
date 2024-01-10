@@ -13,7 +13,7 @@ import Vesting from "pages/Vesting";
 import PynthsBalance from "./PynthsBalance";
 
 const Balance = () => {
-  const { networkId } = useSelector((state: RootState) => state.wallet);
+  const { address, networkId, isConnect } = useSelector((state: RootState) => state.wallet);
   const { balances, isReady } = useSelector((state: RootState) => state.balances);
   const swapName = {
     1: "UNI",
@@ -36,88 +36,86 @@ const Balance = () => {
               <H1>TOTAL BALANCE</H1>
             </Title>
             <TableContainer>
-              {!isReady 
-              ? <BalanceContainer $isLoading={!isReady}>
-                  <TableLoadingSpinner />
-                </BalanceContainer> 
-              : <BalanceContainer  key="balanceTable">
-                  <TableHeader>
-                    <Row>
-                      <TokenCell>
-                        <H4 $weight={"b"} $align={"center"}>
-                          Asset
-                        </H4>
-                      </TokenCell>
-                      <AmountCell>
-                        <H4 $weight={"b"}>Staked</H4>
-                      </AmountCell>
-                      <AmountCell>
-                        <H4 $weight={"b"}>Stakeable</H4>
-                      </AmountCell>
-                      <AmountCell>
-                        <H4 $weight={"b"}>Transferable</H4>
-                      </AmountCell>
-                      <AmountCell>
-                        <H4 $weight={"b"}>Escrow</H4>
-                      </AmountCell>
-                      <AmountCell>
-                        <H4 $weight={"b"}>Total</H4>
-                      </AmountCell>
-                    </Row>
-                  </TableHeader>
-                  <TableBody>
-                    {Object.keys(balances).map((currencyName) => {
-                      if ((networkId === 1287 || networkId === 1285) && currencyName === "LP")
-                        return <></>;
-                      else
-                        return (
-                          <BorderRow key={currencyName}>
-                            <TokenCell>
-                              <Asset $isLP={currencyName === "LP"}>
-                                <img
-                                  src={`/images/currencies/${
-                                    currencyName === "LP"
-                                      ? `${currencyName}_${swapName[networkId]}.png`
-                                      : `${currencyName}.png`
-                                  }`}
-                                  alt="lp"
-                                ></img>
-                                <H4 $weight={"m"} $align={"left"}>
-                                  {currencyName}
-                                </H4>
-                              </Asset>
-                            </TokenCell>
-                            <AmountCell>
-                              <H4 $weight={"m"} $align={"right"}>
-                                {formatCurrency(balances[currencyName].staked)}
+              <BalanceContainer $isLoading={!isReady}>
+                <TableHeader>
+                  <Row>
+                    <TokenCell>
+                      <H4 $weight={"b"} $align={"center"}>
+                        Asset
+                      </H4>
+                    </TokenCell>
+                    <AmountCell>
+                      <H4 $weight={"b"}>Staked</H4>
+                    </AmountCell>
+                    <AmountCell>
+                      <H4 $weight={"b"}>Stakeable</H4>
+                    </AmountCell>
+                    <AmountCell>
+                      <H4 $weight={"b"}>Transferable</H4>
+                    </AmountCell>
+                    <AmountCell>
+                      <H4 $weight={"b"}>Escrow</H4>
+                    </AmountCell>
+                    <AmountCell>
+                      <H4 $weight={"b"}>Total</H4>
+                    </AmountCell>
+                  </Row>
+                </TableHeader>
+                <TableBody $isLoading={!isReady} >
+                  {address ? isReady 
+                  ? Object.keys(balances).map((currencyName) => {
+                    if ((networkId === 1287 || networkId === 1285) && currencyName === "LP")
+                      return <></>;
+                    else
+                      return (
+                        <BorderRow key={currencyName}>
+                          <TokenCell>
+                            <Asset $isLP={currencyName === "LP"}>
+                              <img
+                                src={`/images/currencies/${
+                                  currencyName === "LP"
+                                    ? `${currencyName}_${swapName[networkId]}.png`
+                                    : `${currencyName}.png`
+                                }`}
+                                alt="lp"
+                              ></img>
+                              <H4 $weight={"m"} $align={"left"}>
+                                {currencyName}
                               </H4>
-                            </AmountCell>
-                            <AmountCell>
-                              <H4 $weight={"m"} $align={"right"}>
-                                {formatCurrency(balances[currencyName].stakeable)}
-                              </H4>
-                            </AmountCell>
-                            <AmountCell>
-                              <H4 $weight={"m"} $align={"right"}>
-                                {formatCurrency(balances[currencyName].transferable)}
-                              </H4>
-                            </AmountCell>
-                            <AmountCell>
-                              <H4 $weight={"m"} $align={"right"}>
-                                {formatCurrency(balances[currencyName].rewardEscrow)}
-                              </H4>
-                            </AmountCell>
-                            <AmountCell>
-                              <H4 $weight={"m"} $align={"right"}>
-                                {formatCurrency(balances[currencyName].balance)}
-                              </H4>
-                            </AmountCell>
-                          </BorderRow>
-                        );
-                    })}
-                  </TableBody>
-                </BalanceContainer>
-              }
+                            </Asset>
+                          </TokenCell>
+                          <AmountCell>
+                            <H4 $weight={"m"} $align={"right"}>
+                              {formatCurrency(balances[currencyName].staked)}
+                            </H4>
+                          </AmountCell>
+                          <AmountCell>
+                            <H4 $weight={"m"} $align={"right"}>
+                              {formatCurrency(balances[currencyName].stakeable)}
+                            </H4>
+                          </AmountCell>
+                          <AmountCell>
+                            <H4 $weight={"m"} $align={"right"}>
+                              {formatCurrency(balances[currencyName].transferable)}
+                            </H4>
+                          </AmountCell>
+                          <AmountCell>
+                            <H4 $weight={"m"} $align={"right"}>
+                              {formatCurrency(balances[currencyName].rewardEscrow)}
+                            </H4>
+                          </AmountCell>
+                          <AmountCell>
+                            <H4 $weight={"m"} $align={"right"}>
+                              {formatCurrency(balances[currencyName].balance)}
+                            </H4>
+                          </AmountCell>
+                        </BorderRow>
+                      );
+                    })
+                  : <TableLoadingSpinner />
+                  : null}
+                </TableBody>
+              </BalanceContainer>
               <PynthsBalance />
             </TableContainer>
           </Container>
@@ -165,10 +163,14 @@ export const BalanceContainer = styled.div<{ $isLoading?: boolean }>`
   display: flex;
   flex-direction: column;
   // align-items: center;
-  height: ${(props) => (props.$isLoading ? "50%" : "fit-content")};
+  min-height: 65%;
+  height: fit-content;
   align-items: ${(props) => (props.$isLoading ? "center" : "flex-start")};
-  justify-content: ${(props) => (props.$isLoading ? "center" : "flex-start")};
   width: 100%;
+
+  @media only screen and (max-width: 510px) {
+    width: fit-content;
+  }
 `;
 
 export const AmountCell = styled(Cell)`
@@ -212,7 +214,8 @@ export const Asset = styled.div<{ $isLP?: boolean }>`
   `}
 `;
 
-const TableHeader = styled(StyledTHeader)`
+export const TableHeader = styled(StyledTHeader)`
+  max-height: 50px;
   ${({ theme }) => theme.media.mobile`
     width: 100%;
   `}
@@ -222,10 +225,11 @@ const TableHeader = styled(StyledTHeader)`
   }
 `;
 
-const TableBody = styled(StyledTBody)`
-  ${({ theme }) => theme.media.mobile`
-    width: 100%;
-  `}
+const TableBody = styled(StyledTBody)<{ $isLoading?: boolean }>`
+  width: 100%;
+  height: ${(props) => (props.$isLoading ? "50% !important" : "fit-content")};
+  align-items: ${(props) => (props.$isLoading ? "center" : "flex-start")};
+  justify-content: ${(props) => (props.$isLoading ? "center" : "flex-start")};
 
   @media only screen and (max-width: 510px) {
     width: fit-content;
@@ -273,6 +277,7 @@ const TableContainer = styled.div`
   box-shadow: ${(props) => `0px 0px 25px ${props.theme.colors.border.primary}`};
   border: ${(props) => `2px solid ${props.theme.colors.border.primary}`};
 
+
   ${({ theme }) => theme.media.mobile`
       margin: 0;
       width: 90%;
@@ -283,10 +288,13 @@ const TableContainer = styled.div`
       padding: 0;
       border-radius: 5px;
   `}
+
   ${({ theme }) => theme.media.tablet`
     width: 85%;
     height: 85%;
   `}
+
 `;
+
 
 export default Balance;

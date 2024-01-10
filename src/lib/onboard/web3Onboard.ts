@@ -22,8 +22,6 @@ import metamaskSDK from "@web3-onboard/metamask";
 
 import { NotificationManager } from "react-notifications";
 
-import { SUPPORTED_NETWORKS } from "lib/network";
-
 import { networkInfo } from "configure/networkInfo";
 
 import { MAINNET, TESTNET, UNPOPULARNET } from "lib/network/supportedNetWorks";
@@ -86,7 +84,7 @@ export const web3Onboard: Web3Onboard = {
     };
 
     
-    console.log("wcV2InitOptions", wcV2InitOptions);
+    // console.log("wcV2InitOptions", wcV2InitOptions);
 
     // initialize the module with options
     const coinbase = coinbaseWalletModule();
@@ -180,12 +178,12 @@ export const web3Onboard: Web3Onboard = {
       }
     });
 
-    console.log("chains", chains);
+    // console.log("chains", chains);
 
     const appMetadata = {
-      name: "PERI Finance DEX",
+      name: "PERI Finance",
       icon: "/favicon.ico",
-      description: "PERI Finance DEX",
+      description: "PERI Finance Staking",
       explore: "https://staking.peri.finance",
       /*  recommendedInjectedWallets: [
                 { name: "MetaMask", url: "https://metamask.io" },
@@ -207,7 +205,7 @@ export const web3Onboard: Web3Onboard = {
       accountCenter: { desktop: { enabled: true }, mobile: { enabled: false } },
     });
 
-    console.log("web3Onboard initialized");
+    // console.log("web3Onboard initialized");
   },
   _onWalletUpdated: (wallets: WalletState[]) => {
     const [primaryWallet] = wallets;
@@ -216,7 +214,7 @@ export const web3Onboard: Web3Onboard = {
     const chainId = primaryWallet?.chains[0].id;
     const address = primaryWallet?.accounts[0].address;
 
-    if (chainId !== web3Onboard.selectedNetwork) {
+    if (chainId && chainId !== web3Onboard.selectedNetwork) {
       // console.log(`walletUpdated-> chainId from ${web3Onboard.selectedNetwork} to ${chainId}`);
       web3Onboard.selectedNetwork = chainId;
       web3Onboard.network(chainId);
@@ -232,7 +230,7 @@ export const web3Onboard: Web3Onboard = {
 
     if (!primaryWallet?.provider) {
       web3Onboard.unsubscribe.unsubscribe();
-      web3Onboard.wallet(null);
+      web3Onboard.wallet(undefined);
       web3Onboard.selectedAddress = undefined;
       web3Onboard.selectedNetwork = undefined;
       console.log(`successfully unsubscribed`);
@@ -250,24 +248,26 @@ export const web3Onboard: Web3Onboard = {
     try {
       if (!web3Onboard.wallet || !web3Onboard.address || !web3Onboard.network) return;
 
+      // console.log(web3Onboard.onboard.state.get());
+
       const options = walletLabel
         ? { autoSelect: { label: walletLabel, disableModals: true } }
         : undefined;
       const [primaryWallet] = await web3Onboard.onboard.connectWallet(options);
 
-      console.log("web3Onboard.connect()", options, primaryWallet);
+      // console.log("web3Onboard.connect()", options, primaryWallet);
 
       if (!primaryWallet?.provider) {
         web3Onboard.disconnect();
         return;
       }
 
-      console.log("web3Onboard subscribing to wallets");
+      // console.log("web3Onboard subscribing to wallets");
       const wallets = web3Onboard.onboard.state.select("wallets");
       web3Onboard.unsubscribe = wallets.subscribe(web3Onboard._onWalletUpdated);
       web3Onboard._onWalletUpdated(web3Onboard.onboard.state?.get().wallets);
 
-      console.log(`${primaryWallet.label} connected`);
+      // console.log(`${primaryWallet.label} connected`);
       // label: primaryWallet.label;
       // address: primaryWallet.accounts[0].address;
       // chainId: primaryWallet.chains[0].id;
