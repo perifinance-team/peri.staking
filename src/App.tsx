@@ -61,21 +61,19 @@ const App = () => {
 
     dispatch(updateNetworkFee({ gasPrice }));
 
-    
     if (address) {
       try {
-        const [balancesData, vestable, stateLiquid, timestamp] = await Promise.all([
-          getBalances(
-            address,
-            balances,
-            ratios.exchangeRates,
-            ratios.ratio.targetCRatio,
-            ratios.ratio.currentCRatio
-          ),
-          getVestable(address),
-          await Liquidations.isOpenForLiquidation(address),
-          await getTimeStamp(address, Liquidations),
-        ]);
+				const [balancesData, vestable, stateLiquid, timestamp] = await Promise.all([
+					getBalances(
+            address, 
+            balances, 
+            ratios.exchangeRates, 
+            /* ratios.ratio.targetCRatio, */ 
+            ratios.ratio.currentCRatio),
+					getVestable(address),
+					await Liquidations.isOpenForLiquidation(address),
+					await getTimeStamp(address, Liquidations),
+				]);
 
         dispatch(setIsReady(false));
         //todo:: code move call

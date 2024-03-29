@@ -55,8 +55,8 @@ const Mint = () => {
     }
 
     if (isNaN(Number(value)) || value === "") {
-      setMintAmount("");
-      setStakeAmount("");
+      setMintAmount("0");
+      setStakeAmount("0");
       return false;
     }
 
@@ -91,8 +91,8 @@ const Mint = () => {
     } catch (e) {
       console.log(e);
       getCRatio(currencyName, "0", "0");
-      setMintAmount("");
-      setStakeAmount("");
+      setMintAmount("0");
+      setStakeAmount("0");
     }
   };
 

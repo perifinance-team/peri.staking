@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "config/reducers";
 import styled from "styled-components";
@@ -13,7 +12,8 @@ import Vesting from "pages/Vesting";
 import PynthsBalance from "./PynthsBalance";
 
 const Balance = () => {
-  const { address, networkId, isConnect } = useSelector((state: RootState) => state.wallet);
+
+  const { address, networkId } = useSelector((state: RootState) => state.wallet);
   const { balances, isReady } = useSelector((state: RootState) => state.balances);
   const swapName = {
     1: "UNI",

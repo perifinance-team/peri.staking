@@ -92,7 +92,7 @@ const Refresh = () => {
             address,
             balances,
             ratios.exchangeRates,
-            ratios.ratio.targetCRatio,
+            // ratios.ratio.targetCRatio,
             ratios.ratio.currentCRatio
           ),
           getVestable(address),

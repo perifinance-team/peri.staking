@@ -13,9 +13,11 @@ export const connectContract = async (address: string, PeriFinance: any, Liquida
 		return false;
 	}
 
-	const cRatio = BigInt((await PeriFinance.collateralisationRatio(address)).toString());
+	const { tRatio, cRatio } = await contracts.Issuer.getRatios(address, false);
 
-	const daiKey = utils.formatBytes32String("DAI");
+	// const cRatio = BigInt((await PeriFinance.collateralisationRatio(address)).toString());
+
+	/* const daiKey = utils.formatBytes32String("DAI");
 	const usdcKey = utils.formatBytes32String("USDC");
 
 	const collateral = { pUSD: 0, USDC: 0, DAI: 0 };
@@ -41,6 +43,18 @@ export const connectContract = async (address: string, PeriFinance: any, Liquida
 		formatCurrency(collateral.DAI) === "0"
 	) {
 		return false;
+	} */
+
+	const { tokenList, stakedAmts } = await contracts.ExternalTokenStakeManager.tokenStakeStatus(address);
+	const tmpCollateral = [];
+	let totalAmt = 0;
+	tokenList.forEach((item, idx) => {
+		totalAmt += stakedAmts[idx];
+		tmpCollateral.push({ name: utils.parseBytes32String(item), value: stakedAmts[idx] });
+	});
+
+	if (totalAmt === 0) {
+		return false;
 	}
 
 	const status = async () => {
@@ -57,13 +71,15 @@ export const connectContract = async (address: string, PeriFinance: any, Liquida
 	let resultData = await status();
 
 	return {
-		cRatio: cRatio,
-		debt: debt,
-		collateral: [
-			{ name: "Peri", value: collateral.pUSD },
-			{ name: "Dai", value: collateral.DAI },
-			{ name: "USDC", value: collateral.USDC },
-		],
+		tRatio,
+		cRatio,
+		debt,
+		// collateral: [
+		// 	{ name: "Peri", value: collateral.pUSD },
+		// 	{ name: "Dai", value: collateral.DAI },
+		// 	{ name: "USDC", value: collateral.USDC },
+		// ],
+		collateral: tmpCollateral,
 		status: resultData,
 		address: address,
 		toggle: false,

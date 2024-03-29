@@ -45,11 +45,11 @@ const StakingStatus = () => {
       // const DAIBalanceToUSD = balances['DAI'].transferable * exchangeRates['DAI'] / BigInt(Math.pow(10, 18).toString());
       // const TotalStableUSD = USDCBalanceToUSD + DAIBalanceToUSD;
 
-      // let mintableStable = ((balances['DEBT'].PERI / 4n) - (balances['DEBT'].stable));
+      // let mintableStable = ((balances['DEBT'].PERI / 4n) - (balances['DEBT'].exDebt));
       // mintableStable = mintableStable <= 0n ? 0n : mintableStable * 4n;
 
       // setStableStatus({
-      //     staked: balances['DEBT'].stable * 4n,
+      //     staked: balances['DEBT'].exDebt * 4n,
       //     stakeable: mintableStable < TotalStableUSD ? mintableStable : TotalStableUSD,
       // });
     }

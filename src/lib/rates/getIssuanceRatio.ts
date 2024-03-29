@@ -1,11 +1,13 @@
 import { contracts } from 'lib/contract'
     
-export const getIssuanceRatio = async () => {
+export const getIssuanceRatio = async (currentWallet) => {
     const {
-        SystemSettings,
+        // SystemSettings,
+        Issuer,
 	} = contracts as any;
 
-    const issuanceRatio = await SystemSettings?.issuanceRatio();
+    // const issuanceRatio = await SystemSettings?.issuanceRatio();
+    const targetRatio = await Issuer.getTargetRatio();
 
-    return BigInt((SystemSettings? issuanceRatio : 25e17));
+    return BigInt((Issuer? targetRatio : 25e17));
 };

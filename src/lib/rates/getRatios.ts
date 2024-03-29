@@ -9,8 +9,8 @@ export const getRatios = async (currentWallet) => {
         exchangeRates: await getExchangeRates(),
         ratio: {
             currentCRatio: await getCurrentCRatio(currentWallet),
-            targetCRatio: await getIssuanceRatio(),
-            liquidationRatio: await getLiquidationRatio(),
+            targetCRatio: await getIssuanceRatio(currentWallet),
+            liquidationRatio: await getLiquidationRatio(currentWallet),
         }
     }
 }

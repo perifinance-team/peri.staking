@@ -21,12 +21,8 @@ import { Title, Container, StakeContainer } from "../Mint/Mint";
 SwiperCore.use([Mousewheel, Virtual]);
 const Earn = () => {
   const dispatch = useDispatch();
-  const balancesIsReady = useSelector(
-    (state: RootState) => state.balances.isReady
-  );
-  const exchangeIsReady = useSelector(
-    (state: RootState) => state.exchangeRates.isReady
-  );
+  const balancesIsReady = useSelector((state: RootState) => state.balances.isReady);
+  const exchangeIsReady = useSelector((state: RootState) => state.exchangeRates.isReady);
   const { hash } = useSelector((state: RootState) => state.transaction);
   const [slideIndex, setSlideIndex] = useState(0);
   const { balances } = useSelector((state: RootState) => state.balances);
@@ -46,7 +42,7 @@ const Earn = () => {
     }
 
     if (isNaN(Number(value)) || value === "") {
-      setStakeAmount("");
+      setStakeAmount("0");
       return false;
     }
     let stakeAmount = value;
@@ -58,10 +54,7 @@ const Earn = () => {
       stakeAmount = maxStakeAmount;
     }
 
-    if (
-      BigInt(utils.parseEther(stakeAmount).toString()) >
-      balances[currencyName].allowance
-    ) {
+    if (BigInt(utils.parseEther(stakeAmount).toString()) > balances[currencyName].allowance) {
       setIsApprove(true);
     }
 
@@ -103,15 +96,10 @@ const Earn = () => {
     try {
       const { PERIBalance, PoolTotal } = await getExchangeRatesLP(networkId);
       const lpRewards = await getLpRewards();
-      const totalStakeAmount = BigInt(
-        (await contracts["LP"].totalStakeAmount()).toString()
-      );
+      const totalStakeAmount = BigInt((await contracts["LP"].totalStakeAmount()).toString());
 
       const reward =
-        (BigInt(lpRewards[networkId]) *
-          BigInt(Math.pow(10, 18).toString()) *
-          52n *
-          100n) /
+        (BigInt(lpRewards[networkId]) * BigInt(Math.pow(10, 18).toString()) * 52n * 100n) /
         ((totalStakeAmount * PERIBalance) / PoolTotal);
 
       setRewardsAmountToAPY(reward);
@@ -127,9 +115,7 @@ const Earn = () => {
     dispatch(setLoading({ name: "gasEstimate", value: true }));
     try {
       gasLimit = BigInt(
-        await contracts.signers.LP.contract.estimateGas.stake(
-          utils.parseEther(stakeAmount)
-        )
+        await contracts.signers.LP.contract.estimateGas.stake(utils.parseEther(stakeAmount))
       );
     } catch (e) {
       console.log(e);
@@ -196,9 +182,7 @@ const Earn = () => {
       getAPY();
       if (isConnect) {
         setMaxStakeAmount(
-          utils.formatEther(
-            balances[coins[slideIndex].name].transferable.toString()
-          )
+          utils.formatEther(balances[coins[slideIndex].name].transferable.toString())
         );
       }
     }
@@ -207,9 +191,7 @@ const Earn = () => {
   useEffect(() => {
     if (slideIndex !== null && exchangeIsReady && balancesIsReady) {
       setMaxStakeAmount(
-        utils.formatEther(
-          balances[coins[slideIndex].name].transferable.toString()
-        )
+        utils.formatEther(balances[coins[slideIndex].name].transferable.toString())
       );
     }
   }, [slideIndex, exchangeIsReady, balancesIsReady]);

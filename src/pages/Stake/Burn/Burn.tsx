@@ -76,8 +76,8 @@ const Burn = () => {
     }
 
     if (isNaN(Number(value)) || value === "") {
-      setUnStakeAmount("");
-      setBurnAmount("");
+      setUnStakeAmount("0");
+      setBurnAmount("0");
 
       return false;
     }
@@ -144,8 +144,8 @@ const Burn = () => {
       if (currencyName !== "LP") {
         getCRatio(currencyName, "0", "0");
       }
-      setUnStakeAmount("");
-      setBurnAmount("");
+      setUnStakeAmount("0");
+      setBurnAmount("0");
     }
   };
 
@@ -165,7 +165,7 @@ const Burn = () => {
 
         unStakeAmount = balances[currency.name].staked;
       } else {
-        burnAmount = balances["DEBT"].PERI - balances["DEBT"].stable * 4n;
+        burnAmount = balances["DEBT"].PERI - balances["DEBT"].exDebt * 4n;
         burnAmount = burnAmount < 0n ? 0n : burnAmount;
 
         if (burnAmount > balances["pUSD"].transferable) {
