@@ -129,7 +129,7 @@ const Burn = () => {
           unStakeAmount = utils.formatEther(unStakeAmount);
         }
 
-        console.log("unStakeAmount:", unStakeAmount);
+        // console.log("unStakeAmount:", unStakeAmount);
 
         setUnStakeAmount(unStakeAmount);
         setBurnAmount(burnAmount);
@@ -301,7 +301,7 @@ const Burn = () => {
         exchangeRates["PERI"];
 
       let totalDEBT =
-        (balances["DEBT"].balance * BigInt(Math.pow(10, 18).toString())) / exchangeRates["PERI"] -
+        (balances["DEBT"].balance * BigInt(Math.pow(10, 18).toString()) / exchangeRates["PERI"]) -
         burnAmountToPERI;
 
       const USDCTotalStake =
@@ -315,6 +315,9 @@ const Burn = () => {
           ? balances["DAI"].staked - BigInt(utils.parseEther(unStakeAmount).toString())
           : balances["DAI"].staked;
       const DAIStakedToPERI = (DAITotalStake * exchangeRates["DAI"]) / exchangeRates["PERI"];
+
+      // console.log("totalDEBT:", totalDEBT * BigInt(Math.pow(10, 18).toString()));
+      // console.log("PERI.balance + DAIStakedToPERI + USDCStakedToPERI))",  balances["PERI"].balance + DAIStakedToPERI + USDCStakedToPERI);
 
       setCRatio(
         (BigInt(Math.pow(10, 18).toString()) * 100n) /
