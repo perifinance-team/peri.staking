@@ -45,19 +45,11 @@ const Burn = () => {
   const dispatch = useDispatch();
   const { hash } = useSelector((state: RootState) => state.transaction);
   const { balances } = useSelector((state: RootState) => state.balances);
-  const balancesIsReady = useSelector(
-    (state: RootState) => state.balances.isReady
-  );
-  const exchangeIsReady = useSelector(
-    (state: RootState) => state.exchangeRates.isReady
-  );
+  const balancesIsReady = useSelector((state: RootState) => state.balances.isReady);
+  const exchangeIsReady = useSelector((state: RootState) => state.exchangeRates.isReady);
   const exchangeRates = useSelector((state: RootState) => state.exchangeRates);
-  const { targetCRatio, currentCRatio } = useSelector(
-    (state: RootState) => state.ratio
-  );
-  const { isConnect, address } = useSelector(
-    (state: RootState) => state.wallet
-  );
+  const { targetCRatio, currentCRatio } = useSelector((state: RootState) => state.ratio);
+  const { isConnect, address } = useSelector((state: RootState) => state.wallet);
   const { gasPrice } = useSelector((state: RootState) => state.networkFee);
   const [issuanceDelay, setIssuanceDelay] = useState(1);
   const [slideIndex, setSlideIndex] = useState(0);
@@ -96,7 +88,7 @@ const Burn = () => {
 
         setUnStakeAmount(unStakeAmount);
       } else {
-        let PERIQuota = 0n;
+        /* let PERIQuota = 0n;
         const isTarget: boolean =
           currentCRatio === 0n ||
           currentCRatio <= 25n * BigInt(Math.pow(10, 16).toString());
@@ -107,7 +99,8 @@ const Burn = () => {
               BigInt(Math.pow(10, 18).toString())) /
             exchangeRates["PERI"];
           PERIQuota = balances["PERI"].balance - PERIStaked;
-        }
+          console.log("PERIQuota:", PERIQuota);
+        } */
 
         burnAmount = value;
         if (
@@ -128,14 +121,15 @@ const Burn = () => {
         if (currencyName !== "LP") {
           getCRatio(currencyName, burnAmount, unStakeAmount);
         }
-        unStakeAmount =
-          BigInt(utils.parseEther(unStakeAmount).toString()) + PERIQuota;
+        unStakeAmount = BigInt(utils.parseEther(unStakeAmount).toString()) /*  + PERIQuota */;
 
         if (unStakeAmount < 0n) {
-          unStakeAmount = "0";
+          unStakeAmount = "";
         } else {
           unStakeAmount = utils.formatEther(unStakeAmount);
         }
+
+        console.log("unStakeAmount:", unStakeAmount);
 
         setUnStakeAmount(unStakeAmount);
         setBurnAmount(burnAmount);
@@ -263,9 +257,7 @@ const Burn = () => {
       if (issuanceDelay !== 0) {
         NotificationManager.warning(
           `There is a waiting period after minting before you can burn. Please wait
-                    ${secondsToTime(
-                      issuanceDelay
-                    )} before attempting to burn pUSD.`,
+                    ${secondsToTime(issuanceDelay)} before attempting to burn pUSD.`,
           "NOTE",
           0
         );
@@ -305,30 +297,24 @@ const Burn = () => {
 
     try {
       let burnAmountToPERI =
-        (BigInt(utils.parseEther(burnAmount).toString()) *
-          BigInt(Math.pow(10, 18).toString())) /
+        (BigInt(utils.parseEther(burnAmount).toString()) * BigInt(Math.pow(10, 18).toString())) /
         exchangeRates["PERI"];
 
       let totalDEBT =
-        (balances["DEBT"].balance * BigInt(Math.pow(10, 18).toString())) /
-          exchangeRates["PERI"] -
+        (balances["DEBT"].balance * BigInt(Math.pow(10, 18).toString())) / exchangeRates["PERI"] -
         burnAmountToPERI;
 
       const USDCTotalStake =
         currencyName === "USDC"
-          ? balances["USDC"].staked -
-            BigInt(utils.parseEther(unStakeAmount).toString())
+          ? balances["USDC"].staked - BigInt(utils.parseEther(unStakeAmount).toString())
           : balances["USDC"].staked;
-      const USDCStakedToPERI =
-        (USDCTotalStake * exchangeRates["USDC"]) / exchangeRates["PERI"];
+      const USDCStakedToPERI = (USDCTotalStake * exchangeRates["USDC"]) / exchangeRates["PERI"];
 
       const DAITotalStake =
         currencyName === "DAI"
-          ? balances["DAI"].staked -
-            BigInt(utils.parseEther(unStakeAmount).toString())
+          ? balances["DAI"].staked - BigInt(utils.parseEther(unStakeAmount).toString())
           : balances["DAI"].staked;
-      const DAIStakedToPERI =
-        (DAITotalStake * exchangeRates["DAI"]) / exchangeRates["PERI"];
+      const DAIStakedToPERI = (DAITotalStake * exchangeRates["DAI"]) / exchangeRates["PERI"];
 
       setCRatio(
         (BigInt(Math.pow(10, 18).toString()) * 100n) /
@@ -349,34 +335,16 @@ const Burn = () => {
     const minimumStakeTime = await contracts.SystemSettings.minimumStakeTime();
 
     if (Number(lastIssueEvent) && Number(minimumStakeTime)) {
-      const burnUnlockDate = addSeconds(
-        Number(lastIssueEvent) * 1000,
-        Number(minimumStakeTime)
-      );
-      const issuanceDelayInSeconds = differenceInSeconds(
-        burnUnlockDate,
-        new Date()
-      );
-      setIssuanceDelay(
-        issuanceDelayInSeconds > 0
-          ? issuanceDelayInSeconds
-          : canBurnPynths
-          ? 0
-          : 1
-      );
+      const burnUnlockDate = addSeconds(Number(lastIssueEvent) * 1000, Number(minimumStakeTime));
+      const issuanceDelayInSeconds = differenceInSeconds(burnUnlockDate, new Date());
+      setIssuanceDelay(issuanceDelayInSeconds > 0 ? issuanceDelayInSeconds : canBurnPynths ? 0 : 1);
       const issuanceDelay =
-        issuanceDelayInSeconds > 0
-          ? issuanceDelayInSeconds
-          : canBurnPynths
-          ? 0
-          : 1;
+        issuanceDelayInSeconds > 0 ? issuanceDelayInSeconds : canBurnPynths ? 0 : 1;
 
       if (issuanceDelay > 0) {
         NotificationManager.warning(
           `There is a waiting period after minting before you can burn. Please wait
-                    ${secondsToTime(
-                      issuanceDelay
-                    )} before attempting to burn pUSD.`,
+                    ${secondsToTime(issuanceDelay)} before attempting to burn pUSD.`,
           "NOTE",
           0
         );
@@ -391,8 +359,8 @@ const Burn = () => {
 
   useEffect(() => {
     if (!hash) {
-      setUnStakeAmount("0");
-      setBurnAmount("0");
+      setUnStakeAmount("");
+      setBurnAmount("");
       getCRatio(currencies[slideIndex].name, "0", "0");
     }
   }, [balancesIsReady, exchangeIsReady, isConnect, hash]);
@@ -409,8 +377,8 @@ const Burn = () => {
         }
       } else {
         setCRatio(0n);
-        setMaxUnStakeAmount("0");
-        setMaxBurnAmount("0");
+        setMaxUnStakeAmount("");
+        setMaxBurnAmount("");
       }
     }
   }, [exchangeIsReady, balancesIsReady, exchangeRates, balances, isConnect]);
@@ -418,8 +386,8 @@ const Burn = () => {
   useEffect(() => {
     if (slideIndex !== null) {
       setActiveCurrency(currencies[slideIndex]);
-      setUnStakeAmount("0");
-      setBurnAmount("0");
+      setUnStakeAmount("");
+      setBurnAmount("");
       getCRatio(currencies[slideIndex].name, "0", "0");
     }
   }, [slideIndex]);
@@ -485,7 +453,7 @@ const BurnContainer = styled(StakeContainer)`
     top: -13.5% !important;
   }
 
-  .swiper-slide.swiper-slide-next  {
+  .swiper-slide.swiper-slide-next {
     margin-top: 3% !important;
   }
 
@@ -499,7 +467,6 @@ const BurnContainer = styled(StakeContainer)`
     }
 
   `}
-
 `;
 
 export default Burn;

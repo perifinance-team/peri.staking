@@ -22,16 +22,17 @@ export const Input = ({
           ></img>
         </AssetContainer>
         <InputContainer>
-          {disabled || value !== "" ?
+          {/* {disabled || value !== "" ? */}
             <AmountInput
               type="text"
               $height={height}
               disabled={disabled}
               onChange={onChange}
               value={value}
+              placeholder="0"
             ></AmountInput>
-            : <SmallLoadingSpinner />
-          }
+            {/* : <SmallLoadingSpinner /> */}
+          {/* } */}
         </InputContainer>
       </Container>
     </>

@@ -255,8 +255,8 @@ const Mint = () => {
 
   useEffect(() => {
     if (!hash) {
-      setMintAmount("0");
-      setStakeAmount("0");
+      setMintAmount("");
+      setStakeAmount("");
       getCRatio(currencies[slideIndex].name, "0", "0");
     }
   }, [hash]);
@@ -273,8 +273,8 @@ const Mint = () => {
         getMaxAmount(currencies[slideIndex]);
         getCRatio(currencies[slideIndex].name, mintAmount, stakeAmount);
       } else {
-        setMaxStakeAmount("0");
-        setMaxMintAmount("0");
+        setMaxStakeAmount("");
+        setMaxMintAmount("");
         setCRatio(0n);
       }
     }
@@ -284,8 +284,8 @@ const Mint = () => {
     if (slideIndex !== null) {
       setActiveCurrency(currencies[slideIndex]);
       setIsApprove(false);
-      setMintAmount("0");
-      setStakeAmount("0");
+      setMintAmount("");
+      setStakeAmount("");
       getCRatio(currencies[slideIndex].name, "0", "0");
     }
   }, [slideIndex]);
