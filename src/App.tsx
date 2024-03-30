@@ -19,7 +19,6 @@ import {
 } from "config/reducers/wallet";
 import { updateNetworkFee } from "config/reducers/networkFee";
 import { resetTransaction } from "config/reducers/transaction";
-import { setLoading } from "config/reducers/loading";
 import { getNetworkFee } from "lib/fee";
 import { SUPPORTED_NETWORKS } from "lib/network";
 import { clearCRatio } from "config/reducers/rates";
@@ -78,7 +77,6 @@ const App = () => {
         ]);
 
         dispatch(setIsReady(false));
-        //todo:: code move call
         dispatch(updateVestable({ vestable }));
         dispatch(updateTimestamp(timestamp));
         dispatch(toggleLiquid(stateLiquid));

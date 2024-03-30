@@ -4,6 +4,8 @@ import { utils } from "ethers";
 
 import { formatDecimal } from "lib";
 
+import { tr } from "date-fns/locale";
+
 import { getBalance } from "./getBalance";
 export const getBalances = async (currentWallet, currencies, exchangeRates, targetCRatio, currentCRatio) => {
 	const stakeAble: boolean = currentCRatio <= 25n * BigInt(Math.pow(10, 16).toString()); //0.25;
@@ -20,10 +22,6 @@ export const getBalances = async (currentWallet, currencies, exchangeRates, targ
 		(async () => BigInt(await PeriFinance.transferablePeriFinance(currentWallet)))(),
 	]);
 
-	if (currentCRatio === 0n) {
-		return noDebtBalances(currencies, currentWallet, pUSDBalance, USDCBalance, DAIBalance, transferablePERI);
-	}
-
 	const [debtBalance, /*pUSDBalance, USDCBalance, DAIBalance, */ periBalance, /* transferablePERI, */ PERIRewardEscrow] = await Promise.all([
 		(async () => BigInt(await PeriFinance.debtBalanceOf(currentWallet, utils.formatBytes32String("pUSD"))))(),
 		/* await getBalance(currentWallet, "PynthpUSD", currencies["pUSD"].decimal), */
@@ -34,12 +32,9 @@ export const getBalances = async (currentWallet, currencies, exchangeRates, targ
 		(async () => BigInt(await RewardEscrowV2.balanceOf(currentWallet)))(),
 	]);
 
-	// console.log("USDCBalance", USDCBalance.toString());
-	// console.log("DAIBalance", DAIBalance.toString());
-
 	let USDCAllowance,
-		DAIAllowance,
-		LPAllowance = 0n;
+	DAIAllowance,
+	LPAllowance = 0n;
 
 	if (debtBalance > 0n) {
 		USDCAllowance = formatDecimal(
@@ -58,6 +53,13 @@ export const getBalances = async (currentWallet, currencies, exchangeRates, targ
 			DAIDecimal
 		);
 	}
+
+	if (currentCRatio === 0n) {
+		return noDebtBalances(currencies, currentWallet, pUSDBalance, USDCBalance, DAIBalance, periBalance, transferablePERI, PERIRewardEscrow, USDCAllowance, DAIAllowance);
+	}
+
+	// console.log("USDCBalance", USDCBalance.toString());
+	// console.log("DAIBalance", DAIBalance.toString());
 
 	let [LPBalance, LPRewardEscrow, stakedLP] = contracts["LP"]
 		? await Promise.all([
@@ -210,7 +212,7 @@ export const getBalances = async (currentWallet, currencies, exchangeRates, targ
 };
 
 
-const noDebtBalances = async (currencies, currentWallet, pUSDBalance, USDCBalance, DAIBalance, transferablePERI) => {
+const noDebtBalances = async (currencies, currentWallet, pUSDBalance, USDCBalance, DAIBalance, periBalance, transferablePERI, PERIRewardEscrow, USDCAllowance, DAIAllowance) => {
 
 	let LPAllowance = 0n;
 	
@@ -238,11 +240,11 @@ const noDebtBalances = async (currencies, currentWallet, pUSDBalance, USDCBalanc
 		},
 		PERI: {
 			...currencies["PERI"],
-			balance: 0n,
+			balance: periBalance,
 			staked: 0n,
-			stakeable: 0n,
-			transferable: 0n,
-			rewardEscrow: 0n,
+			stakeable: periBalance,
+			transferable: transferablePERI,
+			rewardEscrow: PERIRewardEscrow,
 		},
 		pUSD: {
 			...currencies["pUSD"],
@@ -256,7 +258,7 @@ const noDebtBalances = async (currencies, currentWallet, pUSDBalance, USDCBalanc
 			staked: 0n,
 			stakeable: USDCBalance,
 			mintable: 0n,
-			allowance: 0n,
+			allowance: USDCAllowance,
 		},
 		DAI: {
 			...currencies["DAI"],
@@ -265,7 +267,7 @@ const noDebtBalances = async (currencies, currentWallet, pUSDBalance, USDCBalanc
 			staked: 0n,
 			mintable: 0n,
 			stakeable: DAIBalance,
-			allowance: 0n,
+			allowance: DAIAllowance,
 		},
 		LP: {
 			...currencies["LP"],
