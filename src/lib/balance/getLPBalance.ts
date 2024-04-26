@@ -1,17 +1,21 @@
 import { contracts } from "lib/contract";
+
 import { getBalance } from "./getBalance";
 
 export const getLPBalance = async (currentWallet:string, currencies:any) => {
-	
-	const [LPBalance, LPRewardEscrow, stakedLP] = contracts["LP"]
-		? await Promise.all([
-				await getBalance(currentWallet, "LP", currencies["LP"].decimal),
-				(async () => BigInt(await contracts["LP"].earned(currentWallet)))(),
-				(async () => BigInt(await contracts["LP"].stakedAmountOf(currentWallet)))(),
-		  ])
-		: [0n, 0n, 0n];
 
-	const LPAllowance = LPBalance > 0n ? BigInt((await contracts["LP"].allowance(currentWallet)).toString()) : 0n;
+	if (!contracts["LP"]?.networkId) return null;
+	
+	const [LPBalance, LPRewardEscrow, stakedLP, LPAllowance] = 
+		await Promise.all([
+			getBalance(currentWallet, "LP", currencies["LP"].decimal),
+			contracts["LP"].earned(currentWallet),
+			contracts["LP"].stakedAmountOf(currentWallet),
+			contracts["LP"].allowance(currentWallet),
+		]).then((values) => values.map((value) => BigInt(value)));
+
+	// console.log("LPBalance", LPBalance, "LPRewardEscrow", LPRewardEscrow, "stakedLP", stakedLP, "LPAllowance", LPAllowance);
+	// const LPAllowance = LPBalance > 0n ? BigInt((await contracts["LP"].allowance(currentWallet)).toString()) : 0n;
 
 	return { ...currencies["LP"],
 		balance: LPBalance + stakedLP,

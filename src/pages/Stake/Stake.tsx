@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { HashRouter as Router, Switch, Route, Link } from "react-router-dom";
@@ -14,12 +14,43 @@ import Mint from "./Mint";
 import Burn from "./Burn";
 import Reward from "./Reward";
 import Earn from "./Earn";
+import { stable } from "lib/contract/contracts";
+import { lpContractAddress } from "lib/contract/LP";
 
 const Stake = () => {
 	const { t } = useTranslation();
 
 	const [activeTab, setActiveTab] = useState<string>("mint");
 	const themeState = useSelector((state: RootState) => state.theme.theme);
+	const { networkId } = useSelector((state: RootState) => state.wallet);	
+	const exchangeRates = useSelector((state: RootState) => state.exchangeRates);
+	const [currencies, setCurrencies] = useState<any>([
+		{ name: "PERI", iisExternal: true, isLP: false },
+		{ name: "USDC", isExternal: true, isLP: false },
+		{ name: "DAI", isExternal: true, isLP: false },
+	])
+	const [LPs, setLPs] = useState<Array<any>>([]);
+
+	useEffect(() => {
+		const currencies = [
+			{ name: "PERI", isExternal: false, isLP: false },
+			{ name: "USDC", isExternal: true, isLP: false },
+			{ name: "DAI", isExternal: true, isLP: false },
+		];
+
+		const stables = stable[networkId];
+		if (stables) {
+			stable[networkId]["USDT"] && currencies.push({ name: "USDT", isExternal: true, isLP: false });
+			stable[networkId]["XAUT"] && currencies.push({ name: "XAUT", isExternal: true, isLP: false });
+			stable[networkId]["PAXG"] && currencies.push({ name: "PAXG", isExternal: true, isLP: false });
+		}
+		
+		lpContractAddress[networkId] 
+			? setLPs([{ name: "LP", isExternal: false, isLP: true }])
+			: setLPs([]);
+
+		setCurrencies(currencies);
+	}, [exchangeRates, networkId]);
 
 	return (
 		<Router basename="/stake">
@@ -56,17 +87,18 @@ const Stake = () => {
 					</Container>
 				</Route>
 				<Route exact path="/mint">
-					<Mint></Mint>
+					<Mint currencies={currencies}></Mint>
 				</Route>
 				<Route exact path="/burn">
-					<Burn></Burn>
+					<Burn currencies={currencies}></Burn>
 				</Route>
 				<Route exact path="/reward">
 					<Reward></Reward>
 				</Route>
+				{LPs.length > 0 && 
 				<Route exact path="/earn">
-					<Earn></Earn>
-				</Route>
+					<Earn LPs={LPs}></Earn>
+				</Route>}
 			</Switch>
 		</Router>
 	);

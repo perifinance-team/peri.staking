@@ -6,7 +6,7 @@ import { RootState } from "config/reducers";
 import { Paragraph } from "components/paragraph";
 import NetCombo from "./NetCombo";
 import Connect from "./Connect";
-import { BaseButton } from "components/button";
+import { BaseContainer } from "components/container";
 
 const Network = () => {
   const { networkName, address, isConnect } = useSelector(
@@ -23,7 +23,7 @@ const Network = () => {
         $padding={"0px 5px"}
         $minWidth={33}
       >
-        {networkName && address && isConnect && (
+        {/* networkName && */ address && isConnect && (
           <Paragraph $fontSize={0.75} $weight={"m"} $color={"primary"} $margin={"0"}>
             {address.slice(0, 6) + "..." + address.slice(-4, address.length)}
           </Paragraph>
@@ -51,9 +51,38 @@ const Container = styled.div`
   `}
 `;
 
-const ConnectButton = styled(BaseButton)`
+const ConnectButton = styled(BaseContainer)`
   box-shadow: none;
   border: none;
+
+  &:hover {
+		transition: 0.2s ease-in-out;
+		transform: translateY(-1px);
+    cursor: pointer;
+	}
+
+	&:active {
+		transform: translateY(1px);
+		box-shadow: none;
+	}
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+
+  ${({ theme }) => theme.media.mobile`
+    h4 {
+      font-weight: 600;
+    }
+  `}
+
   ${({ theme }) => theme.media.mobile`
     padding: 0;
   `}

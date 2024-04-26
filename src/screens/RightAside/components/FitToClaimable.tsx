@@ -36,22 +36,21 @@ const FitToClaimable = () => {
     if (contracts.signers.PeriFinance.amountsToFitClaimable) {
       dispatch(setLoading({ name: "amountsToFitClaimable", value: true }));
       try {
-        const ableAmount = BigInt(
-          (
-            await contracts.signers.PeriFinance.amountsToFitClaimable(address)
-          )[0]
-        );
+        const { burnAmount } = await contracts.signers.PeriFinance.amountsToFitClaimable(address);
+        const burnableAmt = burnAmount.toBigInt();
+        
         dispatch(setLoading({ name: "amountsToFitClaimable", value: false }));
-        if (
-          (balances["pUSD"].transferable / 10n) * 10n <=
-          (ableAmount / 10n) * 10n
-        ) {
-          NotificationManager.error(
+        console.log("burnableAmt", burnableAmt);
+        if (burnableAmt === 0n) {
+          NotificationManager.warning("No amount to fit to claimable", "WARNING");
+          return false;
+        } else if ((balances["pUSD"].transferable / 10n) * 10n <= (burnableAmt / 12n) * 10n) {
+          NotificationManager.warning(
             `To Fit To Claimable, pUSD must be greater than ${formatCurrency(
-              ableAmount,
+              burnableAmt,
               2
             )}`,
-            "ERROR"
+            "WARNING"
           );
           return false;
         }

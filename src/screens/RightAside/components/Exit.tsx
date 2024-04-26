@@ -18,7 +18,7 @@ const Exit = () => {
 		let gasLimit = 600000n;
 		dispatch(setLoading({ name: "gasEstimate", value: true }));
 		try {
-			gasLimit = BigInt((await contracts.signers.PeriFinance.estimateGas.exit()).toString());
+			gasLimit = (await contracts.signers.PeriFinance.estimateGas.exit()).toBigInt();
 		} catch (e) {
 			console.log(e);
 		}

@@ -3,84 +3,275 @@ import { contracts } from "lib/contract";
 import { utils } from "ethers";
 
 import { formatDecimal } from "lib";
-import { getBalance } from "./getBalance";
+import { divideDecimal, multiplyDecimal, toBytes32 } from "lib/etc/utils";
 
-import { getDebtNAddableAmt } from "./getStakableAmt";
 import { getLPBalance } from "./getLPBalance";
+import { getDebtNAddableAmt } from "./getStakableAmt";
+
+const getPeriBalance = async (
+  currentWallet: bigint,
+  exTokens: any,
+  stableEA: bigint,
+  goldEA: bigint,
+  periIR: bigint,
+  periBalance: bigint,
+  debtBalance: bigint,
+  exchangeRates: any
+) => {
+  let periDebt: bigint,
+    PERIStaked: bigint,
+    PERIStakeable: bigint = 0n;
+
+  const { RewardEscrowV2, PeriFinance } = contracts as any;
+
+  let PERIRewardEscrow = 0n,
+    transferablePERI = 0n,
+    periEA = 0n;
+  if (periBalance > 0) {
+    [PERIRewardEscrow, transferablePERI] = (
+      await Promise.all([
+        RewardEscrowV2.balanceOf(currentWallet),
+        PeriFinance.transferablePeriFinance(currentWallet),
+      ])
+    ).map((item) => BigInt(item));
+    periEA = multiplyDecimal(periBalance, exchangeRates["PERI"]);
+  }
+  const totalEA = periEA + stableEA + goldEA;
+
+  try {
+    periDebt = debtBalance - exTokens["DEBT"].exDebt;
+    PERIStaked =
+      periDebt === 0n
+        ? 0n
+        : divideDecimal(periDebt, multiplyDecimal(periIR, exchangeRates["PERI"]));
+    PERIStaked = periBalance < PERIStaked ? periBalance : PERIStaked;
+    PERIStakeable = BigInt(periBalance) - PERIStaked;
+    PERIStakeable = PERIStakeable <= 0n ? 0n : PERIStakeable;
+  } catch (e) {
+    console.log(e);
+  }
+
+  exTokens["PERI"] = {
+    ...exTokens["PERI"],
+    balance: periBalance,
+    transferable: transferablePERI,
+    rewardEscrow: PERIRewardEscrow,
+    staked: PERIStaked,
+    stakeable: PERIStakeable,
+    totalEA: totalEA,
+  };
+
+  return periDebt;
+};
+
+const setExBalances = async (
+  currentWallet,
+  currencies,
+  exTokens,
+  currentCRatio,
+  exchangeRates,
+  iRatios
+) => {
+  const { PeriFinance, RewardEscrowV2, PynthpUSD, ExternalTokenStakeManager, LPContract } =
+    contracts as any;
+  const [, stableIR, goldIR] = iRatios;
+
+  // console.log("LPContract", LPContract);
+
+  const [pUSDB, periB, debtB, exTokenInfo, LP] = await Promise.all([
+    PynthpUSD.balanceOf(currentWallet),
+    PeriFinance.collateral(currentWallet),
+    PeriFinance.debtBalanceOf(currentWallet, toBytes32("pUSD")),
+    ExternalTokenStakeManager.tokenStakeStatus(currentWallet),
+    getLPBalance(currentWallet, currencies),
+  ]);
+
+  const [pUSDBalance, periBalance, debtBalance] = [BigInt(pUSDB), BigInt(periB), BigInt(debtB)];
+  const { tokenList, stakedAmts, decimals, balances } = exTokenInfo;
+
+  let stableEA: bigint = 0n,
+    goldEA: bigint = 0n;
+  const stables = Object.keys(currencies)
+    .filter((item) => currencies[item]?.stable)
+    .map((item) => item);
+
+  const promise = tokenList.map(async (token, index) => {
+    const tokenName = utils.parseBytes32String(token);
+    const iDecimals = Number(decimals[index]);
+
+    const staked = BigInt(stakedAmts[index]);
+    const balance = BigInt(balances[index]);
+    console.log("tokenName", tokenName, "staked", staked, "balance", balance);
+    // get allowance of all external tokens
+    const tokenContract = contracts[tokenName];
+    let allowance = 0n;
+		try {
+			allowance = currentCRatio > 0n && tokenContract
+	        ? formatDecimal(
+	            BigInt(
+	              await tokenContract.allowance(
+	                currentWallet,
+	                contracts?.addressList["ExternalTokenStakeManager"].address
+	              )
+	            ),
+	            iDecimals
+	          )
+	        : 0n;
+		} catch (err) {
+			console.log("allowance error", tokenName, err);
+		}
+
+    // copy exisiting token's data
+    exTokens[tokenName] = {
+      ...currencies[tokenName],
+      staked: staked,
+      decimal: iDecimals,
+      transferable: balance,
+      balance: balance + staked,
+      stakeable: balance,
+      allowance: allowance,
+    };
+    // console.log("tokenName", tokenName, "staked", exTokens[tokenName].staked);
+
+    if (!["DEBT", "PERI", "pUSD", "LP"].includes(tokenName)) {
+      const tokenEA = multiplyDecimal(staked, exchangeRates[tokenName]);
+      let IR = 0n;
+      if (stables.includes(tokenName)) {
+        stableEA = stableEA + tokenEA;
+        IR = stableIR;
+      } else {
+        goldEA = goldEA + tokenEA;
+        IR = goldIR;
+      }
+      exTokens[tokenName]["IR"] = IR;
+      // init exToken's DEBT
+      exTokens["DEBT"][tokenName] = multiplyDecimal(tokenEA, IR);
+      exTokens["DEBT"]["exDebt"] += exTokens["DEBT"][tokenName];
+    }
+    // console.log(token, "staked", tokens[token].staked, "exchangeRates", exchangeRates[token]);
+  });
+
+  LP && (exTokens["LP"] = LP);
+  exTokens["pUSD"] = { ...currencies["pUSD"], balance: pUSDBalance, transferable: pUSDBalance };
+  let PERIRewardEscrow = 0n,
+    transferablePERI = 0n,
+    periEA = 0n;
+  if (periBalance > 0) {
+    const [escrow, transferables] = await Promise.all([
+      RewardEscrowV2.balanceOf(currentWallet),
+      PeriFinance.transferablePeriFinance(currentWallet),
+    ]);
+
+    [PERIRewardEscrow, transferablePERI] = [escrow, transferables].map((item) => BigInt(item));
+
+    periEA = multiplyDecimal(periBalance, exchangeRates["PERI"]);
+  }
+  exTokens["PERI"] = {
+    ...exTokens["PERI"],
+    balance: periBalance,
+    transferable: periBalance - PERIRewardEscrow,
+    rewardEscrow: PERIRewardEscrow,
+    stakeable: periBalance,
+    totalEA: periEA + stableEA + goldEA,
+  };
+
+  await Promise.all(promise);
+
+  // console.log("exTokens", exTokens);
+
+  return { stableEA, goldEA, stables, periBalance, debtBalance, transferablePERI, LP };
+};
+
+const getIRatios = async () => {
+  // return ['0.25', '1', '0.75', '0.5'].map(toBigInt);
+  const { SystemSettings } = contracts as any;
+  const ratios = await Promise.all([
+    SystemSettings.issuanceRatio(),
+    SystemSettings.exTokenIssuanceRatio(toBytes32("USDC")),
+    SystemSettings.exTokenIssuanceRatio(toBytes32("XAUT")),
+    SystemSettings.externalTokenQuota(),
+  ]);
+
+  return ratios.map((item) => item.toBigInt());
+};
 
 export const getBalances = async (currentWallet, currencies, exchangeRates, currentCRatio) => {
-	// const stakeAble: boolean = currentCRatio <= 25n * BigInt(Math.pow(10, 16).toString()); //0.25;
-	// const stakeAble: boolean = currentCRatio <= targetCRatio;
+  // const { ExternalTokenStakeManager } = contracts as any;
 
-	const { PeriFinance, ExternalTokenStakeManager, RewardEscrowV2 } = contracts as any;
+  const exTokens = {};
+  /* const [ iRatios, exTokenInfo, LP ] = await Promise.all([
+		getIRatios(),
+		ExternalTokenStakeManager.tokenStakeStatus(currentWallet), 
+		getLPBalance(currentWallet, currencies)
+	]); */
 
-	const exTokens = {};
-	const { tokenList, stakedAmts, decimals } = await ExternalTokenStakeManager.tokenStakeStatus(currentWallet);
-	for (let i = 0; i < tokenList.length; i++) {
-		const tokenName = utils.parseBytes32String(tokenList[i]);
-		exTokens[tokenName] = { ...currencies[tokenName], staked: stakedAmts[i] };
-		exTokens[tokenName].decimal = decimals[i];
-	}
-	await Promise.all(Object.keys(exTokens).map((token) => {
-		exTokens[token].balance = (async () => BigInt(await getBalance(currentWallet, token, currencies[token].decimal)));
-		const tokenContract = contracts[token];
-		exTokens[token].allowance = currentCRatio > 0n && tokenContract
-			? (async () => formatDecimal(
-				BigInt(await tokenContract.allowance(currentWallet, contracts?.addressList["ExternalTokenStakeManager"].address)),
-				exTokens[token].decimal
-				))
-			: 0n;
+  const iRatios = await getIRatios();
 
-		return exTokens[token];
-	}));
+  const [periIR, stableIR, goldIR, maxTR] = iRatios;
 
-	exTokens["DEBT"] = {balance: 0n, transferable: 0n, PERI: 0n};
-	const periIR = await contracts.SystemSettings.issuanceRatio();
-	await getDebtNAddableAmt(exTokens, periIR, currentCRatio);
+  exTokens["DEBT"] = { ...currencies["DEBT"], balance: 0n, transferable: 0n, PERI: 0n, exDebt: 0n };
+  exTokens["PERI"] = {
+    ...currencies["PERI"],
+    balance: 0n,
+    transferable: 0n,
+    rewardEscrow: 0n,
+    staked: 0n,
+    stakeable: 0n,
+    IR: periIR,
+    totalEA: 0n,
+  };
 
-	const [pUSDBalance, periBalance] = await Promise.all([
-		await getBalance(currentWallet, "PynthpUSD", currencies["pUSD"].decimal),
-		(async () => BigInt(await PeriFinance.collateral(currentWallet)))(),
-	]);
+  const { stableEA, goldEA, stables, periBalance, debtBalance, transferablePERI } =
+    await setExBalances(currentWallet, currencies, exTokens, currentCRatio, exchangeRates, iRatios);
 
-	const [transferablePERI, PERIRewardEscrow] = periBalance > 0 
-		? await Promise.all([
-				(async () => BigInt(await PeriFinance.transferablePeriFinance(currentWallet)))(),
-				(async () => BigInt(await RewardEscrowV2.balanceOf(currentWallet)))(),
-			])
-		: [0n, 0n];
+  // const periDebt = await getPeriBalance(currentWallet, exTokens, stableEA, goldEA, periIR, periBalance, debtBalance, exchangeRates);
 
-	exTokens["pUSD"] = { ...currencies["pUSD"], balance: pUSDBalance, transferable: pUSDBalance };
-	exTokens["PERI"] = { ...currencies["PERI"], balance: periBalance, transferable: transferablePERI, rewardEscrow: PERIRewardEscrow };
+  // console.log("getting debt and addable amounts");
+  currentCRatio &&
+    (await getDebtNAddableAmt(
+      exTokens,
+      exchangeRates,
+      debtBalance,
+      stableEA,
+      goldEA,
+      stableIR,
+      goldIR,
+      maxTR,
+      stables
+    ));
 
-	exTokens["LP"] = await getLPBalance(currentWallet, currencies);
+  if (currentCRatio === 0n) {
+    return exTokens;
+  }
 
-	if (currentCRatio === 0n) {
-		return exTokens;
-	}
+  let periDebt: bigint,
+    PERIStaked: bigint,
+    PERIStakeable: bigint = 0n;
 
-	const debtBalance = BigInt(await PeriFinance.debtBalanceOf(currentWallet, utils.formatBytes32String("pUSD")));
+  try {
+    periDebt = debtBalance - exTokens["DEBT"].exDebt;
+    PERIStaked =
+      periDebt === 0n
+        ? 0n
+        : divideDecimal(periDebt, multiplyDecimal(periIR, exchangeRates["PERI"]));
+    PERIStaked = periBalance < PERIStaked ? periBalance : PERIStaked;
+    PERIStakeable = BigInt(periBalance) - PERIStaked;
+    PERIStakeable = PERIStakeable <= 0n ? 0n : PERIStakeable;
+  } catch (e) {
+    console.log(e);
+  }
 
+  exTokens["PERI"] = {
+    ...exTokens["PERI"],
+    transferable: transferablePERI,
+    staked: PERIStaked,
+    stakeable: PERIStakeable,
+  };
 
-	let periDebt: bigint, PERIStaked: bigint, PERIStakeable: bigint = 0n;
+  exTokens["DEBT"].balance = debtBalance;
+  exTokens["DEBT"].PERI = periDebt;
 
-	try {
-		periDebt = debtBalance - exTokens["DEBT"].exDebt;
-		PERIStaked =
-			(periDebt * (BigInt(Math.pow(10, 18).toString()) / periIR) * BigInt(Math.pow(10, 18).toString())) /
-			exchangeRates["PERI"];
-		PERIStaked = periBalance < PERIStaked ? periBalance : PERIStaked;
-		PERIStakeable = BigInt(periBalance) - PERIStaked;
-		PERIStakeable = PERIStakeable <= 0n ? 0n : PERIStakeable;
-	} catch (e) {
-		console.log(e);
-	}
-
-	exTokens["DEBT"].balance = debtBalance;
-	exTokens["PERI"] = 
-		{...exTokens["PERI"], staked: PERIStaked, stakeable: PERIStakeable}
-	
-	return exTokens;
+  return exTokens;
 };
 /* 
 	return {
@@ -123,74 +314,6 @@ export const getBalances = async (currentWallet, currencies, exchangeRates, curr
 			mintable: stakeAble ? mintableStable : 0n,
 			stakeable: DAIStakeable,
 			allowance: DAIAllowance,
-		},
-		LP: {
-			...currencies["LP"],
-			balance: LPBalance + stakedLP,
-			transferable: LPBalance,
-			allowance: LPAllowance,
-			staked: stakedLP,
-			stakeable: LPBalance,
-			rewardEscrow: LPRewardEscrow,
-		},
-	};
-};
-
-const noDebtBalances = async (currencies, currentWallet, pUSDBalance, USDCBalance, DAIBalance, periBalance, transferablePERI, PERIRewardEscrow) => {
-	let LPAllowance = 0n;
-	
-	let [LPBalance, LPRewardEscrow, stakedLP] = contracts["LP"]
-		? await Promise.all([
-				await getBalance(currentWallet, "LP", currencies["LP"].decimal),
-				(async () => BigInt(await contracts["LP"].earned(currentWallet)))(),
-				(async () => BigInt(await contracts["LP"].stakedAmountOf(currentWallet)))(),
-		  ])
-		: [0n, 0n, 0n];
-
-	if (LPBalance > 0n) {
-		LPAllowance = contracts["LP"] ? BigInt((await contracts["LP"].allowance(currentWallet)).toString()) : 0n;
-	}
-	
-	return {
-		DEBT: {
-			...currencies["DEBT"],
-			balance: 0n,
-			transferable: 0n,
-			USDC: 0n,
-			DAI: 0n,
-			PERI: 0n,
-			exDebt: 0n,
-		},
-		PERI: {
-			...currencies["PERI"],
-			balance: periBalance,
-			staked: 0n,
-			stakeable: periBalance,
-			transferable: transferablePERI,
-			rewardEscrow: PERIRewardEscrow,
-		},
-		pUSD: {
-			...currencies["pUSD"],
-			balance: pUSDBalance,
-			transferable: pUSDBalance,
-		},
-		USDC: {
-			...currencies["USDC"],
-			balance: USDCBalance,
-			transferable: USDCBalance,
-			staked: 0n,
-			stakeable: USDCBalance,
-			mintable: 0n,
-			allowance: 0n,
-		},
-		DAI: {
-			...currencies["DAI"],
-			balance: DAIBalance,
-			transferable: DAIBalance,
-			staked: 0n,
-			mintable: 0n,
-			stakeable: DAIBalance,
-			allowance: 0n,
 		},
 		LP: {
 			...currencies["LP"],

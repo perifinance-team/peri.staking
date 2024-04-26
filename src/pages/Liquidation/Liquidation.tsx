@@ -1,5 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
+
 import { useSelector, useDispatch } from "react-redux";
+
 import styled from "styled-components";
 
 import { RootState } from "config/reducers";
@@ -10,12 +12,14 @@ import { getLiquidationList } from "lib/liquidation";
 
 import { StyledTHeader, StyledTBody, Row, Cell, BorderRow } from "components/table";
 import { H1, H4 } from "components/heading";
-import TakeModal from "components/TakeModal";
+import TakeModal from "pages/Liquidation/TakeModal";
+
 import { setListReady, updateList } from "config/reducers/liquidation";
 
 const Liquidation = () => {
   const dispatch = useDispatch();
-  // const { balances } = useSelector((state: RootState) => state.balances);
+  const balanceReady = useSelector((state: RootState) => state.balances.isReady);
+  const { balances } = useSelector((state: RootState) => state.balances);
   const { address, networkId, isConnect } = useSelector((state: RootState) => state.wallet);
   const { listReady, list } = useSelector((state: RootState) => state.liquidation);
   const transaction = useSelector((state: RootState) => state.transaction);
@@ -23,12 +27,15 @@ const Liquidation = () => {
   const [sortList, setSortList] = useState({
     cRatio: true,
     debt: false,
-    peri: false,
-    dai: false,
-    usdc: false,
+    PERI: false,
+    DAI: false,
+    USDC: false,
+    USDT: false,
+    PAXG: false,
+    XAUT: false,
   });
   const [neutral, setNeutral] = useState(1);
-  const [selected, setSelected] = useState("Peri");
+  const [selected, setSelected] = useState("PERI");
   const [drop, setDrop] = useState(false);
 
   const statusList = ["Open", "Taken", "Closed"];
@@ -44,8 +51,12 @@ const Liquidation = () => {
       // dispatch(setLoading({ name: "liquidation", value: isLoading }));
       dispatch(setListReady(false));
       try {
-        if (address) {
-          await getLiquidationList(dispatch, networkId);
+        if (balanceReady && address) {
+          const stakeTokens = {};
+          Object.keys(balances)
+            .filter((item) => balances[item].staking)
+            .map((item) => (stakeTokens[item] = balances[item]));
+          await getLiquidationList(dispatch, stakeTokens, networkId);
         }
       } catch (e) {
         console.log("getLiquidation error", e);
@@ -54,25 +65,24 @@ const Liquidation = () => {
 
       // dispatch(setLoading({ name: "liquidation", value: false }));
     },
-    [address, dispatch, networkId]
+    [dispatch, balanceReady, address, balances, networkId]
   );
 
   const toggleModal = (flag: number) => {
     const updateListItems = list.map((item, idx) => {
-      console.log(flag, idx);
       return flag === idx ? { ...item, toggle: !item.toggle } : item;
     });
-    console.log(updateListItems);
-    console.log(flag);
+    // console.log(updateListItems);
+    // console.log(flag);
     dispatch(updateList(updateListItems));
   };
 
   const sortListHandler = (direction: boolean, flag: string) => {
     // "asc", "desc";
-    if (flag === "Peri" || flag === "USDC" || flag === "DAI") {
+    /* if (flag === "PERI" || flag === "USDC" || flag === "DAI") {
       let flagIdx = 0;
       switch (flag) {
-        case "Peri":
+        case "PERI":
           flagIdx = 0;
           break;
         case "DAI":
@@ -83,8 +93,11 @@ const Liquidation = () => {
           break;
         default:
           break;
-      }
+      } */
 
+    const flagIdx =
+      list.length > 0 ? list[0].collateral?.findIndex((item) => item.name === flag) : -1;
+    if (flagIdx !== -1) {
       const updateListItems = direction
         ? list
             .map((item) => item)
@@ -128,7 +141,7 @@ const Liquidation = () => {
       return await getLiquidationData(false);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [address, transaction, networkId]);
+  }, [address, transaction, networkId, balanceReady]);
 
   const netRef = useRef<HTMLDivElement>(null);
   const closeModalHandler = useCallback(
@@ -202,25 +215,24 @@ const Liquidation = () => {
               }}
               onClick={() => {
                 const obj = {};
-                obj[selected.toLowerCase()] = !sortList[selected.toLowerCase()];
+                obj[selected.toUpperCase()] = !sortList[selected.toUpperCase()];
                 setSortList({ ...sortList, ...obj });
-                sortListHandler(
-                  sortList[selected.toLowerCase()],
-                  selected.toUpperCase() === "PERI" ? "Peri" : selected.toUpperCase()
-                );
+                sortListHandler(sortList[selected.toUpperCase()], selected.toUpperCase());
                 setNeutral(3);
               }}
             >
-              Col
-              {neutral === 3 ? (
-                sortList[selected.toLowerCase()] ? (
-                  <span>&#9650;</span>
+              {!drop && "Col"}
+              {!drop ? (
+                neutral === 3 ? (
+                  sortList[selected.toUpperCase()] ? (
+                    <span>&#9650;</span>
+                  ) : (
+                    <span>&#9660;</span>
+                  )
                 ) : (
-                  <span>&#9660;</span>
+                  " -"
                 )
-              ) : (
-                " -"
-              )}
+              ) : null}
               {!drop ? (
                 <ImgDropBox>
                   <img
@@ -235,17 +247,28 @@ const Liquidation = () => {
                 </ImgDropBox>
               ) : (
                 <ImgDropList>
-                  <img
-                    src={`/images/currencies/PERI.png`}
-                    onClick={() => {
-                      setSortList({ ...sortList, peri: !sortList.peri });
-                      sortListHandler(sortList.peri, "Peri");
-                      setSelected("Peri");
-                      setDrop(!drop);
-                    }}
-                    alt="PERI"
-                  />
-                  <img
+                  {Object.keys(sortList).map(
+                    (key) =>
+                      !["cRatio", "debt"].includes(key) && (
+                        <img
+                          key={key}
+                          src={`/images/currencies/${key}.png`}
+                          onClick={() => {
+                            const sList = { ...sortList };
+                            sList[key] = true;
+                            if (key !== selected) sList[selected] = false;
+                            console.log(sList, selected, key);
+                            setSortList(sList);
+
+                            sortListHandler(sortList[key], key);
+                            setSelected(key);
+                            setDrop(!drop);
+                          }}
+                          alt={key}
+                        />
+                      )
+                  )}
+                  {/* <img
                     src={`/images/currencies/DAI.png`}
                     onClick={() => {
                       setSortList({ ...sortList, dai: !sortList.dai });
@@ -264,7 +287,7 @@ const Liquidation = () => {
                       setDrop(!drop);
                     }}
                     alt="USDC"
-                  />
+                  /> */}
                 </ImgDropList>
               )}
             </DropH4>
@@ -277,64 +300,88 @@ const Liquidation = () => {
           </ShortCell>
         </TableHeader>
         <TableBody $center={isConnect && !listReady}>
-          {isConnect ? !listReady ? (
-            <ContainerLoadingSpinner />
-          ) : (
-            list.map((el, idx) => {
-              return (
-                <BodyRow key={`row${idx}`}>
-                  <ShortCell>
-                    <H4 $weight={"m"}>{`${ratioToPer(el.cRatio)}%`}</H4>
-                  </ShortCell>
-                  <LongCell>
-                    <H4 $weight={"m"}>{`$${formatCurrency(el.debt)}`}</H4>
-                  </LongCell>
-                  <LongCell /* style={{ width: "100px" }} */>
-                    <CollateralList>
-                      {el.collateral.map((item, idx) => {
-                        return (
-                          item.value > 0 && (
-                            <Image key={`image${idx}`}>
-                              <img
-                                src={`/images/currencies/${item.name.toUpperCase()}.png`}
-                                alt=""
-                              />
-                              <span>{`${
-                                item.name === "Peri"
-                                  ? isNaN(item.value)
-                                    ? 0
-                                    : formatCurrency(item.value)
-                                  : formatCurrency(item.value)
-                              }`}</span>
-                            </Image>
-                          )
-                        );
-                      })}
-                    </CollateralList>
-                  </LongCell>
-                  <ShortCell>
-                    <H4 $weight={"m"}>{statusList[el.status]}</H4>
-                  </ShortCell>
-                  <ActionCell style={{ position: "relative" }}>
-                    {el.status === 0 && <TakeBtn onClick={() => toggleModal(idx)}>Take</TakeBtn>}
+          {isConnect ? (
+            !listReady ? (
+              <ContainerLoadingSpinner />
+            ) : (
+              list.map((el, idx) => {
+                if (el.status === 2) return null;
+                let i = 0;
+                return (
+                  <BodyRow key={`row${idx}`}>
+                    <ShortCell>
+                      <H4 $weight={"m"}>{`${ratioToPer(el.cRatio)}%`}</H4>
+                    </ShortCell>
+                    <LongCell>
+                      <H4 $weight={"m"}>{`$${formatCurrency(el.debt)}`}</H4>
+                    </LongCell>
+                    <LongCell /* style={{ width: "100px" }} */>
+                      <CollateralList>
+                        {el.collateral.map((item, idx) => {
+                          if (i++ < 3)
+                            return (
+                              item.value > 0 && (
+                                <Image key={`image${idx}`}>
+                                  <img
+                                    src={`/images/currencies/${item.name.toUpperCase()}.png`}
+                                    alt=""
+                                  />
+                                  <span>
+                                    {`${isNaN(item.value) ? 0 : formatCurrency(item.value)}`}
+                                  </span>
+                                </Image>
+                              )
+                            );
+                          else if (el.collateral > 4 && i === 4)
+                            return (
+                              item.value > 0 && (
+                                <Image key={`image${idx}`}>
+                                  <span>{"･･･"}</span>
+                                </Image>
+                              )
+                            );
+                        })}
+                      </CollateralList>
+                    </LongCell>
+                    <ShortCell>
+                      <H4 $weight={"m"}>{statusList[el.status]}</H4>
+                    </ShortCell>
+                    <ActionCell style={{ position: "relative" }}>
+                      {el.status === 0 && <TakeBtn onClick={() => toggleModal(idx)}>Take</TakeBtn>}
 
+                      {/* {el.toggle && (
+                        <TakeModal
+                          idx={idx}
+                          address={el.address}
+                          list={list}
+                          dispatch={dispatch}
+                          contracts={contracts}
+                          debt={el.debt}
+                          exEA={el.exEA}
+                          collateral={el.collateral}
+                          toggleModal={toggleModal}
+                          cRatio={`${ratioToPer(el.cRatio)}%`}
+                        ></TakeModal>
+                      )} */}
+                    </ActionCell>
                     {el.toggle && (
-                      <TakeModal
-                        idx={idx}
-                        address={el.address}
-                        list={list}
-                        dispatch={dispatch}
-                        contracts={contracts}
-                        debt={formatCurrency(el.debt)}
-                        collateral={el.collateral}
-                        toggleModal={toggleModal}
-                        cRatio={`${ratioToPer(el.cRatio)}%`}
-                      ></TakeModal>
-                    )}
-                  </ActionCell>
-                </BodyRow>
-              );
-            })
+                        <TakeModal
+                          idx={idx}
+                          address={el.address}
+                          list={list}
+                          dispatch={dispatch}
+                          contracts={contracts}
+                          debt={el.debt}
+                          exEA={el.exEA}
+                          collateral={el.collateral}
+                          toggleModal={toggleModal}
+                          cRatio={`${ratioToPer(el.cRatio)}%`}
+                        ></TakeModal>
+                      )}
+                  </BodyRow>
+                );
+              })
+            )
           ) : null}
         </TableBody>
       </TableContainer>
@@ -498,27 +545,27 @@ export const Image = styled.li`
   align-items: center;
   justify-content: flex-end;
   width: 90px;
-  height: 24px;
-  margin: 2px 10px;
+  height: 15px;
+  margin: 0px 10px;
   // margin-right: 1.8rem;
 
   img {
     margin-right: 5px;
-    width: 20px;
-    height: 20px;
+    width: 12px;
+    height: 12px;
   }
 
   span {
     color: white;
-    font-size: 0.8125rem;
+    font-size: 0.7rem;
   }
 
   ${({ theme }) => theme.media.mobile`
     width: 70px;
     height: 16px;
     img {
-      width: 15px;
-      height: 15px;
+      width: 12px;
+      height: 12px;
     }
 
     span {
@@ -592,13 +639,13 @@ const ImgDropBox = styled.div`
 const ImgDropList = styled.div`
   display: flex;
   left: 0px;
-  top: 23px;
+  top: 0px;
   z-index: 99;
-  flex-direction: column;
+  flex-direction: row;
   position: relative;
   width: fit-content;
   height: fit-content;
-  background: transparent;
+  background: ${({ theme }) => theme.colors.background.body};
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;

@@ -63,55 +63,51 @@ const Balance = () => {
                 </TableHeader>
                 <TableBody $isLoading={!isReady} >
                   {address ? isReady 
-                  ? Object.keys(balances).map((currencyName) => {
-                    if ((networkId === 1287 || networkId === 1285) && currencyName === "LP")
-                      return <></>;
-                    else
-                      return (
-                        <BorderRow key={currencyName}>
-                          <TokenCell>
-                            <Asset $isLP={currencyName === "LP"}>
-                              <img
-                                src={`/images/currencies/${
-                                  currencyName === "LP"
-                                    ? `${currencyName}_${swapName[networkId]}.png`
-                                    : `${currencyName}.png`
-                                }`}
-                                alt="lp"
-                              ></img>
-                              <H4 $weight={"m"} $align={"left"}>
-                                {currencyName}
-                              </H4>
-                            </Asset>
-                          </TokenCell>
-                          <AmountCell>
-                            <H4 $weight={"m"} $align={"right"}>
-                              {formatCurrency(balances[currencyName].staked)}
+                  ? Object.keys(balances).map((currencyName) => /* { */
+                    ((networkId !== 1287 && networkId !== 1285) || currencyName !== "LP") &&
+                      <BorderRow key={currencyName}>
+                        <TokenCell>
+                          <Asset $isLP={currencyName === "LP"}>
+                            <img
+                              src={`/images/currencies/${
+                                currencyName === "LP"
+                                  ? `${currencyName}_${swapName[networkId]}.png`
+                                  : `${currencyName}.png`
+                              }`}
+                              alt="lp"
+                            ></img>
+                            <H4 $weight={"m"} $align={"left"}>
+                              {currencyName}
                             </H4>
-                          </AmountCell>
-                          <AmountCell>
-                            <H4 $weight={"m"} $align={"right"}>
-                              {formatCurrency(balances[currencyName].stakeable)}
-                            </H4>
-                          </AmountCell>
-                          <AmountCell>
-                            <H4 $weight={"m"} $align={"right"}>
-                              {formatCurrency(balances[currencyName].transferable)}
-                            </H4>
-                          </AmountCell>
-                          <AmountCell>
-                            <H4 $weight={"m"} $align={"right"}>
-                              {formatCurrency(balances[currencyName].rewardEscrow)}
-                            </H4>
-                          </AmountCell>
-                          <AmountCell>
-                            <H4 $weight={"m"} $align={"right"}>
-                              {formatCurrency(balances[currencyName].balance)}
-                            </H4>
-                          </AmountCell>
-                        </BorderRow>
-                      );
-                    })
+                          </Asset>
+                        </TokenCell>
+                        <AmountCell>
+                          <H4 $weight={"m"} $align={"right"}>
+                            {formatCurrency(balances[currencyName].staked)}
+                          </H4>
+                        </AmountCell>
+                        <AmountCell>
+                          <H4 $weight={"m"} $align={"right"}>
+                            {formatCurrency(balances[currencyName].stakeable)}
+                          </H4>
+                        </AmountCell>
+                        <AmountCell>
+                          <H4 $weight={"m"} $align={"right"}>
+                            {formatCurrency(balances[currencyName].transferable)}
+                          </H4>
+                        </AmountCell>
+                        <AmountCell>
+                          <H4 $weight={"m"} $align={"right"}>
+                            {formatCurrency(balances[currencyName].rewardEscrow)}
+                          </H4>
+                        </AmountCell>
+                        <AmountCell>
+                          <H4 $weight={"m"} $align={"right"}>
+                            {formatCurrency(balances[currencyName].balance)}
+                          </H4>
+                        </AmountCell>
+                      </BorderRow>
+                    )
                   : <TableLoadingSpinner />
                   : null}
                 </TableBody>

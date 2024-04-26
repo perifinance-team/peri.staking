@@ -49,6 +49,7 @@ const NetCombo = ({ isShow, setIsShow }) => {
   useEffect(() => {
     if (isNaN(networkId) || networkId === null) return;
     const networks = Object.keys(MAINNET).includes(networkId.toString()) ? MAINNET : TESTNET;
+    // const networks = process.env.REACT_APP_ENV === "production" ? MAINNET : TESTNET;
     setNetworks(networks);
   }, [networkId]);
 

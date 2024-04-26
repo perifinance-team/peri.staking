@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 import { ThemeProvider } from "styled-components";
@@ -16,10 +16,10 @@ import {
   clearWallet,
   clearBalances,
   setIsReady,
+  setIsLoading,
 } from "config/reducers/wallet";
 import { updateNetworkFee } from "config/reducers/networkFee";
 import { resetTransaction } from "config/reducers/transaction";
-import { setLoading } from "config/reducers/loading";
 import { getNetworkFee } from "lib/fee";
 import { SUPPORTED_NETWORKS } from "lib/network";
 import { clearCRatio } from "config/reducers/rates";
@@ -30,10 +30,11 @@ import { contracts } from "lib/contract";
 import { getVestable } from "lib/vest";
 import { getBalances } from "lib/balance";
 import { getRatios } from "lib/rates";
-import { getTimeStamp } from "lib/liquidation";
 import Loading from "./screens/Loading";
 import Main from "./screens/Main";
 import "./App.css";
+import { end, start } from "lib/etc/performance";
+import { tr } from "date-fns/locale";
 
 const App = () => {
   const { address, networkId } = useSelector((state: RootState) => state.wallet);
@@ -43,7 +44,7 @@ const App = () => {
   const themeState = useSelector((state: RootState) => state.theme.theme);
 
   const dispatch = useDispatch();
-  const intervalTime = 1000 * 60 * 3;
+  const intervalTime = 1000 * 60 * 1;
   const [intervals, setIntervals] = useState(null);
   const [timer, setTimer] = useState(0);
   const [onboardInit, setOnboardInit] = useState(false);
@@ -51,44 +52,47 @@ const App = () => {
   const { Liquidations } = contracts as any;
 
   const getSystemData = useCallback(
-    async (refresh) => {
-    // dispatch(setLoading({ name: "balance", value: isLoading }));
-    const [ratios, gasPrice] = await Promise.all([getRatios(address), getNetworkFee(networkId)]);
-
-    // console.log("ratio", ratios.ratio);
-    dispatch(updateRatio(ratios.ratio));
-    dispatch(updateExchangeRates(ratios.exchangeRates));
-
-    dispatch(updateNetworkFee({ gasPrice }));
-
-    if (address) {
+    async (/* refresh */) => {
+      start("getSystemData");
+      console.log("networkId", networkId);
       try {
-				const [balancesData, vestable, stateLiquid, timestamp] = await Promise.all([
-					getBalances(
-            address, 
-            balances, 
-            ratios.exchangeRates, 
-            /* ratios.ratio.targetCRatio, */ 
-            ratios.ratio.currentCRatio),
-					getVestable(address),
-					await Liquidations.isOpenForLiquidation(address),
-					await getTimeStamp(address, Liquidations),
-				]);
+        if (address) {
+          dispatch(setIsLoading(true));
+          const [ratios, gasPrice] = await Promise.all([
+            getRatios(address),
+            getNetworkFee(networkId),
+          ]);
 
-        dispatch(setIsReady(false));
-        //todo:: code move call
-        dispatch(updateVestable({ vestable }));
-        dispatch(updateTimestamp(timestamp));
-        dispatch(toggleLiquid(stateLiquid));
-        dispatch(setBalances(balancesData));
+          // console.log("ratios", ratios);
+          if (contracts.networkId === networkId) {
+            const [balancesData, vestable, stateLiquid] = await Promise.all([
+              getBalances(address, balances, ratios.exchangeRates, ratios.ratio.currentCRatio),
+              getVestable(address),
+              Liquidations.getLiquidationInfo(address),
+            ]);
+
+            dispatch(setIsReady(false));
+            dispatch(updateRatio(ratios.ratio));
+            dispatch(updateExchangeRates(ratios.exchangeRates));
+            dispatch(updateNetworkFee({ gasPrice }));
+
+            //todo:: code move call
+            dispatch(updateVestable({ vestable }));
+            dispatch(updateTimestamp(stateLiquid.deadline));
+            dispatch(toggleLiquid(stateLiquid.isOpen));
+            dispatch(setBalances(balancesData));
+            dispatch(setIsReady(true));
+          }
+        }
       } catch (err) {
         console.log(err);
-        refresh ? dispatch(setIsReady(true)): setIsReady(false);
+        localStorage.removeItem("selectedWallet");
+        NotificationManager.warning("Data fetching error", "Data Stream");
       }
-    }
-    
-    // dispatch(setLoading({ name: "balance", value: false }));
-  },
+      dispatch(setIsLoading(false));
+      end();
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [address, networkId]
   );
 
@@ -117,15 +121,13 @@ const App = () => {
             clearInterval(intervals);
             setOnboardInit(false);
             console.log("balance cleared!!!");
-            
           },
           address: async (newAddress) => {
             if (newAddress) {
-              // if (SUPPORTED_NETWORKS[web3Onboard.selectedNetwork]) {
               dispatch(clearCRatio());
               dispatch(clearBalances());
-              
               await contracts.connect(newAddress);
+              // console.log("newAddress", newAddress, networkId);
               dispatch(updateAddress({ address: newAddress }));
               dispatch(updateIsConnect(true));
               // } else {
@@ -135,23 +137,27 @@ const App = () => {
           },
           network: async (network) => {
             if (network) {
-              
               const newNetworkId = Number(network);
               if (SUPPORTED_NETWORKS[newNetworkId]) {
                 await contracts.init(newNetworkId);
                 dispatch(updateNetwork({ networkId: newNetworkId }));
+                return true;
               } else {
+                clearInterval(intervals);
+                dispatch(updateNetwork({ networkId: newNetworkId }));
                 NotificationManager.warning(
                   `This network${newNetworkId} is not supported. Please change to polygon, bsc, moonriver or ethereum network`,
                   "ERROR"
                 );
-                dispatch(updateNetwork({ networkId: newNetworkId }));
+
                 localStorage.removeItem("selectedWallet");
                 // dispatch(clearWallet());
                 dispatch(clearCRatio());
                 dispatch(clearBalances());
                 dispatch(updateVestable({ vestable: false }));
-                clearInterval(intervals);
+                // await contracts.clear();
+                // console.log("balance cleared!!!");
+                return false;
               }
             }
           },
@@ -184,7 +190,7 @@ const App = () => {
             NotificationManager.remove(NotificationManager.listNotify[0]);
             NotificationManager.warning(`${transaction.type} error`, "ERROR");
           } else {
-            await getSystemData(false);
+            await getSystemData();
             NotificationManager.remove(NotificationManager.listNotify[0]);
             NotificationManager.success(`${transaction.type} success`, "SUCCESS");
             dispatch(resetTransaction());
@@ -194,7 +200,7 @@ const App = () => {
 
       getState();
 
-      NotificationManager.info(transaction.message, "In progress", 0);
+      NotificationManager.info(transaction.message, "Transaction Executing", 0);
       // setTimeout(() => NotificationManager.remove(NotificationManager.listNotify[0]), 3000);
     }
 
@@ -221,20 +227,19 @@ const App = () => {
 
     if (!address || (!onboardInit && networkId === 0)) return;
 
-    setTimer(setTimeout(() => getSystemData(false), 0));
+    setTimer(setTimeout(() => getSystemData(), 0));
 
-    setIntervals(setInterval(() => getSystemData, intervalTime, true));
+    setIntervals(setInterval(() => getSystemData, intervalTime));
 
     return () => clearInterval(intervals);
     // eslint-disable-next-line
   }, [networkId, address, onboardInit]);
 
-
   useEffect(() => {
     if (!address && !isReady) {
       dispatch(clearBalances());
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isReady]);
 
   // <input type="text" value={userAddress} onChange={(e) => {setUserAddress(e.target.value)}} />
@@ -251,3 +256,7 @@ const App = () => {
 };
 
 export default App;
+
+/* function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+} */

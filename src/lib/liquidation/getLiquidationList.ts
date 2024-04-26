@@ -13,7 +13,7 @@ const sortList = (list) => {
 	const open = [];
 	const close = [];
 
-	list.forEach((item) => (item.status === 0 ? open.push(item) : close.push(item)));
+	list.forEach((item) => ( item?.status === 0 ? open.push(item) : item?.status === 2 ? close.push(item) : null));
 	console.log("open", open);
 	const sortOpen = open
 		.map((item) => item)
@@ -24,11 +24,12 @@ const sortList = (list) => {
 	return [...sortOpen, ...close];
 };
 
-export const getLiquidationList = async (dispatch, networkId = 1287) => {
+export const getLiquidationList = async (dispatch, stakeTokens, networkId = 1287) => {
 	// dispatch(setLoading({ name: "liquidation", value: true }));
 
+	console.log("stakeTokens", stakeTokens);
+
 	dispatch(setListReady(false));
-	const { PeriFinance, Liquidations } = contracts as any;
 
 	const query = `query {
     liquidationTargets(network: "${SUPPORTED_NETWORKS[networkId].toUpperCase()}") {
@@ -50,7 +51,7 @@ export const getLiquidationList = async (dispatch, networkId = 1287) => {
 		const partList = liquidationList.slice(i * 30, (i + 1) * 30); 
 		await Promise.all(
 			partList.map(async (address, idx) => {
-				await connectContract(address.address, PeriFinance, Liquidations, contracts).then((data: object | boolean) => {
+				await connectContract(address.address, contracts, stakeTokens).then((data: object | boolean) => {
 					if (data) {
 						tempList.push(data);
 					}
@@ -59,7 +60,15 @@ export const getLiquidationList = async (dispatch, networkId = 1287) => {
 		);
 	}
 
-	// console.log("tempList", tempList);
+	// // todo : remove this when test is finished
+	// tempList[0] = await connectContract('0x8143BF76Bcb7e6D32E17672fAe25be38c723E286', contracts, stakeTokens);
+
+	// console.log("test list updating", tempList);
+
+	// // todo : remove this when test is finished
+	// dispatch(updateList(tempList));
+
+	// // todo : uncomment this when test is finished
 	if (len) dispatch(updateList(sortList(tempList)));
 	else dispatch(updateList([]));
 	

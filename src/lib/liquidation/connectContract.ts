@@ -1,87 +1,68 @@
-import { utils } from "ethers";
-import { formatCurrency } from "lib/format";
+import { extractMessage } from "lib/error";
+import { fromBytes32 } from "lib/etc/utils";
 
-const ratioToPer = (value) => {
-	if (value === 0n) return "0";
-	return ((BigInt(Math.pow(10, 18).toString()) * 100n) / value).toString();
-};
+// const ratioToPer = (value) => {
+// 	if (value === 0n) return "0";
+// 	return ((BigInt(Math.pow(10, 18).toString()) * 100n) / value).toString();
+// };
 
-export const connectContract = async (address: string, PeriFinance: any, Liquidations: any, contracts: any) => {
-	const debt = BigInt(await PeriFinance.debtBalanceOf(address, utils.formatBytes32String("pUSD")));
+export const connectContract = async (address: string, contracts: any, stakeTokens: any) => {
+  try {
+    const { Liquidations, ExternalTokenStakeManager, Issuer } = contracts as any;
 
-	if (debt === 0n || formatCurrency(debt) === "0") {
-		return false;
-	}
+    const [
+      { tokenList, stakedAmts },
+      { tRatio, cRatio, debt, exTRatio, exEA, periCol, isLiquidateOpen },
+    ] = await Promise.all([
+      ExternalTokenStakeManager.tokenStakeStatus(address),
+      Liquidations.cRatioNDebtsCollateral(address),
+    ]); /*. then((data) => {return data})
+		.catch((e) => {
+			console.error("connectContract ERROR:", e.data.message);
+		}) */
+    // const { tRatio, cRatio, debt, exTRatio, exEA, periCol, isLiquidateOpen } = ratioDebts;
 
-	const { tRatio, cRatio } = await contracts.Issuer.getRatios(address, false);
+    // console.log("periCol", periCol.toBigInt());
+    if (debt.isZero()) {
+      return false;
+    }
 
-	// const cRatio = BigInt((await PeriFinance.collateralisationRatio(address)).toString());
+    // const { tokenList, stakedAmts } = tokenStatus;
 
-	/* const daiKey = utils.formatBytes32String("DAI");
-	const usdcKey = utils.formatBytes32String("USDC");
+    // console.log("stakeTokens", stakeTokens);
 
-	const collateral = { pUSD: 0, USDC: 0, DAI: 0 };
+    // const { tokenList, stakedAmts } = await ExternalTokenStakeManager.tokenStakeStatus(address);
+    const tmpCollateral = [];
+    tmpCollateral.push({ name: "PERI", value: periCol, IR: stakeTokens["PERI"].IR });
+    let totalAmt = periCol;
+    tokenList.forEach((item, idx) => {
+      totalAmt += stakedAmts[idx];
 
-	const tempPUSD = async () => {
-		return await PeriFinance.collateral(address);
-	};
+    //   console.log("item", item, fromBytes32(item), stakeTokens[fromBytes32(item)]);
 
-	const tempUSDC = async () => {
-		return await contracts.ExternalTokenStakeManager.stakedAmountOf(address, usdcKey, usdcKey);
-	};
-	const tempDAI = async () => {
-		return await contracts.ExternalTokenStakeManager.stakedAmountOf(address, daiKey, daiKey);
-	};
+      const name = fromBytes32(item);
+      const { IR } = stakeTokens[name];
 
-	collateral.pUSD = await tempPUSD();
-	collateral.USDC = await tempUSDC();
-	collateral.DAI = await tempDAI();
+      // console.log(name, stakeTokens[name], totalAmt, stakeTokens);
+      tmpCollateral.push({ name: name, value: stakedAmts[idx], IR });
+    });
 
-	if (
-		formatCurrency(collateral.pUSD) === "0" &&
-		formatCurrency(collateral.USDC) === "0" &&
-		formatCurrency(collateral.DAI) === "0"
-	) {
-		return false;
-	} */
+    // isLiquidateOpen && console.log("tmpCollateral", tmpCollateral, totalAmt, isLiquidateOpen);
 
-	const { tokenList, stakedAmts } = await contracts.ExternalTokenStakeManager.tokenStakeStatus(address);
-	const tmpCollateral = [];
-	let totalAmt = 0;
-	tokenList.forEach((item, idx) => {
-		totalAmt += stakedAmts[idx];
-		tmpCollateral.push({ name: utils.parseBytes32String(item), value: stakedAmts[idx] });
-	});
-
-	if (totalAmt === 0) {
-		return false;
-	}
-
-	const status = async () => {
-		if ((await Liquidations.isOpenForLiquidation(address)) && Number(ratioToPer(cRatio)) <= 150) {
-			return 0;
-		} else if (false) {
-			// ? taken. Syntax missing from existing business logic
-			return 1;
-		} else {
-			return 2;
-		}
-	};
-
-	let resultData = await status();
-
-	return {
-		tRatio,
-		cRatio,
-		debt,
-		// collateral: [
-		// 	{ name: "Peri", value: collateral.pUSD },
-		// 	{ name: "Dai", value: collateral.DAI },
-		// 	{ name: "USDC", value: collateral.USDC },
-		// ],
-		collateral: tmpCollateral,
-		status: resultData,
-		address: address,
-		toggle: false,
-	};
+    return {
+      tRatio: tRatio.toBigInt(),
+      cRatio: cRatio.toBigInt(),
+      debt: debt.toBigInt(),
+      exEA: exEA.toBigInt(),
+      exTRatio: exTRatio.toBigInt(),
+      collateral: tmpCollateral,
+      status: isLiquidateOpen && totalAmt > 0 ? 0 : 2,
+      address: address,
+      totalEA: totalAmt,
+      toggle: false,
+    };
+  } catch (err) {
+    console.error("connectContract ERROR:", extractMessage(err));
+    return {};
+  }
 };

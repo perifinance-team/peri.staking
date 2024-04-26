@@ -1,22 +1,40 @@
 import BN from 'bn.js';
 
-import { toBN, toWei, fromWei } from 'web3-utils';
+import { toBN, toWei, fromWei, rightPad, asciiToHex, hexToAscii, toAscii } from 'web3-utils';
+
+import { BigNumberish, utils, BigNumber } from "ethers";
 
 const UNIT = toWei(new BN('1'), 'ether');
 
-/**
+/**ethers.utils.parseBytes32String(metadata)
 	*  Translates an amount to our canonical unit. We happen to use 10^18, which means we can
 	*  use the built in web3 method for convenience, but if unit ever changes in our contracts
 	*  we should be able to update the conversion factor here.
 	*  @param amount The amount you want to re-base to UNIT
 	*/
 const toUnit = amount => toWei(amount.toString(), 'ether');
-const fromUnit = amount => fromWei(amount, 'ether');
+const fromUnit = amount => fromWei(amount.toString(), 'ether');
+
 const toBigNbr = amount => toBN(amount.toString());
 const unitToPreciseUnit = amount => toBN(amount.toString() + '000000000');
 const preciseUnitToUnit = amount => toBN(amount.toString().slice(0, -9));
-// For USDC
+// For 6 decimals
 const to3Unit = amount => toBN(amount.toString() + '000000');
+
+const toBytes32 = key => rightPad(asciiToHex(key), 64);
+const fromBytes32 = key => utils.parseBytes32String(key);
+const toBigInt = (amount: number | bigint | string | BN | BigNumber)  => {
+	if (amount === '') { return 0n; }
+
+	const bn = !BN.isBN(amount) 
+		? BigNumber.isBigNumber(amount)
+			? amount
+			: utils.parseEther(amount.toString())
+		: BigNumber.from(amount.toString());
+	return bn.toBigInt();
+};
+const fromBigInt = (amount: BigNumberish) => utils.formatEther(amount);
+const fromGwei = (amount: BigNumberish) => utils.formatUnits(amount, 'gwei');
 
 /**
 	*  Translates an amount to our canonical precise unit. We happen to use 10^27, which means we can
@@ -117,7 +135,7 @@ const multiplyDecimal = (x, y, unit = UNIT) => {
 const divideDecimal = (x, y, unit = UNIT) => {
 	const xBN = BN.isBN(x) ? x : new BN(x);
 	const yBN = BN.isBN(y) ? y : new BN(y);
-	return BigInt(xBN.mul(unit).div(yBN).toString());
+	return /* yBN.isZero() ? 0n :  */BigInt(xBN.mul(unit).div(yBN).toString());
 };
 
 /*
@@ -198,6 +216,12 @@ export {
 		toBigNbr,
 		toUnit,
 		fromUnit,
+		toBigInt,
+		fromBigInt,
+		fromGwei,
+
+		toBytes32,
+		fromBytes32,
 
 		toPreciseUnit,
 		fromPreciseUnit,

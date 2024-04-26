@@ -1,3 +1,4 @@
+import { ca } from 'date-fns/locale';
 import { contracts } from 'lib/contract'
     
 export const getIssuanceRatio = async (currentWallet) => {
@@ -6,8 +7,17 @@ export const getIssuanceRatio = async (currentWallet) => {
         Issuer,
 	} = contracts as any;
 
-    // const issuanceRatio = await SystemSettings?.issuanceRatio();
-    const targetRatio = await Issuer.getTargetRatio();
+    // console.log("calling getRatios")
+    let ratios;
+    try {
+        ratios = await Issuer.getRatios(currentWallet, true);
+    } catch (e) {
+        console.log(e);
+        ratios = await Issuer.getRatios(currentWallet, false);
+    }
 
-    return BigInt((Issuer? targetRatio : 25e17));
+    const {tRatio, cRatio, exSR, maxSR} = ratios;
+
+    // console.log("called getRatios")
+    return { tRatio: tRatio ? tRatio : 25e17, cRatio, exSR, maxSR };
 };

@@ -11,11 +11,13 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore, { Mousewheel, Virtual } from "swiper/core";
 import { contracts } from "lib/contract";
 import { formatCurrency } from "lib";
-import { utils } from "ethers";
+import { utils, constants } from "ethers";
 import { updateTransaction } from "config/reducers/transaction";
 import { setLoading } from "config/reducers/loading";
 import { web3Onboard } from "lib/onboard";
 import { StakeContainer, Container, Title } from "../Mint/Mint";
+import { divideDecimal, fromBigInt, multiplyDecimal, toBigInt, toBytes32 } from "lib/etc/utils";
+import { end, start } from "lib/etc/performance";
 
 SwiperCore.use([Mousewheel, Virtual]);
 
@@ -34,50 +36,49 @@ const secondsToTime = (seconds) => {
   return `up to 1 minute`;
 };
 
-const currencies = [
-  { name: "USDC", isStable: true, isLP: false },
-  { name: "PERI", isStable: false, isLP: false },
-  { name: "DAI", isStable: true, isLP: false },
-  { name: "LP", isStable: false, isLP: true },
-];
+// const currencies = [
+//   { name: "USDC", isExternal: true, isLP: false },
+//   { name: "DAI", isExternal: true, isLP: false },
+//   { name: "PERI", isExternal: false, isLP: false },
+// ];
 
-const Burn = () => {
+// contracts["USDT"] && currencies.push({ name: "USDT", isExternal: true, isLP: false });
+// contracts["XAUT"] && currencies.push({ name: "XAUT", isExternal: true, isLP: false });
+// contracts["PAXG"] && currencies.push({ name: "PAXG", isExternal: true, isLP: false });
+// contracts["LP"] && currencies.push({ name: "LP", isExternal: false, isLP: true });
+
+const Burn = ({ currencies }) => {
   const dispatch = useDispatch();
   const { hash } = useSelector((state: RootState) => state.transaction);
   const { balances } = useSelector((state: RootState) => state.balances);
-  const balancesIsReady = useSelector(
-    (state: RootState) => state.balances.isReady
-  );
-  const exchangeIsReady = useSelector(
-    (state: RootState) => state.exchangeRates.isReady
-  );
+  const balancesIsReady = useSelector((state: RootState) => state.balances.isReady);
+  const exchangeIsReady = useSelector((state: RootState) => state.exchangeRates.isReady);
   const exchangeRates = useSelector((state: RootState) => state.exchangeRates);
-  const { targetCRatio, currentCRatio } = useSelector(
-    (state: RootState) => state.ratio
-  );
-  const { isConnect, address } = useSelector(
-    (state: RootState) => state.wallet
-  );
+  const { maxStakingRatio } = useSelector((state: RootState) => state.ratio);
+  const { isConnect, address, networkId } = useSelector((state: RootState) => state.wallet);
   const { gasPrice } = useSelector((state: RootState) => state.networkFee);
   const [issuanceDelay, setIssuanceDelay] = useState(1);
   const [slideIndex, setSlideIndex] = useState(0);
   const [activeCurrency, setActiveCurrency] = useState(null);
   // const [ init, setInit ] = useState(false);
-  const [unStakeAmount, setUnStakeAmount] = useState("0");
-  const [burnAmount, setBurnAmount] = useState("0");
-  const [maxUnStakeAmount, setMaxUnStakeAmount] = useState("0");
-  const [maxBurnAmount, setMaxBurnAmount] = useState("0");
+  const [unStakeAmount, setUnStakeAmount] = useState("");
+  const [burnAmount, setBurnAmount] = useState("");
+  const [maxUnStakeAmount, setMaxUnStakeAmount] = useState("");
+  const [maxBurnAmount, setMaxBurnAmount] = useState("");
 
   const [cRatio, setCRatio] = useState(0n);
 
   const onChangeBurnAmount = (value, currencyName) => {
     if (/\./g.test(value)) {
-      value = value.match(/\d+\.\d{0,17}/g)[0];
+      value = value.match(/\d+\.\d{0,17}/g);
+      value = value ? value[0] : "";
     }
 
+    // console.log("value", value);
+
     if (isNaN(Number(value)) || value === "") {
-      setUnStakeAmount("0");
-      setBurnAmount("0");
+      setUnStakeAmount("");
+      setBurnAmount("");
 
       return false;
     }
@@ -87,54 +88,71 @@ const Burn = () => {
 
       if (currencyName === "LP") {
         unStakeAmount = value;
-        if (
-          BigInt(utils.parseEther(maxUnStakeAmount).toString()) <=
-          BigInt(utils.parseEther(unStakeAmount).toString())
-        ) {
+        if (toBigInt(maxUnStakeAmount) <= toBigInt(unStakeAmount)) {
           unStakeAmount = maxUnStakeAmount;
         }
 
         setUnStakeAmount(unStakeAmount);
       } else {
-        let PERIQuota = 0n;
-        const isTarget: boolean =
-          currentCRatio === 0n ||
-          currentCRatio <= 25n * BigInt(Math.pow(10, 16).toString());
-        if (!isTarget) {
-          const PERIStaked =
-            (balances["DEBT"].balance *
-              (BigInt(Math.pow(10, 18).toString()) / targetCRatio) *
-              BigInt(Math.pow(10, 18).toString())) /
-            exchangeRates["PERI"];
-          PERIQuota = balances["PERI"].balance - PERIStaked;
-        }
-
         burnAmount = value;
-        if (
-          BigInt(utils.parseEther(maxBurnAmount).toString()) <=
-          BigInt(utils.parseEther(burnAmount).toString())
-        ) {
+        const bnBurnAmount = toBigInt(burnAmount);
+
+        // console.log("maxBurnAmount", maxBurnAmount, "burnAmount", burnAmount);
+
+        if (toBigInt(maxBurnAmount) <= toBigInt(burnAmount)) {
           burnAmount = maxBurnAmount;
           unStakeAmount = maxUnStakeAmount;
         } else {
+          const toSARatio = multiplyDecimal(balances[currencyName].IR, exchangeRates[currencyName]);
           unStakeAmount =
-            (BigInt(utils.parseEther(burnAmount).toString()) *
+            toSARatio > 0n
+              ? divideDecimal(
+                  bnBurnAmount,
+                  multiplyDecimal(balances[currencyName].IR, exchangeRates[currencyName])
+                )
+              : 0n;
+          /* (BigInt(utils.parseEther(burnAmount).toString()) *
               BigInt(Math.pow(10, 18).toString()) *
               (BigInt(Math.pow(10, 18).toString()) / targetCRatio)) /
-            exchangeRates[currencyName];
-          unStakeAmount = utils.formatEther(unStakeAmount.toString());
+            exchangeRates[currencyName]; */
+          unStakeAmount = fromBigInt(unStakeAmount);
+          // console.log("unStakeAmount", unStakeAmount, "burnAmount", burnAmount);
         }
 
         if (currencyName !== "LP") {
           getCRatio(currencyName, burnAmount, unStakeAmount);
         }
-        unStakeAmount =
-          BigInt(utils.parseEther(unStakeAmount).toString()) + PERIQuota;
+        // unStakeAmount =
+        //   BigInt(utils.parseEther(unStakeAmount).toString())/*  + PERIQuota */;
 
-        if (unStakeAmount < 0n) {
-          unStakeAmount = "0";
-        } else {
-          unStakeAmount = utils.formatEther(unStakeAmount);
+        // if (unStakeAmount < 0n) {
+        //   unStakeAmount = "";
+        // } else {
+        //   unStakeAmount = utils.formatEther(unStakeAmount);
+        // }
+        unStakeAmount = Number(unStakeAmount).toFixed(balances[currencyName].decimal);
+        // console.log("unStakeAmount", unStakeAmount, "burnAmount", burnAmount);
+
+        if (
+          currencyName === "PERI" &&
+          balances["DEBT"].balance !== 0n &&
+          Number(burnAmount) === 0
+        ) {
+          if (balances["pUSD"].balance === 0n) {
+            NotificationManager.warning(
+              `Please burn other pynths or buy $pUSD at Uniswap`,
+              "Not Enough pUSD"
+            );
+          } else {
+            NotificationManager.warning(
+              `Please check the unstaking order ($Others ➔ $PERI)`,
+              "Unstake Order"
+            );
+          }
+        } else if (balances["DEBT"].balance === 0n && Number(burnAmount) === 0) {
+          NotificationManager.warning(`There is no debt to burn`, "No debt");
+        } else if (balances[currencyName].staked === 0n && Number(unStakeAmount) === 0) {
+          NotificationManager.warning(`There is no ${currencyName} to unstake`, "No staked");
         }
 
         setUnStakeAmount(unStakeAmount);
@@ -144,44 +162,76 @@ const Burn = () => {
       if (currencyName !== "LP") {
         getCRatio(currencyName, "0", "0");
       }
-      setUnStakeAmount("0");
-      setBurnAmount("0");
+      setUnStakeAmount("");
+      setBurnAmount("");
     }
   };
 
   const getMaxAmount = (currency) => {
-    let burnAmount;
-    let unStakeAmount;
+    let burnAmount = 0n;
+    let unStakeAmount = 0n;
+
     if (currency.isLP) {
       burnAmount = 0n;
       unStakeAmount = balances["LP"].staked;
     } else {
-      if (currency.isStable) {
+      if (currency.isExternal) {
         burnAmount = balances["DEBT"][currency.name];
 
         if (burnAmount > balances["pUSD"].transferable) {
           burnAmount = balances["pUSD"].transferable;
         }
 
-        unStakeAmount = balances[currency.name].staked;
+        // unStakeAmount = balances[currency.name].staked;
       } else {
-        burnAmount = balances["DEBT"].PERI - balances["DEBT"].exDebt * 4n;
+        // console.log(currency.name, "balances[currency.name].IR", balances[currency.name].IR);
+        const periSA = divideDecimal(balances["DEBT"].PERI, balances[currency.name].IR);
+        const exEA = balances[currency.name].totalEA - periSA;
+        const minPeriSA =
+          maxStakingRatio > 0n
+            ? multiplyDecimal(exEA, divideDecimal(toBigInt(1) - maxStakingRatio, maxStakingRatio))
+            : 0n;
+        const minPeriDebt = multiplyDecimal(minPeriSA, balances[currency.name].IR);
+
+        burnAmount = balances["DEBT"].PERI - minPeriDebt;
         burnAmount = burnAmount < 0n ? 0n : burnAmount;
 
         if (burnAmount > balances["pUSD"].transferable) {
           burnAmount = balances["pUSD"].transferable;
         }
 
-        unStakeAmount =
-          (burnAmount *
+        // divideDecimal(burnAmount, multiplyDecimal(balances["PERI"].IR, exchangeRates["PERI"]));
+        /*  (burnAmount *
             (BigInt(Math.pow(10, 18).toString()) / targetCRatio) *
             BigInt(Math.pow(10, 18).toString())) /
-          exchangeRates["PERI"];
+          exchangeRates["PERI"]; */
       }
+      const toSARatio = multiplyDecimal(balances[currency.name].IR, exchangeRates[currency.name]);
+      unStakeAmount =
+        toSARatio > 0n
+          ? divideDecimal(
+              burnAmount,
+              multiplyDecimal(balances[currency.name].IR, exchangeRates[currency.name])
+            )
+          : 0n;
+
+      unStakeAmount =
+        unStakeAmount > balances[currency.name].staked
+          ? balances[currency.name].staked
+          : unStakeAmount;
     }
 
-    setMaxBurnAmount(utils.formatEther(burnAmount.toString()));
-    setMaxUnStakeAmount(utils.formatEther(unStakeAmount.toString()));
+    console.log(
+      "burnAmount",
+      burnAmount,
+      "unStakeAmount",
+      unStakeAmount,
+      "staked",
+      balances[currency.name].staked
+    );
+
+    setMaxBurnAmount(fromBigInt(burnAmount));
+    setMaxUnStakeAmount(fromBigInt(unStakeAmount));
   };
 
   const connectHelp = async () => {
@@ -237,7 +287,7 @@ const Burn = () => {
     };
     let transaction;
     if (currency.name === "LP") {
-      if (BigInt(utils.parseEther(unStakeAmount).toString()) === 0n) {
+      if (toBigInt(unStakeAmount) === 0n) {
         NotificationManager.error(`Please enter the LP to Unstake`, "ERROR");
         return false;
       }
@@ -260,35 +310,31 @@ const Burn = () => {
         console.log(e);
       }
     } else {
-      if (issuanceDelay !== 0) {
+      if (issuanceDelay > 0) {
         NotificationManager.warning(
           `There is a waiting period after minting before you can burn. Please wait
-                    ${secondsToTime(
-                      issuanceDelay
-                    )} before attempting to burn pUSD.`,
+                    ${secondsToTime(issuanceDelay)} before attempting to burn pUSD.`,
           "NOTE",
           0
         );
         return false;
       }
 
-      if (BigInt(utils.parseEther(burnAmount).toString()) === 0n) {
+      if (toBigInt(burnAmount) === 0n) {
         NotificationManager.error(`Please enter the pUSD to Burn`, "ERROR");
         return false;
       }
 
       try {
         transaction = await contracts.signers.PeriFinance.burnPynths(
-          utils.formatBytes32String(activeCurrency.name),
-          utils.parseEther(burnAmount),
+          toBytes32(activeCurrency.name),
+          toBigInt(burnAmount),
           transactionSettings
         );
         dispatch(
           updateTransaction({
             hash: transaction.hash,
-            message: `${activeCurrency.name} Burn ${formatCurrency(
-              BigInt(utils.parseEther(burnAmount).toString())
-            )} pUSD`,
+            message: `${activeCurrency.name} Burn ${formatCurrency(toBigInt(burnAmount))} pUSD`,
             type: "Burn",
           })
         );
@@ -304,7 +350,7 @@ const Burn = () => {
     }
 
     try {
-      let burnAmountToPERI =
+      /*let burnAmountToPERI =
         (BigInt(utils.parseEther(burnAmount).toString()) *
           BigInt(Math.pow(10, 18).toString())) /
         exchangeRates["PERI"];
@@ -334,56 +380,67 @@ const Burn = () => {
         (BigInt(Math.pow(10, 18).toString()) * 100n) /
           ((totalDEBT * BigInt(Math.pow(10, 18).toString())) /
             (balances["PERI"].balance + DAIStakedToPERI + USDCStakedToPERI))
-      );
+      ); */
+
+      const bnBurnAmount = utils.parseEther(burnAmount).toBigInt();
+      const bnBurnSA =
+        balances[currencyName].IR > 0n
+          ? divideDecimal(bnBurnAmount, balances[currencyName].IR)
+          : 0n;
+      const estDebt = balances["DEBT"].balance - bnBurnAmount;
+      const estTotalEA = balances["PERI"].totalEA - bnBurnSA;
+
+      const cRatio =
+        estDebt > 0n ? divideDecimal(divideDecimal(estTotalEA, estDebt), BigInt(1e16)) : 0n;
+      // const cRatio = Number(fromBigInt(tmpRatio)).toFixed(2)
+      setCRatio(cRatio);
     } catch (e) {
       setCRatio(0n);
     }
   };
 
   const getIssuanceDelayCheck = async () => {
-    //todo:: need improvement
+    start("burnAble");
     dispatch(setLoading({ name: "burnAble", value: true }));
 
-    const canBurnPynths = await contracts.Issuer.canBurnPynths(address);
-    const lastIssueEvent = await contracts.Issuer.lastIssueEvent(address);
-    const minimumStakeTime = await contracts.SystemSettings.minimumStakeTime();
+    const [canBurnPynths, lastIssueEvent, minimumStakeTime] = await Promise.all([
+      contracts.Issuer.canBurnPynths(address),
+      contracts.Issuer.lastIssueEvent(address),
+      contracts.SystemSettings.minimumStakeTime(),
+    ]);
+    // const canBurnPynths = await contracts.Issuer.canBurnPynths(address);
+    // const lastIssueEvent = await contracts.Issuer.lastIssueEvent(address);
+    // const minimumStakeTime = await contracts.SystemSettings.minimumStakeTime();
+
+    console.log(
+      "canBurnPynths",
+      canBurnPynths,
+      "lastIssueEvent",
+      lastIssueEvent.toBigInt(),
+      "minimumStakeTime",
+      minimumStakeTime.toBigInt()
+    );
 
     if (Number(lastIssueEvent) && Number(minimumStakeTime)) {
-      const burnUnlockDate = addSeconds(
-        Number(lastIssueEvent) * 1000,
-        Number(minimumStakeTime)
-      );
-      const issuanceDelayInSeconds = differenceInSeconds(
-        burnUnlockDate,
-        new Date()
-      );
-      setIssuanceDelay(
-        issuanceDelayInSeconds > 0
-          ? issuanceDelayInSeconds
-          : canBurnPynths
-          ? 0
-          : 1
-      );
+      const burnUnlockDate = addSeconds(Number(lastIssueEvent) * 1000, Number(minimumStakeTime));
+      const issuanceDelayInSeconds = differenceInSeconds(burnUnlockDate, new Date());
+      setIssuanceDelay(issuanceDelayInSeconds > 0 ? issuanceDelayInSeconds : canBurnPynths ? 0 : 1);
       const issuanceDelay =
-        issuanceDelayInSeconds > 0
-          ? issuanceDelayInSeconds
-          : canBurnPynths
-          ? 0
-          : 1;
+        issuanceDelayInSeconds > 0 ? issuanceDelayInSeconds : canBurnPynths ? 0 : 1;
 
       if (issuanceDelay > 0) {
         NotificationManager.warning(
           `There is a waiting period after minting before you can burn. Please wait
-                    ${secondsToTime(
-                      issuanceDelay
-                    )} before attempting to burn pUSD.`,
+                    ${secondsToTime(issuanceDelay)} before attempting to burn pUSD.`,
           "NOTE",
           0
         );
       }
       dispatch(setLoading({ name: "burnAble", value: false }));
+      end();
       return issuanceDelay;
     } else {
+      end();
       dispatch(setLoading({ name: "burnAble", value: false }));
       return 1;
     }
@@ -391,8 +448,8 @@ const Burn = () => {
 
   useEffect(() => {
     if (!hash) {
-      setUnStakeAmount("0");
-      setBurnAmount("0");
+      setUnStakeAmount("");
+      setBurnAmount("");
       getCRatio(currencies[slideIndex].name, "0", "0");
     }
   }, [balancesIsReady, exchangeIsReady, isConnect, hash]);
@@ -409,8 +466,8 @@ const Burn = () => {
         }
       } else {
         setCRatio(0n);
-        setMaxUnStakeAmount("0");
-        setMaxBurnAmount("0");
+        setMaxUnStakeAmount("");
+        setMaxBurnAmount("");
       }
     }
   }, [exchangeIsReady, balancesIsReady, exchangeRates, balances, isConnect]);
@@ -418,8 +475,8 @@ const Burn = () => {
   useEffect(() => {
     if (slideIndex !== null) {
       setActiveCurrency(currencies[slideIndex]);
-      setUnStakeAmount("0");
-      setBurnAmount("0");
+      setUnStakeAmount("");
+      setBurnAmount("");
       getCRatio(currencies[slideIndex].name, "0", "0");
     }
   }, [slideIndex]);
@@ -439,7 +496,7 @@ const Burn = () => {
         <Swiper
           spaceBetween={0}
           direction={"vertical"}
-          slidesPerView={4}
+          slidesPerView={contracts["LP"] ? 7 : 6}
           centeredSlides={true}
           mousewheel={true}
           allowTouchMove={true}
@@ -451,29 +508,37 @@ const Burn = () => {
           onSlideChange={({ activeIndex }) => setSlideIndex(activeIndex)}
           virtual
         >
-          {currencies.map((currency, index) => (
-            <SwiperSlide key={currency.name} virtualIndex={index}>
-              <BurnCard
-                hide={index < slideIndex}
-                isActive={index === slideIndex}
-                currencyName={currency.name}
-                maxAction={() =>
-                  isConnect
-                    ? onChangeBurnAmount(
-                        currency.isLP ? maxUnStakeAmount : maxBurnAmount,
-                        currency.name
-                      )
-                    : connectHelp()
-                }
-                unStakeAmount={unStakeAmount}
-                burnAmount={burnAmount}
-                cRatio={cRatio}
-                onChange={onChangeBurnAmount}
-                isLP={currency.isLP}
-                burnAction={() => burnAction(currency)}
-              ></BurnCard>
-            </SwiperSlide>
-          ))}
+          {currencies.map((currency, index) => {
+            // console.log("currency", currency);
+            return (
+              <SwiperSlide key={currency.name} virtualIndex={index}>
+                <BurnCard
+                  hide={index < slideIndex}
+                  isActive={index === slideIndex}
+                  currencyName={currency.name}
+                  maxAction={() =>
+                    isConnect
+                      ? onChangeBurnAmount(
+                          currency.isLP ? maxUnStakeAmount : maxBurnAmount,
+                          currency.name
+                        )
+                      : connectHelp()
+                  }
+                  unStakeAmount={unStakeAmount}
+                  burnAmount={burnAmount}
+                  cRatio={cRatio}
+                  onChange={onChangeBurnAmount}
+                  isLP={currency.isLP}
+                  burnAction={() => burnAction(currency)}
+                  staked={balances[currency.name]?.staked}
+                  decimals={balances[currency.name]?.decimal}
+                  isConnect={isConnect}
+                  isReady={balancesIsReady}
+                  networkId={networkId}
+                ></BurnCard>
+              </SwiperSlide>
+            );
+          })}
         </Swiper>
       </BurnContainer>
     </Container>
@@ -485,7 +550,7 @@ const BurnContainer = styled(StakeContainer)`
     top: -13.5% !important;
   }
 
-  .swiper-slide.swiper-slide-next  {
+  .swiper-slide.swiper-slide-next {
     margin-top: 3% !important;
   }
 
@@ -499,7 +564,6 @@ const BurnContainer = styled(StakeContainer)`
     }
 
   `}
-
 `;
 
 export default Burn;

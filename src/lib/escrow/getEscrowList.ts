@@ -1,4 +1,5 @@
 import { Contract } from "ethers";
+
 import { formatCurrency } from "lib/format";
 
 export const getEscrowList = async (RewardEscrowV2: Contract, address: string) => {

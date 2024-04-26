@@ -1,4 +1,4 @@
-import { SmallLoadingSpinner } from "components/heading";
+// import { SmallLoadingSpinner } from "components/heading";
 import React from "react";
 import styled from "styled-components";
 
@@ -11,6 +11,7 @@ export const Input = ({
   color,
   isLP = false,
   width = '100%',
+  placeholder="",
 }) => {
   return (
     <>
@@ -22,16 +23,17 @@ export const Input = ({
           ></img>
         </AssetContainer>
         <InputContainer>
-          {disabled || value !== "" ?
+          {/* {disabled || value !== "" ? */}
             <AmountInput
               type="text"
               $height={height}
               disabled={disabled}
               onChange={onChange}
               value={value}
+              placeholder={placeholder}
             ></AmountInput>
-            : <SmallLoadingSpinner />
-          }
+           {/*  : <SmallLoadingSpinner /> */}
+          {/* } */}
         </InputContainer>
       </Container>
     </>

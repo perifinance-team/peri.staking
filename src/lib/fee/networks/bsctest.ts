@@ -1,4 +1,4 @@
-export const bsctest = async ():Promise<bigint> => {
-    return BigInt(13n);
+export const bsctest = async (networkId):Promise<string> => {
+    return '7';
 }
 

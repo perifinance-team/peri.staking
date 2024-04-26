@@ -7,15 +7,15 @@ import { updateVestable } from "config/reducers/vest";
 import { BaseImg } from "components/image";
 import { clearCRatio } from "config/reducers/rates";
 import { Paragraph } from "components/paragraph";
-import { BaseContainer } from "components/container";
 import { useState } from "react";
 // import { set } from "date-fns";
 
 const Connect = () => {
-  const dispatch = useDispatch();
   const { isConnect } = useSelector((state: RootState) => state.wallet);
-  const { isReady } = useSelector((state: RootState) => state.balances);
+  const { isLoading } = useSelector((state: RootState) => state.balances);
   const [ connecting, setConnecting ] = useState(false);
+
+  const dispatch = useDispatch();
 
   const onConnect = async () => {
     try {
@@ -34,7 +34,7 @@ const Connect = () => {
   };
 
   const onDisConnect = () => {
-    ////todo:: need bug
+    // // todo:: need bug
     web3Onboard.disconnect();
     localStorage.removeItem("selectedWallet");
     dispatch(clearWallet());
@@ -46,7 +46,7 @@ const Connect = () => {
   return (
     <ConnectContainer
       $connecting={connecting}
-      disabled={isConnect && !isReady}
+      disabled={isConnect && isLoading}
       onClick={() => {
         isConnect ? onDisConnect() : onConnect();
       }}
@@ -107,6 +107,7 @@ const ConnectContainer = styled.button<{$connecting: boolean}>`
     img {
       transition: 0.5s;
       transform: rotate(90deg);
+      cursor: pointer;
     }
   }
   

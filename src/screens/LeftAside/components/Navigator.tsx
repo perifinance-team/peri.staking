@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { NavLink, useRouteMatch } from "react-router-dom";
 import { RootState } from "config/reducers";
 import { useSelector } from "react-redux";
+import { lpContractAddress } from "lib/contract/LP";
 // import { useEffect } from 'react';
 
 const Navigator = () => {
@@ -85,7 +86,7 @@ const Navigator = () => {
 				let childrenLink;
 				if (item.children?.length > 0) {
 					childrenLink = item.children.map((childrenItem) => {
-						if ((networkId !== 1285 || childrenItem.name !== "earn") && (childrenItem.name !== "vesting" || vestable !== false)) /* return <></>; */
+						if ((lpContractAddress[networkId] || childrenItem.name !== "earn") && (childrenItem.name !== "vesting" || vestable !== false)) /* return <></>; */
 						/* else */
 							return (
 								<ChildrenLink to={`${item.to}${childrenItem.to}`} key={childrenItem.name}>

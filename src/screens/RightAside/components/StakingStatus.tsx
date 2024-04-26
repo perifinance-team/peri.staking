@@ -4,56 +4,12 @@ import { useSelector } from "react-redux";
 import { RootState } from "config/reducers";
 import { H4, SmallLoadingSpinner } from "components/heading";
 import { formatCurrency } from "lib";
-import { useEffect, useState } from "react";
+// import { useEffect, useState } from "react";
 const StakingStatus = () => {
   const { isConnect } = useSelector((state: RootState) => state.wallet);
-  const { balances } = useSelector((state: RootState) => state.balances);
-  const balancesIsReady = useSelector((state: RootState) => state.balances.isReady);
+  const { balances, isLoading } = useSelector((state: RootState) => state.balances);
+  // const balancesIsReady = useSelector((state: RootState) => state.balances.isReady);
 
-  const [PERIStatus, setPERIStatus] = useState({
-    staked: 0n,
-    stakeable: 0n,
-  });
-
-  const [USDCStatus, setUSDCStatus] = useState({
-    staked: 0n,
-    stakeable: 0n,
-  });
-
-  const [DAIStatus, setDAIStatus] = useState({
-    staked: 0n,
-    stakeable: 0n,
-  });
-
-  useEffect(() => {
-    if (balancesIsReady) {
-      setPERIStatus({
-        staked: balances["PERI"].staked,
-        stakeable: balances["PERI"].stakeable,
-      });
-
-      setUSDCStatus({
-        staked: balances["USDC"].staked,
-        stakeable: balances["USDC"].stakeable,
-      });
-
-      setDAIStatus({
-        staked: balances["DAI"].staked,
-        stakeable: balances["DAI"].stakeable,
-      });
-      // const USDCBalanceToUSD = balances['USDC'].transferable * exchangeRates['USDC'] / BigInt(Math.pow(10, 18).toString());
-      // const DAIBalanceToUSD = balances['DAI'].transferable * exchangeRates['DAI'] / BigInt(Math.pow(10, 18).toString());
-      // const TotalStableUSD = USDCBalanceToUSD + DAIBalanceToUSD;
-
-      // let mintableStable = ((balances['DEBT'].PERI / 4n) - (balances['DEBT'].exDebt));
-      // mintableStable = mintableStable <= 0n ? 0n : mintableStable * 4n;
-
-      // setStableStatus({
-      //     staked: balances['DEBT'].exDebt * 4n,
-      //     stakeable: mintableStable < TotalStableUSD ? mintableStable : TotalStableUSD,
-      // });
-    }
-  }, [balancesIsReady, balances]);
   return (
     <>
       <Container>
@@ -66,34 +22,38 @@ const StakingStatus = () => {
           <H4 $color={"fourth"}>Stakeable</H4>
         </Box>
       </Container>
-      <Container>
-        <Image>
-          <img src={`/images/currencies/PERI.png`} alt="lp"></img>
-        </Image>
-        <Box>
-          {isConnect ? (
-            balancesIsReady ? (
-              <H4 $align={"right"}> {formatCurrency(PERIStatus.staked)}</H4>
+      {Object.keys(balances).map(
+        (token) => 
+        (token !== "DEBT" && token !== "pUSD" && token !== "LP") &&
+        <Container key={token}>
+          <Image>
+            <img src={`/images/currencies/${token}.png`} alt="lp"></img>
+          </Image>
+          <Box>
+            {isConnect ? (
+              !isLoading ? (
+                <H4 $align={"right"}> {formatCurrency(balances[token].staked)}</H4>
+              ) : (
+                <SmallLoadingSpinner />
+              )
             ) : (
-              <SmallLoadingSpinner />
-            )
-          ) : (
-            <H4 $align={"right"}></H4>
-          )}
-        </Box>
-        <Box>
-          {isConnect ? (
-            balancesIsReady ? (
-              <H4 $align={"right"}>{formatCurrency(PERIStatus.stakeable)}</H4>
+              <H4 $align={"right"}></H4>
+            )}
+          </Box>
+          <Box>
+            {isConnect ? (
+              !isLoading ? (
+                <H4 $align={"right"}>{formatCurrency(balances[token].stakeable)}</H4>
+              ) : (
+                <SmallLoadingSpinner />
+              )
             ) : (
-              <SmallLoadingSpinner />
-            )
-          ) : (
-            <H4 $align={"right"}></H4>
-          )}
-        </Box>
-      </Container>
-      <Container>
+              <H4 $align={"right"}></H4>
+            )}
+          </Box>
+        </Container>
+      )}
+      {/* <Container>
         <Image>
           <img src={`/images/currencies/USDC.png`} alt="lp"></img>
         </Image>
@@ -146,7 +106,7 @@ const StakingStatus = () => {
             <H4 $align={"right"}></H4>
           )}
         </Box>
-      </Container>
+      </Container> */}
     </>
   );
 };

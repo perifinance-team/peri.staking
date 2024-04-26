@@ -1,18 +1,20 @@
-import React, { useState } from "react";
 import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "config/reducers";
 
-import { getVestable } from "lib/vest";
 import { getBalances } from "lib/balance";
 import { getRatios } from "lib/rates";
-import { getNetworkFee } from "lib/fee";
-import { NotificationManager } from "react-notifications"
-import { clearBalances, clearPynths, setBalances, setIsReady, updatePynths } from "config/reducers/wallet";
-import { clearCRatio, updateRatio } from "config/reducers/rates";
+import { NotificationManager } from "react-notifications";
+import {
+  clearBalances,
+  clearPynths,
+  setBalances,
+  setIsLoading,
+  setIsReady,
+  updatePynths,
+} from "config/reducers/wallet";
+import { updateRatio } from "config/reducers/rates";
 import { updateExchangeRates } from "config/reducers/rates";
-import { updateVestable } from "config/reducers/vest";
-import { updateNetworkFee } from "config/reducers/networkFee";
 import { useLocation } from "react-router-dom";
 import { getLiquidationList } from "lib/liquidation";
 import { getEscrowList } from "lib/escrow";
@@ -21,16 +23,18 @@ import { setReady, updateEscrowList } from "config/reducers/escrow";
 import { getPynthBalances } from "lib/thegraph/api";
 import { createCompareFn } from "lib";
 import { networkInfo } from "configure/networkInfo";
-import { set } from "date-fns";
+import { updateTimestamp, toggleLiquid } from "config/reducers/liquidation";
+import { end, start } from "lib/etc/performance";
+import { getNetworkFee } from "lib/fee";
+import { updateNetworkFee } from "config/reducers/networkFee";
 
 const Refresh = () => {
   const dispatch = useDispatch();
   const { address, networkId } = useSelector((state: RootState) => state.wallet);
-  const { balances, isReady } = useSelector((state: RootState) => state.balances);
+  const { balances, isLoading } = useSelector((state: RootState) => state.balances);
   const themeState = useSelector((state: RootState) => state.theme.theme);
-  const [isLoading, setIsLoading] = useState(false);
   const location = useLocation();
-  const { RewardEscrowV2 } = contracts as any;
+  const { RewardEscrowV2, Liquidations } = contracts as any;
 
   const getEscrowListData = async () => {
     dispatch(setReady(false));
@@ -46,7 +50,11 @@ const Refresh = () => {
 
   const getLiquidationData = async () => {
     try {
-      await getLiquidationList(dispatch, networkId);
+      const stakeTokens = {};
+      Object.keys(balances)
+        .filter((item) => balances[item].staking)
+        .map((item) => (stakeTokens[item] = balances[item]));
+      await getLiquidationList(dispatch, stakeTokens, networkId);
     } catch (e) {}
   };
 
@@ -63,7 +71,6 @@ const Refresh = () => {
       balances.sort(createCompareFn("usdBalance", "desc"));
       dispatch(updatePynths(balances));
     }
-
   };
 
   const getSystemData = async () => {
@@ -77,39 +84,43 @@ const Refresh = () => {
       fetchPynthBalances();
     }
 
-    setIsLoading(true);
-    dispatch(clearCRatio());
-    dispatch(clearBalances());
+    start("refresh");
+    // dispatch(clearBalances());
+    dispatch(setIsLoading(true));
     try {
-      const [ratios, gasPrice] = await Promise.all([getRatios(address), getNetworkFee(networkId)]);
-      dispatch(updateRatio(ratios.ratio));
-      dispatch(updateExchangeRates(ratios.exchangeRates));
-      dispatch(updateNetworkFee({ gasPrice }));
-      dispatch(updateVestable({ vestable: false }));
       if (address) {
-        const [balancesData, vestable] = await Promise.all([
-          getBalances(
-            address,
-            balances,
-            ratios.exchangeRates,
-            // ratios.ratio.targetCRatio,
-            ratios.ratio.currentCRatio
-          ),
-          getVestable(address),
+        const [ratios, gasPrice] = await Promise.all([
+          getRatios(address),
+          getNetworkFee(networkId),
         ]);
-        
-        //todo:: code move call
-        dispatch(updateVestable({ vestable }));
+
+        dispatch(updateRatio(ratios.ratio));
+        dispatch(updateExchangeRates(ratios.exchangeRates));
+        dispatch(updateNetworkFee({ gasPrice }));
+        // console.log("exchangeRates", ratios.exchangeRates);
+        const [balancesData, stateLiquid /* , timestamp */] = await Promise.all([
+          getBalances(address, balances, ratios.exchangeRates, ratios.ratio.currentCRatio),
+          Liquidations.getLiquidationInfo(address),
+          // await getTimeStamp(address, Liquidations),
+        ]);
+
+        dispatch(setIsReady(false));
+        dispatch(updateTimestamp(stateLiquid.deadline));
+        dispatch(toggleLiquid(stateLiquid.isOpen));
         dispatch(setBalances(balancesData));
+        dispatch(setIsReady(true));
       }
     } catch (e) {
-      NotificationManager.warning(`Something went wrong while refershing.`);
+      console.log(e);
+      NotificationManager.warning(`Something went wrong while refershing.`, "Refresh Error");
+      localStorage.removeItem("selectedWallet");
     }
-    setIsLoading(false);
+    dispatch(setIsLoading(false));
+    end();
   };
 
   return (
-    <Container $isLoading={address && (isLoading || !isReady)} onClick={() => getSystemData()}>
+    <Container $isLoading={address && isLoading /* || !isReady */} onClick={() => getSystemData()}>
       <img src={`/images/${themeState}/refresh.svg`} alt="refresh"></img>
     </Container>
   );
@@ -124,7 +135,9 @@ const Container = styled.button<{ $isLoading?: boolean }>`
   border: ${(props) => `1.5px solid ${props.theme.colors.border.tableRow}`};
   box-shadow: 0.5px 1.5px 0px ${(props) => props.theme.colors.border.primary};
 
-  ${({ $isLoading }) => $isLoading && `
+  ${({ $isLoading }) =>
+    $isLoading &&
+    `
     animation: spin 1s infinite ease-in-out;
     @keyframes spin {
       to {

@@ -5,6 +5,9 @@ export type ExchangeRatesState = {
     PERI: bigint;
     USDC: bigint;
     DAI: bigint;
+    USDT: bigint;
+    XAUT: bigint;
+    PAXG: bigint;
 };
 
 const initialState: ExchangeRatesState = {
@@ -12,6 +15,9 @@ const initialState: ExchangeRatesState = {
     PERI: 0n,
     USDC: 0n,
     DAI: 0n,
+    USDT: 0n,
+    XAUT: 0n,
+    PAXG: 0n,
 };
 
 export const ExchangeRatesSlice = createSlice({
@@ -20,7 +26,7 @@ export const ExchangeRatesSlice = createSlice({
     reducers: {
         updateExchangeRates(state, actions: PayloadAction<ExchangeRatesState>) {
 			const rateState = actions.payload;
-            return { ...state, isReady: true, PERI: rateState.PERI, USDC: rateState.USDC, DAI: rateState.DAI };
+            return { ...state, isReady: true, PERI: rateState.PERI, USDC: rateState.USDC, DAI: rateState.DAI, USDT: rateState.USDT, XAUT: rateState.XAUT, PAXG: rateState.PAXG};
         },
     },
 });

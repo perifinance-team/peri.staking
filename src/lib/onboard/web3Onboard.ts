@@ -24,7 +24,9 @@ import { NotificationManager } from "react-notifications";
 
 import { networkInfo } from "configure/networkInfo";
 
-import { MAINNET, TESTNET, UNPOPULARNET } from "lib/network/supportedNetWorks";
+import { MAINNET, /* SUPPORTED_NETWORKS, */ TESTNET, UNPOPULARNET } from "lib/network/supportedNetWorks";
+
+// import { changeNetwork } from "lib/network";
 
 type Web3Onboard = {
   onboard: OnboardAPI;
@@ -32,10 +34,10 @@ type Web3Onboard = {
   selectedAddress: string;
   selectedNetwork: string;
   init: (subscriptions: any, colorMode: string, autoConnect: boolean) => void;
-  connect: (walletLabel?: any) => Promise<void>;
+  connect: (walletLabel?: any, networkId?: string | number) => Promise<void>;
   disconnect: () => void;
   address: (address: any) => void;
-  network: (networkId: any) => void;
+  network: (networkId: string | number) => void;
   wallet: (wallet: WalletState) => void;
   _onWalletUpdated: (wallets: WalletState[]) => void;
   // _onChainUpdated: (chains: Chain[]) => void;
@@ -69,22 +71,22 @@ export const web3Onboard: Web3Onboard = {
       },
     });
 
+    // const requiredChains = Object.keys(SUPPORTED_NETWORKS).filter((networkId) => networkId !== "1337");
+    // console.log("requiredChains", requiredChains);
     const wcV2InitOptions = {
       projectId: process.env.REACT_APP_RPC_ONBOARD_ID,
       version: 2,
       qrModalOptions: {
         enableAuthMode: true,
       },
-      requiredChains: Object.keys(MAINNET).filter(
+      requiredChains: Object.keys(process.env.REACT_APP_ENV === 'production' ? MAINNET : TESTNET).filter(
         (networkId) => UNPOPULARNET[networkId] === undefined && networkId !== "1337"
       ),
       optionalChains: Object.keys(UNPOPULARNET).filter((networkId) => networkId !== "1287"),
+      // requiredChains,
       dappUrl: "https://staking.peri.finance",
       additionalOptionalMethods: ["wallet_switchEthereumChain", "wallet_addEthereumChain"],
     };
-
-    
-    // console.log("wcV2InitOptions", wcV2InitOptions);
 
     // initialize the module with options
     const coinbase = coinbaseWalletModule();
@@ -169,13 +171,11 @@ export const web3Onboard: Web3Onboard = {
     var supportedNetworks = process.env.REACT_APP_ENV === "production" ? MAINNET : TESTNET;
     const chains: Chain[] = [];
     Object.keys(supportedNetworks).forEach((networkId) => {
-      if (networkId !== "1337") {
         chains.push({
           id: networkInfo[networkId].chainId,
           label: networkInfo[networkId].chainName,
           rpcUrl: networkInfo[networkId].rpcUrls,
         });
-      }
     });
 
     // console.log("chains", chains);
@@ -216,10 +216,13 @@ export const web3Onboard: Web3Onboard = {
 
     if (chainId && chainId !== web3Onboard.selectedNetwork) {
       // console.log(`walletUpdated-> chainId from ${web3Onboard.selectedNetwork} to ${chainId}`);
+      // NotificationManager.success(`connected to ${primaryWallet.label} ${SUPPORTED_NETWORKS[parseInt(chainId)]}`, "", 2000);
+      
       web3Onboard.selectedNetwork = chainId;
       web3Onboard.network(chainId);
       web3Onboard.selectedAddress = address;
       web3Onboard.address(address);
+      console.log(`walletUpdated-> chainId: ${chainId}`);;
     }
 
     if (web3Onboard.selectedAddress !== address) {
@@ -248,15 +251,12 @@ export const web3Onboard: Web3Onboard = {
     try {
       if (!web3Onboard.wallet || !web3Onboard.address || !web3Onboard.network) return;
 
-      // console.log(web3Onboard.onboard.state.get());
-
       const options = walletLabel
         ? { autoSelect: { label: walletLabel, disableModals: true } }
         : undefined;
       const [primaryWallet] = await web3Onboard.onboard.connectWallet(options);
 
       // console.log("web3Onboard.connect()", options, primaryWallet);
-
       if (!primaryWallet?.provider) {
         web3Onboard.disconnect();
         return;
