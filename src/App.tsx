@@ -34,7 +34,6 @@ import Loading from "./screens/Loading";
 import Main from "./screens/Main";
 import "./App.css";
 import { end, start } from "lib/etc/performance";
-import { tr } from "date-fns/locale";
 
 const App = () => {
   const { address, networkId } = useSelector((state: RootState) => state.wallet);

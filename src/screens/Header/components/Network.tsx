@@ -9,7 +9,7 @@ import Connect from "./Connect";
 import { BaseContainer } from "components/container";
 
 const Network = () => {
-  const { networkName, address, isConnect } = useSelector(
+  const { address, isConnect } = useSelector(
     (state: RootState) => state.wallet
   );
 

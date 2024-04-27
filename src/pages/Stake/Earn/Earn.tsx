@@ -3,7 +3,6 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "config/reducers";
 import { NotificationManager } from "react-notifications";
 
-import styled from "styled-components";
 import { H1 } from "components/heading";
 import { EarnCard } from "components/card/EarnCard";
 import { Swiper, SwiperSlide } from "swiper/react";

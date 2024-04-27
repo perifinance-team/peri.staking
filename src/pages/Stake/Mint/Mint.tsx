@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "config/reducers";
 import styled from "styled-components";
@@ -26,7 +26,6 @@ import {
   toBigInt,
   toBytes32 /* , toUnit */,
 } from "lib/etc/utils";
-import { ca } from "date-fns/locale";
 
 SwiperCore.use([Mousewheel, Virtual]);
 
@@ -264,7 +263,7 @@ const Mint = ({ currencies }) => {
     // dispatch(setLoading({ name: "apy", value: false }));
   };
 
-  const getCRatio = (currencyName, mintAmount, stakeAmount) => {
+  const getCRatio = useCallback((currencyName: string | number, mintAmount: string, stakeAmount: string) => {
     if (mintAmount === "" || !mintAmount) {
       mintAmount = "0";
     }
@@ -309,7 +308,7 @@ const Mint = ({ currencies }) => {
     } catch (e) {
       setCRatio(0n);
     }
-  };
+  },[balances]);
 
   useEffect(() => {
     if (!hash) {
@@ -317,7 +316,7 @@ const Mint = ({ currencies }) => {
       setStakeAmount("");
       getCRatio(currencies[slideIndex].name, "0", "0");
     }
-  }, [hash]);
+  }, [getCRatio, hash, slideIndex]);
 
   useEffect(() => {
     if (exchangeIsReady) {
@@ -349,10 +348,11 @@ const Mint = ({ currencies }) => {
   }, [slideIndex]);
 
   useEffect(() => {
+    // console.log("slideIndex", slideIndex, exchangeIsReady, balancesIsReady, currencies, maxMintAmount);
     if (slideIndex !== null && exchangeIsReady && balancesIsReady) {
       getMaxAmount(currencies[slideIndex]);
     }
-  }, [slideIndex, exchangeIsReady, balancesIsReady]);
+  }, [slideIndex, exchangeIsReady, balancesIsReady, currencies]);
 
   return (
     <Container>

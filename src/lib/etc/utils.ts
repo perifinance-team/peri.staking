@@ -1,12 +1,13 @@
 import BN from 'bn.js';
 
-import { toBN, toWei, fromWei, rightPad, asciiToHex, hexToAscii, toAscii } from 'web3-utils';
+import { toBN, toWei, fromWei, rightPad, asciiToHex/* , hexToAscii, toAscii */ } from 'web3-utils';
 
-import { BigNumberish, utils, BigNumber } from "ethers";
+import { BigNumberish, BigNumber } from "ethers";
+import { parseEther, formatEther, parseBytes32String, formatUnits } from "ethers/lib/utils";
 
 const UNIT = toWei(new BN('1'), 'ether');
 
-/**ethers.utils.parseBytes32String(metadata)
+	/**parseBytes32String(metadata)
 	*  Translates an amount to our canonical unit. We happen to use 10^18, which means we can
 	*  use the built in web3 method for convenience, but if unit ever changes in our contracts
 	*  we should be able to update the conversion factor here.
@@ -22,19 +23,28 @@ const preciseUnitToUnit = amount => toBN(amount.toString().slice(0, -9));
 const to3Unit = amount => toBN(amount.toString() + '000000');
 
 const toBytes32 = key => rightPad(asciiToHex(key), 64);
-const fromBytes32 = key => utils.parseBytes32String(key);
+const fromBytes32 = key => parseBytes32String(key);
 const toBigInt = (amount: number | bigint | string | BN | BigNumber)  => {
 	if (amount === '') { return 0n; }
 
 	const bn = !BN.isBN(amount) 
 		? BigNumber.isBigNumber(amount)
 			? amount
-			: utils.parseEther(amount.toString())
+			: parseEther(amount.toString())
 		: BigNumber.from(amount.toString());
 	return bn.toBigInt();
 };
-const fromBigInt = (amount: BigNumberish) => utils.formatEther(amount);
-const fromGwei = (amount: BigNumberish) => utils.formatUnits(amount, 'gwei');
+const fromBigInt = (amount: BigNumberish) => formatEther(amount);
+const fromGwei = (amount: BigNumberish) => formatUnits(amount, 'gwei');
+
+export const toBigNumber = (value: BigNumberish):BigNumber => {
+    return typeof value === "bigint" ? BigNumber.from(value) : parseEther(String(value));
+};
+
+export const fromBigNumber = (value: BigNumberish):string => {
+    return formatEther(String(value));
+};
+
 
 /**
 	*  Translates an amount to our canonical precise unit. We happen to use 10^27, which means we can

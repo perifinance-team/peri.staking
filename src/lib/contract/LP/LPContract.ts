@@ -26,7 +26,7 @@ export const lpContractAddress = {
 export const LPContract = {
     networkId: null,
     init(networkId, provider) {
-        if (!lpContractAddress[this.networkId]) return;
+        if (!lpContractAddress[networkId]) return;
         if(networkId) {
             this.networkId = networkId;
         }

@@ -1,14 +1,11 @@
 import React from "react";
 import styled from "styled-components";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "config/reducers";
 import { H4 } from "components/heading";
-import { toggleNoti } from "config/reducers/liquidation";
-import { divideDecimal, toUnit } from "lib/etc/utils";
 
 const Ratios = () => {
-  const dispatch = useDispatch();
-  const { targetCRatio, currentCRatio, liquidationRatio } = useSelector(
+  const { targetCRatio, liquidationRatio } = useSelector(
     (state: RootState) => state.ratio
   );
 

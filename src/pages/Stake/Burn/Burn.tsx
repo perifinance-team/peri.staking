@@ -11,7 +11,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore, { Mousewheel, Virtual } from "swiper/core";
 import { contracts } from "lib/contract";
 import { formatCurrency } from "lib";
-import { utils, constants } from "ethers";
+import { utils, } from "ethers";
 import { updateTransaction } from "config/reducers/transaction";
 import { setLoading } from "config/reducers/loading";
 import { web3Onboard } from "lib/onboard";
@@ -452,7 +452,8 @@ const Burn = ({ currencies }) => {
       setBurnAmount("");
       getCRatio(currencies[slideIndex].name, "0", "0");
     }
-  }, [balancesIsReady, exchangeIsReady, isConnect, hash]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [balancesIsReady, exchangeIsReady, isConnect, slideIndex]);
 
   useEffect(() => {
     if (balancesIsReady && exchangeIsReady) {

@@ -36,6 +36,7 @@ const NetCombo = ({ isShow, setIsShow }) => {
         setIsShow(false);
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [isShow]
   );
 
@@ -270,14 +271,14 @@ const ListBtnImg = styled(NetworkImg)`
   `}
 `;
 
-const SafeParagraph = styled(Paragraph)`
-  ${({ theme }) => theme.media.desktop`
-    display: table-cell;
-  `}
+// const SafeParagraph = styled(Paragraph)`
+//   ${({ theme }) => theme.media.desktop`
+//     display: table-cell;
+//   `}
 
-  ${({ theme }) => theme.media.mobile`
-    display: none;
-  `}
-`;
+//   ${({ theme }) => theme.media.mobile`
+//     display: none;
+//   `}
+// `;
 
 export default NetCombo;

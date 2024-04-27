@@ -10,7 +10,7 @@ import { contracts } from "lib/contract";
 import { formatCurrency } from "lib";
 import { getLiquidationList } from "lib/liquidation";
 
-import { StyledTHeader, StyledTBody, Row, Cell, BorderRow } from "components/table";
+import { StyledTHeader, StyledTBody, Cell, BorderRow } from "components/table";
 import { H1, H4 } from "components/heading";
 import TakeModal from "pages/Liquidation/TakeModal";
 
@@ -340,6 +340,8 @@ const Liquidation = () => {
                                 </Image>
                               )
                             );
+                          else
+                            return null;
                         })}
                       </CollateralList>
                     </LongCell>

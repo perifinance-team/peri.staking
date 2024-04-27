@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { contracts } from "lib/contract";
 import { H1, H4 } from "components/heading";
-import { StyledTHeader, StyledTBody, Row, BorderRow } from "components/table";
+import { StyledTHeader, Row, BorderRow } from "components/table";
 import { NotificationManager } from "react-notifications";
 import {
   Container,
@@ -272,10 +272,6 @@ const EscrowBodyRow = styled(BorderRow)`
 // `;
 
 const EscrowHeader = styled(StyledTHeader)`
-  width: 100%;
-`;
-
-const EscrowBody = styled(StyledTBody)`
   width: 100%;
 `;
 

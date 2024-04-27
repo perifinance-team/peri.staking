@@ -1,4 +1,3 @@
-import { ca } from 'date-fns/locale';
 import { contracts } from 'lib/contract'
     
 export const getIssuanceRatio = async (currentWallet) => {

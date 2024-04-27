@@ -239,6 +239,8 @@ export const contracts: Contracts = {
 			if (lpContractAddress[this.networkId]){
 				this["LP"] = LPContract;
 				this["LP"].init(this.networkId, this.provider);
+			} else {
+				this["LP"] = null;
 			}
 		} catch (e) {
 			console.log(e);
@@ -277,6 +279,8 @@ export const contracts: Contracts = {
 				this.signers["LP"] = LPContract;
 				this.signers["LP"].init(this.networkId, this.provider);
 				this.signers["LP"].connect(this.signer);
+			} else {
+				this.signers["LP"] = null;
 			}
 		} catch (e) {
 			console.log(e);
@@ -314,14 +318,14 @@ export const contracts: Contracts = {
 			this["DAI"] = new ethers.Contract(stable[this.networkId].DAI, ERC20.abi, this.provider);
 		}
 
-		try {
+		/* try {
 			if (lpContractAddress[this.networkId]){
 				this["LP"] = LPContract;
 				this["LP"].init(this.networkId, this.provider);
 			}
 		} catch (e) {
-			console.log(e);
+			console.log(e); */
 			this["LP"] = null;
-		}
+		/* } */
 	},
 };

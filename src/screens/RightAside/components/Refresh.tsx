@@ -6,7 +6,6 @@ import { getBalances } from "lib/balance";
 import { getRatios } from "lib/rates";
 import { NotificationManager } from "react-notifications";
 import {
-  clearBalances,
   clearPynths,
   setBalances,
   setIsLoading,

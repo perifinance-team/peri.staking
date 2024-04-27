@@ -7,7 +7,7 @@ import { divideDecimal, multiplyDecimal, toBytes32 } from "lib/etc/utils";
 
 import { getLPBalance } from "./getLPBalance";
 import { getDebtNAddableAmt } from "./getStakableAmt";
-
+/* 
 const getPeriBalance = async (
   currentWallet: bigint,
   exTokens: any,
@@ -63,7 +63,7 @@ const getPeriBalance = async (
 
   return periDebt;
 };
-
+ */
 const setExBalances = async (
   currentWallet,
   currencies,
@@ -72,11 +72,12 @@ const setExBalances = async (
   exchangeRates,
   iRatios
 ) => {
-  const { PeriFinance, RewardEscrowV2, PynthpUSD, ExternalTokenStakeManager, LPContract } =
+  const { PeriFinance, RewardEscrowV2, PynthpUSD, ExternalTokenStakeManager } =
     contracts as any;
   const [, stableIR, goldIR] = iRatios;
 
   // console.log("LPContract", LPContract);
+  console.log("currencies", currencies);
 
   const [pUSDB, periB, debtB, exTokenInfo, LP] = await Promise.all([
     PynthpUSD.balanceOf(currentWallet),

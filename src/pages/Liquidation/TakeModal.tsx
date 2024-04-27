@@ -282,11 +282,6 @@ const TakeModal = ({
   };
 
   useEffect(() => {
-    sumCollateralHandler();
-    getGasPrice();
-  }, []);
-
-  useEffect(() => {
     // getGasPrice();
     getProfit();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -298,10 +293,14 @@ const TakeModal = ({
   }, [per]);
 
   useEffect(() => {
+    sumCollateralHandler();
+    getGasPrice();
+
     window.addEventListener("click", closeModalHandler);
     return () => {
       window.removeEventListener("click", closeModalHandler);
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

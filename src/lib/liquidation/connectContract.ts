@@ -1,5 +1,5 @@
 import { extractMessage } from "lib/error";
-import { fromBytes32 } from "lib/etc/utils";
+import { fromBytes32, toBigNumber } from "lib/etc/utils";
 
 // const ratioToPer = (value) => {
 // 	if (value === 0n) return "0";
@@ -8,7 +8,7 @@ import { fromBytes32 } from "lib/etc/utils";
 
 export const connectContract = async (address: string, contracts: any, stakeTokens: any) => {
   try {
-    const { Liquidations, ExternalTokenStakeManager, Issuer } = contracts as any;
+    const { Liquidations, ExternalTokenStakeManager } = contracts as any;
 
     const [
       { tokenList, stakedAmts },
@@ -32,6 +32,7 @@ export const connectContract = async (address: string, contracts: any, stakeToke
     // console.log("stakeTokens", stakeTokens);
 
     // const { tokenList, stakedAmts } = await ExternalTokenStakeManager.tokenStakeStatus(address);
+
     const tmpCollateral = [];
     tmpCollateral.push({ name: "PERI", value: periCol, IR: stakeTokens["PERI"].IR });
     let totalAmt = periCol;
@@ -41,7 +42,11 @@ export const connectContract = async (address: string, contracts: any, stakeToke
     //   console.log("item", item, fromBytes32(item), stakeTokens[fromBytes32(item)]);
 
       const name = fromBytes32(item);
-      const { IR } = stakeTokens[name];
+      const IR = stakeTokens[name]?.IR 
+        ? stakeTokens[name].IR 
+        : stakeTokens[name].stable 
+          ? toBigNumber("1")
+          : toBigNumber("0.75");
 
       // console.log(name, stakeTokens[name], totalAmt, stakeTokens);
       tmpCollateral.push({ name: name, value: stakedAmts[idx], IR });

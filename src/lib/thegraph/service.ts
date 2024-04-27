@@ -1,4 +1,4 @@
-import { ApolloClient, createHttpLink, InMemoryCache } from "@apollo/client";
+import { ApolloClient, InMemoryCache } from "@apollo/client";
 const API_URL = process.env.REACT_APP_THEGRAPH_URL;
 
 export const get = ({ url, query, mapping, variables, errorCallback }) => {

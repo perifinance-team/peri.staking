@@ -86,13 +86,13 @@ const Navigator = () => {
 				let childrenLink;
 				if (item.children?.length > 0) {
 					childrenLink = item.children.map((childrenItem) => {
-						if ((lpContractAddress[networkId] || childrenItem.name !== "earn") && (childrenItem.name !== "vesting" || vestable !== false)) /* return <></>; */
-						/* else */
+						if ((lpContractAddress[networkId] || childrenItem.name !== "earn") && (childrenItem.name !== "vesting" || vestable !== false)) 
 							return (
 								<ChildrenLink to={`${item.to}${childrenItem.to}`} key={childrenItem.name}>
 									{childrenItem.name.toLocaleUpperCase()}
 								</ChildrenLink>
 							);
+						return null;
 					});
 				}
 				if (item.name !== "vesting" || vestable !== false) {
@@ -106,7 +106,8 @@ const Navigator = () => {
 							{/* )} */}
 						</ParentLinkContainer>  
 					);
-				} 
+				}
+				return null;
 			})}
 		</Container>
 	);

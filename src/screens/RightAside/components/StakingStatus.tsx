@@ -53,6 +53,11 @@ const StakingStatus = () => {
           </Box>
         </Container>
       )}
+      <Container>
+        <BannerBox>
+          <img src={`/images/banners/peri-dex1.svg`} onClick={()=>{window.open("https://dex.peri.finance/")}} alt="PERI Finance's Dex"></img>
+        </BannerBox>
+      </Container>
       {/* <Container>
         <Image>
           <img src={`/images/currencies/USDC.png`} alt="lp"></img>
@@ -130,6 +135,22 @@ const Box = styled.div<{ $width?: string }>`
   flex: 5;
   padding: 0px 5px;
   width: ${(props) => (props.$width ? props.$width : "auto")};
+`;
+
+const BannerBox = styled.div`
+  flex: 1;
+  box-shadow: ${(props) => `0.5px 1px 0px ${props.theme.colors.border.primary}`};
+  border: ${(props) => `0.1px solid ${props.theme.colors.background.button.fifth}`};
+  border-radius: 5px;
+  z-index: 0;
+  
+  img {
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    border-radius: 4px;
+    object-fit: cover;
+  }
 `;
 
 export default StakingStatus;

@@ -5,10 +5,12 @@ import { getBalance } from "./getBalance";
 export const getLPBalance = async (currentWallet:string, currencies:any) => {
 
 	if (!contracts["LP"]?.networkId) return null;
+
+	const decimals = currencies["LP"]?.decimal ? currencies["LP"].decimal : 18;
 	
 	const [LPBalance, LPRewardEscrow, stakedLP, LPAllowance] = 
 		await Promise.all([
-			getBalance(currentWallet, "LP", currencies["LP"].decimal),
+			getBalance(currentWallet, "LP", decimals),
 			contracts["LP"].earned(currentWallet),
 			contracts["LP"].stakedAmountOf(currentWallet),
 			contracts["LP"].allowance(currentWallet),

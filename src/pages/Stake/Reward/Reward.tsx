@@ -234,6 +234,7 @@ const Reward = () => {
     } else {
       setClaimData({ ...claimData, rewards: { exchange: 0n, staking: 0n } });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hash, isConnect, address, networkId, exchangeIsReady]);
 
   useEffect(() => {

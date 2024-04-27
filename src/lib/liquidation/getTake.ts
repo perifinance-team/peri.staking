@@ -1,5 +1,3 @@
-import { utils } from "ethers";
-
 import { setLoading } from "config/reducers/loading";
 import { updateTransaction } from "config/reducers/transaction";
 
