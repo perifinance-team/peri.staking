@@ -1,5 +1,5 @@
 import React from "react";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import { H3, H4 } from "components/heading";
 import { RoundButton } from "components/button/RoundButton";
 import { Input } from "../../components/Input/index";
@@ -55,14 +55,14 @@ export const RewardCard = ({
           <Label>{"pUSD"}</Label>
           <Input
             currencyName={"pUSD"}
-            value={formatCurrency(data.rewards.Exchange, 8)}
+            value={formatCurrency(data.rewards.exchange, 8)}
             color={"primary"}
             disabled={true}
           />
         </RowContainer>
 
         <ColContainer>
-          {data?.isCloseFeePeriodEnabled && (
+          {false && data?.isCloseFeePeriodEnabled && (
             <RoundButton
               height={30}
               onClick={() => periodAction()}

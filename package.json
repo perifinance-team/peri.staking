@@ -11,7 +11,7 @@
   "dependencies": {
     "@apollo/client": "^3.8.8",
     "@egjs/react-flicking": "^4.5.3",
-    "@perifinance/peri-finance": "^0.6.13",
+    "@perifinance/peri-finance": "^0.7.32-polygon",
     "@reduxjs/toolkit": "^1.8.0",
     "@types/react-redux": "^7.1.23",
     "@web3-onboard/coinbase": "^2.2.6",
@@ -66,7 +66,7 @@
     "deploy": "env-cmd -f .env.production npm run build && npm run deploy-s3 && npm run invalidate",
     "deploy-s3": "aws s3 sync ./build s3://peri.staking --profile=peri.staking-deploy-s3",
     "invalidate": "aws cloudfront create-invalidation --profile=peri.staking-deploy-s3 --distribution-id E10BVDVX3OHOTH --paths / /index.html /error.html /service-worker.js /manifest.json /favicon.ico",
-    "test-deploy": "env-cmd -f .env.production npm run build && npm run test-deploy-s3 && npm run test-invalidate",
+    "test-deploy": "env-cmd -f .env.development npm run build && npm run test-deploy-s3 && npm run test-invalidate",
     "test-deploy-s3": "aws s3 sync ./build s3://test.peri.staking --profile=test.peri.staking-deploy-s3",
     "test-invalidate": "aws cloudfront create-invalidation --profile=test.peri.staking-deploy-s3 --distribution-id E3O6OMR9TOEU8H --paths / /index.html /error.html /service-worker.js /manifest.json /favicon.ico"
   },

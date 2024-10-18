@@ -1,16 +1,27 @@
-import { getCurrentCRatio } from './getCurrentCRatio'
+// import { end, start } from 'lib/performance';
 import { getExchangeRates } from './getExchangeRates'
 import { getIssuanceRatio } from './getIssuanceRatio'
 import { getLiquidationRatio } from './getLiquidationRatio'
 
 
-export const getRatios = async (currentWallet) => {
+export const getRatios = async (currentWallet, nativeCoin) => {
+    // start("getRatios");
+    const [iRatios, lRatios, exchangeRates ] = await Promise.all([
+        getIssuanceRatio(currentWallet),
+        getLiquidationRatio(currentWallet),
+        getExchangeRates(nativeCoin)
+    ])
+    // end();
+    // console.log("iRatios", iRatios);
+    // const { tRatio, cRatio, exSR, maxSR } = await getIssuanceRatio(currentWallet)
     return {
-        exchangeRates: await getExchangeRates(),
+        exchangeRates: exchangeRates,
         ratio: {
-            currentCRatio: await getCurrentCRatio(currentWallet),
-            targetCRatio: await getIssuanceRatio(),
-            liquidationRatio: await getLiquidationRatio(),
+            currentCRatio: BigInt(iRatios.cRatio),
+            targetCRatio: BigInt(iRatios.tRatio),
+            liquidationRatio: BigInt(lRatios),
+            exStakingRatio: BigInt(iRatios.exSR),
+            maxStakingRatio: BigInt(iRatios.maxSR),
         }
     }
 }

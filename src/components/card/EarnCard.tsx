@@ -1,5 +1,5 @@
 import React from "react";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import { H3, H4 } from "components/heading";
 import { RoundButton } from "components/button/RoundButton";
 import { Input } from "../../components/Input/index";
@@ -13,7 +13,6 @@ import { Card, IconContainer, InputContainer, APYContainer, RowContainer, ColCon
 export const EarnCard = ({
     isActive,
     coinName,
-    isStable = false,
     isApprove = false,
     approveAction = null,
     stakeAction,
@@ -72,7 +71,7 @@ export const EarnCard = ({
                             width={320}
                             margin={"20px 20px 0px 0px"}
                             shadow={isActive}
-                            disabled={!isActive || isConnect}
+                            disabled={!isActive || (isConnect && !isReady)}
                         >
                             <H4 $weight={"sb"}>Approve</H4>
                         </RoundButton>

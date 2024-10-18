@@ -1,7 +1,7 @@
+import { ethers } from 'ethers';
+
 import ERC20 from '../abi/ERC20.json';
 import { contracts } from 'lib/contract'
-
-import { ethers } from 'ethers';
 
 const tokenAddress = {
     1: '0x3530A9461788891b7f5b94148a6E82FFa6fd236a',
@@ -13,29 +13,31 @@ const tokenAddress = {
     1337: '0x98f675b60769abc732ee59685bffa19ea3c8e81c',
 }
 
-const contractAddress = {
+export const lpContractAddress = {
     1: '0xc0Ea07dA274Ab54D3A6d76293100f7370d74f0E8',
     42: '0x4c40b3E3AeC2505e801Db038821989FB0bd144fe',
     56: '0xCA4f304F58dF2231ef04E63d85C88A9D46d0ca94',
     97: '0x5e8fd0bADC50628ea179997a7669c15a2D0bF72b',
     137: '0xeFf7642144991B11DedD4c0a7e353386952fe9A5',
-    80001: '0x3F01190Aa0827f4E9fF96096CC386CC1b2DA8982',
+    // 80001: '0x3F01190Aa0827f4E9fF96096CC386CC1b2DA8982',
     1337: '0xeFf7642144991B11DedD4c0a7e353386952fe9A5',
 }
 
 export const LPContract = {
     networkId: null,
     init(networkId, provider) {
+        if (!lpContractAddress[networkId]) return;
         if(networkId) {
             this.networkId = networkId;
         }
-        // if (!contractAddress[this.networkId]) return;
-        this.contract = new ethers.Contract(contractAddress[this.networkId], contracts.sources.StakingRewards.abi, provider);
+
+        this.contract = new ethers.Contract(lpContractAddress[this.networkId], contracts.sources.StakingRewards.abi, provider);
         this.balanceContract = new ethers.Contract(tokenAddress[this.networkId], ERC20.abi, provider);
     },
 
     connect(signer) {
-        this.contract = new ethers.Contract(contractAddress[this.networkId], contracts.sources.StakingRewards.abi, signer);
+        if (!lpContractAddress[this.networkId]) return;
+        this.contract = new ethers.Contract(lpContractAddress[this.networkId], contracts.sources.StakingRewards.abi, signer);
         this.balanceContract = new ethers.Contract(tokenAddress[this.networkId], ERC20.abi, signer);
     },
 
@@ -64,15 +66,15 @@ export const LPContract = {
     },
 
     allowance: async function (currentAddress) {
-        return (await this.balanceContract.allowance(currentAddress, contractAddress[this.networkId]));
+        return (await this.balanceContract.allowance(currentAddress, lpContractAddress[this.networkId]));
     },
 
     approve: async function () {
-        return await this.balanceContract.approve(contractAddress[this.networkId], '11579208923731619542357098500868790785326998466');
+        return await this.balanceContract.approve(lpContractAddress[this.networkId], '11579208923731619542357098500868790785326998466');
     },
 
     balanceOf: async function (currentAddress) {
-        const balance = currentAddress ? await this.contract.balanceOf(currentAddress) : undefined;
+        const balance = currentAddress ? await this.balanceContract.balanceOf(currentAddress) : undefined;
         return balance ? balance : 0n;
     },
     earned: async function (currentWallet) {

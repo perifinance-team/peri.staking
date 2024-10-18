@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "config/reducers";
 import styled from "styled-components";
@@ -16,29 +16,31 @@ import { updateTransaction } from "config/reducers/transaction";
 import { setLoading } from "config/reducers/loading";
 import { web3Onboard } from "lib/onboard";
 
-import { getTotalDebtCache } from "lib/balance";
-import { getLpRewards } from "lib/reward";
+// import { getTotalDebtCache } from "lib/balance";
+// import { getLpRewards } from "lib/reward";
 import { getTotalAPY } from "lib/contract/api/api";
+import {
+  divideDecimal,
+  fromBigInt,
+  /* fromUnit,  */ multiplyDecimal,
+  toBigInt,
+  toBytes32 /* , toUnit */,
+} from "lib/etc/utils";
+import { extractMessage } from "lib/error";
 
 SwiperCore.use([Mousewheel, Virtual]);
 
-const currencies = [
-  { name: "USDC", isStable: true },
-  { name: "PERI", isStable: false },
-  { name: "DAI", isStable: true },
-];
-
-const Mint = () => {
+const Mint = ({ currencies }) => {
   const dispatch = useDispatch();
   const balancesIsReady = useSelector((state: RootState) => state.balances.isReady);
   const exchangeIsReady = useSelector((state: RootState) => state.exchangeRates.isReady);
   const { balances } = useSelector((state: RootState) => state.balances);
   const exchangeRates = useSelector((state: RootState) => state.exchangeRates);
-  const { targetCRatio } = useSelector((state: RootState) => state.ratio);
+  // const { targetCRatio } = useSelector((state: RootState) => state.ratio);
   const { hash } = useSelector((state: RootState) => state.transaction);
   const { gasPrice } = useSelector((state: RootState) => state.networkFee);
 
-  const { isConnect, networkId } = useSelector((state: RootState) => state.wallet);
+  const { isConnect, networkId, address } = useSelector((state: RootState) => state.wallet);
   const [slideIndex, setSlideIndex] = useState(0);
   const [activeCurrency, setActiveCurrency] = useState(null);
   const [maxStakeAmount, setMaxStakeAmount] = useState("0");
@@ -64,30 +66,40 @@ const Mint = () => {
       let mintAmount = value;
       let stakeAmount;
 
-      if (
-        BigInt(utils.parseEther(maxMintAmount).toString()) <=
-        BigInt(utils.parseEther(mintAmount).toString())
-      ) {
+      const bnMintAmount = toBigInt(mintAmount);
+
+      if (toBigInt(maxMintAmount) <= toBigInt(mintAmount)) {
         mintAmount = maxMintAmount;
         stakeAmount = maxStakeAmount;
       } else {
-        stakeAmount =
-          (BigInt(utils.parseEther(mintAmount).toString()) *
+        stakeAmount = divideDecimal(
+          bnMintAmount,
+          multiplyDecimal(balances[currencyName].IR, exchangeRates[currencyName])
+        );
+        /* (BigInt(utils.parseEther(mintAmount).toString()) *
             BigInt(Math.pow(10, 18).toString()) *
-            (BigInt(Math.pow(10, 18).toString()) / targetCRatio)) /
-          exchangeRates[currencyName];
-        stakeAmount = utils.formatEther(stakeAmount.toString());
+            (BigInt(Math.pow(10, 18).toString()) / balances[currencyName].IR)) /
+          exchangeRates[currencyName]; */
+        stakeAmount = fromBigInt(stakeAmount);
       }
 
       if (currencyName !== "PERI") {
-        if (BigInt(utils.parseEther(mintAmount).toString()) > balances[currencyName].allowance) {
+        if (BigInt(bnMintAmount.toString()) > balances[currencyName].allowance) {
           setIsApprove(true);
         }
       }
       getCRatio(currencyName, mintAmount, stakeAmount);
 
+      // console.log("currencyName", currencyName, balances["DEBT"].balance);
+      if (currencyName !== "PERI" && balances["DEBT"].balance === 0n) {
+        NotificationManager.warning(
+          `Please check the staking order ($PERI ➔ $Others)`,
+          "Starking Order"
+        );
+      }
+
       setMintAmount(mintAmount);
-      setStakeAmount(stakeAmount);
+      setStakeAmount(Number(stakeAmount).toFixed(balances[currencyName].decimal));
     } catch (e) {
       console.log(e);
       getCRatio(currencyName, "0", "0");
@@ -97,17 +109,49 @@ const Mint = () => {
   };
 
   const getMaxAmount = async (currency) => {
-    let stakeAmount = utils.formatEther(balances[currency.name].stakeable);
-    let mintAmount = utils.formatEther(
-      (BigInt(balances[currency.name].stakeable) * exchangeRates[currency.name]) /
+    // console.log("getMaxAmount", currency.name, balances[currency.name].stakeable, exchangeRates[currency.name]);
+    // let stakeAmount = fromBigInt(balances[currency.name].stakeable);
+    // const temp = multiplyDecimal(balances[currency.name].stakeable, exchangeRates[currency.name]);
+    // let mintAmount = fromBigInt(multiplyDecimal(temp, balances[currency.name].IR));
+    /* (BigInt(balances[currency.name].stakeable) * exchangeRates[currency.name]) /
         BigInt(Math.pow(10, 18).toString()) /
         (BigInt(Math.pow(10, 18).toString()) / targetCRatio)
-    );
+    ); */
+    try {
+      const { Issuer } = contracts;
 
-    // console.log(currency.name, balances[currency.name].stakeable);
+      const tmpMintAmt =
+        currency.name === "PERI"
+          ? (await Issuer.remainingIssuablePynths(address))?.maxIssuable
+          : await Issuer.maxExIssuablePynths(address, toBytes32(currency.name));
 
-    setMaxStakeAmount(stakeAmount);
-    setMaxMintAmount(mintAmount);
+      const mintAmount = !tmpMintAmt || tmpMintAmt.isZero() ? 0 : tmpMintAmt.toBigInt();
+
+      // console.log(currency.name, "maxMintAmount", mintAmount);
+
+      // console.log(currency.name, balances[currency.name].IR, exchangeRates[currency.name]);
+      if (!balances[currency.name]?.IR || exchangeRates[currency.name] === 0n)
+        throw new Error(`${currency.name} rate is not valid`);
+
+      const temp = divideDecimal(mintAmount, balances[currency.name].IR);
+      const stakeable = divideDecimal(temp, exchangeRates[currency.name]);
+      const stakeAmount = fromBigInt(stakeable);
+
+      balances["DEBT"].balance !== 0n &&
+        dispatch(
+          updateBalance({ currencyName: currency.name, value: "stakeable", amount: stakeable })
+        );
+
+      // console.log(currency.name, "maxMintAmount", mintAmount, "maxStakeAmount", stakeAmount, "balances[currency.name].IR", balances[currency.name].IR);
+
+      setMaxStakeAmount(stakeAmount);
+      setMaxMintAmount(fromBigInt(mintAmount));
+    } catch (e) {
+      setMaxStakeAmount("");
+      setMaxMintAmount("");
+      console.log(e);
+      NotificationManager.warning(extractMessage(e));
+    }
   };
 
   const getGasEstimate = async () => {
@@ -117,24 +161,32 @@ const Mint = () => {
       gasLimit = BigInt(
         (
           await contracts.signers.PeriFinance.estimateGas.issuePynths(
-            utils.formatBytes32String(activeCurrency.name),
-            utils.parseEther(mintAmount)
+            toBytes32(activeCurrency.name),
+            toBigInt(mintAmount)
           )
         ).toString()
       );
     } catch (e) {
       console.log(e);
     }
+    console.log(gasLimit.toString());
     dispatch(setLoading({ name: "gasEstimate", value: false }));
     return ((gasLimit * 12n) / 10n).toString();
   };
 
   const approveAction = async (currencyName) => {
     const amount = BigInt("11579208923731619542357098500868790785326998466");
-    const transaction = await contracts.signers[currencyName].approve(
-      contracts?.addressList["ExternalTokenStakeManager"].address,
-      amount.toString()
-    );
+    let transaction;
+    try {
+      // console.log("approveAction", currencyName, amount.toString());
+      transaction = await contracts.signers[currencyName].approve(
+        contracts?.addressList["ExternalTokenStakeManager"].address,
+        amount.toString()
+      );
+    } catch (e) {
+      console.log(e);
+      return;
+    }
     NotificationManager.info("Approve", "In progress", 0);
 
     const getState = async () => {
@@ -151,7 +203,7 @@ const Mint = () => {
   };
 
   const connectHelp = async () => {
-    NotificationManager.warn(`Please connect your wallet first`, "ERROR");
+    NotificationManager.warning(`Please connect your wallet first`, "WARNING");
     try {
       await web3Onboard.connect();
     } catch (e) {}
@@ -163,7 +215,7 @@ const Mint = () => {
       return false;
     }
 
-    if (BigInt(utils.parseEther(mintAmount).toString()) === 0n) {
+    if (toBigInt(mintAmount) === 0n) {
       NotificationManager.error(`Please enter the pUSD to mint`, "ERROR");
       return false;
     }
@@ -176,8 +228,8 @@ const Mint = () => {
     try {
       let transaction;
       transaction = await contracts.signers.PeriFinance.issuePynths(
-        utils.formatBytes32String(activeCurrency.name),
-        utils.parseEther(mintAmount),
+        toBytes32(activeCurrency.name),
+        toBigInt(mintAmount),
         transactionSettings
       );
 
@@ -185,7 +237,7 @@ const Mint = () => {
         updateTransaction({
           hash: transaction.hash,
           message: `${activeCurrency.name} Staking & Minting ${formatCurrency(
-            BigInt(utils.parseEther(mintAmount).toString())
+            toBigInt(mintAmount)
           )} pUSD`,
           type: "Staked & Minted",
         })
@@ -217,13 +269,14 @@ const Mint = () => {
     // dispatch(setLoading({ name: "apy", value: false }));
   };
 
-  const getCRatio = (currencyName, mintAmount, stakeAmount) => {
-    if (mintAmount === "" || !mintAmount) {
-      mintAmount = "0";
-    }
+  const getCRatio = useCallback(
+    (currencyName: string | number, mintAmount: string, stakeAmount: string) => {
+      if (mintAmount === "" || !mintAmount) {
+        mintAmount = "0";
+      }
 
-    try {
-      let mintAmountToPERI =
+      try {
+        /* let mintAmountToPERI =
         (BigInt(utils.parseEther(mintAmount).toString()) * BigInt(Math.pow(10, 18).toString())) /
         exchangeRates["PERI"];
 
@@ -247,11 +300,24 @@ const Mint = () => {
         (BigInt(Math.pow(10, 18).toString()) * 100n) /
           ((totalDEBT * BigInt(Math.pow(10, 18).toString())) /
             (balances["PERI"].balance + DAIStakedToPERI + USDCStakedToPERI))
-      );
-    } catch (e) {
-      setCRatio(0n);
-    }
-  };
+      ); */
+        const bnMintAmount = utils.parseEther(mintAmount).toBigInt();
+        const bnMintSA = divideDecimal(bnMintAmount, balances[currencyName].IR);
+        const estDebt = balances["DEBT"].balance + bnMintAmount;
+        const estTotalEA = balances["PERI"].totalEA + bnMintSA;
+
+        // console.log("mintAmount", mintAmount, "stakeAmount", stakeAmount, "estDebt", estDebt, "estTotalEA", estTotalEA);
+
+        const cRatio = divideDecimal(divideDecimal(estTotalEA, estDebt), BigInt(1e16));
+        // console.log("cRatio", bnMintAmount, bnMintSA, cRatio, estDebt, estTotalEA);
+
+        setCRatio(cRatio);
+      } catch (e) {
+        setCRatio(0n);
+      }
+    },
+    [balances]
+  );
 
   useEffect(() => {
     if (!hash) {
@@ -259,7 +325,7 @@ const Mint = () => {
       setStakeAmount("");
       getCRatio(currencies[slideIndex].name, "0", "0");
     }
-  }, [hash]);
+  }, [getCRatio, hash, slideIndex]);
 
   useEffect(() => {
     if (exchangeIsReady) {
@@ -270,7 +336,7 @@ const Mint = () => {
   useEffect(() => {
     if (exchangeIsReady) {
       if (balancesIsReady && isConnect) {
-        getMaxAmount(currencies[slideIndex]);
+        // getMaxAmount(currencies[slideIndex]);
         getCRatio(currencies[slideIndex].name, mintAmount, stakeAmount);
       } else {
         setMaxStakeAmount("");
@@ -291,10 +357,11 @@ const Mint = () => {
   }, [slideIndex]);
 
   useEffect(() => {
+    // console.log("slideIndex", slideIndex, exchangeIsReady, balancesIsReady, currencies, maxMintAmount);
     if (slideIndex !== null && exchangeIsReady && balancesIsReady) {
       getMaxAmount(currencies[slideIndex]);
     }
-  }, [slideIndex, exchangeIsReady, balancesIsReady]);
+  }, [slideIndex, exchangeIsReady, balancesIsReady, currencies]);
 
   return (
     <Container>
@@ -305,7 +372,7 @@ const Mint = () => {
         <Swiper
           spaceBetween={20}
           direction={"vertical"}
-          slidesPerView={3}
+          slidesPerView={currencies.length}
           centeredSlides={true}
           mousewheel={true}
           allowTouchMove={true}
@@ -319,6 +386,7 @@ const Mint = () => {
           virtual
         >
           {currencies.map((currency, index) => (
+            currency.name !== "LP" &&
             <SwiperSlide key={currency.name} virtualIndex={index}>
               <MintCard
                 hide={index < slideIndex}
@@ -335,6 +403,10 @@ const Mint = () => {
                 isApprove={isApprove}
                 approveAction={() => approveAction(currency.name)}
                 mintAction={() => mintAction()}
+                staked={balances[currency.name]?.staked}
+                decimals={balances[currency.name]?.decimal}
+                isConnect={isConnect}
+                isReady={balancesIsReady}
               ></MintCard>
             </SwiperSlide>
           ))}

@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { contracts } from "lib/contract";
 import { H1, H4 } from "components/heading";
-import { StyledTHeader, StyledTBody, Row, BorderRow } from "components/table";
+import { StyledTHeader, Row, BorderRow } from "components/table";
 import { NotificationManager } from "react-notifications";
 import {
   Container,
@@ -22,6 +22,7 @@ import { getEscrowList } from "lib/escrow";
 import { RootState } from "config/reducers";
 import { updateTransaction } from "config/reducers/transaction";
 import { setReady, updateEscrowList } from "config/reducers/escrow";
+import { add } from "date-fns";
 
 interface IEntry {
   amount: string;
@@ -272,10 +273,6 @@ const EscrowBodyRow = styled(BorderRow)`
 // `;
 
 const EscrowHeader = styled(StyledTHeader)`
-  width: 100%;
-`;
-
-const EscrowBody = styled(StyledTBody)`
   width: 100%;
 `;
 

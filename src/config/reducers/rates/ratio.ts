@@ -3,12 +3,16 @@ export type RatiosState = {
     currentCRatio: bigint;
     targetCRatio: bigint;
     liquidationRatio: bigint;
+    exStakingRatio: bigint;
+    maxStakingRatio: bigint;
 };
 
 const initialState: RatiosState = {
     currentCRatio: 0n,
     targetCRatio: 250000000000000000n,
     liquidationRatio: 666666666666666666n,
+    exStakingRatio: 0n,
+    maxStakingRatio: 0n,
 };
 
 export const RatioSlice = createSlice({
@@ -23,11 +27,13 @@ export const RatioSlice = createSlice({
                 currentCRatio: rateState.currentCRatio,
                 targetCRatio: rateState.targetCRatio,
                 liquidationRatio: rateState.liquidationRatio,
+                exStakingRatio: rateState.exStakingRatio,
+                maxStakingRatio: rateState.maxStakingRatio,
             };
         },
         clearCRatio(state) {
             // console.log("clearCRatio called");
-            state.currentCRatio = 0n;
+            return initialState;
         },
     },
 });

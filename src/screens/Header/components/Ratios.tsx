@@ -1,21 +1,20 @@
 import React from "react";
 import styled from "styled-components";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "config/reducers";
 import { H4 } from "components/heading";
-import { toggleNoti } from "config/reducers/liquidation";
 
 const Ratios = () => {
-  const dispatch = useDispatch();
-  const { targetCRatio, currentCRatio, liquidationRatio } = useSelector(
+  const { targetCRatio, liquidationRatio } = useSelector(
     (state: RootState) => state.ratio
   );
 
   // const { liquidation } = useSelector((state: RootState) => state.liquidation);
 
-  const ratioToPer = (value) => {
-    if (value === 0n) return "0";
-    return ((BigInt(Math.pow(10, 18).toString()) * 100n) / value).toString();
+  const ratioToPer = (value: bigint) => {
+    const bnValue = BigInt(value);
+    if (bnValue === 0n) return "0";
+    return ((BigInt(Math.pow(10, 18).toString()) * 100n) / bnValue).toString();
   };
 
   // const onLiquidHandler = () => {
@@ -25,16 +24,16 @@ const Ratios = () => {
   return (
     <Container>
       <Row $width="38%">
-        <H4 $weight={"sm"} $color={"sixth"}>Target</H4>
-        <RatioLabel $color={"fourth"}>
-          {ratioToPer(targetCRatio)}%
-        </RatioLabel>
+        <H4 $weight={"sm"} $color={"sixth"}>
+          Target
+        </H4>
+        <RatioLabel $color={"fourth"}>{ratioToPer(targetCRatio)}%</RatioLabel>
       </Row>
       <Row $width="58%">
-        <H4 $weight={"sm"} $color={"sixth"}>Liquidation</H4>
-        <RatioLabel $color={"fourth"}>
-          {ratioToPer(liquidationRatio)}%
-        </RatioLabel>
+        <H4 $weight={"sm"} $color={"sixth"}>
+          Liquidation
+        </H4>
+        <RatioLabel $color={"fourth"}>{ratioToPer(liquidationRatio)}%</RatioLabel>
       </Row>
     </Container>
   );
@@ -57,12 +56,12 @@ const Container = styled.div`
   `}
 `;
 
-const Row = styled.div<{ $width?: string; }>`
-  width: ${({$width}) => $width ? $width : "50%"};
+const Row = styled.div<{ $width?: string }>`
+  width: ${({ $width }) => ($width ? $width : "50%")};
   margin: 0px 10px 0px 10px;
   display: flex;
   flex-direction: row;
-  
+
   justify-content: center;
 
   h4 {

@@ -7,19 +7,19 @@ import { formatCurrency } from "lib";
 import Timer from "components/Timer";
 import { BaseContainer } from "components/container";
 import { toggleNoti } from "config/reducers/liquidation";
+import { fromBigInt } from "lib/etc/utils";
 
 const DebtBalance = () => {
   const dispatch = useDispatch();
   const { balances } = useSelector((state: RootState) => state.balances);
   const { liquidation } = useSelector((state: RootState) => state.liquidation);
   const { isConnect } = useSelector((state: RootState) => state.wallet);
-  const { currentCRatio } = useSelector(
-    (state: RootState) => state.ratio
-  );
+  const { currentCRatio } = useSelector((state: RootState) => state.ratio);
 
-  const ratioToPer = (value) => {
+  const ratioToPer = (value: bigint) => {
     if (value === 0n) return "0";
-    return ((BigInt(Math.pow(10, 18).toString()) * 100n) / value).toString();
+    // console.log("ratio", value);
+    return Math.round((1 / Number(fromBigInt(value))) * 100).toString();
   };
 
   const onLiquidHandler = () => {
@@ -34,11 +34,14 @@ const DebtBalance = () => {
   };
 
   useEffect(() => {
-    return () => {
-      setFlag(isConnect && Number(ratioToPer(currentCRatio)) <= 150 && liquidation);
-      // setFlag(true);
-    };
-  }, [currentCRatio, liquidation]);
+    // console.log("currentCRatio", currentCRatio, "ratioToPer", Number(ratioToPer(currentCRatio)));
+    currentCRatio && setFlag(isConnect && Number(ratioToPer(currentCRatio)) <= 150 && liquidation);
+    // return () => {
+    //   console.log("currentCRatio", currentCRatio, "ratioToPer", Number(ratioToPer(currentCRatio)));
+    //   setFlag(isConnect && Number(ratioToPer(currentCRatio)) <= 150 && liquidation);
+    //   // setFlag(true);
+    // };
+  }, [isConnect, currentCRatio, liquidation]);
 
   return (
     <DebtBalanceContainer>
@@ -47,7 +50,7 @@ const DebtBalance = () => {
           <LiquidationBtn $isShow={isUnderLiquidation()} onClick={() => onLiquidHandler()}>
             !
           </LiquidationBtn>
-          <H4 $weight={"sm"} $color={"sixth"} >
+          <H4 $weight={"sm"} $color={"sixth"}>
             C-Ratio
           </H4>
         </CRatioInfoLabel>
@@ -192,11 +195,9 @@ const CRatioContainer = styled.div`
     margin: 0;
   `}
 
-
   ${({ theme }) => theme.media.tablet`
     flex-wrap: wrap;
   `}
-
 `;
 
 const RatioLabel = styled(H4)`
@@ -227,7 +228,6 @@ const CRatioInfoLabel = styled.div`
     text-wrap: nowrap;
     width: fit-content;
   }
-
 `;
 
 const LiquidationBtn = styled.button<{ $isShow?: boolean }>`

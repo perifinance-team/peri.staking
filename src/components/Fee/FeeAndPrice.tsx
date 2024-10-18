@@ -1,13 +1,25 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "config/reducers";
 import styled from "styled-components";
 import { H5 } from "components/heading";
 import { formatCurrency } from "lib";
+import { getExchangeRatesLP } from "lib/rates";
 
 export const FeeAndPrice = ({ currencyName = "PERI" }) => {
   const { gasPrice } = useSelector((state: RootState) => state.networkFee);
   const exchangeRates = useSelector((state: RootState) => state.exchangeRates);
+  const { networkId } = useSelector((state: RootState) => state.wallet);
+  const [lpPrice, setLPPrice] = React.useState(0n);
+
+
+  useEffect(() => {
+    getExchangeRatesLP(networkId).then(({ PERIBalance, PoolTotal }) => {
+      PoolTotal ? setLPPrice(PERIBalance * 2n * exchangeRates["PERI"] / PoolTotal)
+      : setLPPrice(0n);
+    });
+  }, [exchangeRates, networkId]);
+
 
   return (
     <FeeContainer>
@@ -15,7 +27,10 @@ export const FeeAndPrice = ({ currencyName = "PERI" }) => {
         Fee : {(gasPrice / 1000000000n).toString()} GWEI
       </H5>
       <H5 $align={"right"} color={"primary"}>
-        {currencyName} : $ {formatCurrency(exchangeRates[currencyName])}
+      {currencyName} : $ {
+          currencyName === "LP" 
+          ? formatCurrency(lpPrice)
+          : formatCurrency(exchangeRates[currencyName])} 
       </H5>
     </FeeContainer>
   );

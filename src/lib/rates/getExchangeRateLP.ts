@@ -1,4 +1,5 @@
-import { Contract } from 'ethers';
+import { BigNumber, Contract } from 'ethers';
+
 import { contracts } from 'lib/contract';
 import ERC20 from 'lib/contract/abi/ERC20.json';
 
@@ -16,15 +17,22 @@ export const getExchangeRatesLP = async (networkId) => {
 
     const provider = contracts.provider;
     const peri = new Contract(PERI_ADDRESS, ERC20.abi, provider);
-    const lp = new Contract(tokenAddress[networkId], ERC20.abi, provider);
+    const lp = tokenAddress[networkId] 
+        ? new Contract(tokenAddress[networkId], ERC20.abi, provider)
+        : undefined;
 
-    const PERIBalance = BigInt((await peri.balanceOf(tokenAddress[networkId])).toString());
-    const PoolTotal = BigInt((await lp.totalSupply()).toString());
+    const [PERIBalance, PoolTotal] = await Promise.all([
+        tokenAddress[networkId] ? peri.balanceOf(tokenAddress[networkId]) : BigNumber.from(0),
+        lp ? lp.totalSupply() : BigNumber.from(0),
+    ]);
+
+    // const PERIBalance = BigInt((await peri.balanceOf(tokenAddress[networkId])).toString());
+    // const PoolTotal = BigInt((await lp.totalSupply()).toString());
     
     const periPerLP:{
         PERIBalance: bigint,
         PoolTotal: bigint
-    } = {PERIBalance,  PoolTotal};
+    } = { PERIBalance: PERIBalance.toBigInt(), PoolTotal: PoolTotal.toBigInt()};
     
     return periPerLP;
 }

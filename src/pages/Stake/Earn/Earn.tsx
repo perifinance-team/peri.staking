@@ -3,12 +3,11 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "config/reducers";
 import { NotificationManager } from "react-notifications";
 
-import styled from "styled-components";
 import { H1 } from "components/heading";
 import { EarnCard } from "components/card/EarnCard";
 import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore, { Mousewheel, Virtual } from "swiper/core";
-import { utils } from "ethers";
+import { BigNumber, utils } from "ethers";
 import { updateBalance } from "config/reducers/wallet";
 import { updateTransaction } from "config/reducers/transaction";
 import { contracts } from "lib/contract";
@@ -17,16 +16,13 @@ import { getExchangeRatesLP } from "lib/rates";
 import { getLpRewards } from "lib/reward";
 import { setLoading } from "config/reducers/loading";
 import { Title, Container, StakeContainer } from "../Mint/Mint";
+import { toBigInt } from "lib/etc/utils";
 
 SwiperCore.use([Mousewheel, Virtual]);
-const Earn = () => {
+const Earn = ({ LPs }) => {
   const dispatch = useDispatch();
-  const balancesIsReady = useSelector(
-    (state: RootState) => state.balances.isReady
-  );
-  const exchangeIsReady = useSelector(
-    (state: RootState) => state.exchangeRates.isReady
-  );
+  const balancesIsReady = useSelector((state: RootState) => state.balances.isReady);
+  const exchangeIsReady = useSelector((state: RootState) => state.exchangeRates.isReady);
   const { hash } = useSelector((state: RootState) => state.transaction);
   const [slideIndex, setSlideIndex] = useState(0);
   const { balances } = useSelector((state: RootState) => state.balances);
@@ -38,7 +34,7 @@ const Earn = () => {
   const [isApprove, setIsApprove] = useState(false);
   const [rewardsAmountToAPY, setRewardsAmountToAPY] = useState(0n);
 
-  const coins = [{ name: "LP", isStable: true }];
+  // const coins = [{ name: "LP", isExternal: false, isLP: true }];
 
   const onChangeStakingAmount = (value, currencyName) => {
     if (/\./g.test(value)) {
@@ -46,22 +42,17 @@ const Earn = () => {
     }
 
     if (isNaN(Number(value)) || value === "") {
-      setStakeAmount("");
+      setStakeAmount("0");
       return false;
     }
     let stakeAmount = value;
+    const bnStakeAmount = toBigInt(stakeAmount);
 
-    if (
-      BigInt(utils.parseEther(maxStakeAmount).toString()) <
-      BigInt(utils.parseEther(stakeAmount).toString())
-    ) {
+    if (toBigInt(maxStakeAmount) < bnStakeAmount) {
       stakeAmount = maxStakeAmount;
     }
 
-    if (
-      BigInt(utils.parseEther(stakeAmount).toString()) >
-      balances[currencyName].allowance
-    ) {
+    if (bnStakeAmount > balances[currencyName].allowance) {
       setIsApprove(true);
     }
 
@@ -74,19 +65,14 @@ const Earn = () => {
     NotificationManager.info("Approve", "In progress", 0);
 
     const getState = async () => {
-      await contracts.provider.once(
-        transaction.hash,
-        async (transactionState) => {
-          if (transactionState.status === 1) {
-            NotificationManager.remove(NotificationManager.listNotify[0]);
-            NotificationManager.success(`Approve success`, "SUCCESS");
-            dispatch(
-              updateBalance({ currencyName, value: "allowance", amount })
-            );
-            setIsApprove(false);
-          }
+      await contracts.provider.once(transaction.hash, async (transactionState) => {
+        if (transactionState.status === 1) {
+          NotificationManager.remove(NotificationManager.listNotify[0]);
+          NotificationManager.success(`Approve success`, "SUCCESS");
+          dispatch(updateBalance({ currencyName, value: "allowance", amount }));
+          setIsApprove(false);
         }
-      );
+      });
     };
     getState();
   };
@@ -101,20 +87,22 @@ const Earn = () => {
   const getAPY = async () => {
     dispatch(setLoading({ name: "apy", value: true }));
     try {
-      const { PERIBalance, PoolTotal } = await getExchangeRatesLP(networkId);
+      const [exchangeRatesLP, lpRewards, totalStakeAmount] = await Promise.all([
+        getExchangeRatesLP(networkId),
+        getLpRewards(),
+        contracts["LP"] ? contracts["LP"].totalStakeAmount() : BigNumber.from(0),
+      ]);
+      const { PERIBalance, PoolTotal } = exchangeRatesLP; /* await getExchangeRatesLP(networkId);
       const lpRewards = await getLpRewards();
-      const totalStakeAmount = BigInt(
-        (await contracts["LP"].totalStakeAmount()).toString()
-      );
+      const totalStakeAmount = BigInt((await contracts["LP"].totalStakeAmount()).toString()); */
 
-      const reward =
-        (BigInt(lpRewards[networkId]) *
-          BigInt(Math.pow(10, 18).toString()) *
-          52n *
-          100n) /
-        ((totalStakeAmount * PERIBalance) / PoolTotal);
+      const reward = lpRewards[networkId]
+        ? (BigInt(lpRewards[networkId]) * BigInt(Math.pow(10, 18).toString()) * 52n * 100n) /
+          ((totalStakeAmount.toBigInt() * PERIBalance) / PoolTotal)
+        : 0n;
 
       setRewardsAmountToAPY(reward);
+      setStakeAmount("0");
     } catch (e) {
       console.log(e);
       setRewardsAmountToAPY(0n);
@@ -127,9 +115,7 @@ const Earn = () => {
     dispatch(setLoading({ name: "gasEstimate", value: true }));
     try {
       gasLimit = BigInt(
-        await contracts.signers.LP.contract.estimateGas.stake(
-          utils.parseEther(stakeAmount)
-        )
+        await contracts.signers.LP.contract.estimateGas.stake(utils.parseEther(stakeAmount))
       );
     } catch (e) {
       console.log(e);
@@ -173,11 +159,11 @@ const Earn = () => {
     }
   };
 
-  useEffect(() => {
-    if (!hash) {
-      setStakeAmount("0");
-    }
-  }, [hash]);
+  // useEffect(() => {
+  //   if (!hash) {
+  //     setStakeAmount("0");
+  //   }
+  // }, [hash]);
 
   useEffect(() => {
     setIsApprove(false);
@@ -196,9 +182,7 @@ const Earn = () => {
       getAPY();
       if (isConnect) {
         setMaxStakeAmount(
-          utils.formatEther(
-            balances[coins[slideIndex].name].transferable.toString()
-          )
+          utils.formatEther(balances[LPs[slideIndex].name].transferable.toString())
         );
       }
     }
@@ -206,11 +190,7 @@ const Earn = () => {
 
   useEffect(() => {
     if (slideIndex !== null && exchangeIsReady && balancesIsReady) {
-      setMaxStakeAmount(
-        utils.formatEther(
-          balances[coins[slideIndex].name].transferable.toString()
-        )
-      );
+      setMaxStakeAmount(utils.formatEther(balances[LPs[slideIndex].name].transferable.toString()));
     }
   }, [slideIndex, exchangeIsReady, balancesIsReady]);
 
@@ -235,7 +215,7 @@ const Earn = () => {
           onSlideChange={({ activeIndex }) => setSlideIndex(activeIndex)}
           virtual
         >
-          {coins.map((coin, index) => (
+          {LPs?.map((coin, index) => (
             <SwiperSlide key={coin.name} virtualIndex={index}>
               <EarnCard
                 isActive={index === slideIndex}
@@ -244,9 +224,7 @@ const Earn = () => {
                 apy={rewardsAmountToAPY}
                 stakeAmount={stakeAmount}
                 maxAction={() =>
-                  isConnect
-                    ? onChangeStakingAmount(maxStakeAmount, coin.name)
-                    : connectHelp()
+                  isConnect ? onChangeStakingAmount(maxStakeAmount, coin.name) : connectHelp()
                 }
                 isApprove={isApprove}
                 approveAction={() => approveAction(coin.name)}
@@ -259,6 +237,5 @@ const Earn = () => {
     </Container>
   );
 };
-
 
 export default Earn;

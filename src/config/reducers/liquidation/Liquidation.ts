@@ -18,8 +18,8 @@ const initialState: LiquidState = {
         cRatio: "0",
         debt: 0,
         collateral: [
-            { name: "Peri", value: 0 },
-            { name: "Dai", value: 0 },
+            { name: "PERI", value: 0 },
+            { name: "DAI", value: 0 },
             { name: "USDC", value: 0 },
         ],
         status: 0,

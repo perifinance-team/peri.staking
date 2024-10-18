@@ -1,125 +1,153 @@
 import React from "react";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import { H3, H4 } from "components/heading";
 import { RoundButton } from "components/button/RoundButton";
 import { Input } from "../../components/Input/index";
 import { MaxButton } from "components/button/MaxButton";
 import { FeeAndPrice } from "components/fee";
-import { useSelector } from "react-redux";
-import { RootState } from "config/reducers";
+// import { useSelector } from "react-redux";
+// import { RootState } from "config/reducers";
 import { formatCurrency } from "lib";
-import { Card, IconContainer, InputContainer, APYContainer, RowContainer, ColContainer, Label } from "../card/MintCard"
+import {
+  Card,
+  IconContainer,
+  InputContainer,
+  APYContainer,
+  RowContainer,
+  ColContainer,
+  Label,
+} from "../card/MintCard";
+import { fromBigInt } from "lib/etc/utils";
 
 export const BurnCard = ({
-    hide = false,
-    isActive,
-    currencyName,
-    burnAmount,
-    unStakeAmount,
-    burnAction,
-    isLP = false,
-    cRatio = 0n,
-    maxAction,
-    onChange,
+  hide = false,
+  isActive,
+  currencyName,
+  burnAmount,
+  unStakeAmount,
+  burnAction,
+  isLP = false,
+  cRatio = 0n,
+  maxAction,
+  onChange,
+  staked,
+  decimals,
+  isConnect,
+  isReady,
+  networkId,
 }) => {
-    const { isConnect, networkId } = useSelector((state: RootState) => state.wallet);
-    const { balances, isReady } = useSelector((state: RootState) => state.balances);
-    const swapName = {
-        1: "UNI",
-        3: "UNI",
-        4: "UNI",
-        5: "UNI",
-        42: "UNI",
-        56: "PANCAKE",
-        97: "PANCAKE",
-        137: "QUICK",
-        80001: "QUICK",
-    };
-    return (
-        <Card $isActive={isActive} $border={"tertiary"}>
-            <IconContainer>
-                <img
-                    src={`/images/icon/${isLP ? `${currencyName}_${swapName[networkId]}.png` : `${currencyName}.svg`}`}
-                    alt="burn"
-                />
-                <H3 $weight={"sb"}>{isLP ? `${swapName[networkId]}SWAP` : currencyName}</H3>
-                <H4 $weight={"b"}>Staked: {formatCurrency(balances[currencyName]?.staked, 2)}</H4>
-            </IconContainer>
-            <InputContainer $hide={hide}>
-                {!isLP && (
-                    <APYContainer>
-                        <Ratio $align={"right"} $weight={"sb"}>
-                            EST C-RATIO: {cRatio.toString()}%
-                        </Ratio>
-                    </APYContainer>
-                )}
-                {!isLP && (
-                    <RowContainer>
-                        <Label>{"pUSD"}</Label>
-                        <Input
-                            disabled={!isActive || !isReady}
-                            currencyName={"pUSD"}
-                            value={isConnect ? burnAmount : ""}
-                            onChange={(e) => onChange(e.target.value, currencyName)}
-                            color={"primary"}
-                        />
-                        <MaxButton disabled={!isActive || !isReady} color={"fourth"} fontColor={"fifth"} onClick={() => maxAction()} />
-                    </RowContainer>
-                )}
+  // const { /* isConnect, */ networkId } = useSelector((state: RootState) => state.wallet);
+  const swapName = {
+    1: "UNI",
+    3: "UNI",
+    4: "UNI",
+    5: "UNI",
+    42: "UNI",
+    56: "PANCAKE",
+    97: "PANCAKE",
+    137: "QUICK",
+    80001: "QUICK",
+  };
+  return (
+    <Card $isActive={isActive} $border={"tertiary"}>
+      <IconContainer>
+        <img
+          src={`/images/icon/${
+            isLP ? `${currencyName}_${swapName[networkId]}.png` : `${currencyName}.svg`
+          }`}
+          alt="burn"
+        />
+        <H3 $weight={"sb"}>{isLP ? `${swapName[networkId]}SWAP` : currencyName}</H3>
+        <H4 $weight={"b"}>Staked: {formatCurrency(staked, 2)}</H4>
+      </IconContainer>
+      <InputContainer $hide={hide}>
+        {!isLP && (
+          <APYContainer>
+            <Ratio $align={"right"} $weight={"sb"}>
+              EST C-RATIO: {Number(fromBigInt(cRatio)).toFixed(2)}%
+            </Ratio>
+          </APYContainer>
+        )}
+        {!isLP && (
+          <RowContainer>
+            <Label>{"pUSD"}</Label>
+            <Input
+              disabled={!isActive || !isReady}
+              currencyName={"pUSD"}
+              value={isConnect ? burnAmount : ""}
+              onChange={(e) => onChange(e.target.value, currencyName)}
+              color={"primary"}
+              placeholder={"0"}
+            />
+            <MaxButton
+              disabled={!isActive || !isReady}
+              color={"fourth"}
+              fontColor={"fifth"}
+              onClick={() => maxAction()}
+            />
+          </RowContainer>
+        )}
 
-                <RowContainer>
-                    <Label>{currencyName}</Label>
-                    <Input
-                        disabled={!isLP || !isActive}
-                        isLP={isLP}
-                        currencyName={isLP ? `${currencyName}_${swapName[networkId]}` : currencyName}
-                        value={isActive ? unStakeAmount : ""}
-                        onChange={(e) => onChange(e.target.value, currencyName)}
-                        color={"primary"}
-                    />
-                    {isLP && <MaxButton color={"fourth"} fontColor={"fifth"} onClick={() => maxAction()} disabled={!isActive || !isReady} />}
-                </RowContainer>
-                <ColContainer>
-                    {!isLP ? (
-                        <RoundButton
-                            height={30}
-                            disabled={!isActive || !isReady}
-                            onClick={() => burnAction()}
-                            padding={'0'}
-                            color={"fourth"}
-                            width={320}
-                            margin={"0px 20px 0px 0px"}
-                            shadow={isActive}
-                        >
-                            <H4 $weight={"sb"} $color={"fifth"}>
-                                BURN
-                            </H4>
-                        </RoundButton>
-                    ) : (
-                        <RoundButton
-                            height={30}
-                            disabled={!isActive || !isReady}
-                            onClick={() => burnAction()}
-                            color={"fourth"}
-                            width={320}
-                            margin={"0px 20px 0px 0px"}
-                            shadow={isActive}
-                        >
-                            <H4 $weight={"sb"} $color={"fifth"}>
-                                UNSTAKE
-                            </H4>
-                        </RoundButton>
-                    )}
-                    {isActive && <FeeAndPrice currencyName={currencyName}></FeeAndPrice>}
-                </ColContainer>
-            </InputContainer>
-        </Card>
-    );
+        <RowContainer>
+          <Label>{currencyName}</Label>
+          <Input
+            disabled={!isLP || !isActive}
+            isLP={isLP}
+            currencyName={isLP ? `${currencyName}_${swapName[networkId]}` : currencyName}
+            value={isActive ? unStakeAmount : ""}
+            onChange={(e) => onChange(e.target.value, currencyName)}
+            color={"primary"}
+            placeholder={"0." + "0".repeat(decimals)}
+          />
+          {isLP && (
+            <MaxButton
+              color={"fourth"}
+              fontColor={"fifth"}
+              onClick={() => maxAction()}
+              disabled={!isActive || !isReady}
+            />
+          )}
+        </RowContainer>
+        <ColContainer>
+          {!isLP ? (
+            <RoundButton
+              height={30}
+              disabled={!isActive || !isReady}
+              onClick={() => burnAction()}
+              padding={"0"}
+              color={"fourth"}
+              width={320}
+              margin={"0px 20px 0px 0px"}
+              shadow={isActive}
+            >
+              <H4 $weight={"sb"} $color={"fifth"}>
+                BURN
+              </H4>
+            </RoundButton>
+          ) : (
+            <RoundButton
+              height={30}
+              disabled={!isActive || !isReady}
+              onClick={() => burnAction()}
+              color={"fourth"}
+              width={320}
+              margin={"0px 20px 0px 0px"}
+              shadow={isActive}
+            >
+              <H4 $weight={"sb"} $color={"fifth"}>
+                UNSTAKE
+              </H4>
+            </RoundButton>
+          )}
+          {isActive && <FeeAndPrice currencyName={currencyName}></FeeAndPrice>}
+        </ColContainer>
+      </InputContainer>
+    </Card>
+  );
 };
 const Ratio = styled(H4)`
-    width: 100% !important;
-    text-align: center !important;
-
+  width: 100% !important;
+  text-align: center !important;
 `;
 
 // const IsActive = css`

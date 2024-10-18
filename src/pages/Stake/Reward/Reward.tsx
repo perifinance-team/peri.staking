@@ -18,6 +18,8 @@ import { setLoading } from "config/reducers/loading";
 import { web3Onboard } from "lib/onboard";
 import { formatCurrency } from "lib";
 import { Title, StakeContainer, Container } from "../Mint/Mint";
+import { BigNumber } from "ethers";
+import { end, start } from "lib/etc/performance";
 // import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from 'constants';
 // import networkFee from 'config/reducers/networkFee/networkFee';
 
@@ -44,7 +46,6 @@ const Reward = () => {
   const { hash } = useSelector((state: RootState) => state.transaction);
   const { address, isConnect, networkId } = useSelector((state: RootState) => state.wallet);
   const { gasPrice } = useSelector((state: RootState) => state.networkFee);
-  const { currentCRatio } = useSelector((state: RootState) => state.ratio);
   const { balances } = useSelector((state: RootState) => state.balances);
   const [claimData, setClaimData] = useState<ClaimData>({
     closeIn: "",
@@ -59,7 +60,6 @@ const Reward = () => {
   });
 
   const [actions, setActions] = useState([]);
-    
 
   const getFeePeriodCountdown = (recentFeePeriods, feePeriodDuration) => {
     const currentPeriodStart =
@@ -147,9 +147,8 @@ const Reward = () => {
         return false;
       }
 
-      const claimAble: boolean =
-        currentCRatio === 0n ||
-        (BigInt(Math.pow(10, 18).toString()) * 100n) / currentCRatio >= 399n;
+      const claimAble: boolean = claimData.claimable;
+      // console.log("claimAble", claimAble, currentCRatio, targetCRatio);
 
       if (!claimAble) {
         NotificationManager.warning(
@@ -193,22 +192,29 @@ const Reward = () => {
 
   const getData = async () => {
     dispatch(setLoading({ name: "rewardData", value: true }));
+    start("rewardData");
     try {
-      const duration = await contracts.FeePool.feePeriodDuration();
-      const periods = await contracts.FeePool.recentFeePeriods(0);
-      const claimable = address ? await contracts.FeePool.isFeesClaimable(address) : false;
-      const reward = address ? await contracts.FeePool.feesAvailable(address) : [];
-      //reward type  array[0] = exchange | array[1] = staking
+      const [duration, periods, claimable, availableFees] = await Promise.all([
+        contracts.FeePool.feePeriodDuration(),
+        contracts.FeePool.recentFeePeriods(0),
+        contracts.FeePool.isFeesClaimable(address),
+        address ? contracts.FeePool.feesAvailable(address) : [BigNumber.from(0), BigNumber.from(0)],
+      ]);
+      const { totalFees, totalRewards } = availableFees;
+
+      // console.log("totalFees", totalFees.toBigInt(), "totalRewards", totalRewards.toBigInt());
+      console.log(address, "duration", duration?.toBigInt(), "claimable", claimable);
 
       const { closeIn, isCloseFeePeriodEnabled } = getFeePeriodCountdown(periods, duration);
+      console.log("closeIn", closeIn, "isCloseFeePeriodEnabled", isCloseFeePeriodEnabled);
 
       setClaimData({
         closeIn,
         duration,
         periods,
         rewards: {
-          exchange: isConnect ? BigInt(reward[0].toString()) : 0n,
-          staking: isConnect ? BigInt(reward[1].toString()) : 0n,
+          exchange: totalFees?.toBigInt(),
+          staking: totalRewards?.toBigInt(),
         },
         claimable,
         isCloseFeePeriodEnabled,
@@ -217,6 +223,8 @@ const Reward = () => {
       console.log(e);
     }
 
+    end();
+
     dispatch(setLoading({ name: "rewardData", value: false }));
   };
 
@@ -224,25 +232,26 @@ const Reward = () => {
     if (address && exchangeIsReady) {
       getData();
     } else {
-      setClaimData({...claimData, rewards: {exchange: 0n, staking: 0n}});
+      setClaimData({ ...claimData, rewards: { exchange: 0n, staking: 0n } });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hash, isConnect, address, networkId, exchangeIsReady]);
 
-
   useEffect(() => {
-    const actions = networkId === 1285
-    ? [{ name: "CLAIM", component: RewardCard, data: claimData }]
-    : [
-        { name: "CLAIM", component: RewardCard, data: claimData },
-        {
-          name: "LP",
-          component: LPRewardCard,
-          data: {
-            ...claimData,
-            rewardEscrow: balances["LP"]?.rewardEscrow ? balances["LP"].rewardEscrow : 0n,
-          },
-        },
-      ];
+    const actions =
+      !contracts["LP"]?.networkId
+        ? [{ name: "CLAIM", component: RewardCard, data: claimData }]
+        : [
+            { name: "CLAIM", component: RewardCard, data: claimData },
+            {
+              name: "LP",
+              component: LPRewardCard,
+              data: {
+                ...claimData,
+                rewardEscrow: balances["LP"]?.rewardEscrow ? balances["LP"].rewardEscrow : 0n,
+              },
+            },
+          ];
     setActions(actions);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -292,7 +301,7 @@ const RewardContainer = styled(StakeContainer)`
     top: -14% !important;
   }
 
-  .swiper-slide.swiper-slide-next  {
+  .swiper-slide.swiper-slide-next {
     margin-top: 1.5% !important;
   }
 

@@ -5,9 +5,12 @@ const govCoin = {
 	56: "BNB",
 	97: "BNB",
 	137: "MATIC",
+	1284: "GLMR",
 	1285: "MOVR",
 	1287: "MOVR",
-	80001: "MATIC"
+	8453: "ETH",
+	80001: "MATIC",
+	84532: "ETH",
 };
 
 export default govCoin;
