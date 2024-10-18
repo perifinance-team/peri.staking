@@ -56,6 +56,7 @@ const Burn = ({ currencies }) => {
   const exchangeRates = useSelector((state: RootState) => state.exchangeRates);
   const { maxStakingRatio } = useSelector((state: RootState) => state.ratio);
   const { isConnect, address, networkId } = useSelector((state: RootState) => state.wallet);
+
   const { gasPrice } = useSelector((state: RootState) => state.networkFee);
   const [issuanceDelay, setIssuanceDelay] = useState(1);
   const [slideIndex, setSlideIndex] = useState(0);
@@ -94,6 +95,7 @@ const Burn = ({ currencies }) => {
 
         setUnStakeAmount(unStakeAmt);
       } else {
+
         burnAmount = value;
         const bnBurnAmount = toBigInt(burnAmount);
 
@@ -354,28 +356,27 @@ const Burn = ({ currencies }) => {
       /*let burnAmountToPERI =
         (BigInt(utils.parseEther(burnAmount).toString()) *
           BigInt(Math.pow(10, 18).toString())) /
+
         exchangeRates["PERI"];
 
       let totalDEBT =
-        (balances["DEBT"].balance * BigInt(Math.pow(10, 18).toString())) /
-          exchangeRates["PERI"] -
+        (balances["DEBT"].balance * BigInt(Math.pow(10, 18).toString()) / exchangeRates["PERI"]) -
         burnAmountToPERI;
 
       const USDCTotalStake =
         currencyName === "USDC"
-          ? balances["USDC"].staked -
-            BigInt(utils.parseEther(unStakeAmount).toString())
+          ? balances["USDC"].staked - BigInt(utils.parseEther(unStakeAmount).toString())
           : balances["USDC"].staked;
-      const USDCStakedToPERI =
-        (USDCTotalStake * exchangeRates["USDC"]) / exchangeRates["PERI"];
+      const USDCStakedToPERI = (USDCTotalStake * exchangeRates["USDC"]) / exchangeRates["PERI"];
 
       const DAITotalStake =
         currencyName === "DAI"
-          ? balances["DAI"].staked -
-            BigInt(utils.parseEther(unStakeAmount).toString())
+          ? balances["DAI"].staked - BigInt(utils.parseEther(unStakeAmount).toString())
           : balances["DAI"].staked;
-      const DAIStakedToPERI =
-        (DAITotalStake * exchangeRates["DAI"]) / exchangeRates["PERI"];
+      const DAIStakedToPERI = (DAITotalStake * exchangeRates["DAI"]) / exchangeRates["PERI"];
+
+      // console.log("totalDEBT:", totalDEBT * BigInt(Math.pow(10, 18).toString()));
+      // console.log("PERI.balance + DAIStakedToPERI + USDCStakedToPERI))",  balances["PERI"].balance + DAIStakedToPERI + USDCStakedToPERI);
 
       setCRatio(
         (BigInt(Math.pow(10, 18).toString()) * 100n) /

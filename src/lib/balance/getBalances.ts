@@ -90,6 +90,7 @@ const setExBalances = async (
   const [pUSDBalance, periBalance, debtBalance] = [BigInt(pUSDB), BigInt(periB), BigInt(debtB)];
   const { tokenList, stakedAmts, decimals, balances } = exTokenInfo;
 
+
   let stableEA: bigint = 0n,
     goldEA: bigint = 0n;
   const stables = Object.keys(currencies)
@@ -328,3 +329,4 @@ export const getBalances = async (currentWallet, currencies, exchangeRates, curr
 	};
 };
  */
+
