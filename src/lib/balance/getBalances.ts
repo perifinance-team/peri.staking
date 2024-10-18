@@ -77,7 +77,7 @@ const setExBalances = async (
   const [, stableIR, goldIR] = iRatios;
 
   // console.log("LPContract", LPContract);
-  console.log("currencies", currencies);
+  // console.log("currencies", currencies);
 
   const [pUSDB, periB, debtB, exTokenInfo, LP] = await Promise.all([
     PynthpUSD.balanceOf(currentWallet),
@@ -102,7 +102,7 @@ const setExBalances = async (
 
     const staked = BigInt(stakedAmts[index]);
     const balance = BigInt(balances[index]);
-    console.log("tokenName", tokenName, "staked", staked, "balance", balance);
+    // console.log("tokenName", tokenName, "staked", staked, "balance", balance);
     // get allowance of all external tokens
     const tokenContract = contracts[tokenName];
     let allowance = 0n;

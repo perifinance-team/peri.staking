@@ -71,7 +71,7 @@ export const EarnCard = ({
                             width={320}
                             margin={"20px 20px 0px 0px"}
                             shadow={isActive}
-                            disabled={!isActive || isConnect}
+                            disabled={!isActive || (isConnect && !isReady)}
                         >
                             <H4 $weight={"sb"}>Approve</H4>
                         </RoundButton>

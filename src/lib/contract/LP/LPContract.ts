@@ -74,7 +74,7 @@ export const LPContract = {
     },
 
     balanceOf: async function (currentAddress) {
-        const balance = currentAddress ? await this.contract.balanceOf(currentAddress) : undefined;
+        const balance = currentAddress ? await this.balanceContract.balanceOf(currentAddress) : undefined;
         return balance ? balance : 0n;
     },
     earned: async function (currentWallet) {

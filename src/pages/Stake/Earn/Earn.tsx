@@ -102,6 +102,7 @@ const Earn = ({ LPs }) => {
         : 0n;
 
       setRewardsAmountToAPY(reward);
+      setStakeAmount("0");
     } catch (e) {
       console.log(e);
       setRewardsAmountToAPY(0n);
@@ -158,11 +159,11 @@ const Earn = ({ LPs }) => {
     }
   };
 
-  useEffect(() => {
-    if (!hash) {
-      setStakeAmount("0");
-    }
-  }, [hash]);
+  // useEffect(() => {
+  //   if (!hash) {
+  //     setStakeAmount("0");
+  //   }
+  // }, [hash]);
 
   useEffect(() => {
     setIsApprove(false);

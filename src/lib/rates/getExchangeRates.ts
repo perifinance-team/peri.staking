@@ -1,7 +1,8 @@
 import { contracts } from "lib/contract";
 import { toBytes32 } from "lib/etc/utils";
+import { natives } from "lib/rpcUrl/rpcUrl";
 
-export const getExchangeRates = async () => {
+export const getExchangeRates = async (nativeCoin) => {
   const { ExchangeRates } = contracts as any;
 
   if (!ExchangeRates) {
@@ -21,21 +22,28 @@ export const getExchangeRates = async () => {
   if (contracts["PAXG"]) keys.push("PAXG");
   if (contracts["USDT"]) keys.push("USDT");
 
-  // console.log("keys", keys);
+  keys.push(nativeCoin);
 
-  const [PERI, USDC, DAI, XAUT, PAXG, USDT] = await ExchangeRates.ratesForCurrencies(
+  // console.log("keys", keys);
+  // console.log("toBytes32", keys.map(toBytes32));
+
+  const rates = await ExchangeRates.ratesForCurrencies(
     keys.map(toBytes32)
   ).then((values) => values.map((value) => BigInt(value)));
 
+  const Obj:any = {};
+  keys.forEach((key, index) => {
+    if (key === nativeCoin) {
+      Obj["NATIVE"] = rates[index];
+    }
+    else{
+      Obj[key] = rates[index];
+    }
+  });
+
   // console.log("rates", PERI, USDC, DAI, XAUT, PAXG, USDT);
   // const [PERI, USDC, DAI, XAUT, PAXG, USDT] = rates.map(feed => feed.toBigInt());
+  // console.log("Obj", Obj);
 
-  return {
-    PERI: PERI,
-    USDC: USDC,
-    DAI: DAI,
-    USDT: USDT,
-    XAUT: XAUT,
-    PAXG: PAXG,
-  };
+  return Obj;
 };

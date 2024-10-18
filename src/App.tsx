@@ -34,6 +34,7 @@ import Loading from "./screens/Loading";
 import Main from "./screens/Main";
 import "./App.css";
 import { end, start } from "lib/etc/performance";
+import { natives } from "lib/rpcUrl/rpcUrl";
 
 const App = () => {
   const { address, networkId } = useSelector((state: RootState) => state.wallet);
@@ -48,8 +49,6 @@ const App = () => {
   const [timer, setTimer] = useState(0);
   const [onboardInit, setOnboardInit] = useState(false);
 
-  const { Liquidations } = contracts as any;
-
   const getSystemData = useCallback(
     async (/* refresh */) => {
       start("getSystemData");
@@ -58,10 +57,11 @@ const App = () => {
         if (address) {
           dispatch(setIsLoading(true));
           const [ratios, gasPrice] = await Promise.all([
-            getRatios(address),
+            getRatios(address, natives[networkId]),
             getNetworkFee(networkId),
           ]);
 
+          const { Liquidations } = contracts as any;
           // console.log("ratios", ratios);
           if (contracts.networkId === networkId) {
             const [balancesData, vestable, stateLiquid] = await Promise.all([
@@ -171,7 +171,7 @@ const App = () => {
     }
 
     const selectedWallet = localStorage.getItem("selectedWallet");
-    if (selectedWallet && selectedWallet !== "undefined") {
+    if (selectedWallet) {
       try {
         await web3Onboard.connect(selectedWallet);
       } catch (e) {
@@ -189,10 +189,10 @@ const App = () => {
             NotificationManager.remove(NotificationManager.listNotify[0]);
             NotificationManager.warning(`${transaction.type} error`, "ERROR");
           } else {
-            await getSystemData();
             NotificationManager.remove(NotificationManager.listNotify[0]);
             NotificationManager.success(`${transaction.type} success`, "SUCCESS");
             dispatch(resetTransaction());
+            await getSystemData();
           }
         });
       };
@@ -224,7 +224,7 @@ const App = () => {
       clearInterval(intervals);
     }
 
-    if (!address || (!onboardInit && networkId === 0)) return;
+    if (!address || !onboardInit || networkId === 0) return;
 
     setTimer(setTimeout(() => getSystemData(), 0));
 

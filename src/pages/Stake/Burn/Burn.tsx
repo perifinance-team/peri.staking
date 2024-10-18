@@ -84,15 +84,15 @@ const Burn = ({ currencies }) => {
     }
     try {
       let burnAmount;
-      let unStakeAmount;
+      let unStakeAmt;
 
       if (currencyName === "LP") {
-        unStakeAmount = value;
-        if (toBigInt(maxUnStakeAmount) <= toBigInt(unStakeAmount)) {
-          unStakeAmount = maxUnStakeAmount;
+        unStakeAmt = value;
+        if (toBigInt(maxUnStakeAmount) <= toBigInt(unStakeAmt)) {
+          unStakeAmt = maxUnStakeAmount;
         }
 
-        setUnStakeAmount(unStakeAmount);
+        setUnStakeAmount(unStakeAmt);
       } else {
         burnAmount = value;
         const bnBurnAmount = toBigInt(burnAmount);
@@ -101,10 +101,10 @@ const Burn = ({ currencies }) => {
 
         if (toBigInt(maxBurnAmount) <= toBigInt(burnAmount)) {
           burnAmount = maxBurnAmount;
-          unStakeAmount = maxUnStakeAmount;
+          unStakeAmt = maxUnStakeAmount;
         } else {
           const toSARatio = multiplyDecimal(balances[currencyName].IR, exchangeRates[currencyName]);
-          unStakeAmount =
+          unStakeAmt =
             toSARatio > 0n
               ? divideDecimal(
                   bnBurnAmount,
@@ -115,12 +115,12 @@ const Burn = ({ currencies }) => {
               BigInt(Math.pow(10, 18).toString()) *
               (BigInt(Math.pow(10, 18).toString()) / targetCRatio)) /
             exchangeRates[currencyName]; */
-          unStakeAmount = fromBigInt(unStakeAmount);
-          // console.log("unStakeAmount", unStakeAmount, "burnAmount", burnAmount);
+          unStakeAmt = fromBigInt(unStakeAmt);
+          // console.log("unStakeAmt", unStakeAmt, "burnAmount", burnAmount);
         }
 
         if (currencyName !== "LP") {
-          getCRatio(currencyName, burnAmount, unStakeAmount);
+          getCRatio(currencyName, burnAmount, unStakeAmt);
         }
         // unStakeAmount =
         //   BigInt(utils.parseEther(unStakeAmount).toString())/*  + PERIQuota */;
@@ -130,7 +130,7 @@ const Burn = ({ currencies }) => {
         // } else {
         //   unStakeAmount = utils.formatEther(unStakeAmount);
         // }
-        unStakeAmount = Number(unStakeAmount).toFixed(balances[currencyName].decimal);
+        unStakeAmt = Number(unStakeAmt).toFixed(balances[currencyName].decimal);
         // console.log("unStakeAmount", unStakeAmount, "burnAmount", burnAmount);
 
         if (
@@ -151,11 +151,11 @@ const Burn = ({ currencies }) => {
           }
         } else if (balances["DEBT"].balance === 0n && Number(burnAmount) === 0) {
           NotificationManager.warning(`There is no debt to burn`, "No debt");
-        } else if (balances[currencyName].staked === 0n && Number(unStakeAmount) === 0) {
+        } else if (balances[currencyName].staked === 0n && Number(unStakeAmt) === 0) {
           NotificationManager.warning(`There is no ${currencyName} to unstake`, "No staked");
         }
 
-        setUnStakeAmount(unStakeAmount);
+        setUnStakeAmount(unStakeAmt);
         setBurnAmount(burnAmount);
       }
     } catch (e) {
@@ -169,11 +169,11 @@ const Burn = ({ currencies }) => {
 
   const getMaxAmount = (currency) => {
     let burnAmount = 0n;
-    let unStakeAmount = 0n;
+    let unStakeAmt = 0n;
 
     if (currency.isLP) {
       burnAmount = 0n;
-      unStakeAmount = balances["LP"].staked;
+      unStakeAmt = balances["LP"].staked;
     } else {
       if (currency.isExternal) {
         burnAmount = balances["DEBT"][currency.name];
@@ -184,8 +184,9 @@ const Burn = ({ currencies }) => {
 
         // unStakeAmount = balances[currency.name].staked;
       } else {
-        // console.log(currency.name, "balances[currency.name].IR", balances[currency.name].IR);
+        console.log(currency.name, "balances[currency.name].IR", balances[currency.name].IR);
         const periSA = divideDecimal(balances["DEBT"].PERI, balances[currency.name].IR);
+        console.log("periSA", periSA);
         const exEA = balances[currency.name].totalEA - periSA;
         const minPeriSA =
           maxStakingRatio > 0n
@@ -207,7 +208,7 @@ const Burn = ({ currencies }) => {
           exchangeRates["PERI"]; */
       }
       const toSARatio = multiplyDecimal(balances[currency.name].IR, exchangeRates[currency.name]);
-      unStakeAmount =
+      unStakeAmt =
         toSARatio > 0n
           ? divideDecimal(
               burnAmount,
@@ -215,23 +216,23 @@ const Burn = ({ currencies }) => {
             )
           : 0n;
 
-      unStakeAmount =
-        unStakeAmount > balances[currency.name].staked
+      unStakeAmt =
+        unStakeAmt > balances[currency.name].staked
           ? balances[currency.name].staked
-          : unStakeAmount;
+          : unStakeAmt;
     }
 
     console.log(
       "burnAmount",
       burnAmount,
       "unStakeAmount",
-      unStakeAmount,
+      unStakeAmt,
       "staked",
       balances[currency.name].staked
     );
 
     setMaxBurnAmount(fromBigInt(burnAmount));
-    setMaxUnStakeAmount(fromBigInt(unStakeAmount));
+    setMaxUnStakeAmount(fromBigInt(unStakeAmt));
   };
 
   const connectHelp = async () => {
@@ -288,7 +289,7 @@ const Burn = ({ currencies }) => {
     let transaction;
     if (currency.name === "LP") {
       if (toBigInt(unStakeAmount) === 0n) {
-        NotificationManager.error(`Please enter the LP to Unstake`, "ERROR");
+        NotificationManager.warning(`Please enter amount to Unstake`, "Warning");
         return false;
       }
 
@@ -321,7 +322,7 @@ const Burn = ({ currencies }) => {
       }
 
       if (toBigInt(burnAmount) === 0n) {
-        NotificationManager.error(`Please enter the pUSD to Burn`, "ERROR");
+        NotificationManager.warning(`Please enter the pUSD to Burn`, "ERROR");
         return false;
       }
 
@@ -383,16 +384,21 @@ const Burn = ({ currencies }) => {
       ); */
 
       const bnBurnAmount = utils.parseEther(burnAmount).toBigInt();
-      const bnBurnSA =
-        balances[currencyName].IR > 0n
-          ? divideDecimal(bnBurnAmount, balances[currencyName].IR)
-          : 0n;
+      const bnBurnSA = 0n;
+        // balances[currencyName].IR > 0n
+        //   ? divideDecimal(bnBurnAmount, balances[currencyName].IR)
+        //   : 0n;
       const estDebt = balances["DEBT"].balance - bnBurnAmount;
       const estTotalEA = balances["PERI"].totalEA - bnBurnSA;
+      // console.log("debt", balances["DEBT"].balance, "totalEA", balances["PERI"].totalEA);
+      // console.log("C-Ratio", balances["DEBT"].balance > 0n ? divideDecimal(divideDecimal(balances["PERI"].totalEA, balances["DEBT"].balance), BigInt(1e16)) : 0n);
+      // console.log("bnBurnAmount", bnBurnAmount, "bnBurnSA", bnBurnSA);
+      // console.log("estTotalEA", estTotalEA, "estDebt", estDebt);
 
       const cRatio =
         estDebt > 0n ? divideDecimal(divideDecimal(estTotalEA, estDebt), BigInt(1e16)) : 0n;
       // const cRatio = Number(fromBigInt(tmpRatio)).toFixed(2)
+      // console.log("cRatio", cRatio);
       setCRatio(cRatio);
     } catch (e) {
       setCRatio(0n);
@@ -462,7 +468,10 @@ const Burn = ({ currencies }) => {
         getIssuanceDelayCheck();
         if (currencies[slideIndex].isLP) {
           setCRatio(0n);
+          setUnStakeAmount("");
         } else {
+          setUnStakeAmount("");
+          setBurnAmount("");
           getCRatio(currencies[slideIndex].name, burnAmount, unStakeAmount);
         }
       } else {

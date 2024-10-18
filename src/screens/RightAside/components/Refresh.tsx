@@ -26,6 +26,8 @@ import { updateTimestamp, toggleLiquid } from "config/reducers/liquidation";
 import { end, start } from "lib/etc/performance";
 import { getNetworkFee } from "lib/fee";
 import { updateNetworkFee } from "config/reducers/networkFee";
+import { resetTransaction } from "config/reducers/transaction";
+import { natives } from "lib/rpcUrl/rpcUrl";
 
 const Refresh = () => {
   const dispatch = useDispatch();
@@ -81,7 +83,7 @@ const Refresh = () => {
       return;
     } else if (location.pathname.includes("/balance")) {
       fetchPynthBalances();
-    }
+    } 
 
     start("refresh");
     // dispatch(clearBalances());
@@ -89,7 +91,7 @@ const Refresh = () => {
     try {
       if (address) {
         const [ratios, gasPrice] = await Promise.all([
-          getRatios(address),
+          getRatios(address, natives[networkId]),
           getNetworkFee(networkId),
         ]);
 

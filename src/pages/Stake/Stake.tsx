@@ -45,10 +45,10 @@ const Stake = () => {
 			stable[networkId]["PAXG"] && currencies.push({ name: "PAXG", isExternal: true, isLP: false });
 		}
 		
-		lpContractAddress[networkId] 
-			? setLPs([{ name: "LP", isExternal: false, isLP: true }])
-			: setLPs([]);
-
+		if (lpContractAddress[networkId]) {
+			setLPs([{ name: "LP", isExternal: false, isLP: true }]);
+			currencies.push({ name: "LP", isExternal: false, isLP: true });
+		}
 		setCurrencies(currencies);
 	}, [exchangeRates, networkId]);
 

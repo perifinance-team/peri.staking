@@ -4,12 +4,12 @@ import { getIssuanceRatio } from './getIssuanceRatio'
 import { getLiquidationRatio } from './getLiquidationRatio'
 
 
-export const getRatios = async (currentWallet) => {
+export const getRatios = async (currentWallet, nativeCoin) => {
     // start("getRatios");
     const [iRatios, lRatios, exchangeRates ] = await Promise.all([
         getIssuanceRatio(currentWallet),
         getLiquidationRatio(currentWallet),
-        getExchangeRates()
+        getExchangeRates(nativeCoin)
     ])
     // end();
     // console.log("iRatios", iRatios);

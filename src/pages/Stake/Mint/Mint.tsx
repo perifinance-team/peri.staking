@@ -26,6 +26,7 @@ import {
   toBigInt,
   toBytes32 /* , toUnit */,
 } from "lib/etc/utils";
+import { extractMessage } from "lib/error";
 
 SwiperCore.use([Mousewheel, Virtual]);
 
@@ -128,6 +129,10 @@ const Mint = ({ currencies }) => {
 
       // console.log(currency.name, "maxMintAmount", mintAmount);
 
+      // console.log(currency.name, balances[currency.name].IR, exchangeRates[currency.name]);
+      if (!balances[currency.name]?.IR || exchangeRates[currency.name] === 0n)
+        throw new Error(`${currency.name} rate is not valid`);
+
       const temp = divideDecimal(mintAmount, balances[currency.name].IR);
       const stakeable = divideDecimal(temp, exchangeRates[currency.name]);
       const stakeAmount = fromBigInt(stakeable);
@@ -144,7 +149,8 @@ const Mint = ({ currencies }) => {
     } catch (e) {
       setMaxStakeAmount("");
       setMaxMintAmount("");
-      NotificationManager.warning(`One of Pynths or PERI rate is staled.`, "Price Error");
+      console.log(e);
+      NotificationManager.warning(extractMessage(e));
     }
   };
 
@@ -263,13 +269,14 @@ const Mint = ({ currencies }) => {
     // dispatch(setLoading({ name: "apy", value: false }));
   };
 
-  const getCRatio = useCallback((currencyName: string | number, mintAmount: string, stakeAmount: string) => {
-    if (mintAmount === "" || !mintAmount) {
-      mintAmount = "0";
-    }
+  const getCRatio = useCallback(
+    (currencyName: string | number, mintAmount: string, stakeAmount: string) => {
+      if (mintAmount === "" || !mintAmount) {
+        mintAmount = "0";
+      }
 
-    try {
-      /* let mintAmountToPERI =
+      try {
+        /* let mintAmountToPERI =
         (BigInt(utils.parseEther(mintAmount).toString()) * BigInt(Math.pow(10, 18).toString())) /
         exchangeRates["PERI"];
 
@@ -294,21 +301,23 @@ const Mint = ({ currencies }) => {
           ((totalDEBT * BigInt(Math.pow(10, 18).toString())) /
             (balances["PERI"].balance + DAIStakedToPERI + USDCStakedToPERI))
       ); */
-      const bnMintAmount = utils.parseEther(mintAmount).toBigInt();
-      const bnMintSA = divideDecimal(bnMintAmount, balances[currencyName].IR);
-      const estDebt = balances["DEBT"].balance + bnMintAmount;
-      const estTotalEA = balances["PERI"].totalEA + bnMintSA;
+        const bnMintAmount = utils.parseEther(mintAmount).toBigInt();
+        const bnMintSA = divideDecimal(bnMintAmount, balances[currencyName].IR);
+        const estDebt = balances["DEBT"].balance + bnMintAmount;
+        const estTotalEA = balances["PERI"].totalEA + bnMintSA;
 
-      // console.log("mintAmount", mintAmount, "stakeAmount", stakeAmount, "estDebt", estDebt, "estTotalEA", estTotalEA);
+        // console.log("mintAmount", mintAmount, "stakeAmount", stakeAmount, "estDebt", estDebt, "estTotalEA", estTotalEA);
 
-      const cRatio = divideDecimal(divideDecimal(estTotalEA, estDebt), BigInt(1e16));
-      // console.log("cRatio", bnMintAmount, bnMintSA, cRatio, estDebt, estTotalEA);
+        const cRatio = divideDecimal(divideDecimal(estTotalEA, estDebt), BigInt(1e16));
+        // console.log("cRatio", bnMintAmount, bnMintSA, cRatio, estDebt, estTotalEA);
 
-      setCRatio(cRatio);
-    } catch (e) {
-      setCRatio(0n);
-    }
-  },[balances]);
+        setCRatio(cRatio);
+      } catch (e) {
+        setCRatio(0n);
+      }
+    },
+    [balances]
+  );
 
   useEffect(() => {
     if (!hash) {
@@ -377,6 +386,7 @@ const Mint = ({ currencies }) => {
           virtual
         >
           {currencies.map((currency, index) => (
+            currency.name !== "LP" &&
             <SwiperSlide key={currency.name} virtualIndex={index}>
               <MintCard
                 hide={index < slideIndex}

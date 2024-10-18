@@ -34,11 +34,14 @@ const DebtBalance = () => {
   };
 
   useEffect(() => {
-    return () => {
-      setFlag(isConnect && Number(ratioToPer(currentCRatio)) <= 150 && liquidation);
-      // setFlag(true);
-    };
-  }, [currentCRatio, liquidation]);
+    // console.log("currentCRatio", currentCRatio, "ratioToPer", Number(ratioToPer(currentCRatio)));
+    currentCRatio && setFlag(isConnect && Number(ratioToPer(currentCRatio)) <= 150 && liquidation);
+    // return () => {
+    //   console.log("currentCRatio", currentCRatio, "ratioToPer", Number(ratioToPer(currentCRatio)));
+    //   setFlag(isConnect && Number(ratioToPer(currentCRatio)) <= 150 && liquidation);
+    //   // setFlag(true);
+    // };
+  }, [isConnect, currentCRatio, liquidation]);
 
   return (
     <DebtBalanceContainer>

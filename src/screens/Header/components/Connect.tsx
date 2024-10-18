@@ -26,7 +26,7 @@ const Connect = () => {
       //   localStorage.removeItem("selectedWallet");
       //   selectedWallet = undefined;
       // }
-      await web3Onboard.connect();
+      await web3Onboard.connect(undefined);
     } catch (e) {
       console.log("connect error", e);
     }

@@ -79,10 +79,11 @@ export const web3Onboard: Web3Onboard = {
       qrModalOptions: {
         enableAuthMode: true,
       },
-      requiredChains: Object.keys(process.env.REACT_APP_ENV === 'production' ? MAINNET : TESTNET).filter(
+      requiredChains: [1, 137]/* Object.keys(process.env.REACT_APP_ENV === 'production' ? MAINNET : TESTNET).filter(
         (networkId) => UNPOPULARNET[networkId] === undefined && networkId !== "1337"
-      ),
-      optionalChains: Object.keys(UNPOPULARNET).filter((networkId) => networkId !== "1287"),
+      ) */,
+      optionalChains: Object.keys(process.env.REACT_APP_ENV === 'production' ? MAINNET : TESTNET).filter(
+        (networkId) => networkId !== "1337"),
       // requiredChains,
       dappUrl: "https://staking.peri.finance",
       additionalOptionalMethods: ["wallet_switchEthereumChain", "wallet_addEthereumChain"],
