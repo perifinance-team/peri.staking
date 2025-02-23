@@ -24,7 +24,7 @@ import { NotificationManager } from "react-notifications";
 
 import { networkInfo } from "configure/networkInfo";
 
-import { MAINNET, /* SUPPORTED_NETWORKS, */ TESTNET, UNPOPULARNET } from "lib/network/supportedNetWorks";
+import { MAINNET, /* SUPPORTED_NETWORKS, */ TESTNET/* , UNPOPULARNET */ } from "lib/network/supportedNetWorks";
 
 // import { changeNetwork } from "lib/network";
 
@@ -63,7 +63,7 @@ export const web3Onboard: Web3Onboard = {
       options: {
         extensionOnly: false,
         // injectProvider: true,
-        infuraAPIKey: process.env.REACT_APP_INFURA_ID,
+        infuraAPIKey: process.env.REACT_APP_INFURA_API_KEY,
         dappMetadata: {
           url: "https://staking.peri.finance",
           name: "PERI Finance Staking",

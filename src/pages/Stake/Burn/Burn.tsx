@@ -173,6 +173,8 @@ const Burn = ({ currencies }) => {
     let burnAmount = 0n;
     let unStakeAmt = 0n;
 
+    console.log("balances", balances);
+
     if (currency.isLP) {
       burnAmount = 0n;
       unStakeAmt = balances["LP"].staked;
@@ -270,6 +272,7 @@ const Burn = ({ currencies }) => {
           ).toString()
         );
       } catch (e) {
+        console.log("gasLimit", gasLimit, "burnAmount", utils.parseEther(burnAmount).toBigInt());
         console.log(e);
       }
     }
